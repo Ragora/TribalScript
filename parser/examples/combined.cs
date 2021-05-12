@@ -1,3 +1,13 @@
+for (%x = 0; %x < 50; %x++)
+{
+    echo(%x);
+
+    for (%y = 0; %y < 100; %y++)
+    {
+        echo(%y);
+    }
+}
+
 function simple()
 {
     echo("Simple function");
@@ -78,7 +88,22 @@ package TestPackage
 {
     function My::PackagedFunction(%param)
     {
-        return %param % 50;
+        %myObject = new SimGroup(MissionGroup) {
+        		CnH_timeLimit = "25";
+        		cdTrack = "5";
+        		musicTrack = "ice";
+        		powerCount = "0";
+
+            // Sub-object of MissionGroup
+        	new MissionArea(MissionArea) {
+        		area = "-600 -808 992 1632";
+        		flightCeiling = "2000";
+        		flightCeilingRange = "50";
+        			locked = "true";
+        	};
+        };
+
+        return %myObject;
     }
 };
 activatePackage(TestPackage);

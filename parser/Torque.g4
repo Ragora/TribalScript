@@ -18,7 +18,8 @@ whilecontrol : 'while' '(' expression ')' '{' statement* '}'
 forcontrol : 'for' '(' expression? ';' expression? ';' expression? ')' statement
            | 'for' '(' expression? ';' expression? ';' expression? ')' '{' statement* '}' ;
 
-switchcontrol : 'switch' '$'? '(' expression ')' '{' ('case' expression ':' statement+)* ('default' ':' statement+)? '}' ;
+switchcase : 'case' primary ':' statement+ ;
+switchcontrol : 'switch' '$'? '(' expression ')' '{' switchcase* ('default' ':' statement+)? '}' ;
 
 // Control structures
 control : whilecontrol
@@ -31,10 +32,14 @@ newobject : 'new' LABEL '(' expression? ')' '{' (field | newobject ';')* '}'
           | 'new' LABEL '(' expression? ')' ;
 
 // Functions, datablocks, packages
+functiondeclaration : 'function' LABEL '(' paramlist? ')' '{' statement* '}' ;
+packagedeclaration : 'package' LABEL '{' (block)* '}' ;
+datablockdeclaration : 'datablock' LABEL '(' LABEL ')' (':' LABEL)? '{' field* '}' ;
+
 paramlist : local (',' local)* ;
-block : 'function' LABEL '(' paramlist? ')' '{' statement* '}'
-      | 'package' LABEL '{' (block)* '}'
-      | 'datablock' LABEL '(' LABEL ')' (':' LABEL)? '{' field* '}'
+block : functiondeclaration
+      | packagedeclaration
+      | datablockdeclaration
       | newobject ;
 
 statement : (expression ';') | control ;
@@ -42,10 +47,28 @@ statement : (expression ';') | control ;
 // Used for setting field values in object instantiation & datablocks
 field : LABEL ('[' expression ']')? '=' expression ';' ;
 
-expression : expression ('>'|'>='|'<'|'<='|'=='|'!='|'!$='|'$=') expression
-           | expression ('++'|'--')
-           | '!' expression
-           | '~' expression
+primary : local
+        | global
+        | 'true'
+        | 'false'
+        | STRING
+        | LABEL
+        | INT
+        | '(' expression ')'
+        | FLOAT ;
+
+postfix : primary ('++'|'--') ;
+
+unary : '!' expression
+      | '~' expression ;
+
+relational : primary ('>'|'>='|'<'|'<=') expression ;
+equality : primary ('=='|'!='|'!$='|'$=') expression ;
+
+expression : relational
+           | postfix
+           | equality
+           | unary
            | expression ('@'|'SPC'|'NL'|'TAB') expression
            | expression ('*'|'/') expression
            | expression ('+'|'-') expression
@@ -58,19 +81,10 @@ expression : expression ('>'|'>='|'<'|'<='|'=='|'!='|'!$='|'$=') expression
            | expression '[' expression (',' expression)* ']'
            | expression '(' (expression (',' expression)*)* ')'
            | 'return' expression
-           | '(' expression ')'
            | control
            | newobject
            | expression ('.' expression)+
-           | local
-           | global
-           | 'true'
-           | 'false'
-           | STRING
-           | LABEL
-           | INT
-           | FLOAT ;
-
+           | primary ;
 
 LABEL: ('0'..'9'|'a'..'z'|'A'..'Z'|'_')+ ('::'LABEL)* ;
 local: '%'LABEL ;
