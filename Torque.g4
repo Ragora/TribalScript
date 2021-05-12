@@ -6,31 +6,62 @@ grammar Torque;
 
 program  : (block | statement)* ;
 
-paramlist : local (',' local)* ;
+ifcontrol : 'if' '(' expression ')' '{' statement* '}' 'else' '{' statement* '}'
+          | 'if' '(' expression ')' statement 'else' statement
+          | 'if' '(' expression ')' statement
+          | 'if' '(' expression ')' '{' statement* '}' ('else if' '(' expression ')' '{' statement* '}')*
+          | 'if' '(' expression ')' '{' statement* '}' ('else if' '(' expression ')' statement )* ;
 
-expression_or_assign_or_function :
-                     expression '=' expression_or_assign_or_function
-                     | expression;
+whilecontrol : 'while' '(' expression ')' '{' statement* '}'
+             | 'while' '(' expression ')' statement ;
+
+forcontrol : 'for' '(' expression? ';' expression? ';' expression? ')' statement
+           | 'for' '(' expression? ';' expression? ';' expression? ')' '{' statement* '}' ;
+
+switchcontrol : 'switch' '$'? '(' expression ')' '{' ('case' expression ':' statement+)* ('default' ':' statement+)? '}' ;
 
 // Control structures
-control : 'while' '(' expression ')' '{' statement* '}'
-        | 'if' '(' expression ')' '{' statement* '}' 'else' '{' statement* '}'
-        | 'if' '(' expression ')' '{' statement* '}' ;
+control : whilecontrol
+        | ifcontrol
+        | forcontrol
+        | switchcontrol ;
+
+// Object instantiation
+newobject : 'new' LABEL '(' expression? ')' '{' (field | newobject ';')* '}'
+          | 'new' LABEL '(' expression? ')' ;
 
 // Functions, datablocks, packages
+paramlist : local (',' local)* ;
 block : 'function' LABEL '(' paramlist? ')' '{' statement* '}'
-      | 'package' LABEL '{' (block)* '};' ;
+      | 'package' LABEL '{' (block)* '}'
+      | 'datablock' LABEL '(' LABEL ')' (':' LABEL)? '{' field* '}'
+      | newobject ;
 
 statement : (expression ';') | control ;
 
-expression : expression ('>'|'>='|'<'|'<='|'=='|'!=') expression
+// Used for setting field values in object instantiation & datablocks
+field : LABEL ('[' expression ']')? '=' expression ';' ;
+
+expression : expression ('>'|'>='|'<'|'<='|'=='|'!='|'!$='|'$=') expression
+           | expression ('++'|'--')
            | '!' expression
            | '~' expression
-           | expression ('+'|'-') expression
+           | expression ('@'|'SPC'|'NL'|'TAB') expression
            | expression ('*'|'/') expression
+           | expression ('+'|'-') expression
+           | expression ('%') expression
+           | expression ('&'|'&&') expression
+           | expression ('|'|'||') expression
+           | expression ('^') expression
+           | expression '?' expression ':' expression
            | expression '=' expression
-           | expression '(' expression ')'
+           | expression '[' expression (',' expression)* ']'
+           | expression '(' (expression (',' expression)*)* ')'
+           | 'return' expression
+           | '(' expression ')'
            | control
+           | newobject
+           | expression ('.' expression)+
            | local
            | global
            | 'true'
@@ -41,7 +72,7 @@ expression : expression ('>'|'>='|'<'|'<='|'=='|'!=') expression
            | FLOAT ;
 
 
-LABEL: [A-z]+ ('::'LABEL)* ;
+LABEL: ('0'..'9'|'a'..'z'|'A'..'Z'|'_')+ ('::'LABEL)* ;
 local: '%'LABEL ;
 global: '$'LABEL ;
 
@@ -85,11 +116,11 @@ HEX_ESCAPE
     ;
 
 DIGIT:  '0'..'9' ;
-INT :   DIGIT+ [Ll]? ;
+INT :   '-'? DIGIT+ [Ll]? ;
 
 EXP :   ('E' | 'e') ('+' | '-')? INT ;
 
-FLOAT:  DIGIT+ '.' DIGIT* EXP? [Ll]?
+FLOAT:  '-'? DIGIT+ '.' DIGIT* EXP? [Ll]?
     |   DIGIT+ EXP? [Ll]?
     |   '.' DIGIT+ EXP? [Ll]?
     ;
