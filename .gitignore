@@ -1,0 +1,7 @@
+*.jar
+*.class
+*.exe
+*.lib
+*.a
+*.dll
+*.dylib
