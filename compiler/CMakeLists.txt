@@ -5,6 +5,8 @@ include_directories(${ANTLR_Torque_OUTPUT_DIR})
 
 add_library(TorqueCompiler
     compiler.cpp
+    bitstream.cpp
+    interpreter.cpp
     ${ANTLR_Torque_CXX_OUTPUTS}
 )
 target_link_libraries(TorqueCompiler antlr4_static)

@@ -14,46 +14,28 @@
 
 #pragma once
 
-#include <map>
-#include <string>
-#include <vector>
+#include <torquescript/compiler/bitstream.h>
 
-#include <torquescript/compiler/instructions.h>
-
-class Variable
+class Instruction
 {
-    private:
-        //! The name of the variable.
-        std::string mName;
-
-        //! Whether or not this is a global variable.
-        bool mGlobal;
+    public:
+        virtual void execute(BitStream* bitstream) = 0;
 };
 
-/**
- *  @brief A function is callable subroutine from anywhere in the language.
- */
-class Function
+class PushFInstruction : public Instruction
 {
     private:
-        //! The name of the function.
-        std::string mName;
-
-        //! All instructions associated with this function.
-        std::vector<Instruction> mInstructions;
+        //! The value to push.
+        float mParameter;
 
     public:
-};
+        PushFInstruction(const float value)
+        {
+            mParameter = value;
+        }
 
-/**
- *  @brief A CodeBlock defines a piece of executable code generated from a single input (Ie. a file).
- *  This includes global executable code and subroutines, datablocks, etc.
- */
-class CodeBlock
-{
-    private:
-        //! All functions registered in this codeblock.
-        std::map<std::string, Function> mFunctions;
-
-
+        virtual void execute(BitStream* bitstream) override
+        {
+            bitstream->write(mParameter);
+        };
 };

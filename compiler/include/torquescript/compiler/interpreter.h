@@ -16,44 +16,59 @@
 
 #include <map>
 #include <string>
-#include <vector>
+#include <variant>
 
-#include <torquescript/compiler/instructions.h>
-
-class Variable
+/**
+ *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
+ */
+class StoredVariable
 {
-    private:
-        //! The name of the variable.
-        std::string mName;
+    typedef enum {
+        FLOAT,
+        INTEGER,
+        STRING
+    } VariableType;
 
-        //! Whether or not this is a global variable.
-        bool mGlobal;
+    //! The type of variable this is.
+    VariableType mVariableType;
+
+    //! The value stored.
+    std::variant<float, int, std::string> mValue;
+
+    explicit StoredVariable(const float value)
+    {
+        mValue = value;
+    }
+
+    explicit StoredVariable(const int value)
+    {
+        mValue = value;
+    }
+
+    explicit StoredVariable(const std::string& value)
+    {
+        mValue = value;
+    }
 };
 
 /**
- *  @brief A function is callable subroutine from anywhere in the language.
+ *  @brief A specific scope of execution - this is used to delineate local variables
+ *  primarily.
  */
-class Function
+class ExecutionScope
 {
     private:
-        //! The name of the function.
-        std::string mName;
-
-        //! All instructions associated with this function.
-        std::vector<Instruction> mInstructions;
-
-    public:
+        //! A mapping of local variable names to their stored value instance.
+        std::map<std::string, StoredVariable> mLocalVariables;
 };
 
 /**
- *  @brief A CodeBlock defines a piece of executable code generated from a single input (Ie. a file).
- *  This includes global executable code and subroutines, datablocks, etc.
+ *  @brief The interpreter class represents a high level instance of the TorqueScript interpreter.
+ *  It is where execution control flow begins.
  */
-class CodeBlock
+class Interpreter
 {
     private:
-        //! All functions registered in this codeblock.
-        std::map<std::string, Function> mFunctions;
-
-
+        //! A mapping of global variable names to their stored value instance.
+        std::map<std::string, StoredVariable> mGlobalVariables;
 };
