@@ -1,8 +1,9 @@
 #pragma once
 
 #include "antlr4-runtime.h"
-
 #include <TorqueBaseListener.h>
+
+#include <torquescript/compiler/codeblock.h>
 
 class Compiler : public TorqueBaseListener
 {

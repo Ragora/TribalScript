@@ -14,4 +14,7 @@ include_directories(${ANTLR4_INCLUDE_DIRS})
 
 project (Torque)
 find_package(ANTLR REQUIRED)
+find_package(Doxygen
+             REQUIRED dot)
+             
 add_subdirectory(compiler)
