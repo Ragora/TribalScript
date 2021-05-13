@@ -26,3 +26,14 @@ switch$(%string)
     default:
         echo("Default");
 }
+
+// In Torque, the case values are entire expressions
+switch(%value)
+{
+    case (5+5)*2:
+        echo("Case 1");
+    case (2/2)*3 or (1+1)/2:
+        echo("Case 2");
+    default:
+        echo("Default Case");
+}
