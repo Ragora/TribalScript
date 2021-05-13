@@ -20,40 +20,43 @@
 
 #include <torquescript/compiler/instructions.hpp>
 
-class Variable
+namespace TorqueScript
 {
-    private:
-        //! The name of the variable.
-        std::string mName;
+    class Variable
+    {
+        private:
+            //! The name of the variable.
+            std::string mName;
 
-        //! Whether or not this is a global variable.
-        bool mGlobal;
-};
+            //! Whether or not this is a global variable.
+            bool mGlobal;
+    };
 
-/**
- *  @brief A function is callable subroutine from anywhere in the language.
- */
-class Function
-{
-    private:
-        //! The name of the function.
-        std::string mName;
+    /**
+     *  @brief A function is callable subroutine from anywhere in the language.
+     */
+    class Function
+    {
+        private:
+            //! The name of the function.
+            std::string mName;
 
-        //! All instructions associated with this function.
-        std::vector<Instruction> mInstructions;
+            //! All instructions associated with this function.
+            std::vector<Instruction> mInstructions;
 
-    public:
-};
+        public:
+    };
 
-/**
- *  @brief A CodeBlock defines a piece of executable code generated from a single input (Ie. a file).
- *  This includes global executable code and subroutines, datablocks, etc.
- */
-class CodeBlock
-{
-    private:
-        //! All functions registered in this codeblock.
-        std::map<std::string, Function> mFunctions;
+    /**
+     *  @brief A CodeBlock defines a piece of executable code generated from a single input (Ie. a file).
+     *  This includes global executable code and subroutines, datablocks, etc.
+     */
+    class CodeBlock
+    {
+        private:
+            //! All functions registered in this codeblock.
+            std::map<std::string, Function> mFunctions;
 
 
-};
+    };
+}

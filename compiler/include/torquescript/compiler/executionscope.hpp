@@ -12,9 +12,27 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/compiler/interpreter.hpp>
+#pragma once
+
+#include <map>
+
+#include <torquescript/compiler/storedvariable.hpp>
+#include <torquescript/compiler/stringhelpers.hpp>
 
 namespace TorqueScript
 {
-    
+    /**
+     *  @brief A specific scope of execution - this is used to delineate local variables
+     *  primarily.
+     */
+    class ExecutionScope
+    {
+        private:
+            //! A mapping of local variable names to their stored value instance.
+            std::map<std::string, StoredVariable*> mLocalVariables;
+
+        public:
+            StoredVariable* getVariable(const std::string& name);
+            void setVariable(const std::string& name, StoredVariable* variable);
+    };
 }

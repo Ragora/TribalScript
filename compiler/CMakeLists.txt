@@ -7,6 +7,7 @@ add_library(TorqueCompiler
     compiler.cpp
     bitstream.cpp
     interpreter.cpp
+    executionscope.cpp
     ${ANTLR_Torque_CXX_OUTPUTS}
 )
 target_link_libraries(TorqueCompiler antlr4_static)

@@ -12,9 +12,43 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/compiler/interpreter.hpp>
+#pragma once
+
+#include <variant>
+#include <string>
 
 namespace TorqueScript
 {
-    
+    /**
+     *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
+     */
+    class StoredVariable
+    {
+        typedef enum {
+            FLOAT,
+            INTEGER,
+            STRING
+        } VariableType;
+
+        //! The type of variable this is.
+        VariableType mVariableType;
+
+        //! The value stored.
+        std::variant<float, int, std::string> mValue;
+
+        explicit StoredVariable(const float value)
+        {
+            mValue = value;
+        }
+
+        explicit StoredVariable(const int value)
+        {
+            mValue = value;
+        }
+
+        explicit StoredVariable(const std::string& value)
+        {
+            mValue = value;
+        }
+    };
 }

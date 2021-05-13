@@ -15,60 +15,19 @@
 #pragma once
 
 #include <map>
-#include <string>
-#include <variant>
 
-/**
- *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
- */
-class StoredVariable
+#include <torquescript/compiler/storedvariable.hpp>
+
+namespace TorqueScript
 {
-    typedef enum {
-        FLOAT,
-        INTEGER,
-        STRING
-    } VariableType;
-
-    //! The type of variable this is.
-    VariableType mVariableType;
-
-    //! The value stored.
-    std::variant<float, int, std::string> mValue;
-
-    explicit StoredVariable(const float value)
+    /**
+     *  @brief The interpreter class represents a high level instance of the TorqueScript interpreter.
+     *  It is where execution control flow begins.
+     */
+    class Interpreter
     {
-        mValue = value;
-    }
-
-    explicit StoredVariable(const int value)
-    {
-        mValue = value;
-    }
-
-    explicit StoredVariable(const std::string& value)
-    {
-        mValue = value;
-    }
-};
-
-/**
- *  @brief A specific scope of execution - this is used to delineate local variables
- *  primarily.
- */
-class ExecutionScope
-{
-    private:
-        //! A mapping of local variable names to their stored value instance.
-        std::map<std::string, StoredVariable> mLocalVariables;
-};
-
-/**
- *  @brief The interpreter class represents a high level instance of the TorqueScript interpreter.
- *  It is where execution control flow begins.
- */
-class Interpreter
-{
-    private:
-        //! A mapping of global variable names to their stored value instance.
-        std::map<std::string, StoredVariable> mGlobalVariables;
-};
+        private:
+            //! A mapping of global variable names to their stored value instance.
+            std::map<std::string, StoredVariable> mGlobalVariables;
+    };
+}

@@ -14,12 +14,15 @@
 
 #include <torquescript/compiler/compiler.hpp>
 
-void Compiler::enterFunctiondeclaration(TorqueParser::FunctiondeclarationContext * /*ctx*/)
+namespace TorqueScript
 {
+    void Compiler::enterFunctiondeclaration(TorqueParser::FunctiondeclarationContext* context)
+    {
 
-}
+    }
 
-void Compiler::exitFunctiondeclaration(TorqueParser::FunctiondeclarationContext * /*ctx*/)
-{
+    void Compiler::exitFunctiondeclaration(TorqueParser::FunctiondeclarationContext* context)
+    {
 
+    }
 }

@@ -15,27 +15,41 @@
 #pragma once
 
 #include <torquescript/compiler/bitstream.hpp>
+#include <torquescript/compiler/interpreter.hpp>
+#include <torquescript/compiler/executionscope.hpp>
 
-class Instruction
+namespace TorqueScript
 {
-    public:
-        virtual void execute(BitStream* bitstream) = 0;
-};
+    /**
+     *  @brief Base instruction class. All instructions in the interpreter should dervive
+     *  from this class and implement all virtual members.
+     */
+    class Instruction
+    {
+        public:
+            /**
+             *  @brief Main execution method of the instruction. This serves as our
+             *  switching statement that determines how opcodes will behave.
+             *  @param bitstream The bitstream acting as our current stack.
+             */
+            virtual void execute(ExecutionScope* scope, BitStream* bitstream) = 0;
+    };
 
-class PushFInstruction : public Instruction
-{
-    private:
-        //! The value to push.
-        float mParameter;
+    class PushFInstruction : public Instruction
+    {
+        private:
+            //! The value to push.
+            float mParameter;
 
-    public:
-        PushFInstruction(const float value)
-        {
-            mParameter = value;
-        }
+        public:
+            PushFInstruction(const float value)
+            {
+                mParameter = value;
+            }
 
-        virtual void execute(BitStream* bitstream) override
-        {
-            bitstream->write(mParameter);
-        };
-};
+            virtual void execute(ExecutionScope* scope, BitStream* bitstream) override
+            {
+                bitstream->write(mParameter);
+            };
+    };
+}

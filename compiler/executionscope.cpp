@@ -12,9 +12,26 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/compiler/interpreter.hpp>
+#include <torquescript/compiler/executionscope.hpp>
 
 namespace TorqueScript
 {
-    
+    StoredVariable* ExecutionScope::getVariable(const std::string& name)
+    {
+        std::string lookup = toLowerCase(name);
+
+        auto search = mLocalVariables.find(lookup);
+        if (search != mLocalVariables.end())
+        {
+            return search->second;
+        }
+        return nullptr;
+    }
+
+    void ExecutionScope::setVariable(const std::string& name, StoredVariable* variable)
+    {
+        std::string key = toLowerCase(name);
+
+        mLocalVariables[key] = variable;
+    }
 }
