@@ -1,4 +1,4 @@
-project(Parser)
+project(Torque)
 
 antlr_target(Torque Torque.g4 LISTENER)
 include_directories(${ANTLR_Torque_OUTPUT_DIR})

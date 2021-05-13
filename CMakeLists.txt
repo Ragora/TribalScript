@@ -12,13 +12,12 @@ include(ExternalAntlr4Cpp)
 # add antrl4cpp artifacts to project environment
 include_directories(${ANTLR4_INCLUDE_DIRS})
 
-project (Torque)
 find_package(ANTLR REQUIRED)
 find_package(Doxygen
              REQUIRED dot)
 find_package(GTest CONFIG REQUIRED)
 
-add_subdirectory(compiler)
+add_subdirectory(source)
 
 enable_testing ()
 add_subdirectory(tests)
