@@ -14,7 +14,7 @@
 
 #include "gtest/gtest.h"
 
-#include <torquescript/compiler/bitstream.hpp>
+#include <torquescript/bitstream.hpp>
 
 const static float sFloatList[] =
 {

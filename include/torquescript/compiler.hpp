@@ -14,20 +14,17 @@
 
 #pragma once
 
-#include <map>
+#include "antlr4-runtime.h"
+#include <TorqueBaseListener.h>
 
-#include <torquescript/compiler/storedvariable.hpp>
+#include <torquescript/codeblock.hpp>
 
 namespace TorqueScript
 {
-    /**
-     *  @brief The interpreter class represents a high level instance of the TorqueScript interpreter.
-     *  It is where execution control flow begins.
-     */
-    class Interpreter
+    class Compiler : public TorqueBaseListener
     {
-        private:
-            //! A mapping of global variable names to their stored value instance.
-            std::map<std::string, StoredVariable> mGlobalVariables;
+        public:
+            virtual void enterFunctiondeclaration(TorqueParser::FunctiondeclarationContext * /*ctx*/) override;
+            virtual void exitFunctiondeclaration(TorqueParser::FunctiondeclarationContext * /*ctx*/) override;
     };
 }

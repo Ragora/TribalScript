@@ -14,42 +14,25 @@
 
 #pragma once
 
-#include <torquescript/compiler/bitstream.hpp>
-#include <torquescript/compiler/interpreter.hpp>
-#include <torquescript/compiler/executionscope.hpp>
+#include <map>
+
+#include <torquescript/storedvariable.hpp>
+#include <torquescript/stringhelpers.hpp>
 
 namespace TorqueScript
 {
     /**
-     *  @brief Base instruction class. All instructions in the interpreter should dervive
-     *  from this class and implement all virtual members.
+     *  @brief A specific scope of execution - this is used to delineate local variables
+     *  primarily.
      */
-    class Instruction
-    {
-        public:
-            /**
-             *  @brief Main execution method of the instruction. This serves as our
-             *  switching statement that determines how opcodes will behave.
-             *  @param bitstream The bitstream acting as our current stack.
-             */
-            virtual void execute(ExecutionScope* scope, BitStream* bitstream) = 0;
-    };
-
-    class PushFInstruction : public Instruction
+    class ExecutionScope
     {
         private:
-            //! The value to push.
-            float mParameter;
+            //! A mapping of local variable names to their stored value instance.
+            std::map<std::string, StoredVariable*> mLocalVariables;
 
         public:
-            PushFInstruction(const float value)
-            {
-                mParameter = value;
-            }
-
-            virtual void execute(ExecutionScope* scope, BitStream* bitstream) override
-            {
-                bitstream->write(mParameter);
-            };
+            StoredVariable* getVariable(const std::string& name);
+            void setVariable(const std::string& name, StoredVariable* variable);
     };
 }

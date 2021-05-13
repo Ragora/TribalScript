@@ -14,7 +14,7 @@
 
 #include <string.h>
 
-#include <torquescript/compiler/bitstream.hpp>
+#include <torquescript/bitstream.hpp>
 
 namespace TorqueScript
 {

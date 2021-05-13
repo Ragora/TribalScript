@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include <torquescript/compiler/interpreter.hpp>
+#include <torquescript/interpreter.hpp>
 
 TEST(FactorialTest, Zero) {
     EXPECT_EQ(1, 1);

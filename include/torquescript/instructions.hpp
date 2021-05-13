@@ -14,17 +14,42 @@
 
 #pragma once
 
-#include "antlr4-runtime.h"
-#include <TorqueBaseListener.h>
-
-#include <torquescript/compiler/codeblock.hpp>
+#include <torquescript/bitstream.hpp>
+#include <torquescript/interpreter.hpp>
+#include <torquescript/executionscope.hpp>
 
 namespace TorqueScript
 {
-    class Compiler : public TorqueBaseListener
+    /**
+     *  @brief Base instruction class. All instructions in the interpreter should dervive
+     *  from this class and implement all virtual members.
+     */
+    class Instruction
     {
         public:
-            virtual void enterFunctiondeclaration(TorqueParser::FunctiondeclarationContext * /*ctx*/) override;
-            virtual void exitFunctiondeclaration(TorqueParser::FunctiondeclarationContext * /*ctx*/) override;
+            /**
+             *  @brief Main execution method of the instruction. This serves as our
+             *  switching statement that determines how opcodes will behave.
+             *  @param bitstream The bitstream acting as our current stack.
+             */
+            virtual void execute(ExecutionScope* scope, BitStream* bitstream) = 0;
+    };
+
+    class PushFInstruction : public Instruction
+    {
+        private:
+            //! The value to push.
+            float mParameter;
+
+        public:
+            PushFInstruction(const float value)
+            {
+                mParameter = value;
+            }
+
+            virtual void execute(ExecutionScope* scope, BitStream* bitstream) override
+            {
+                bitstream->write(mParameter);
+            };
     };
 }

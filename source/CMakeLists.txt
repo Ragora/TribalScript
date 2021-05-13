@@ -1,5 +1,3 @@
-project(Torque)
-
 antlr_target(Torque Torque.g4 LISTENER)
 include_directories(${ANTLR_Torque_OUTPUT_DIR})
 
@@ -12,7 +10,7 @@ add_library(TorqueCompiler
 )
 target_link_libraries(TorqueCompiler antlr4_static)
 target_include_directories(TorqueCompiler PUBLIC
-    "include"
+    ${PROJECT_SOURCE_DIR}/include
     ${ANTLR_Torque_OUTPUT_DIR}
 )
 

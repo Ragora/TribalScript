@@ -12,9 +12,9 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/compiler/interpreter.hpp>
+#include <torquescript/interpreter.hpp>
 
 namespace TorqueScript
 {
-    
+
 }
