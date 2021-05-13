@@ -3,7 +3,7 @@
 #include "antlr4-runtime.h"
 #include <TorqueBaseListener.h>
 
-#include <torquescript/compiler/codeblock.h>
+#include <torquescript/compiler/codeblock.hpp>
 
 class Compiler : public TorqueBaseListener
 {

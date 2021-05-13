@@ -16,5 +16,9 @@ project (Torque)
 find_package(ANTLR REQUIRED)
 find_package(Doxygen
              REQUIRED dot)
+find_package(GTest CONFIG REQUIRED)
 
 add_subdirectory(compiler)
+
+enable_testing ()
+add_subdirectory(tests)

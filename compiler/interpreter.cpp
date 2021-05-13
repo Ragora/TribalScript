@@ -12,4 +12,4 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/compiler/interpreter.h>
+#include <torquescript/compiler/interpreter.hpp>

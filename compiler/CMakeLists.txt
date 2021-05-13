@@ -12,6 +12,7 @@ add_library(TorqueCompiler
 target_link_libraries(TorqueCompiler antlr4_static)
 target_include_directories(TorqueCompiler PUBLIC
     "include"
+    ${ANTLR_Torque_OUTPUT_DIR}
 )
 
 set(DOXYGEN_GENERATE_HTML YES)

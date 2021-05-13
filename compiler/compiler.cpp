@@ -12,7 +12,7 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/compiler/compiler.h>
+#include <torquescript/compiler/compiler.hpp>
 
 void Compiler::enterFunctiondeclaration(TorqueParser::FunctiondeclarationContext * /*ctx*/)
 {

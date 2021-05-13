@@ -18,7 +18,7 @@
 #include <string>
 #include <vector>
 
-#include <torquescript/compiler/instructions.h>
+#include <torquescript/compiler/instructions.hpp>
 
 class Variable
 {

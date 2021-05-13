@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <torquescript/compiler/bitstream.h>
+#include <torquescript/compiler/bitstream.hpp>
 
 class Instruction
 {

@@ -11,7 +11,7 @@
 
 #include <string.h>
 
-#include <torquescript/compiler/bitstream.h>
+#include <torquescript/compiler/bitstream.hpp>
 
 BitStream::BitStream(void* initializer, const size_t initializerLength, const size_t resizeLength) : mMemoryBlock((unsigned char*)initializer),
 mTotalSize(initializerLength), mPointer(0), mOwnsMemoryBlock(false), mResizeLength(resizeLength)
