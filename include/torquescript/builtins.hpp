@@ -14,41 +14,46 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
+#include <iostream>
+#include <stdexcept>
+
+#include <torquescript/function.hpp>
+#include <torquescript/executionscope.hpp>
+#include <torquescript/interpreter.hpp>
 
 namespace TorqueScript
 {
-    //! Forward declaration to avoid circular dependencies.
-    class Interpreter;
-    class Instruction;
-    class ExecutionScope;
-    class StoredVariable;
-
-    /**
-     *  @brief A function is callable subroutine from anywhere in the language.
-     */
-    class Function
+    class Echo : public Function
     {
         public:
-            Function(const std::string& name);
-
-            void addInstructions(const std::vector<Instruction*>& instructions);
+            Echo() : Function("echo") { }
 
             /**
              *  @brief Default implementation will execute virtual instructions but can be overriden to implement native
              *  functions.
              */
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack);
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack) override
+            {
+                // Retrieve string to print from stack
+                StoredVariable* printedPayload = stack.back();
+                stack.pop_back();
 
-            std::string getName();
+                // Ensure we have a string value here - it should be impossible to get anything else as a call name
+                // assert(calledFunctionParameter.getVariableType() == StoredVariable::VariableType::STRING);
 
-        private:
-            //! The name of the function.
-            std::string mName;
+                std::string printedValue = printedPayload->toString();
+                if (printedPayload->getVariableType() == StoredVariable::VariableType::LOCALREFERENCE)
+                {
+                    StoredVariable* variable = scope->getVariable(printedValue);
+                    printedValue = variable ? variable->toString() : "";
+                }
 
-            //! All instructions associated with this function.
-            std::vector<Instruction*> mInstructions;
-
+                std::cout << "Echo > " << printedValue << std::endl;
+            }
     };
+
+    void registerBuiltIns(Interpreter* interpreter)
+    {
+        interpreter->addFunction(new Echo());
+    }
 }

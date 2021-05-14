@@ -12,20 +12,89 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <assert.h>
+
 #include <torquescript/interpreter.hpp>
 #include <torquescript/compiler.hpp>
+#include <torquescript/executionscope.hpp>
+#include <torquescript/stringhelpers.hpp>
 
 namespace TorqueScript
 {
-    BitStream* Interpreter::evaluate(const std::string& input)
+    Interpreter::Interpreter()
     {
-        // FIXME: Hardcoded default-256 byte size?
-        BitStream* newStream = new BitStream(256);
+        mCompiler = new Compiler();
+    }
+
+    Interpreter::~Interpreter()
+    {
+        assert(mCompiler);
+        delete mCompiler;
+    }
+
+    void Interpreter::evaluate(const std::string& input, std::vector<StoredVariable*>& stack)
+    {
+        assert(mCompiler);
 
         // Spawn a compiler and generate a codeblock
-        Compiler* compiler = new Compiler();
-        delete compiler;
+        CodeBlock* compiled = this->compile(input);
 
-        return newStream;
+        // FIXME: Some kind of error was encountered. Ask the compiler?
+        if (!compiled)
+        {
+            return;
+        }
+
+        ExecutionScope scope;
+        compiled->execute(this, &scope, stack);
+    }
+
+    CodeBlock* Interpreter::compile(const std::string& input)
+    {
+        mCompiler->compileString(input);
+    }
+
+    StoredVariable* Interpreter::getGlobal(const std::string& name)
+    {
+        const std::string key = toLowerCase(name);
+
+        auto search = mGlobalVariables.find(key);
+        if (search != mGlobalVariables.end())
+        {
+            return search->second;
+        }
+        return nullptr;
+    }
+
+    void Interpreter::addFunction(Function* function)
+    {
+        const std::string storedName = toLowerCase(function->getName());
+        auto search = mFunctions.find(storedName);
+
+        if (search != mFunctions.end())
+        {
+            delete search->second;
+            mFunctions.erase(search);
+        }
+
+        mFunctions[storedName] = function;
+    }
+
+    Function* Interpreter::getFunction(const std::string& name)
+    {
+        const std::string searchedName = toLowerCase(name);
+        auto search = mFunctions.find(searchedName);
+
+        if (search != mFunctions.end())
+        {
+            return search->second;
+        }
+        return nullptr;
+    }
+
+    void Interpreter::setGlobal(const std::string& name, StoredVariable* value)
+    {
+        const std::string key = toLowerCase(name);
+        mGlobalVariables[key] = value;
     }
 }

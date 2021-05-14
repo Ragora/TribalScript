@@ -41,7 +41,7 @@ newobject : 'new' LABEL '(' expression? ')' objectinitialization?
           | 'new' '(' expression ')' '(' expression? ')' objectinitialization? ;
 
 // Functions, datablocks, packages
-paramlist : localvariable (',' localvariable)* ;
+paramlist : LOCALVARIABLE (',' LOCALVARIABLE)* ;
 functiondeclaration : 'function' LABELNAMESPACESINGLE '(' paramlist? ')' '{' statement* '}' ;
 packagedeclaration : 'package' LABEL '{' functiondeclaration* '}' ';' ;
 
@@ -65,13 +65,10 @@ breakcontrol : 'break' ;
 trueliteral: 'true' ;
 falseliteral : 'false' ;
 
-lvalue : localvariable
-       | globalvariable ;
-
 expression : (op=NOT|op=MINUS) expression                                                                                                                                                                           # unary
            | expression (op=PLUSPLUS|op=MINUSMINUS)                                                                                                                                                                 # unary
-           | expression '(' expression? (',' expression)* ')'                                                                                                                                                       # call
-           | (localvariable | globalvariable) '[' expression (',' expression)* ']'                                                                                                                                  # array
+           | LABELNAMESPACESINGLE '(' expression? (',' expression)* ')'                                                                                                                                             # call
+           | (LOCALVARIABLE | GLOBALVARIABLE) '[' expression (',' expression)* ']'                                                                                                                                  # array
            | expression ('.' LABEL)+                                                                                                                                                                                # subreference
            | '(' expression ')'                                                                                                                                                                                     # parenthesis
            | expression (op=MULT|op=DIV|op=MODULUS) expression                                                                                                                                                      # arithmetic
@@ -85,9 +82,10 @@ expression : (op=NOT|op=MINUS) expression                                       
            | expression '?' expression ':' expression                                                                                                                                                               # ternary
            | expression (op=ASSIGN|op=ADDASSIGN|op=MULTASSIGN|op=SUBASSIGN|op=MODULUSASSIGN|op=BITWISEORASSIGN|op=BITWISEANDASSIGN|op=EXLUSIVEORASSIGN|op=LEFTSHIFTASSIGN|op=RIGHTSHIFTASSIGN)  expression          # assignment
            | op=newobject                                                                                                                                                                                           # objectInstantiation
-           | op=lvalue                                                                                                                                                                                              # expressionLValue
            | op=INT                                                                                                                                                                                                 # value
            | op=FLOAT                                                                                                                                                                                               # value
+           | op=GLOBALVARIABLE                                                                                                                                                                                      # value
+           | op=LOCALVARIABLE                                                                                                                                                                                       # value
            | op=LABELNAMESPACESINGLE                                                                                                                                                                                # labelReference
            | op=BOOLEAN                                                                                                                                                                                             # value
            | op=STRING                                                                                                                                                                                              # value ;
@@ -98,8 +96,8 @@ LABELNAMESPACESINGLE : LABEL ('::' LABEL)? ;
 // Some cases like variables can go infinitely deep with namespacing
 LABELNAMESPACE : LABEL ('::' LABEL)* ;
 
-localvariable: '%'LABELNAMESPACE ;
-globalvariable: '$'LABELNAMESPACE ;
+LOCALVARIABLE: '%'LABELNAMESPACE ;
+GLOVALVARIABLE: '$'LABELNAMESPACE ;
 
 // Lexer
 PLUS: '+' ;

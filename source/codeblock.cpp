@@ -31,12 +31,29 @@ namespace TorqueScript
         }
     }
 
-    void CodeBlock::execute(Interpreter* interpreter, ExecutionScope* scope, BitStream* bitstream)
+    void CodeBlock::execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack)
     {
         for (auto iterator = mInstructions.begin(); iterator != mInstructions.end(); ++iterator)
         {
             Instruction* instruction = *iterator;
-            instruction->execute(interpreter, scope, bitstream);
+            instruction->execute(interpreter, scope, stack);
         }
+    }
+
+    std::vector<std::string> CodeBlock::disassemble()
+    {
+        std::vector<std::string> result;
+
+        for (auto iterator = mInstructions.begin(); iterator != mInstructions.end(); ++iterator)
+        {
+            Instruction* instruction = *iterator;
+            result.push_back(instruction->disassemble());
+        }
+        return result;
+    }
+
+    std::vector<Function*> CodeBlock::getFunctions()
+    {
+        return mFunctions;
     }
 }

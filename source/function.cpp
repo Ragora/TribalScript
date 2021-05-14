@@ -13,11 +13,35 @@
  */
 
 #include <torquescript/function.hpp>
+#include <torquescript/instructions.hpp>
+#include <torquescript/stringhelpers.hpp>
 
 namespace TorqueScript
 {
     Function::Function(const std::string& name)
     {
         mName = toLowerCase(name);
+    }
+
+    void Function::addInstructions(const std::vector<Instruction*>& instructions)
+    {
+        for (auto iterator = instructions.begin(); iterator != instructions.end(); ++iterator)
+        {
+            mInstructions.push_back(*iterator);
+        }
+    }
+
+    void Function::execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack)
+    {
+        for (auto iterator = mInstructions.begin(); iterator != mInstructions.end(); ++iterator)
+        {
+            Instruction* executed = *iterator;
+            executed->execute(interpreter, scope, stack);
+        }
+    }
+
+    std::string Function::getName()
+    {
+        return mName;
     }
 }

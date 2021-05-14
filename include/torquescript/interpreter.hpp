@@ -15,12 +15,18 @@
 #pragma once
 
 #include <map>
+#include <vector>
 
-#include <torquescript/bitstream.hpp>
+#include <torquescript/function.hpp>
 #include <torquescript/storedvariable.hpp>
+#include <torquescript/stringhelpers.hpp>
 
 namespace TorqueScript
 {
+    //! Forward declaration to deal with circular dependencies.
+    class Compiler;
+    class CodeBlock;
+
     /**
      *  @brief The interpreter class represents a high level instance of the TorqueScript interpreter.
      *  It is where execution control flow begins.
@@ -28,8 +34,32 @@ namespace TorqueScript
     class Interpreter
     {
         public:
-            BitStream* evaluate(const std::string& input);
+            Interpreter();
+            ~Interpreter();
+
+            void setGlobal(const std::string& name, StoredVariable* value);
+
+            StoredVariable* getGlobal(const std::string& name);
+
+            CodeBlock* compile(const std::string& input);
+            void evaluate(const std::string& input, std::vector<StoredVariable*>& stack);
+
+            /**
+             *  @brief Registers a new function to the interpreter. Ownership is transferred to the interpreter at this
+             *  point.
+             */
+            void addFunction(Function* function);
+
+            Function* getFunction(const std::string& name);
+
+
+
         private:
+            //! Keep a ready instance of the compiler on hand as it is reusable.
+            Compiler* mCompiler;
+
+            //! A mapping of function names to the function object.
+            std::map<std::string, Function*> mFunctions;
 
             //! A mapping of global variable names to their stored value instance.
             std::map<std::string, StoredVariable*> mGlobalVariables;

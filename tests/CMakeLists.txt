@@ -13,7 +13,3 @@ FetchContent_MakeAvailable(googletest)
 add_executable(InterpreterTest interpreter.cpp)
 target_link_libraries(InterpreterTest TorqueCompiler gtest_main)
 add_test(NAME InterpreterTest COMMAND InterpreterTest)
-
-add_executable(BitStreamTest bitstream.cpp)
-target_link_libraries(BitStreamTest TorqueCompiler gtest_main)
-add_test(NAME BitStreamTest COMMAND BitStreamTest)

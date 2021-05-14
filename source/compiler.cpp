@@ -51,6 +51,17 @@ namespace TorqueScript
         return this->compileStream(fileStream);
     }
 
+    void Compiler::pushInstructions(const std::vector<Instruction*>& instructions)
+    {
+        if (mCurrentFunction)
+        {
+            mCurrentFunction->addInstructions(instructions);
+            return;
+        }
+
+        mCurrentCodeBlock->addInstructions(instructions);
+    }
+
     // Compiler routines =====================================================
 
     void Compiler::enterFunctiondeclaration(TorqueParser::FunctiondeclarationContext* context)
@@ -74,7 +85,22 @@ namespace TorqueScript
 
     void Compiler::exitArithmetic(TorqueParser::ArithmeticContext* context)
     {
+        std::vector<Instruction*> generatedCode;
 
+        if (context->PLUS())
+        {
+            generatedCode.push_back(new AddInstruction());
+        }
+        else if (context->MULT())
+        {
+            generatedCode.push_back(new MultiplyInstruction());
+        }
+        else
+        {
+            throw new std::runtime_error("Encountered unhandled arithmetic type!");
+        }
+
+        this->pushInstructions(generatedCode);
     }
 
     void Compiler::enterRelational(TorqueParser::RelationalContext* context)
@@ -85,5 +111,125 @@ namespace TorqueScript
     void Compiler::exitRelational(TorqueParser::RelationalContext* context)
     {
 
+    }
+
+    void Compiler::enterCall(TorqueParser::CallContext* context)
+    {
+
+    }
+
+    void Compiler::exitCall(TorqueParser::CallContext* context)
+    {
+        const std::string calledFunctionName = context->LABELNAMESPACESINGLE()->getText();
+
+        std::vector<Instruction*> generatedCode;
+        generatedCode.push_back(new PushStringInstruction(calledFunctionName));
+        generatedCode.push_back(new CallFunctionInstruction());
+
+        this->pushInstructions(generatedCode);
+    }
+
+    void Compiler::enterValue(TorqueParser::ValueContext* context)
+    {
+
+    }
+
+    void Compiler::exitValue(TorqueParser::ValueContext* context)
+    {
+        std::vector<Instruction*> generatedCode;
+
+        if (context->FLOAT())
+        {
+            generatedCode.push_back(new PushFloatInstruction(std::stof(context->getText())));
+        }
+        else if (context->STRING())
+        {
+            // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the enclosing quotations
+            const std::string rawString = context->getText();
+            const std::string stringContent = rawString.substr(1, rawString.size() - 2);
+            generatedCode.push_back(new PushStringInstruction(stringContent));
+        }
+        else if (context->INT())
+        {
+            generatedCode.push_back(new PushIntegerInstruction(std::stoi(context->getText())));
+        }
+        else if (context->LOCALVARIABLE())
+        {
+            // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the % prefix
+            const std::string rawString = context->getText();
+            const std::string variableName = rawString.substr(1, rawString.size());
+            generatedCode.push_back(new PushLocalReferenceInstruction(variableName));
+        }
+        else
+        {
+            throw new std::runtime_error("Encountered unhandled value type!");
+        }
+
+        this->pushInstructions(generatedCode);
+    }
+
+    void Compiler::enterConcatenation(TorqueParser::ConcatenationContext* context)
+    {
+
+    }
+
+    void Compiler::exitConcatenation(TorqueParser::ConcatenationContext* context)
+    {
+        std::vector<Instruction*> generatedCode;
+
+        if (context->CONCAT())
+        {
+            generatedCode.push_back(new ConcatInstruction());
+        }
+        else
+        {
+            throw new std::runtime_error("Encountered unhandled concat op type!");
+        }
+
+        this->pushInstructions(generatedCode);
+    }
+
+
+    void Compiler::enterUnary(TorqueParser::UnaryContext* context)
+    {
+
+    }
+
+    void Compiler::exitUnary(TorqueParser::UnaryContext* context)
+    {
+        std::vector<Instruction*> generatedCode;
+
+        if (context->MINUS())
+        {
+            generatedCode.push_back(new NegateInstruction());
+        }
+        else
+        {
+            throw new std::runtime_error("Encountered unhandled unary op type!");
+        }
+
+        this->pushInstructions(generatedCode);
+    }
+
+    void Compiler::enterAssignment(TorqueParser::AssignmentContext* context)
+    {
+
+    }
+
+    void Compiler::exitAssignment(TorqueParser::AssignmentContext* context)
+    {
+        std::vector<Instruction*> generatedCode;
+
+        std::cout << context->getText() << std::endl;
+        if (context->ASSIGN())
+        {
+            generatedCode.push_back(new AssignmentInstruction());
+        }
+        else
+        {
+            throw new std::runtime_error("Encountered unhandled unary op type!");
+        }
+
+        this->pushInstructions(generatedCode);
     }
 }

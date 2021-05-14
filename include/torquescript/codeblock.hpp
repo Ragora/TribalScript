@@ -20,9 +20,9 @@
 
 #include <torquescript/instructions.hpp>
 #include <torquescript/executionscope.hpp>
-#include <torquescript/bitstream.hpp>
 #include <torquescript/interpreter.hpp>
 #include <torquescript/function.hpp>
+#include <torquescript/storedvariable.hpp>
 
 namespace TorqueScript
 {
@@ -49,7 +49,14 @@ namespace TorqueScript
             /**
              *  @brief Executes all instructions contained in mInstructions within the provided context.
              */
-            void execute(Interpreter* interpreter, ExecutionScope* scope, BitStream* bitstream);
+            void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack);
+
+            /**
+             *  @brief Produces a disassembly of the global CodeBlock code.
+             */
+            std::vector<std::string> disassemble();
+
+            std::vector<Function*> getFunctions();
 
         private:
             //! All functions registered in this codeblock.

@@ -18,6 +18,7 @@
 #include <TorqueBaseListener.h>
 
 #include <torquescript/codeblock.hpp>
+#include <torquescript/instructions.hpp>
 
 namespace TorqueScript
 {
@@ -56,7 +57,29 @@ namespace TorqueScript
             virtual void enterRelational(TorqueParser::RelationalContext* context) override;
             virtual void exitRelational(TorqueParser::RelationalContext* context) override;
 
+            virtual void enterCall(TorqueParser::CallContext* context) override;
+            virtual void exitCall(TorqueParser::CallContext* context) override;
+
+            virtual void enterValue(TorqueParser::ValueContext* context) override;
+            virtual void exitValue(TorqueParser::ValueContext* context) override;
+
+            virtual void enterConcatenation(TorqueParser::ConcatenationContext* context) override;
+            virtual void exitConcatenation(TorqueParser::ConcatenationContext* context) override;
+
+            virtual void enterUnary(TorqueParser::UnaryContext* context) override;
+            virtual void exitUnary(TorqueParser::UnaryContext* context) override;
+
+            virtual void enterAssignment(TorqueParser::AssignmentContext* context) override;
+            virtual void exitAssignment(TorqueParser::AssignmentContext* context) override;
+
         private:
+            /**
+             *  @brief Internal helper function to push a sequence of instructions either to the
+             *  global codeblock or the currently generated function.
+             *  @param instructions All instructions to push.
+             */
+            void pushInstructions(const std::vector<Instruction*>& instructions);
+
             //! Codeblock we are currently generating. This is only used as temporary storage space as the tree is running.
             CodeBlock* mCurrentCodeBlock;
 

@@ -12,11 +12,43 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <torquescript/builtins.hpp>
 #include <torquescript/interpreter.hpp>
+#include <torquescript/executionscope.hpp>
+#include <torquescript/codeblock.hpp>
 
 int main(int argc, char* argv[])
 {
     TorqueScript::Interpreter interpreter;
-    interpreter.evaluate("echo(\"Hi\");");
+    TorqueScript::registerBuiltIns(&interpreter);
+
+    std::cout << "Type TorqueScript Program, use EOF (CTRL+D on Unix, CTRL+Z on Windows) to End Input" << std::endl << std::endl;
+
+    std::istreambuf_iterator<char> begin(std::cin), end;
+    std::string evaluated(begin, end);
+
+    std::vector<TorqueScript::StoredVariable*> stack;
+    TorqueScript::CodeBlock* compiled = interpreter.compile(evaluated);
+
+    // Load all functions from the codeblock
+    std::vector functions = compiled->getFunctions();
+    for (auto iterator = functions.begin(); iterator != functions.end(); ++iterator)
+    {
+        interpreter.addFunction(*iterator);
+    }
+
+    TorqueScript::ExecutionScope scope;
+    compiled->execute(&interpreter, &scope, stack);
+
+    // Produce a disassembly for debugging
+    std::cout << std::endl << "Disassembly: " << std::endl;
+    std::vector<std::string> disassembly = compiled->disassemble();
+
+    for (auto iterator = disassembly.begin(); iterator != disassembly.end(); ++iterator)
+    {
+        std::cout << *iterator << std::endl;
+    }
+
+    delete compiled;
     return 0;
 }

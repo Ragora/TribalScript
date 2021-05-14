@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <iostream>
+#include <assert.h>
 #include <variant>
 #include <string>
 
@@ -24,31 +26,94 @@ namespace TorqueScript
      */
     class StoredVariable
     {
-        typedef enum {
-            FLOAT,
-            INTEGER,
-            STRING
-        } VariableType;
+        public:
+            typedef enum {
+                FLOAT,
+                INTEGER,
+                STRING,
+                LOCALREFERENCE,
+                GLOBALREFERENCE
+            } VariableType;
 
-        //! The type of variable this is.
-        VariableType mVariableType;
+            explicit StoredVariable(const float value)
+            {
+                mValue = value;
+                mVariableType = VariableType::FLOAT;
+            }
 
-        //! The value stored.
-        std::variant<float, int, std::string> mValue;
+            explicit StoredVariable(const int value)
+            {
+                mValue = value;
+                mVariableType = VariableType::INTEGER;
+            }
 
-        explicit StoredVariable(const float value)
-        {
-            mValue = value;
-        }
+            explicit StoredVariable(const std::string& value, const VariableType valueType = VariableType::STRING)
+            {
+                // Ensure we're not trying to pass a string as an int or something
+                // FIXME: Perhaps use a hierarchy of types here?
+                assert(valueType == VariableType::STRING || valueType == VariableType::LOCALREFERENCE || valueType == VariableType::GLOBALREFERENCE);
 
-        explicit StoredVariable(const int value)
-        {
-            mValue = value;
-        }
+                mValue = value;
+                mVariableType = valueType;
+            }
 
-        explicit StoredVariable(const std::string& value)
-        {
-            mValue = value;
-        }
+            VariableType getVariableType()
+            {
+                return mVariableType;
+            }
+
+            std::variant<float, int, std::string> getValue()
+            {
+                return mValue;
+            }
+
+            // Below is Torque-specific implementations of handling of individual cases
+            float toFloat()
+            {
+                switch (mVariableType)
+                {
+                    case StoredVariable::VariableType::INTEGER:
+                        return (float)std::get<int>(mValue);
+                    case StoredVariable::VariableType::FLOAT:
+                        return std::get<float>(mValue);
+                    case StoredVariable::VariableType::STRING:
+                        try
+                        {
+                            return std::stof(std::get<std::string>(mValue));
+                        }
+                        catch (std::invalid_argument exception)
+                        {
+
+                        }
+                        break;
+                    default:
+                        throw new std::runtime_error("Unhandled conversion argument type!");
+                }
+            }
+
+            std::string toString()
+            {
+                switch (mVariableType)
+                {
+                    case StoredVariable::VariableType::INTEGER:
+                        return std::to_string(std::get<float>(mValue));
+                    case StoredVariable::VariableType::LOCALREFERENCE:
+                    case StoredVariable::VariableType::GLOBALREFERENCE:
+                        return std::get<std::string>(mValue);
+                    case StoredVariable::VariableType::FLOAT:
+                        return std::to_string(std::get<float>(mValue));
+                    case StoredVariable::VariableType::STRING:
+                        return std::get<std::string>(mValue);
+                    default:
+                        throw new std::runtime_error("Unhandled conversion argument type!");
+                }
+            }
+
+        private:
+            //! The type of variable this is.
+            VariableType mVariableType;
+
+            //! The value stored.
+            std::variant<float, int, std::string> mValue;
     };
 }

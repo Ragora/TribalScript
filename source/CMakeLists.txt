@@ -3,7 +3,6 @@ include_directories(${ANTLR_Torque_OUTPUT_DIR})
 
 add_library(TorqueCompiler
     compiler.cpp
-    bitstream.cpp
     interpreter.cpp
     executionscope.cpp
     codeblock.cpp
