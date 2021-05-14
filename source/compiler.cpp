@@ -12,16 +12,77 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <assert.h>
+
+#include <TorqueLexer.h>
+#include <TorqueParser.h>
+
 #include <torquescript/compiler.hpp>
 
 namespace TorqueScript
 {
+    CodeBlock* Compiler::compileStream(std::istream& input)
+    {
+        mCurrentCodeBlock = new CodeBlock();
+
+        antlr4::ANTLRInputStream antlrStream(input);
+        TorqueLexer lexer(&antlrStream);
+        antlr4::CommonTokenStream stream(&lexer);
+        TorqueParser parser(&stream);
+
+        antlr4::tree::ParseTree* tree = parser.program();
+        antlr4::tree::ParseTreeWalker::DEFAULT.walk(this, tree);
+
+        return mCurrentCodeBlock;
+    }
+
+    CodeBlock* Compiler::compileString(const std::string& input)
+    {
+        std::stringstream stream;
+        stream << input;
+        return this->compileStream(stream);
+    }
+
+    CodeBlock* Compiler::compileFile(const std::string& path)
+    {
+        std::ifstream fileStream;
+        fileStream.open(path);
+
+        return this->compileStream(fileStream);
+    }
+
+    // Compiler routines =====================================================
+
     void Compiler::enterFunctiondeclaration(TorqueParser::FunctiondeclarationContext* context)
+    {
+        // Functions are a global construct only
+        assert(!mCurrentFunction);
+
+        mCurrentFunction = new Function(context->LABELNAMESPACESINGLE()->getText());
+        mCurrentCodeBlock->addFunction(mCurrentFunction);
+    }
+
+    void Compiler::exitFunctiondeclaration(TorqueParser::FunctiondeclarationContext* context)
+    {
+        mCurrentFunction = nullptr;
+    }
+
+    void Compiler::enterArithmetic(TorqueParser::ArithmeticContext* context)
     {
 
     }
 
-    void Compiler::exitFunctiondeclaration(TorqueParser::FunctiondeclarationContext* context)
+    void Compiler::exitArithmetic(TorqueParser::ArithmeticContext* context)
+    {
+
+    }
+
+    void Compiler::enterRelational(TorqueParser::RelationalContext* context)
+    {
+
+    }
+
+    void Compiler::exitRelational(TorqueParser::RelationalContext* context)
     {
 
     }

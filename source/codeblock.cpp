@@ -12,9 +12,31 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <torquescript/codeblock.hpp>
+#include <torquescript/instructions.hpp>
+#include <torquescript/stringhelpers.hpp>
 
 namespace TorqueScript
 {
-    std::string toLowerCase(const std::string& in);
+    void CodeBlock::addFunction(Function* function)
+    {
+        mFunctions.push_back(function);
+    }
+
+    void CodeBlock::addInstructions(const std::vector<Instruction*> instructions)
+    {
+        for (auto iterator = instructions.begin(); iterator != instructions.end(); ++iterator)
+        {
+            mInstructions.push_back(*iterator);
+        }
+    }
+
+    void CodeBlock::execute(Interpreter* interpreter, ExecutionScope* scope, BitStream* bitstream)
+    {
+        for (auto iterator = mInstructions.begin(); iterator != mInstructions.end(); ++iterator)
+        {
+            Instruction* instruction = *iterator;
+            instruction->execute(interpreter, scope, bitstream);
+        }
+    }
 }

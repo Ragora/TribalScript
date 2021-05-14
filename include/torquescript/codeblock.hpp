@@ -19,44 +19,43 @@
 #include <vector>
 
 #include <torquescript/instructions.hpp>
+#include <torquescript/executionscope.hpp>
+#include <torquescript/bitstream.hpp>
+#include <torquescript/interpreter.hpp>
+#include <torquescript/function.hpp>
 
 namespace TorqueScript
 {
-    class Variable
-    {
-        private:
-            //! The name of the variable.
-            std::string mName;
-
-            //! Whether or not this is a global variable.
-            bool mGlobal;
-    };
-
-    /**
-     *  @brief A function is callable subroutine from anywhere in the language.
-     */
-    class Function
-    {
-        private:
-            //! The name of the function.
-            std::string mName;
-
-            //! All instructions associated with this function.
-            std::vector<Instruction> mInstructions;
-
-        public:
-    };
-
     /**
      *  @brief A CodeBlock defines a piece of executable code generated from a single input (Ie. a file).
      *  This includes global executable code and subroutines, datablocks, etc.
      */
     class CodeBlock
     {
+        public:
+            /**
+             *  @brief Registers a new function within this codeblock.
+             *  @param function The function to be added.
+             */
+            void addFunction(Function* function);
+
+            /**
+             *  @brief Registers the instruction sequence to the codeblock to be executed
+             *  immediately.
+             *  @param instructions The instructions to execute immediately.
+             */
+            void addInstructions(const std::vector<Instruction*> instructions);
+
+            /**
+             *  @brief Executes all instructions contained in mInstructions within the provided context.
+             */
+            void execute(Interpreter* interpreter, ExecutionScope* scope, BitStream* bitstream);
+
         private:
             //! All functions registered in this codeblock.
-            std::map<std::string, Function> mFunctions;
+            std::vector<Function*> mFunctions;
 
-
+            //! All instructions that were generated global to the block - ie. should be executed immediately
+            std::vector<Instruction*> mInstructions;
     };
 }

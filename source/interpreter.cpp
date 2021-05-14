@@ -13,8 +13,19 @@
  */
 
 #include <torquescript/interpreter.hpp>
+#include <torquescript/compiler.hpp>
 
 namespace TorqueScript
 {
+    BitStream* Interpreter::evaluate(const std::string& input)
+    {
+        // FIXME: Hardcoded default-256 byte size?
+        BitStream* newStream = new BitStream(256);
 
+        // Spawn a compiler and generate a codeblock
+        Compiler* compiler = new Compiler();
+        delete compiler;
+
+        return newStream;
+    }
 }

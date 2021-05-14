@@ -12,9 +12,17 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <string>
+#include <algorithm>
+
+#include <torquescript/stringhelpers.hpp>
 
 namespace TorqueScript
 {
-    std::string toLowerCase(const std::string& in);
+    std::string toLowerCase(const std::string& in)
+    {
+        std::string result = in;
+        std::transform(result.begin(), result.end(), result.begin(), [](unsigned char character) { return std::tolower(character); });
+        return result;
+    }
 }

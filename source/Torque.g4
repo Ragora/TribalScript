@@ -42,7 +42,7 @@ newobject : 'new' LABEL '(' expression? ')' objectinitialization?
 
 // Functions, datablocks, packages
 paramlist : localvariable (',' localvariable)* ;
-functiondeclaration : 'function' labelnamespacesingle '(' paramlist? ')' '{' statement* '}' ;
+functiondeclaration : 'function' LABELNAMESPACESINGLE '(' paramlist? ')' '{' statement* '}' ;
 packagedeclaration : 'package' LABEL '{' functiondeclaration* '}' ';' ;
 
 // Datablock declaration requires at least one field
@@ -88,21 +88,18 @@ expression : (op=NOT|op=MINUS) expression                                       
            | op=lvalue                                                                                                                                                                                              # expressionLValue
            | op=INT                                                                                                                                                                                                 # value
            | op=FLOAT                                                                                                                                                                                               # value
-           | op=labelnamespacesingle                                                                                                                                                                                # labelReference
+           | op=LABELNAMESPACESINGLE                                                                                                                                                                                # labelReference
            | op=BOOLEAN                                                                                                                                                                                             # value
            | op=STRING                                                                                                                                                                                              # value ;
 
 // Function declarations can be namespaced but only a single deep ie. function one::two() {}
-labelnamespacesingle : LABEL ('::' LABEL)? ;
+LABELNAMESPACESINGLE : LABEL ('::' LABEL)? ;
 
 // Some cases like variables can go infinitely deep with namespacing
-labelnamespace : LABEL ('::' LABEL)* ;
+LABELNAMESPACE : LABEL ('::' LABEL)* ;
 
-// Finally some cases like object names are just a label with no possibility of namespacing
-label: LABEL ;
-
-localvariable: '%'labelnamespace ;
-globalvariable: '$'labelnamespace ;
+localvariable: '%'LABELNAMESPACE ;
+globalvariable: '$'LABELNAMESPACE ;
 
 // Lexer
 PLUS: '+' ;

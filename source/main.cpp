@@ -12,9 +12,11 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <torquescript/interpreter.hpp>
 
-namespace TorqueScript
+int main(int argc, char* argv[])
 {
-    std::string toLowerCase(const std::string& in);
+    TorqueScript::Interpreter interpreter;
+    interpreter.evaluate("echo(\"Hi\");");
+    return 0;
 }

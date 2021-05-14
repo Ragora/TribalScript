@@ -32,24 +32,28 @@ namespace TorqueScript
              *  switching statement that determines how opcodes will behave.
              *  @param bitstream The bitstream acting as our current stack.
              */
-            virtual void execute(ExecutionScope* scope, BitStream* bitstream) = 0;
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, BitStream* bitstream) = 0;
     };
 
+    /**
+     *  @brief Push float instruction. This will push a floating point value to the system stack
+     *  for later use in execution.
+     */
     class PushFInstruction : public Instruction
     {
-        private:
-            //! The value to push.
-            float mParameter;
-
         public:
             PushFInstruction(const float value)
             {
                 mParameter = value;
             }
 
-            virtual void execute(ExecutionScope* scope, BitStream* bitstream) override
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, BitStream* bitstream) override
             {
                 bitstream->write(mParameter);
             };
+
+        private:
+            //! The value to push.
+            float mParameter;
     };
 }

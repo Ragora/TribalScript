@@ -12,9 +12,12 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <torquescript/function.hpp>
 
 namespace TorqueScript
 {
-    std::string toLowerCase(const std::string& in);
+    Function::Function(const std::string& name)
+    {
+        mName = toLowerCase(name);
+    }
 }

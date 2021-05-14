@@ -16,6 +16,7 @@
 
 #include <map>
 
+#include <torquescript/bitstream.hpp>
 #include <torquescript/storedvariable.hpp>
 
 namespace TorqueScript
@@ -26,8 +27,11 @@ namespace TorqueScript
      */
     class Interpreter
     {
+        public:
+            BitStream* evaluate(const std::string& input);
         private:
+
             //! A mapping of global variable names to their stored value instance.
-            std::map<std::string, StoredVariable> mGlobalVariables;
+            std::map<std::string, StoredVariable*> mGlobalVariables;
     };
 }
