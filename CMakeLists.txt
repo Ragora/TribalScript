@@ -15,9 +15,7 @@ include(ExternalAntlr4Cpp)
 include_directories(${ANTLR4_INCLUDE_DIRS})
 
 find_package(ANTLR REQUIRED)
-find_package(Doxygen
-             REQUIRED dot)
-find_package(GTest CONFIG REQUIRED)
+find_package(Doxygen)
 
 add_subdirectory(source)
 

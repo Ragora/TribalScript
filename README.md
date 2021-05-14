@@ -16,14 +16,6 @@ your ANTLR4 tool. If it does not, you may set he ANTLR_EXECUTABLE variable in yo
 -DANTLR_EXECUTABLE=/usr/local/bin/antlr-4.9.2-complete.jar
 ```
 
-### GTest
-
-Google Test is used for verification that various parts of the compiler and interpreter are working correctly.
-
-See https://github.com/google/googletest
-
-If built and installed to your system, CMake should automatically pick up on your installation.
-
 ## Testing
 
 After CMake has generated the makefiles and you have built the project, you may run tests using:

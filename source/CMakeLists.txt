@@ -20,11 +20,13 @@ target_include_directories(TorqueCompiler PUBLIC
 add_executable(main main.cpp)
 target_link_libraries(main TorqueCompiler)
 
-set(DOXYGEN_GENERATE_HTML YES)
-set(DOXYGEN_GENERATE_MAN NO)
+if (${DOXYGEN_FOUND})
+    set(DOXYGEN_GENERATE_HTML YES)
+    set(DOXYGEN_GENERATE_MAN NO)
 
-doxygen_add_docs(
-    TorqueCompilerDocs
-    ${PROJECT_SOURCE_DIR}
-    COMMENT "Generate Documentation for the Compiler"
-)
+    doxygen_add_docs(
+        TorqueCompilerDocs
+        ${PROJECT_SOURCE_DIR}
+        COMMENT "Generate Documentation for the Compiler"
+    )
+endif (${DOXYGEN_FOUND})
