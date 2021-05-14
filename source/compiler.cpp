@@ -160,6 +160,13 @@ namespace TorqueScript
             const std::string variableName = rawString.substr(1, rawString.size());
             generatedCode.push_back(new PushLocalReferenceInstruction(variableName));
         }
+        else if (context->GLOBALVARIABLE())
+        {
+            // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the % prefix
+            const std::string rawString = context->getText();
+            const std::string variableName = rawString.substr(1, rawString.size());
+            generatedCode.push_back(new PushGlobalReferenceInstruction(variableName));
+        }
         else
         {
             throw new std::runtime_error("Encountered unhandled value type!");

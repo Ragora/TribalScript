@@ -163,6 +163,35 @@ namespace TorqueScript
     };
 
     /**
+     *  @brief Push a reference to a named global variable. The parameter provided here
+     *  should be excluding the '$' prefix.
+     */
+    class PushGlobalReferenceInstruction : public Instruction
+    {
+        public:
+            PushGlobalReferenceInstruction(const std::string& value)
+            {
+                mParameter = value;
+            }
+
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack) override
+            {
+                stack.push_back(new StoredVariable(mParameter, StoredVariable::VariableType::GLOBALREFERENCE));
+            };
+
+            virtual std::string disassemble() override
+            {
+                std::ostringstream out;
+                out << "PushGlobalReference " << mParameter;
+                return out.str();
+            }
+
+        private:
+            //! The value to push.
+            std::string mParameter;
+    };
+
+    /**
      *  @brief Assign to lhs with whatever is on rhs.
      */
     class AssignmentInstruction : public Instruction

@@ -47,6 +47,11 @@ namespace TorqueScript
                     StoredVariable* variable = scope->getVariable(printedValue);
                     printedValue = variable ? variable->toString() : "";
                 }
+                else if (printedPayload->getVariableType() == StoredVariable::VariableType::GLOBALREFERENCE)
+                {
+                    StoredVariable* variable = interpreter->getGlobal(printedValue);
+                    printedValue = variable ? variable->toString() : "";
+                }
 
                 std::cout << "Echo > " << printedValue << std::endl;
             }
