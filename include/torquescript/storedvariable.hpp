@@ -96,7 +96,7 @@ namespace TorqueScript
                 switch (mVariableType)
                 {
                     case StoredVariable::VariableType::INTEGER:
-                        return std::to_string(std::get<float>(mValue));
+                        return std::to_string(std::get<int>(mValue));
                     case StoredVariable::VariableType::LOCALREFERENCE:
                     case StoredVariable::VariableType::GLOBALREFERENCE:
                         return std::get<std::string>(mValue);

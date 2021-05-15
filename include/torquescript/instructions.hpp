@@ -293,8 +293,7 @@ namespace TorqueScript
                 std::shared_ptr<Function> functionLookup = interpreter->getFunction(calledFunctionName);
                 if (functionLookup)
                 {
-                    ExecutionScope newScope;
-                    functionLookup->execute(interpreter, &newScope, stack);
+                    functionLookup->execute(interpreter, scope, stack);
                 }
                 else
                 {
@@ -302,7 +301,6 @@ namespace TorqueScript
                     std::cerr << "Could not find function '" << calledFunctionName << "' for calling! Placing 0 on the stack." << std::endl;
                     stack.push_back(std::shared_ptr<StoredVariable>(new StoredVariable(0)));
                 }
-                //std::cout << "Calling" << calledFunctionName << std::endl;
             };
 
             virtual std::string disassemble() override

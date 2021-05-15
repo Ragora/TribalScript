@@ -29,18 +29,11 @@ namespace TorqueScript
         public:
             Echo() : Function("echo") { }
 
-            /**
-             *  @brief Default implementation will execute virtual instructions but can be overriden to implement native
-             *  functions.
-             */
             virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack) override
             {
                 // Retrieve string to print from stack
                 std::shared_ptr<StoredVariable> printedPayload = stack.back();
                 stack.pop_back();
-
-                // Ensure we have a string value here - it should be impossible to get anything else as a call name
-                // assert(calledFunctionParameter.getVariableType() == StoredVariable::VariableType::STRING);
 
                 std::string printedValue = printedPayload->toString();
                 if (printedPayload->getVariableType() == StoredVariable::VariableType::LOCALREFERENCE)
