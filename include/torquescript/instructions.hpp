@@ -204,6 +204,8 @@ namespace TorqueScript
         public:
             virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
+                assert(stack.size() >= 2);
+
                 // Pull two values off the stack
                 std::shared_ptr<StoredValue> rhsStored = stack.back();
                 stack.pop_back();
@@ -221,6 +223,9 @@ namespace TorqueScript
                     return;
                 }
                 globalReference->setValue(rhsStored);
+
+                // In Torque, the result of the assignment is pushed to stack
+                stack.push_back(rhsStored);
             };
 
             virtual std::string disassemble() override
@@ -238,6 +243,8 @@ namespace TorqueScript
         public:
             virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
+                assert(stack.size() >= 2);
+
                 // Pull two values off the stack
                 std::shared_ptr<StoredValue> rhsStored = stack.back();
                 stack.pop_back();
@@ -264,6 +271,8 @@ namespace TorqueScript
         public:
             virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
+                assert(stack.size() >= 1);
+
                 // Pull two values off the stack
                 std::shared_ptr<StoredValue> storedTarget = stack.back();
                 stack.pop_back();
@@ -285,6 +294,8 @@ namespace TorqueScript
         public:
             virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
+                assert(stack.size() >= 1);
+
                 // Pop name from the stack
                 std::shared_ptr<StoredValue> calledFunctionParameter = stack.back();
                 stack.pop_back();
@@ -323,6 +334,8 @@ namespace TorqueScript
         public:
             virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
+                assert(stack.size() >= 2);
+
                 std::shared_ptr<StoredValue> rhsStored = stack.back();
                 stack.pop_back();
                 std::shared_ptr<StoredValue> lhsStored = stack.back();
@@ -350,6 +363,8 @@ namespace TorqueScript
         public:
             virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
+                assert(stack.size() >= 2);
+
                 std::shared_ptr<StoredValue> lhsStored = stack.back();
                 stack.pop_back();
                 std::shared_ptr<StoredValue> rhsStored = stack.back();
