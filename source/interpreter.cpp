@@ -51,7 +51,7 @@ namespace TorqueScript
 
     CodeBlock* Interpreter::compile(const std::string& input)
     {
-        mCompiler->compileString(input);
+        return mCompiler->compileString(input);
     }
 
     std::shared_ptr<StoredVariable> Interpreter::getGlobal(const std::string& name)
