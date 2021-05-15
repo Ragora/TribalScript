@@ -167,6 +167,14 @@ namespace TorqueScript
             const std::string variableName = rawString.substr(1, rawString.size());
             generatedCode.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(variableName)));
         }
+        else if (context->TRUE())
+        {
+            generatedCode.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(1)));
+        }
+        else if (context->FALSE())
+        {
+            generatedCode.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(0)));
+        }
         else
         {
             throw new std::runtime_error("Encountered unhandled value type!");

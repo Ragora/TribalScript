@@ -96,17 +96,9 @@ expression : (op=NOT|op=MINUS) expression                                       
            | op=GLOBALVARIABLE                                                                   # value
            | op=LOCALVARIABLE                                                                    # value
            | op=LABELNAMESPACESINGLE                                                             # labelReference
-           | op=BOOLEAN                                                                          # value
+           | op=TRUE                                                                             # value
+           | op=FALSE                                                                            # value
            | op=STRING                                                                           # value ;
-
-// Function declarations can be namespaced but only a single deep ie. function one::two() {}
-LABELNAMESPACESINGLE : LABEL ('::' LABEL)? ;
-
-// Some cases like variables can go infinitely deep with namespacing
-LABELNAMESPACE : LABEL ('::' LABEL)* ;
-
-LOCALVARIABLE: '%'LABELNAMESPACE ;
-GLOBALVARIABLE: '$'LABELNAMESPACE ;
 
 // Lexer
 PLUS: '+' ;
@@ -146,11 +138,20 @@ SPACE: 'SPC' ;
 NEWLINE: 'NL' ;
 TAB: 'TAB' ;
 
-BOOLEAN: TRUE | FALSE ;
 TRUE: 'true' ;
 FALSE: 'false' ;
 
 MODULUS: '%' ;
+
+
+// Function declarations can be namespaced but only a single deep ie. function one::two() {}
+LABELNAMESPACESINGLE : LABEL ('::' LABEL)? ;
+
+// Some cases like variables can go infinitely deep with namespacing
+LABELNAMESPACE : LABEL ('::' LABEL)* ;
+
+LOCALVARIABLE: '%'LABELNAMESPACE ;
+GLOBALVARIABLE: '$'LABELNAMESPACE ;
 
 // Labels can contain numbers but not at the start
 LABEL : [a-zA-Z_]+[a-zA-Z_0-9]* ;
