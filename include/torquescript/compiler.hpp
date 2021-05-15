@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <memory>
+
 #include "antlr4-runtime.h"
 #include <TorqueBaseListener.h>
 
@@ -78,12 +80,12 @@ namespace TorqueScript
              *  global codeblock or the currently generated function.
              *  @param instructions All instructions to push.
              */
-            void pushInstructions(const std::vector<Instruction*>& instructions);
+            void pushInstructions(const std::vector<std::shared_ptr<Instruction>>& instructions);
 
             //! Codeblock we are currently generating. This is only used as temporary storage space as the tree is running.
             CodeBlock* mCurrentCodeBlock;
 
             //! Function we are currently generating. This is only used as temporary storage space as the tree is running.
-            Function* mCurrentFunction;
+            std::shared_ptr<Function> mCurrentFunction;
     };
 }

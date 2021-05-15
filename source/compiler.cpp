@@ -51,7 +51,7 @@ namespace TorqueScript
         return this->compileStream(fileStream);
     }
 
-    void Compiler::pushInstructions(const std::vector<Instruction*>& instructions)
+    void Compiler::pushInstructions(const std::vector<std::shared_ptr<Instruction>>& instructions)
     {
         if (mCurrentFunction)
         {
@@ -69,7 +69,7 @@ namespace TorqueScript
         // Functions are a global construct only
         assert(!mCurrentFunction);
 
-        mCurrentFunction = new Function(context->LABELNAMESPACESINGLE()->getText());
+        mCurrentFunction = std::shared_ptr<Function>(new Function(context->LABELNAMESPACESINGLE()->getText()));
         mCurrentCodeBlock->addFunction(mCurrentFunction);
     }
 
@@ -85,15 +85,15 @@ namespace TorqueScript
 
     void Compiler::exitArithmetic(TorqueParser::ArithmeticContext* context)
     {
-        std::vector<Instruction*> generatedCode;
+        std::vector<std::shared_ptr<Instruction>> generatedCode;
 
         if (context->PLUS())
         {
-            generatedCode.push_back(new AddInstruction());
+            generatedCode.push_back(std::shared_ptr<Instruction>(new AddInstruction()));
         }
         else if (context->MULT())
         {
-            generatedCode.push_back(new MultiplyInstruction());
+            generatedCode.push_back(std::shared_ptr<Instruction>(new MultiplyInstruction()));
         }
         else
         {
@@ -122,9 +122,9 @@ namespace TorqueScript
     {
         const std::string calledFunctionName = context->LABELNAMESPACESINGLE()->getText();
 
-        std::vector<Instruction*> generatedCode;
-        generatedCode.push_back(new PushStringInstruction(calledFunctionName));
-        generatedCode.push_back(new CallFunctionInstruction());
+        std::vector<std::shared_ptr<Instruction>> generatedCode;
+        generatedCode.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(calledFunctionName)));
+        generatedCode.push_back(std::shared_ptr<Instruction>(new CallFunctionInstruction()));
 
         this->pushInstructions(generatedCode);
     }
@@ -136,36 +136,36 @@ namespace TorqueScript
 
     void Compiler::exitValue(TorqueParser::ValueContext* context)
     {
-        std::vector<Instruction*> generatedCode;
+        std::vector<std::shared_ptr<Instruction>> generatedCode;
 
         if (context->FLOAT())
         {
-            generatedCode.push_back(new PushFloatInstruction(std::stof(context->getText())));
+            generatedCode.push_back(std::shared_ptr<Instruction>(new PushFloatInstruction(std::stof(context->getText()))));
         }
         else if (context->STRING())
         {
             // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the enclosing quotations
             const std::string rawString = context->getText();
             const std::string stringContent = rawString.substr(1, rawString.size() - 2);
-            generatedCode.push_back(new PushStringInstruction(stringContent));
+            generatedCode.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(stringContent)));
         }
         else if (context->INT())
         {
-            generatedCode.push_back(new PushIntegerInstruction(std::stoi(context->getText())));
+            generatedCode.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(std::stoi(context->getText()))));
         }
         else if (context->LOCALVARIABLE())
         {
             // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the % prefix
             const std::string rawString = context->getText();
             const std::string variableName = rawString.substr(1, rawString.size());
-            generatedCode.push_back(new PushLocalReferenceInstruction(variableName));
+            generatedCode.push_back(std::shared_ptr<Instruction>(new PushLocalReferenceInstruction(variableName)));
         }
         else if (context->GLOBALVARIABLE())
         {
             // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the % prefix
             const std::string rawString = context->getText();
             const std::string variableName = rawString.substr(1, rawString.size());
-            generatedCode.push_back(new PushGlobalReferenceInstruction(variableName));
+            generatedCode.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(variableName)));
         }
         else
         {
@@ -182,11 +182,11 @@ namespace TorqueScript
 
     void Compiler::exitConcatenation(TorqueParser::ConcatenationContext* context)
     {
-        std::vector<Instruction*> generatedCode;
+        std::vector<std::shared_ptr<Instruction>> generatedCode;
 
         if (context->CONCAT())
         {
-            generatedCode.push_back(new ConcatInstruction());
+            generatedCode.push_back(std::shared_ptr<Instruction>(new ConcatInstruction()));
         }
         else
         {
@@ -204,11 +204,11 @@ namespace TorqueScript
 
     void Compiler::exitUnary(TorqueParser::UnaryContext* context)
     {
-        std::vector<Instruction*> generatedCode;
+        std::vector<std::shared_ptr<Instruction>> generatedCode;
 
         if (context->MINUS())
         {
-            generatedCode.push_back(new NegateInstruction());
+            generatedCode.push_back(std::shared_ptr<Instruction>(new NegateInstruction()));
         }
         else
         {
@@ -225,12 +225,12 @@ namespace TorqueScript
 
     void Compiler::exitAssignment(TorqueParser::AssignmentContext* context)
     {
-        std::vector<Instruction*> generatedCode;
+        std::vector<std::shared_ptr<Instruction>> generatedCode;
 
         std::cout << context->getText() << std::endl;
         if (context->ASSIGN())
         {
-            generatedCode.push_back(new AssignmentInstruction());
+            generatedCode.push_back(std::shared_ptr<Instruction>(new AssignmentInstruction()));
         }
         else
         {

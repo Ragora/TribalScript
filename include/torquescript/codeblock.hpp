@@ -17,6 +17,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include <torquescript/instructions.hpp>
 #include <torquescript/executionscope.hpp>
@@ -37,32 +38,32 @@ namespace TorqueScript
              *  @brief Registers a new function within this codeblock.
              *  @param function The function to be added.
              */
-            void addFunction(Function* function);
+            void addFunction(std::shared_ptr<Function> function);
 
             /**
              *  @brief Registers the instruction sequence to the codeblock to be executed
              *  immediately.
              *  @param instructions The instructions to execute immediately.
              */
-            void addInstructions(const std::vector<Instruction*> instructions);
+            void addInstructions(const std::vector<std::shared_ptr<Instruction>> instructions);
 
             /**
              *  @brief Executes all instructions contained in mInstructions within the provided context.
              */
-            void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack);
+            void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack);
 
             /**
              *  @brief Produces a disassembly of the global CodeBlock code.
              */
             std::vector<std::string> disassemble();
 
-            std::vector<Function*> getFunctions();
+            std::vector<std::shared_ptr<Function>> getFunctions();
 
         private:
             //! All functions registered in this codeblock.
-            std::vector<Function*> mFunctions;
+            std::vector<std::shared_ptr<Function>> mFunctions;
 
             //! All instructions that were generated global to the block - ie. should be executed immediately
-            std::vector<Instruction*> mInstructions;
+            std::vector<std::shared_ptr<Instruction>> mInstructions;
     };
 }

@@ -32,7 +32,7 @@ namespace TorqueScript
         delete mCompiler;
     }
 
-    void Interpreter::evaluate(const std::string& input, std::vector<StoredVariable*>& stack)
+    void Interpreter::evaluate(const std::string& input, std::vector<std::shared_ptr<StoredVariable>>& stack)
     {
         assert(mCompiler);
 
@@ -54,7 +54,7 @@ namespace TorqueScript
         mCompiler->compileString(input);
     }
 
-    StoredVariable* Interpreter::getGlobal(const std::string& name)
+    std::shared_ptr<StoredVariable> Interpreter::getGlobal(const std::string& name)
     {
         const std::string key = toLowerCase(name);
 
@@ -66,21 +66,20 @@ namespace TorqueScript
         return nullptr;
     }
 
-    void Interpreter::addFunction(Function* function)
+    void Interpreter::addFunction(std::shared_ptr<Function> function)
     {
         const std::string storedName = toLowerCase(function->getName());
         auto search = mFunctions.find(storedName);
 
         if (search != mFunctions.end())
         {
-            delete search->second;
             mFunctions.erase(search);
         }
 
         mFunctions[storedName] = function;
     }
 
-    Function* Interpreter::getFunction(const std::string& name)
+    std::shared_ptr<Function> Interpreter::getFunction(const std::string& name)
     {
         const std::string searchedName = toLowerCase(name);
         auto search = mFunctions.find(searchedName);
@@ -92,7 +91,7 @@ namespace TorqueScript
         return nullptr;
     }
 
-    void Interpreter::setGlobal(const std::string& name, StoredVariable* value)
+    void Interpreter::setGlobal(const std::string& name, std::shared_ptr<StoredVariable> value)
     {
         const std::string key = toLowerCase(name);
         mGlobalVariables[key] = value;

@@ -16,6 +16,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace TorqueScript
 {
@@ -33,13 +34,13 @@ namespace TorqueScript
         public:
             Function(const std::string& name);
 
-            void addInstructions(const std::vector<Instruction*>& instructions);
+            void addInstructions(const std::vector<std::shared_ptr<Instruction>>& instructions);
 
             /**
              *  @brief Default implementation will execute virtual instructions but can be overriden to implement native
              *  functions.
              */
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack);
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack);
 
             std::string getName();
 
@@ -48,7 +49,7 @@ namespace TorqueScript
             std::string mName;
 
             //! All instructions associated with this function.
-            std::vector<Instruction*> mInstructions;
+            std::vector<std::shared_ptr<Instruction>> mInstructions;
 
     };
 }

@@ -23,7 +23,7 @@ namespace TorqueScript
         mName = toLowerCase(name);
     }
 
-    void Function::addInstructions(const std::vector<Instruction*>& instructions)
+    void Function::addInstructions(const std::vector<std::shared_ptr<Instruction>>& instructions)
     {
         for (auto iterator = instructions.begin(); iterator != instructions.end(); ++iterator)
         {
@@ -31,12 +31,11 @@ namespace TorqueScript
         }
     }
 
-    void Function::execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack)
+    void Function::execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack)
     {
-        for (auto iterator = mInstructions.begin(); iterator != mInstructions.end(); ++iterator)
+        for (auto&& instruction : mInstructions)
         {
-            Instruction* executed = *iterator;
-            executed->execute(interpreter, scope, stack);
+            instruction->execute(interpreter, scope, stack);
         }
     }
 

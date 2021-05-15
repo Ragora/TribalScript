@@ -38,7 +38,7 @@ namespace TorqueScript
              *  switching statement that determines how opcodes will behave.
              *  @param bitstream The bitstream acting as our current stack.
              */
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack) = 0;
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack) = 0;
 
             /**
              *  @brief Helper routine to produce a disassembly for this instruction.
@@ -58,9 +58,9 @@ namespace TorqueScript
                 mParameter = value;
             }
 
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack) override
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack) override
             {
-                stack.push_back(new StoredVariable(mParameter));
+                stack.push_back(std::shared_ptr<StoredVariable>(new StoredVariable(mParameter)));
             };
 
             virtual std::string disassemble() override
@@ -87,9 +87,9 @@ namespace TorqueScript
                 mParameter = value;
             }
 
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack) override
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack) override
             {
-                stack.push_back(new StoredVariable(mParameter));
+                stack.push_back(std::shared_ptr<StoredVariable>(new StoredVariable(mParameter)));
             };
 
             virtual std::string disassemble() override
@@ -116,9 +116,9 @@ namespace TorqueScript
                 mParameter = value;
             }
 
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack) override
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack) override
             {
-                stack.push_back(new StoredVariable(mParameter));
+                stack.push_back(std::shared_ptr<StoredVariable>(new StoredVariable(mParameter)));
             };
 
             virtual std::string disassemble() override
@@ -145,9 +145,9 @@ namespace TorqueScript
                 mParameter = value;
             }
 
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack) override
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack) override
             {
-                stack.push_back(new StoredVariable(mParameter, StoredVariable::VariableType::LOCALREFERENCE));
+                stack.push_back(std::shared_ptr<StoredVariable>(new StoredVariable(mParameter, StoredVariable::VariableType::LOCALREFERENCE)));
             };
 
             virtual std::string disassemble() override
@@ -174,9 +174,9 @@ namespace TorqueScript
                 mParameter = value;
             }
 
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack) override
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack) override
             {
-                stack.push_back(new StoredVariable(mParameter, StoredVariable::VariableType::GLOBALREFERENCE));
+                stack.push_back(std::shared_ptr<StoredVariable>(new StoredVariable(mParameter, StoredVariable::VariableType::GLOBALREFERENCE)));
             };
 
             virtual std::string disassemble() override
@@ -197,12 +197,12 @@ namespace TorqueScript
     class AssignmentInstruction : public Instruction
     {
         public:
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack) override
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack) override
             {
                 // Pull two values off the stack
-                StoredVariable* rhsStored = stack.back();
+                std::shared_ptr<StoredVariable> rhsStored = stack.back();
                 stack.pop_back();
-                StoredVariable* lhsStored = stack.back();
+                std::shared_ptr<StoredVariable> lhsStored = stack.back();
                 stack.pop_back();
 
 
@@ -232,18 +232,18 @@ namespace TorqueScript
     class ConcatInstruction : public Instruction
     {
         public:
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack) override
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack) override
             {
                 // Pull two values off the stack
-                StoredVariable* rhsStored = stack.back();
+                std::shared_ptr<StoredVariable> rhsStored = stack.back();
                 stack.pop_back();
-                StoredVariable* lhsStored = stack.back();
+                std::shared_ptr<StoredVariable> lhsStored = stack.back();
                 stack.pop_back();
 
                 std::string lhs = lhsStored->toString();
                 std::string rhs = rhsStored->toString();
 
-                stack.push_back(new StoredVariable(lhs + rhs));
+                stack.push_back(std::shared_ptr<StoredVariable>(new StoredVariable(lhs + rhs)));
             };
 
             virtual std::string disassemble() override
@@ -258,13 +258,13 @@ namespace TorqueScript
     class NegateInstruction : public Instruction
     {
         public:
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack) override
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack) override
             {
                 // Pull two values off the stack
-                StoredVariable* storedTarget = stack.back();
+                std::shared_ptr<StoredVariable> storedTarget = stack.back();
                 stack.pop_back();
 
-                stack.push_back(new StoredVariable(-storedTarget->toFloat()));
+                stack.push_back(std::shared_ptr<StoredVariable>(new StoredVariable(-storedTarget->toFloat())));
             };
 
             virtual std::string disassemble() override
@@ -279,10 +279,10 @@ namespace TorqueScript
     class CallFunctionInstruction : public Instruction
     {
         public:
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack) override
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack) override
             {
                 // Pop name from the stack
-                StoredVariable* calledFunctionParameter = stack.back();
+                std::shared_ptr<StoredVariable> calledFunctionParameter = stack.back();
                 stack.pop_back();
 
                 // Ensure we have a string value here - it should be impossible to get anything else as a call name
@@ -290,7 +290,7 @@ namespace TorqueScript
 
                 const std::string calledFunctionName = std::get<std::string>(calledFunctionParameter->getValue());
 
-                Function* functionLookup = interpreter->getFunction(calledFunctionName);
+                std::shared_ptr<Function> functionLookup = interpreter->getFunction(calledFunctionName);
                 if (functionLookup)
                 {
                     ExecutionScope newScope;
@@ -300,7 +300,7 @@ namespace TorqueScript
                 {
                     // FIXME: Virtual logging methods?
                     std::cerr << "Could not find function '" << calledFunctionName << "' for calling! Placing 0 on the stack." << std::endl;
-                    stack.push_back(new StoredVariable(0));
+                    stack.push_back(std::shared_ptr<StoredVariable>(new StoredVariable(0)));
                 }
                 //std::cout << "Calling" << calledFunctionName << std::endl;
             };
@@ -317,11 +317,11 @@ namespace TorqueScript
     class AddInstruction : public Instruction
     {
         public:
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack) override
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack) override
             {
-                StoredVariable* rhsStored = stack.back();
+                std::shared_ptr<StoredVariable> rhsStored = stack.back();
                 stack.pop_back();
-                StoredVariable* lhsStored = stack.back();
+                std::shared_ptr<StoredVariable> lhsStored = stack.back();
                 stack.pop_back();
 
                 // NOTE: For now we normalize to floats
@@ -329,7 +329,7 @@ namespace TorqueScript
                 float rhs = rhsStored->toFloat();
 
                 const float result = lhs + rhs;
-                stack.push_back(new StoredVariable(result));
+                stack.push_back(std::shared_ptr<StoredVariable>(new StoredVariable(result)));
             };
 
             virtual std::string disassemble() override
@@ -344,11 +344,11 @@ namespace TorqueScript
     class MultiplyInstruction : public Instruction
     {
         public:
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack) override
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack) override
             {
-                StoredVariable* lhsStored = stack.back();
+                std::shared_ptr<StoredVariable> lhsStored = stack.back();
                 stack.pop_back();
-                StoredVariable* rhsStored = stack.back();
+                std::shared_ptr<StoredVariable> rhsStored = stack.back();
                 stack.pop_back();
 
                 // NOTE: For now we normalize to floats
@@ -357,7 +357,7 @@ namespace TorqueScript
                 float rhs = rhsStored->toFloat();
 
                 const float result = lhs * rhs;
-                stack.push_back(new StoredVariable(result));
+                stack.push_back(std::shared_ptr<StoredVariable>(new StoredVariable(result)));
             };
 
             virtual std::string disassemble() override

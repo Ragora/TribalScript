@@ -18,24 +18,23 @@
 
 namespace TorqueScript
 {
-    void CodeBlock::addFunction(Function* function)
+    void CodeBlock::addFunction(std::shared_ptr<Function> function)
     {
         mFunctions.push_back(function);
     }
 
-    void CodeBlock::addInstructions(const std::vector<Instruction*> instructions)
+    void CodeBlock::addInstructions(const std::vector<std::shared_ptr<Instruction>> instructions)
     {
-        for (auto iterator = instructions.begin(); iterator != instructions.end(); ++iterator)
+        for (auto&& instruction : instructions)
         {
-            mInstructions.push_back(*iterator);
+            mInstructions.push_back(instruction);
         }
     }
 
-    void CodeBlock::execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack)
+    void CodeBlock::execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack)
     {
-        for (auto iterator = mInstructions.begin(); iterator != mInstructions.end(); ++iterator)
+        for (auto&& instruction : mInstructions)
         {
-            Instruction* instruction = *iterator;
             instruction->execute(interpreter, scope, stack);
         }
     }
@@ -44,15 +43,14 @@ namespace TorqueScript
     {
         std::vector<std::string> result;
 
-        for (auto iterator = mInstructions.begin(); iterator != mInstructions.end(); ++iterator)
+        for (auto&& instruction : mInstructions)
         {
-            Instruction* instruction = *iterator;
             result.push_back(instruction->disassemble());
         }
         return result;
     }
 
-    std::vector<Function*> CodeBlock::getFunctions()
+    std::vector<std::shared_ptr<Function>> CodeBlock::getFunctions()
     {
         return mFunctions;
     }

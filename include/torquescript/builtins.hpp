@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <memory>
 #include <iostream>
 #include <stdexcept>
 
@@ -32,10 +33,10 @@ namespace TorqueScript
              *  @brief Default implementation will execute virtual instructions but can be overriden to implement native
              *  functions.
              */
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<StoredVariable*>& stack) override
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack) override
             {
                 // Retrieve string to print from stack
-                StoredVariable* printedPayload = stack.back();
+                std::shared_ptr<StoredVariable> printedPayload = stack.back();
                 stack.pop_back();
 
                 // Ensure we have a string value here - it should be impossible to get anything else as a call name
@@ -44,12 +45,12 @@ namespace TorqueScript
                 std::string printedValue = printedPayload->toString();
                 if (printedPayload->getVariableType() == StoredVariable::VariableType::LOCALREFERENCE)
                 {
-                    StoredVariable* variable = scope->getVariable(printedValue);
+                    std::shared_ptr<StoredVariable> variable = scope->getVariable(printedValue);
                     printedValue = variable ? variable->toString() : "";
                 }
                 else if (printedPayload->getVariableType() == StoredVariable::VariableType::GLOBALREFERENCE)
                 {
-                    StoredVariable* variable = interpreter->getGlobal(printedValue);
+                    std::shared_ptr<StoredVariable> variable = interpreter->getGlobal(printedValue);
                     printedValue = variable ? variable->toString() : "";
                 }
 
@@ -59,6 +60,6 @@ namespace TorqueScript
 
     void registerBuiltIns(Interpreter* interpreter)
     {
-        interpreter->addFunction(new Echo());
+        interpreter->addFunction(std::shared_ptr<Function>(new Echo()));
     }
 }

@@ -16,6 +16,7 @@
 
 #include <map>
 #include <vector>
+#include <memory>
 
 #include <torquescript/function.hpp>
 #include <torquescript/storedvariable.hpp>
@@ -37,20 +38,20 @@ namespace TorqueScript
             Interpreter();
             ~Interpreter();
 
-            void setGlobal(const std::string& name, StoredVariable* value);
+            void setGlobal(const std::string& name, std::shared_ptr<StoredVariable> value);
 
-            StoredVariable* getGlobal(const std::string& name);
+            std::shared_ptr<StoredVariable> getGlobal(const std::string& name);
 
             CodeBlock* compile(const std::string& input);
-            void evaluate(const std::string& input, std::vector<StoredVariable*>& stack);
+            void evaluate(const std::string& input, std::vector<std::shared_ptr<StoredVariable>>& stack);
 
             /**
              *  @brief Registers a new function to the interpreter. Ownership is transferred to the interpreter at this
              *  point.
              */
-            void addFunction(Function* function);
+            void addFunction(std::shared_ptr<Function> function);
 
-            Function* getFunction(const std::string& name);
+            std::shared_ptr<Function> getFunction(const std::string& name);
 
 
 
@@ -59,9 +60,9 @@ namespace TorqueScript
             Compiler* mCompiler;
 
             //! A mapping of function names to the function object.
-            std::map<std::string, Function*> mFunctions;
+            std::map<std::string, std::shared_ptr<Function>> mFunctions;
 
             //! A mapping of global variable names to their stored value instance.
-            std::map<std::string, StoredVariable*> mGlobalVariables;
+            std::map<std::string, std::shared_ptr<StoredVariable>> mGlobalVariables;
     };
 }

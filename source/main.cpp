@@ -27,14 +27,14 @@ int main(int argc, char* argv[])
     std::istreambuf_iterator<char> begin(std::cin), end;
     std::string evaluated(begin, end);
 
-    std::vector<TorqueScript::StoredVariable*> stack;
+    std::vector<std::shared_ptr<TorqueScript::StoredVariable>> stack;
     TorqueScript::CodeBlock* compiled = interpreter.compile(evaluated);
 
     // Load all functions from the codeblock
     std::vector functions = compiled->getFunctions();
-    for (auto iterator = functions.begin(); iterator != functions.end(); ++iterator)
+    for (auto&& function : functions)
     {
-        interpreter.addFunction(*iterator);
+        interpreter.addFunction(function);
     }
 
     TorqueScript::ExecutionScope scope;
