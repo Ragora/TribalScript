@@ -62,8 +62,6 @@ field : LABEL ('[' expression ']')? '=' expression ';' ;
 
 returncontrol : 'return' expression? ;
 breakcontrol : 'break' ;
-trueliteral: 'true' ;
-falseliteral : 'false' ;
 
 expression : (op=NOT|op=MINUS) expression                                                        # unary
            | expression (op=PLUSPLUS|op=MINUSMINUS)                                              # unary
@@ -76,7 +74,7 @@ expression : (op=NOT|op=MINUS) expression                                       
            | expression (op=LEFTSHIFT|op=RIGHTSHIFT) expression                                  # arithmetic
            | expression (op=LESS|op=LESSEQ|op=BIGGER|op=BIGGEREQ) expression                     # relational
            | expression (op=EQUAL|op=NOTEQUAL|op=STRINGEQUAL|op=STRINGNOTEQUAL) expression       # equality
-           | expression (op=BITWISEAND|op=EXCLUSIVEOR|op=BITWISEOR) expression                   # bitwiseAnd
+           | expression (op=BITWISEAND|op=EXCLUSIVEOR|op=BITWISEOR) expression                   # bitwise
            | expression (op=CONCAT|op=SPACE|op=NEWLINE|op=TAB) expression                        # concatenation
            | expression (op=AND|op=OR) expression                                                # logicalop
            | expression '?' expression ':' expression                                            # ternary
@@ -142,7 +140,6 @@ TRUE: 'true' ;
 FALSE: 'false' ;
 
 MODULUS: '%' ;
-
 
 // Function declarations can be namespaced but only a single deep ie. function one::two() {}
 LABELNAMESPACESINGLE : LABEL ('::' LABEL)? ;

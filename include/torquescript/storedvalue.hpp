@@ -33,6 +33,8 @@ namespace TorqueScript
         public:
             StoredValue(Interpreter* interpreter);
 
+            virtual int toInteger(ExecutionScope* scope) = 0;
+
             /**
              *  @brief Converts the value in question to a native floating point type.
              *  @param scope The execution scope within which this conversion is occurring.

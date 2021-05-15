@@ -356,6 +356,35 @@ namespace TorqueScript
     };
 
     /**
+     *  @brief Performs a bitwise AND against two values.
+     */
+    class BitwiseAndInstruction : public Instruction
+    {
+        public:
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            {
+                assert(stack.size() >= 2);
+
+                std::shared_ptr<StoredValue> rhsStored = stack.back();
+                stack.pop_back();
+                std::shared_ptr<StoredValue> lhsStored = stack.back();
+                stack.pop_back();
+
+                // NOTE: For now we normalize to floats
+                int lhs = lhsStored->toInteger(scope);
+                int rhs = rhsStored->toInteger(scope);
+
+                const int result = lhs & rhs;
+                stack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(result, interpreter)));
+            };
+
+            virtual std::string disassemble() override
+            {
+                return "BitwiseAnd";
+            }
+    };
+
+    /**
      *  @brief Adds together two values on the stack and pushes the sum.
      */
     class MultiplyInstruction : public Instruction

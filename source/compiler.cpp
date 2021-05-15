@@ -97,7 +97,7 @@ namespace TorqueScript
         }
         else
         {
-            throw new std::runtime_error("Encountered unhandled arithmetic type!");
+            throw std::runtime_error("Encountered unhandled arithmetic type!");
         }
 
         this->pushInstructions(generatedCode);
@@ -177,7 +177,7 @@ namespace TorqueScript
         }
         else
         {
-            throw new std::runtime_error("Encountered unhandled value type!");
+            throw std::runtime_error("Encountered unhandled value type!");
         }
 
         this->pushInstructions(generatedCode);
@@ -198,7 +198,7 @@ namespace TorqueScript
         }
         else
         {
-            throw new std::runtime_error("Encountered unhandled concat op type!");
+            throw std::runtime_error("Encountered unhandled concat op type!");
         }
 
         this->pushInstructions(generatedCode);
@@ -220,7 +220,7 @@ namespace TorqueScript
         }
         else
         {
-            throw new std::runtime_error("Encountered unhandled unary op type!");
+            throw std::runtime_error("Encountered unhandled unary op type!");
         }
 
         this->pushInstructions(generatedCode);
@@ -242,7 +242,28 @@ namespace TorqueScript
         }
         else
         {
-            throw new std::runtime_error("Encountered unhandled unary op type!");
+            throw std::runtime_error("Encountered unhandled unary op type!");
+        }
+
+        this->pushInstructions(generatedCode);
+    }
+
+    void Compiler::enterBitwise(TorqueParser::BitwiseContext* context)
+    {
+
+    }
+
+    void Compiler::exitBitwise(TorqueParser::BitwiseContext* context)
+    {
+        std::vector<std::shared_ptr<Instruction>> generatedCode;
+
+        if (context->BITWISEAND())
+        {
+            generatedCode.push_back(std::shared_ptr<Instruction>(new BitwiseAndInstruction()));
+        }
+        else
+        {
+            throw std::runtime_error("Encountered unknown bitwise type!");
         }
 
         this->pushInstructions(generatedCode);

@@ -74,6 +74,9 @@ namespace TorqueScript
             virtual void enterAssignment(TorqueParser::AssignmentContext* context) override;
             virtual void exitAssignment(TorqueParser::AssignmentContext* context) override;
 
+            virtual void enterBitwise(TorqueParser::BitwiseContext* context) override;
+            virtual void exitBitwise(TorqueParser::BitwiseContext* context) override;
+
         private:
             /**
              *  @brief Internal helper function to push a sequence of instructions either to the
