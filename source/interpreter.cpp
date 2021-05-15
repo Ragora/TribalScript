@@ -32,7 +32,7 @@ namespace TorqueScript
         delete mCompiler;
     }
 
-    void Interpreter::evaluate(const std::string& input, std::vector<std::shared_ptr<StoredVariable>>& stack)
+    void Interpreter::evaluate(const std::string& input, std::vector<std::shared_ptr<StoredValue>>& stack)
     {
         assert(mCompiler);
 
@@ -54,7 +54,7 @@ namespace TorqueScript
         return mCompiler->compileString(input);
     }
 
-    std::shared_ptr<StoredVariable> Interpreter::getGlobal(const std::string& name)
+    std::shared_ptr<StoredValue> Interpreter::getGlobal(const std::string& name)
     {
         const std::string key = toLowerCase(name);
 
@@ -91,7 +91,7 @@ namespace TorqueScript
         return nullptr;
     }
 
-    void Interpreter::setGlobal(const std::string& name, std::shared_ptr<StoredVariable> value)
+    void Interpreter::setGlobal(const std::string& name, std::shared_ptr<StoredValue> value)
     {
         const std::string key = toLowerCase(name);
         mGlobalVariables[key] = value;

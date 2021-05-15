@@ -16,7 +16,7 @@
 
 namespace TorqueScript
 {
-    std::shared_ptr<StoredVariable> ExecutionScope::getVariable(const std::string& name)
+    std::shared_ptr<StoredValue> ExecutionScope::getVariable(const std::string& name)
     {
         std::string lookup = toLowerCase(name);
         auto search = mLocalVariables.find(lookup);
@@ -28,7 +28,7 @@ namespace TorqueScript
         return nullptr;
     }
 
-    void ExecutionScope::setVariable(const std::string& name, std::shared_ptr<StoredVariable> variable)
+    void ExecutionScope::setVariable(const std::string& name, std::shared_ptr<StoredValue> variable)
     {
         std::string key = toLowerCase(name);
         mLocalVariables[key] = variable;

@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
     std::istreambuf_iterator<char> begin(std::cin), end;
     std::string evaluated(begin, end);
 
-    std::vector<std::shared_ptr<TorqueScript::StoredVariable>> stack;
+    std::vector<std::shared_ptr<TorqueScript::StoredValue>> stack;
     TorqueScript::CodeBlock* compiled = interpreter.compile(evaluated);
 
     // Load all functions from the codeblock

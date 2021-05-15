@@ -31,7 +31,7 @@ namespace TorqueScript
         }
     }
 
-    void Function::execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack)
+    void Function::execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack)
     {
         for (auto&& instruction : mInstructions)
         {

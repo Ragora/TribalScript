@@ -14,42 +14,41 @@
 
 #pragma once
 
+#include <iostream>
+#include <assert.h>
+#include <variant>
 #include <string>
-#include <vector>
-#include <memory>
 
 namespace TorqueScript
 {
-    //! Forward declaration to avoid circular dependencies.
     class Interpreter;
-    class Instruction;
     class ExecutionScope;
-    class StoredValue;
 
     /**
-     *  @brief A function is callable subroutine from anywhere in the language.
+     *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
+     *  This is the base class and should not be instantiated directly.
      */
-    class Function
+    class StoredValue
     {
         public:
-            Function(const std::string& name);
-
-            void addInstructions(const std::vector<std::shared_ptr<Instruction>>& instructions);
+            StoredValue(Interpreter* interpreter);
 
             /**
-             *  @brief Default implementation will execute virtual instructions but can be overriden to implement native
-             *  functions.
+             *  @brief Converts the value in question to a native floating point type.
+             *  @param scope The execution scope within which this conversion is occurring.
+             *  @return A floating point representation of this value.
              */
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack);
+            virtual float toFloat(ExecutionScope* scope) = 0;
 
-            std::string getName();
+            /**
+             *  @brief Converts the value in question to a native sting type.
+             *  @param scope The execution scope within which this conversion is occurring.
+             *  @return A string representation of this value.
+             */
+            virtual std::string toString(ExecutionScope* scope) = 0;
 
-        private:
-            //! The name of the function.
-            std::string mName;
-
-            //! All instructions associated with this function.
-            std::vector<std::shared_ptr<Instruction>> mInstructions;
-
+        protected:
+            //! The interpreter this value is associated with. Required for global value lookups.
+            Interpreter* mInterpreter;
     };
 }

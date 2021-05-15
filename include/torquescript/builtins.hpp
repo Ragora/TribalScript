@@ -29,24 +29,13 @@ namespace TorqueScript
         public:
             Echo() : Function("echo") { }
 
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredVariable>>& stack) override
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
                 // Retrieve string to print from stack
-                std::shared_ptr<StoredVariable> printedPayload = stack.back();
+                std::shared_ptr<StoredValue> printedPayload = stack.back();
                 stack.pop_back();
 
-                std::string printedValue = printedPayload->toString();
-                if (printedPayload->getVariableType() == StoredVariable::VariableType::LOCALREFERENCE)
-                {
-                    std::shared_ptr<StoredVariable> variable = scope->getVariable(printedValue);
-                    printedValue = variable ? variable->toString() : "";
-                }
-                else if (printedPayload->getVariableType() == StoredVariable::VariableType::GLOBALREFERENCE)
-                {
-                    std::shared_ptr<StoredVariable> variable = interpreter->getGlobal(printedValue);
-                    printedValue = variable ? variable->toString() : "";
-                }
-
+                std::string printedValue = printedPayload->toString(scope);
                 std::cout << "Echo > " << printedValue << std::endl;
             }
     };

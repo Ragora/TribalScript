@@ -8,6 +8,12 @@ add_library(TorqueCompiler
     codeblock.cpp
     stringhelpers.cpp
     function.cpp
+    storedfloatvalue.cpp
+    storedstringvalue.cpp
+    storedintegervalue.cpp
+    storedvalue.cpp
+    storedglobalreferencevalue.cpp
+    storedlocalreferencevalue.cpp
     ${ANTLR_Torque_CXX_OUTPUTS}
 )
 target_link_libraries(TorqueCompiler antlr4_static)
