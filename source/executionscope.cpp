@@ -19,10 +19,22 @@ namespace TorqueScript
     std::shared_ptr<StoredValue> ExecutionScope::getVariable(const std::string& name)
     {
         std::string lookup = toLowerCase(name);
-        auto search = mLocalVariables.find(lookup);
-        if (search != mLocalVariables.end())
+
+        if (mLocalVariables.empty())
         {
-            return search->second;
+            return nullptr;
+        }
+
+        // Here we search the scopes in reverse to find the first match for reference
+        for (auto iterator = mLocalVariables.rbegin(); iterator != mLocalVariables.rend(); ++iterator)
+        {
+            std::map<std::string, std::shared_ptr<StoredValue>>& currentScope = *iterator;
+
+            auto search = currentScope.find(lookup);
+            if (search != currentScope.end())
+            {
+                return search->second;
+            }
         }
 
         return nullptr;
@@ -31,6 +43,24 @@ namespace TorqueScript
     void ExecutionScope::setVariable(const std::string& name, std::shared_ptr<StoredValue> variable)
     {
         std::string key = toLowerCase(name);
-        mLocalVariables[key] = variable;
+
+        // Initialize if necessary
+        if (mLocalVariables.empty())
+        {
+            this->push();
+        }
+
+        std::map<std::string, std::shared_ptr<StoredValue>>& currentScope = mLocalVariables.back();
+        currentScope[key] = variable;
+    }
+
+    void ExecutionScope::push()
+    {
+        mLocalVariables.push_back(std::map<std::string, std::shared_ptr<StoredValue>>());
+    }
+
+    void ExecutionScope::pop()
+    {
+        mLocalVariables.pop_back();
     }
 }

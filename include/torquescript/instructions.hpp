@@ -297,7 +297,9 @@ namespace TorqueScript
                 std::shared_ptr<Function> functionLookup = interpreter->getFunction(calledFunctionName);
                 if (functionLookup)
                 {
+                    scope->push();
                     functionLookup->execute(interpreter, scope, stack);
+                    scope->pop();
                 }
                 else
                 {

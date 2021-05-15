@@ -15,6 +15,7 @@
 #pragma once
 
 #include <map>
+#include <vector>
 #include <memory>
 
 #include <torquescript/storedvalue.hpp>
@@ -30,9 +31,12 @@ namespace TorqueScript
     {
         private:
             //! A mapping of local variable names to their stored value instance.
-            std::map<std::string, std::shared_ptr<StoredValue>> mLocalVariables;
+            std::vector<std::map<std::string, std::shared_ptr<StoredValue>>> mLocalVariables;
 
         public:
+            void push();
+            void pop();
+
             std::shared_ptr<StoredValue> getVariable(const std::string& name);
             void setVariable(const std::string& name, std::shared_ptr<StoredValue> variable);
     };
