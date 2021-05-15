@@ -65,30 +65,39 @@ breakcontrol : 'break' ;
 trueliteral: 'true' ;
 falseliteral : 'false' ;
 
-expression : (op=NOT|op=MINUS) expression                                                                                                                                                                           # unary
-           | expression (op=PLUSPLUS|op=MINUSMINUS)                                                                                                                                                                 # unary
-           | LABELNAMESPACESINGLE '(' expression? (',' expression)* ')'                                                                                                                                             # call
-           | (LOCALVARIABLE | GLOBALVARIABLE) '[' expression (',' expression)* ']'                                                                                                                                  # array
-           | expression ('.' LABEL)+                                                                                                                                                                                # subreference
-           | '(' expression ')'                                                                                                                                                                                     # parenthesis
-           | expression (op=MULT|op=DIV|op=MODULUS) expression                                                                                                                                                      # arithmetic
-           | expression (op=PLUS|op=MINUS) expression                                                                                                                                                               # arithmetic
-           | expression (op=LEFTSHIFT|op=RIGHTSHIFT) expression                                                                                                                                                     # arithmetic
-           | expression (op=LESS|op=LESSEQ|op=BIGGER|op=BIGGEREQ) expression                                                                                                                                        # relational
-           | expression (op=EQUAL|op=NOTEQUAL|op=STRINGEQUAL|op=STRINGNOTEQUAL) expression                                                                                                                          # equality
-           | expression (op=BITWISEAND|op=EXCLUSIVEOR|op=BITWISEOR) expression                                                                                                                                      # bitwiseAnd
-           | expression (op=CONCAT|op=SPACE|op=NEWLINE|op=TAB) expression                                                                                                                                           # concatenation
-           | expression (op=AND|op=OR) expression                                                                                                                                                                   # logicalop
-           | expression '?' expression ':' expression                                                                                                                                                               # ternary
-           | expression (op=ASSIGN|op=ADDASSIGN|op=MULTASSIGN|op=SUBASSIGN|op=MODULUSASSIGN|op=BITWISEORASSIGN|op=BITWISEANDASSIGN|op=EXLUSIVEORASSIGN|op=LEFTSHIFTASSIGN|op=RIGHTSHIFTASSIGN)  expression          # assignment
-           | op=newobject                                                                                                                                                                                           # objectInstantiation
-           | op=INT                                                                                                                                                                                                 # value
-           | op=FLOAT                                                                                                                                                                                               # value
-           | op=GLOBALVARIABLE                                                                                                                                                                                      # value
-           | op=LOCALVARIABLE                                                                                                                                                                                       # value
-           | op=LABELNAMESPACESINGLE                                                                                                                                                                                # labelReference
-           | op=BOOLEAN                                                                                                                                                                                             # value
-           | op=STRING                                                                                                                                                                                              # value ;
+expression : (op=NOT|op=MINUS) expression                                                        # unary
+           | expression (op=PLUSPLUS|op=MINUSMINUS)                                              # unary
+           | LABELNAMESPACESINGLE '(' expression? (',' expression)* ')'                          # call
+           | (LOCALVARIABLE | GLOBALVARIABLE) '[' expression (',' expression)* ']'               # array
+           | expression ('.' LABEL)+                                                             # subreference
+           | '(' expression ')'                                                                  # parenthesis
+           | expression (op=MULT|op=DIV|op=MODULUS) expression                                   # arithmetic
+           | expression (op=PLUS|op=MINUS) expression                                            # arithmetic
+           | expression (op=LEFTSHIFT|op=RIGHTSHIFT) expression                                  # arithmetic
+           | expression (op=LESS|op=LESSEQ|op=BIGGER|op=BIGGEREQ) expression                     # relational
+           | expression (op=EQUAL|op=NOTEQUAL|op=STRINGEQUAL|op=STRINGNOTEQUAL) expression       # equality
+           | expression (op=BITWISEAND|op=EXCLUSIVEOR|op=BITWISEOR) expression                   # bitwiseAnd
+           | expression (op=CONCAT|op=SPACE|op=NEWLINE|op=TAB) expression                        # concatenation
+           | expression (op=AND|op=OR) expression                                                # logicalop
+           | expression '?' expression ':' expression                                            # ternary
+           | (GLOBALVARIABLE | LOCALVARIABLE) (op=ASSIGN
+                                              |op=ADDASSIGN
+                                              |op=MULTASSIGN
+                                              |op=SUBASSIGN
+                                              |op=MODULUSASSIGN
+                                              |op=BITWISEORASSIGN
+                                              |op=BITWISEANDASSIGN
+                                              |op=EXLUSIVEORASSIGN
+                                              |op=LEFTSHIFTASSIGN
+                                              |op=RIGHTSHIFTASSIGN)  expression                  # assignment
+           | op=newobject                                                                        # objectInstantiation
+           | op=INT                                                                              # value
+           | op=FLOAT                                                                            # value
+           | op=GLOBALVARIABLE                                                                   # value
+           | op=LOCALVARIABLE                                                                    # value
+           | op=LABELNAMESPACESINGLE                                                             # labelReference
+           | op=BOOLEAN                                                                          # value
+           | op=STRING                                                                           # value ;
 
 // Function declarations can be namespaced but only a single deep ie. function one::two() {}
 LABELNAMESPACESINGLE : LABEL ('::' LABEL)? ;
