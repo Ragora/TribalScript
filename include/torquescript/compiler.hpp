@@ -77,18 +77,18 @@ namespace TorqueScript
             virtual void enterBitwise(TorqueParser::BitwiseContext* context) override;
             virtual void exitBitwise(TorqueParser::BitwiseContext* context) override;
 
+            virtual void enterProgram(TorqueParser::ProgramContext* context) override;
+            virtual void exitProgram(TorqueParser::ProgramContext* context) override;
+
         private:
-            /**
-             *  @brief Internal helper function to push a sequence of instructions either to the
-             *  global codeblock or the currently generated function.
-             *  @param instructions All instructions to push.
-             */
-            void pushInstructions(const std::vector<std::shared_ptr<Instruction>>& instructions);
+
+            void pushInstructionFrame();
+            void popInstructionFrame();
+            std::vector<std::shared_ptr<Instruction>>& getCurrentInstructionFrame();
 
             //! Codeblock we are currently generating. This is only used as temporary storage space as the tree is running.
             CodeBlock* mCurrentCodeBlock;
 
-            //! Function we are currently generating. This is only used as temporary storage space as the tree is running.
-            std::shared_ptr<Function> mCurrentFunction;
+            std::vector<std::vector<std::shared_ptr<Instruction>>> mInstructionStack;
     };
 }

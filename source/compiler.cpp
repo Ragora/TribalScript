@@ -51,31 +51,41 @@ namespace TorqueScript
         return this->compileStream(fileStream);
     }
 
-    void Compiler::pushInstructions(const std::vector<std::shared_ptr<Instruction>>& instructions)
+    void Compiler::pushInstructionFrame()
     {
-        if (mCurrentFunction)
-        {
-            mCurrentFunction->addInstructions(instructions);
-            return;
-        }
-
-        mCurrentCodeBlock->addInstructions(instructions);
+        mInstructionStack.push_back(std::vector<std::shared_ptr<Instruction>>());
     }
+
+    void Compiler::popInstructionFrame()
+    {
+        mInstructionStack.pop_back();
+    }
+
+    std::vector<std::shared_ptr<Instruction>>& Compiler::getCurrentInstructionFrame()
+    {
+        if (mInstructionStack.empty())
+        {
+            this->pushInstructionFrame();
+        }
+        return mInstructionStack.back();
+    }
+
 
     // Compiler routines =====================================================
 
     void Compiler::enterFunctiondeclaration(TorqueParser::FunctiondeclarationContext* context)
     {
-        // Functions are a global construct only
-        assert(!mCurrentFunction);
-
-        mCurrentFunction = std::shared_ptr<Function>(new Function(context->LABELNAMESPACESINGLE()->getText()));
-        mCurrentCodeBlock->addFunction(mCurrentFunction);
+        this->pushInstructionFrame();
     }
 
     void Compiler::exitFunctiondeclaration(TorqueParser::FunctiondeclarationContext* context)
     {
-        mCurrentFunction = nullptr;
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+        std::shared_ptr<Function> newFunction = std::shared_ptr<Function>(new Function(context->LABELNAMESPACESINGLE()->getText()));
+        newFunction->addInstructions(currentFrame);
+        this->popInstructionFrame();
+
+        mCurrentCodeBlock->addFunction(newFunction);
     }
 
     void Compiler::enterArithmetic(TorqueParser::ArithmeticContext* context)
@@ -85,22 +95,20 @@ namespace TorqueScript
 
     void Compiler::exitArithmetic(TorqueParser::ArithmeticContext* context)
     {
-        std::vector<std::shared_ptr<Instruction>> generatedCode;
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
 
         if (context->PLUS())
         {
-            generatedCode.push_back(std::shared_ptr<Instruction>(new AddInstruction()));
+            currentFrame.push_back(std::shared_ptr<Instruction>(new AddInstruction()));
         }
         else if (context->MULT())
         {
-            generatedCode.push_back(std::shared_ptr<Instruction>(new MultiplyInstruction()));
+            currentFrame.push_back(std::shared_ptr<Instruction>(new MultiplyInstruction()));
         }
         else
         {
             throw std::runtime_error("Encountered unhandled arithmetic type!");
         }
-
-        this->pushInstructions(generatedCode);
     }
 
     void Compiler::enterRelational(TorqueParser::RelationalContext* context)
@@ -122,11 +130,9 @@ namespace TorqueScript
     {
         const std::string calledFunctionName = context->LABELNAMESPACESINGLE()->getText();
 
-        std::vector<std::shared_ptr<Instruction>> generatedCode;
-        generatedCode.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(calledFunctionName)));
-        generatedCode.push_back(std::shared_ptr<Instruction>(new CallFunctionInstruction()));
-
-        this->pushInstructions(generatedCode);
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+        currentFrame.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(calledFunctionName)));
+        currentFrame.push_back(std::shared_ptr<Instruction>(new CallFunctionInstruction()));
     }
 
     void Compiler::enterValue(TorqueParser::ValueContext* context)
@@ -136,51 +142,49 @@ namespace TorqueScript
 
     void Compiler::exitValue(TorqueParser::ValueContext* context)
     {
-        std::vector<std::shared_ptr<Instruction>> generatedCode;
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
 
         if (context->FLOAT())
         {
-            generatedCode.push_back(std::shared_ptr<Instruction>(new PushFloatInstruction(std::stof(context->getText()))));
+            currentFrame.push_back(std::shared_ptr<Instruction>(new PushFloatInstruction(std::stof(context->getText()))));
         }
         else if (context->STRING())
         {
             // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the enclosing quotations
             const std::string rawString = context->getText();
             const std::string stringContent = rawString.substr(1, rawString.size() - 2);
-            generatedCode.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(stringContent)));
+            currentFrame.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(stringContent)));
         }
         else if (context->INT())
         {
-            generatedCode.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(std::stoi(context->getText()))));
+            currentFrame.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(std::stoi(context->getText()))));
         }
         else if (context->LOCALVARIABLE())
         {
             // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the % prefix
             const std::string rawString = context->getText();
             const std::string variableName = rawString.substr(1, rawString.size());
-            generatedCode.push_back(std::shared_ptr<Instruction>(new PushLocalReferenceInstruction(variableName)));
+            currentFrame.push_back(std::shared_ptr<Instruction>(new PushLocalReferenceInstruction(variableName)));
         }
         else if (context->GLOBALVARIABLE())
         {
             // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the % prefix
             const std::string rawString = context->getText();
             const std::string variableName = rawString.substr(1, rawString.size());
-            generatedCode.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(variableName)));
+            currentFrame.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(variableName)));
         }
         else if (context->TRUE())
         {
-            generatedCode.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(1)));
+            currentFrame.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(1)));
         }
         else if (context->FALSE())
         {
-            generatedCode.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(0)));
+            currentFrame.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(0)));
         }
         else
         {
             throw std::runtime_error("Encountered unhandled value type!");
         }
-
-        this->pushInstructions(generatedCode);
     }
 
     void Compiler::enterConcatenation(TorqueParser::ConcatenationContext* context)
@@ -190,18 +194,16 @@ namespace TorqueScript
 
     void Compiler::exitConcatenation(TorqueParser::ConcatenationContext* context)
     {
-        std::vector<std::shared_ptr<Instruction>> generatedCode;
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
 
         if (context->CONCAT())
         {
-            generatedCode.push_back(std::shared_ptr<Instruction>(new ConcatInstruction()));
+            currentFrame.push_back(std::shared_ptr<Instruction>(new ConcatInstruction()));
         }
         else
         {
             throw std::runtime_error("Encountered unhandled concat op type!");
         }
-
-        this->pushInstructions(generatedCode);
     }
 
 
@@ -212,18 +214,16 @@ namespace TorqueScript
 
     void Compiler::exitUnary(TorqueParser::UnaryContext* context)
     {
-        std::vector<std::shared_ptr<Instruction>> generatedCode;
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
 
         if (context->MINUS())
         {
-            generatedCode.push_back(std::shared_ptr<Instruction>(new NegateInstruction()));
+            currentFrame.push_back(std::shared_ptr<Instruction>(new NegateInstruction()));
         }
         else
         {
             throw std::runtime_error("Encountered unhandled unary op type!");
         }
-
-        this->pushInstructions(generatedCode);
     }
 
     void Compiler::enterAssignment(TorqueParser::AssignmentContext* context)
@@ -233,19 +233,17 @@ namespace TorqueScript
 
     void Compiler::exitAssignment(TorqueParser::AssignmentContext* context)
     {
-        std::vector<std::shared_ptr<Instruction>> generatedCode;
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
 
         std::cout << context->getText() << std::endl;
         if (context->ASSIGN())
         {
-            generatedCode.push_back(std::shared_ptr<Instruction>(new AssignmentInstruction()));
+            currentFrame.push_back(std::shared_ptr<Instruction>(new AssignmentInstruction()));
         }
         else
         {
             throw std::runtime_error("Encountered unhandled unary op type!");
         }
-
-        this->pushInstructions(generatedCode);
     }
 
     void Compiler::enterBitwise(TorqueParser::BitwiseContext* context)
@@ -255,17 +253,27 @@ namespace TorqueScript
 
     void Compiler::exitBitwise(TorqueParser::BitwiseContext* context)
     {
-        std::vector<std::shared_ptr<Instruction>> generatedCode;
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
 
         if (context->BITWISEAND())
         {
-            generatedCode.push_back(std::shared_ptr<Instruction>(new BitwiseAndInstruction()));
+            currentFrame.push_back(std::shared_ptr<Instruction>(new BitwiseAndInstruction()));
         }
         else
         {
             throw std::runtime_error("Encountered unknown bitwise type!");
         }
+    }
 
-        this->pushInstructions(generatedCode);
+    void Compiler::enterProgram(TorqueParser::ProgramContext* context)
+    {
+        this->pushInstructionFrame();
+    }
+
+    void Compiler::exitProgram(TorqueParser::ProgramContext* context)
+    {
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+        mCurrentCodeBlock->addInstructions(currentFrame);
+        this->popInstructionFrame();
     }
 }
