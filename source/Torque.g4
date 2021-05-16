@@ -66,7 +66,7 @@ breakcontrol : 'break' ;
 expression : (op=NOT|op=MINUS) expression                                                        # unary
            | expression (op=PLUSPLUS|op=MINUSMINUS)                                              # unary
            | LABELNAMESPACESINGLE '(' expression? (',' expression)* ')'                          # call
-           | (LOCALVARIABLE | GLOBALVARIABLE) '[' expression (',' expression)* ']'               # array
+           | expression '[' expression (',' expression)* ']'                                     # array
            | expression ('.' LABEL)+                                                             # subreference
            | '(' expression ')'                                                                  # parenthesis
            | expression (op=MULT|op=DIV|op=MODULUS) expression                                   # arithmetic
@@ -78,16 +78,16 @@ expression : (op=NOT|op=MINUS) expression                                       
            | expression (op=CONCAT|op=SPACE|op=NEWLINE|op=TAB) expression                        # concatenation
            | expression (op=AND|op=OR) expression                                                # logicalop
            | expression '?' expression ':' expression                                            # ternary
-           | (GLOBALVARIABLE | LOCALVARIABLE) (op=ASSIGN
-                                              |op=ADDASSIGN
-                                              |op=MULTASSIGN
-                                              |op=SUBASSIGN
-                                              |op=MODULUSASSIGN
-                                              |op=BITWISEORASSIGN
-                                              |op=BITWISEANDASSIGN
-                                              |op=EXLUSIVEORASSIGN
-                                              |op=LEFTSHIFTASSIGN
-                                              |op=RIGHTSHIFTASSIGN)  expression                  # assignment
+           | expression (op=ASSIGN
+                        |op=ADDASSIGN
+                        |op=MULTASSIGN
+                        |op=SUBASSIGN
+                        |op=MODULUSASSIGN
+                        |op=BITWISEORASSIGN
+                        |op=BITWISEANDASSIGN
+                        |op=EXLUSIVEORASSIGN
+                        |op=LEFTSHIFTASSIGN
+                        |op=RIGHTSHIFTASSIGN)  expression                                        # assignment
            | op=newobject                                                                        # objectInstantiation
            | op=INT                                                                              # value
            | op=FLOAT                                                                            # value
