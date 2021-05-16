@@ -276,4 +276,15 @@ namespace TorqueScript
         mCurrentCodeBlock->addInstructions(currentFrame);
         this->popInstructionFrame();
     }
+
+    void Compiler::enterStatement(TorqueParser::StatementContext* context)
+    {
+
+    }
+
+    void Compiler::exitStatement(TorqueParser::StatementContext* context)
+    {
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+        currentFrame.push_back(std::shared_ptr<Instruction>(new PopInstruction()));
+    }
 }

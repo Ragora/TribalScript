@@ -22,6 +22,7 @@
 #include <torquescript/executionscope.hpp>
 #include <torquescript/interpreter.hpp>
 #include <torquescript/storedvaluestack.hpp>
+#include <torquescript/storedintegervalue.hpp>
 
 namespace TorqueScript
 {
@@ -42,6 +43,7 @@ namespace TorqueScript
                 }
 
                 std::cout << "Echo > " << outputString << std::endl;
+                stack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0, interpreter)));
             }
     };
 

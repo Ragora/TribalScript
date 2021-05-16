@@ -428,4 +428,24 @@ namespace TorqueScript
                 return "Multiply";
             }
     };
+
+    /**
+     *  @brief Pops a value from the stack, discarding it.
+     */
+    class PopInstruction : public Instruction
+    {
+        public:
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            {
+                assert(stack.size() >= 1);
+                stack.pop_back();
+
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                return "Pop";
+            }
+    };
 }
