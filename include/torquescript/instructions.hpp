@@ -43,7 +43,7 @@ namespace TorqueScript
              *  switching statement that determines how opcodes will behave.
              *  @param bitstream The bitstream acting as our current stack.
              */
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) = 0;
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) = 0;
 
             /**
              *  @brief Helper routine to produce a disassembly for this instruction.
@@ -63,9 +63,10 @@ namespace TorqueScript
                 mParameter = value;
             }
 
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(mParameter, interpreter)));
+                return 1;
             };
 
             virtual std::string disassemble() override
@@ -92,9 +93,10 @@ namespace TorqueScript
                 mParameter = value;
             }
 
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(mParameter, interpreter)));
+                return 1;
             };
 
             virtual std::string disassemble() override
@@ -121,9 +123,10 @@ namespace TorqueScript
                 mParameter = value;
             }
 
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(mParameter, interpreter)));
+                return 1;
             };
 
             virtual std::string disassemble() override
@@ -150,9 +153,10 @@ namespace TorqueScript
                 mParameter = value;
             }
 
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredLocalReferenceValue(mParameter, interpreter)));
+                return 1;
             };
 
             virtual std::string disassemble() override
@@ -179,9 +183,10 @@ namespace TorqueScript
                 mParameter = value;
             }
 
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredGlobalReferenceValue(mParameter, interpreter)));
+                return 1;
             };
 
             virtual std::string disassemble() override
@@ -202,7 +207,7 @@ namespace TorqueScript
     class AssignmentInstruction : public Instruction
     {
         public:
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
                 assert(stack.size() >= 2);
 
@@ -220,12 +225,15 @@ namespace TorqueScript
                 if (localReference)
                 {
                     localReference->setValue(rhsStored, scope);
-                    return;
                 }
-                globalReference->setValue(rhsStored);
+                else
+                {
+                    globalReference->setValue(rhsStored);
+                }
 
                 // In Torque, the result of the assignment is pushed to stack
                 stack.push_back(rhsStored);
+                return 1;
             };
 
             virtual std::string disassemble() override
@@ -241,7 +249,7 @@ namespace TorqueScript
     class ConcatInstruction : public Instruction
     {
         public:
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
                 assert(stack.size() >= 2);
 
@@ -255,6 +263,7 @@ namespace TorqueScript
                 std::string rhs = rhsStored->toString(scope);
 
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(lhs + rhs, interpreter)));
+                return 1;
             };
 
             virtual std::string disassemble() override
@@ -269,7 +278,7 @@ namespace TorqueScript
     class NegateInstruction : public Instruction
     {
         public:
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
                 assert(stack.size() >= 1);
 
@@ -278,6 +287,7 @@ namespace TorqueScript
                 stack.pop_back();
 
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(-storedTarget->toFloat(scope), interpreter)));
+                return 1;
             };
 
             virtual std::string disassemble() override
@@ -292,7 +302,7 @@ namespace TorqueScript
     class CallFunctionInstruction : public Instruction
     {
         public:
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
                 assert(stack.size() >= 1);
 
@@ -318,6 +328,7 @@ namespace TorqueScript
                     std::cerr << "Could not find function '" << calledFunctionName << "' for calling! Placing 0 on the stack." << std::endl;
                     stack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0, interpreter)));
                 }
+                return 1;
             };
 
             virtual std::string disassemble() override
@@ -332,7 +343,7 @@ namespace TorqueScript
     class AddInstruction : public Instruction
     {
         public:
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
                 assert(stack.size() >= 2);
 
@@ -347,6 +358,7 @@ namespace TorqueScript
 
                 const float result = lhs + rhs;
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(result, interpreter)));
+                return 1;
             };
 
             virtual std::string disassemble() override
@@ -361,7 +373,7 @@ namespace TorqueScript
     class BitwiseAndInstruction : public Instruction
     {
         public:
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
                 assert(stack.size() >= 2);
 
@@ -376,6 +388,7 @@ namespace TorqueScript
 
                 const int result = lhs & rhs;
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(result, interpreter)));
+                return 1;
             };
 
             virtual std::string disassemble() override
@@ -390,7 +403,7 @@ namespace TorqueScript
     class MultiplyInstruction : public Instruction
     {
         public:
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
                 assert(stack.size() >= 2);
 
@@ -406,6 +419,7 @@ namespace TorqueScript
 
                 const float result = lhs * rhs;
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(result, interpreter)));
+                return 1;
             };
 
             virtual std::string disassemble() override

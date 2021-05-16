@@ -31,12 +31,18 @@ namespace TorqueScript
 
             virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
             {
-                // Retrieve string to print from stack
-                std::shared_ptr<StoredValue> printedPayload = stack.back();
-                stack.pop_back();
+                // We concat everything on the stack
+                std::string outputString = "";
+                while (!stack.empty())
+                {
+                    std::shared_ptr<StoredValue> printedPayload = stack.front();
 
-                std::string printedValue = printedPayload->toString(scope);
-                std::cout << "Echo > " << printedValue << std::endl;
+                    outputString += printedPayload->toString(scope);
+
+                    stack.erase(stack.begin());
+                }
+
+                std::cout << "Echo > " << outputString << std::endl;
             }
     };
 
