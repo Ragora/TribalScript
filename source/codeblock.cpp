@@ -33,9 +33,9 @@ namespace TorqueScript
 
     void CodeBlock::execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack)
     {
-        unsigned int instructionIndex = 0;
+        int instructionIndex = 0;
 
-        while (instructionIndex < mInstructions.size())
+        while (instructionIndex < mInstructions.size() && instructionIndex >= 0)
         {
             std::shared_ptr<Instruction> nextInstruction = mInstructions[instructionIndex];
             instructionIndex += nextInstruction->execute(interpreter, scope, stack);

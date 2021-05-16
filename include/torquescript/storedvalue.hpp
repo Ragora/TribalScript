@@ -49,6 +49,8 @@ namespace TorqueScript
              */
             virtual std::string toString(ExecutionScope* scope) = 0;
 
+            virtual bool toBoolean(ExecutionScope* scope);
+
         protected:
             //! The interpreter this value is associated with. Required for global value lookups.
             Interpreter* mInterpreter;

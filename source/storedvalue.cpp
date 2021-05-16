@@ -18,6 +18,11 @@ namespace TorqueScript
 {
     StoredValue::StoredValue(Interpreter* interpreter) : mInterpreter(interpreter)
     {
-        
+
+    }
+
+    bool StoredValue::toBoolean(ExecutionScope* scope)
+    {
+        return this->toInteger(scope) != 0;
     }
 }

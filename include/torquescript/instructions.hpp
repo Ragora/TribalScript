@@ -44,7 +44,7 @@ namespace TorqueScript
              *  switching statement that determines how opcodes will behave.
              *  @param bitstream The bitstream acting as our current stack.
              */
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) = 0;
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) = 0;
 
             /**
              *  @brief Helper routine to produce a disassembly for this instruction.
@@ -59,12 +59,12 @@ namespace TorqueScript
     class PushFloatInstruction : public Instruction
     {
         public:
-            PushFloatInstruction(const float value)
+            PushFloatInstruction(const float value) : mParameter(value)
             {
-                mParameter = value;
+
             }
 
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(mParameter, interpreter)));
                 return 1;
@@ -89,12 +89,12 @@ namespace TorqueScript
     class PushIntegerInstruction : public Instruction
     {
         public:
-            PushIntegerInstruction(const int value)
+            PushIntegerInstruction(const int value) : mParameter(value)
             {
-                mParameter = value;
+
             }
 
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(mParameter, interpreter)));
                 return 1;
@@ -119,12 +119,12 @@ namespace TorqueScript
     class PushStringInstruction : public Instruction
     {
         public:
-            PushStringInstruction(const std::string& value)
+            PushStringInstruction(const std::string& value) : mParameter(value)
             {
-                mParameter = value;
+
             }
 
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(mParameter, interpreter)));
                 return 1;
@@ -149,12 +149,12 @@ namespace TorqueScript
     class PushLocalReferenceInstruction : public Instruction
     {
         public:
-            PushLocalReferenceInstruction(const std::string& value)
+            PushLocalReferenceInstruction(const std::string& value) : mParameter(value)
             {
-                mParameter = value;
+
             }
 
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredLocalReferenceValue(mParameter, interpreter)));
                 return 1;
@@ -179,12 +179,12 @@ namespace TorqueScript
     class PushGlobalReferenceInstruction : public Instruction
     {
         public:
-            PushGlobalReferenceInstruction(const std::string& value)
+            PushGlobalReferenceInstruction(const std::string& value) : mParameter(value)
             {
-                mParameter = value;
+
             }
 
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredGlobalReferenceValue(mParameter, interpreter)));
                 return 1;
@@ -208,7 +208,7 @@ namespace TorqueScript
     class AssignmentInstruction : public Instruction
     {
         public:
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 assert(stack.size() >= 2);
 
@@ -250,7 +250,7 @@ namespace TorqueScript
     class ConcatInstruction : public Instruction
     {
         public:
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 assert(stack.size() >= 2);
 
@@ -279,7 +279,7 @@ namespace TorqueScript
     class NegateInstruction : public Instruction
     {
         public:
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 assert(stack.size() >= 1);
 
@@ -303,7 +303,7 @@ namespace TorqueScript
     class CallFunctionInstruction : public Instruction
     {
         public:
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 assert(stack.size() >= 1);
 
@@ -344,7 +344,7 @@ namespace TorqueScript
     class AddInstruction : public Instruction
     {
         public:
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 assert(stack.size() >= 2);
 
@@ -374,7 +374,7 @@ namespace TorqueScript
     class BitwiseAndInstruction : public Instruction
     {
         public:
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 assert(stack.size() >= 2);
 
@@ -404,7 +404,7 @@ namespace TorqueScript
     class MultiplyInstruction : public Instruction
     {
         public:
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 assert(stack.size() >= 2);
 
@@ -435,7 +435,7 @@ namespace TorqueScript
     class PopInstruction : public Instruction
     {
         public:
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 assert(stack.size() >= 1);
                 stack.pop_back();
@@ -446,6 +446,113 @@ namespace TorqueScript
             virtual std::string disassemble() override
             {
                 return "Pop";
+            }
+    };
+
+    class JumpInstruction : public Instruction
+    {
+        public:
+            JumpInstruction(const int offset) : mOffset(offset)
+            {
+
+            }
+
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            {
+                return mOffset;
+            };
+
+            virtual std::string disassemble() override
+            {
+                std::ostringstream out;
+                out << "Jump " << mOffset;
+                return out.str();
+            }
+
+        private:
+            //! The unconditional jump offset.
+            int mOffset;
+    };
+
+    class JumpTrueInstruction : public Instruction
+    {
+        public:
+            JumpTrueInstruction(const int offset) : mOffset(offset)
+            {
+
+            }
+
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            {
+                assert(stack.size() >= 1);
+
+                std::shared_ptr<StoredValue> booleanStored = stack.back();
+                stack.pop_back();
+
+                if (booleanStored->toBoolean(scope))
+                {
+                    return mOffset;
+                }
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                std::ostringstream out;
+                out << "JumpTrue " << mOffset;
+                return out.str();
+            }
+
+        private:
+            //! The jump offset.
+            int mOffset;
+    };
+
+    class JumpFalseInstruction : public Instruction
+    {
+        public:
+            JumpFalseInstruction(const int offset) : mOffset(offset)
+            {
+
+            }
+
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            {
+                assert(stack.size() >= 1);
+
+                std::shared_ptr<StoredValue> booleanStored = stack.back();
+                stack.pop_back();
+
+                if (!booleanStored->toBoolean(scope))
+                {
+                    return mOffset;
+                }
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                std::ostringstream out;
+                out << "JumpFalse " << mOffset;
+                return out.str();
+            }
+
+        private:
+            //! The jump offset.
+            int mOffset;
+    };
+
+    class NOPInstruction : public Instruction
+    {
+        public:
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            {
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                return "NOP";
             }
     };
 }
