@@ -23,6 +23,7 @@
 #include <torquescript/interpreter.hpp>
 #include <torquescript/executionscope.hpp>
 #include <torquescript/storedvalue.hpp>
+#include <torquescript/storedvaluestack.hpp>
 #include <torquescript/storedfloatvalue.hpp>
 #include <torquescript/storedstringvalue.hpp>
 #include <torquescript/storedintegervalue.hpp>
@@ -43,7 +44,7 @@ namespace TorqueScript
              *  switching statement that determines how opcodes will behave.
              *  @param bitstream The bitstream acting as our current stack.
              */
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) = 0;
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) = 0;
 
             /**
              *  @brief Helper routine to produce a disassembly for this instruction.
@@ -63,7 +64,7 @@ namespace TorqueScript
                 mParameter = value;
             }
 
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(mParameter, interpreter)));
                 return 1;
@@ -93,7 +94,7 @@ namespace TorqueScript
                 mParameter = value;
             }
 
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(mParameter, interpreter)));
                 return 1;
@@ -123,7 +124,7 @@ namespace TorqueScript
                 mParameter = value;
             }
 
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(mParameter, interpreter)));
                 return 1;
@@ -153,7 +154,7 @@ namespace TorqueScript
                 mParameter = value;
             }
 
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredLocalReferenceValue(mParameter, interpreter)));
                 return 1;
@@ -183,7 +184,7 @@ namespace TorqueScript
                 mParameter = value;
             }
 
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 stack.push_back(std::shared_ptr<StoredValue>(new StoredGlobalReferenceValue(mParameter, interpreter)));
                 return 1;
@@ -207,7 +208,7 @@ namespace TorqueScript
     class AssignmentInstruction : public Instruction
     {
         public:
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 assert(stack.size() >= 2);
 
@@ -249,7 +250,7 @@ namespace TorqueScript
     class ConcatInstruction : public Instruction
     {
         public:
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 assert(stack.size() >= 2);
 
@@ -278,7 +279,7 @@ namespace TorqueScript
     class NegateInstruction : public Instruction
     {
         public:
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 assert(stack.size() >= 1);
 
@@ -302,7 +303,7 @@ namespace TorqueScript
     class CallFunctionInstruction : public Instruction
     {
         public:
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 assert(stack.size() >= 1);
 
@@ -343,7 +344,7 @@ namespace TorqueScript
     class AddInstruction : public Instruction
     {
         public:
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 assert(stack.size() >= 2);
 
@@ -373,7 +374,7 @@ namespace TorqueScript
     class BitwiseAndInstruction : public Instruction
     {
         public:
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 assert(stack.size() >= 2);
 
@@ -403,7 +404,7 @@ namespace TorqueScript
     class MultiplyInstruction : public Instruction
     {
         public:
-            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual unsigned int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 assert(stack.size() >= 2);
 

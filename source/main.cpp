@@ -16,6 +16,7 @@
 #include <torquescript/interpreter.hpp>
 #include <torquescript/executionscope.hpp>
 #include <torquescript/codeblock.hpp>
+#include <torquescript/storedvaluestack.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -27,7 +28,7 @@ int main(int argc, char* argv[])
     std::istreambuf_iterator<char> begin(std::cin), end;
     std::string evaluated(begin, end);
 
-    std::vector<std::shared_ptr<TorqueScript::StoredValue>> stack;
+    TorqueScript::StoredValueStack stack;
     TorqueScript::CodeBlock* compiled = interpreter.compile(evaluated);
 
     // Load all functions from the codeblock

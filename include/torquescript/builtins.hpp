@@ -21,6 +21,7 @@
 #include <torquescript/function.hpp>
 #include <torquescript/executionscope.hpp>
 #include <torquescript/interpreter.hpp>
+#include <torquescript/storedvaluestack.hpp>
 
 namespace TorqueScript
 {
@@ -29,17 +30,15 @@ namespace TorqueScript
         public:
             Echo() : Function("echo") { }
 
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack) override
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 // We concat everything on the stack
                 std::string outputString = "";
                 while (!stack.empty())
                 {
-                    std::shared_ptr<StoredValue> printedPayload = stack.front();
-
-                    outputString += printedPayload->toString(scope);
-
-                    stack.erase(stack.begin());
+                    // Parameters will flow right to left so we build the string considering this
+                    std::string printedPayload = stack.popString(scope);
+                    outputString = printedPayload + outputString;
                 }
 
                 std::cout << "Echo > " << outputString << std::endl;

@@ -15,6 +15,7 @@
 #include <torquescript/function.hpp>
 #include <torquescript/instructions.hpp>
 #include <torquescript/stringhelpers.hpp>
+#include <torquescript/storedvaluestack.hpp>
 
 namespace TorqueScript
 {
@@ -31,7 +32,7 @@ namespace TorqueScript
         }
     }
 
-    void Function::execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack)
+    void Function::execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack)
     {
         unsigned int instructionIndex = 0;
 

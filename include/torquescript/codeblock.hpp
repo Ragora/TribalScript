@@ -24,6 +24,7 @@
 #include <torquescript/interpreter.hpp>
 #include <torquescript/function.hpp>
 #include <torquescript/storedvalue.hpp>
+#include <torquescript/storedvaluestack.hpp>
 
 namespace TorqueScript
 {
@@ -50,7 +51,7 @@ namespace TorqueScript
             /**
              *  @brief Executes all instructions contained in mInstructions within the provided context.
              */
-            void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack);
+            void execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack);
 
             /**
              *  @brief Produces a disassembly of the CodeBlock code.

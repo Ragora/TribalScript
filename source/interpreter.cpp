@@ -32,7 +32,7 @@ namespace TorqueScript
         delete mCompiler;
     }
 
-    void Interpreter::evaluate(const std::string& input, std::vector<std::shared_ptr<StoredValue>>& stack)
+    void Interpreter::evaluate(const std::string& input, StoredValueStack& stack)
     {
         assert(mCompiler);
 

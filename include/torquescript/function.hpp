@@ -25,6 +25,7 @@ namespace TorqueScript
     class Instruction;
     class ExecutionScope;
     class StoredValue;
+    class StoredValueStack;
 
     /**
      *  @brief A function is callable subroutine from anywhere in the language.
@@ -40,7 +41,7 @@ namespace TorqueScript
              *  @brief Default implementation will execute virtual instructions but can be overriden to implement native
              *  functions.
              */
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack);
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack);
 
             std::string getName();
 

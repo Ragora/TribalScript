@@ -21,6 +21,7 @@
 #include <torquescript/function.hpp>
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/stringhelpers.hpp>
+#include <torquescript/storedvaluestack.hpp>
 
 namespace TorqueScript
 {
@@ -43,7 +44,7 @@ namespace TorqueScript
             std::shared_ptr<StoredValue> getGlobal(const std::string& name);
 
             CodeBlock* compile(const std::string& input);
-            void evaluate(const std::string& input, std::vector<std::shared_ptr<StoredValue>>& stack);
+            void evaluate(const std::string& input, StoredValueStack& stack);
 
             /**
              *  @brief Registers a new function to the interpreter. Ownership is transferred to the interpreter at this

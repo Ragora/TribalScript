@@ -31,7 +31,7 @@ namespace TorqueScript
         }
     }
 
-    void CodeBlock::execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack)
+    void CodeBlock::execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack)
     {
         unsigned int instructionIndex = 0;
 
