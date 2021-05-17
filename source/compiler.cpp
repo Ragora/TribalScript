@@ -151,7 +151,16 @@ namespace TorqueScript
 
     void Compiler::exitRelational(TorqueParser::RelationalContext* context)
     {
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
 
+        if (context->LESS())
+        {
+            currentFrame.push_back(std::shared_ptr<Instruction>(new LessThanInstruction()));
+        }
+        else
+        {
+            throw std::runtime_error("Unknown relational operator!");
+        }
     }
 
     void Compiler::enterCall(TorqueParser::CallContext* context)
@@ -268,14 +277,13 @@ namespace TorqueScript
     {
         std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
 
-        std::cout << context->getText() << std::endl;
         if (context->ASSIGN())
         {
             currentFrame.push_back(std::shared_ptr<Instruction>(new AssignmentInstruction()));
         }
         else
         {
-            throw std::runtime_error("Encountered unhandled unary op type!");
+            throw std::runtime_error("Encountered unhandled assignment op type!");
         }
     }
 
@@ -349,7 +357,7 @@ namespace TorqueScript
         for (unsigned int iteration = 0; iteration < statementCount; ++iteration)
         {
             std::vector<std::shared_ptr<Instruction>> bodyStatement = this->getCurrentInstructionFrame();
-            whileBody.insert(whileBody.end(), bodyStatement.begin(), bodyStatement.end());
+            whileBody.insert(whileBody.begin(), bodyStatement.begin(), bodyStatement.end());
             this->popInstructionFrame();
         }
 

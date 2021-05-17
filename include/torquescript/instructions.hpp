@@ -369,6 +369,36 @@ namespace TorqueScript
     };
 
     /**
+     *  @brief Compares two values on the stack using a less than relation.
+     */
+    class LessThanInstruction : public Instruction
+    {
+        public:
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            {
+                assert(stack.size() >= 2);
+
+                std::shared_ptr<StoredValue> rhsStored = stack.back();
+                stack.pop_back();
+                std::shared_ptr<StoredValue> lhsStored = stack.back();
+                stack.pop_back();
+
+                // NOTE: For now we normalize to floats
+                float lhs = lhsStored->toFloat(scope);
+                float rhs = rhsStored->toFloat(scope);
+
+                const int result = lhs < rhs ? 1 : 0;
+                stack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(result, interpreter)));
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                return "LessThan";
+            }
+    };
+
+    /**
      *  @brief Performs a bitwise AND against two values.
      */
     class BitwiseAndInstruction : public Instruction
