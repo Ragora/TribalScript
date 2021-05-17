@@ -15,6 +15,7 @@ add_library(TorqueCompiler
     storedvaluestack.cpp
     storedglobalreferencevalue.cpp
     storedlocalreferencevalue.cpp
+    parsererrorlistener.cpp
     ${ANTLR_Torque_CXX_OUTPUTS}
 )
 target_link_libraries(TorqueCompiler antlr4_static)

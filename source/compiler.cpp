@@ -18,6 +18,7 @@
 #include <TorqueParser.h>
 
 #include <torquescript/compiler.hpp>
+#include <torquescript/parsererrorlistener.hpp>
 
 namespace TorqueScript
 {
@@ -27,13 +28,32 @@ namespace TorqueScript
 
         antlr4::ANTLRInputStream antlrStream(input);
         TorqueLexer lexer(&antlrStream);
+
+        // Setup our parser
         antlr4::CommonTokenStream stream(&lexer);
         TorqueParser parser(&stream);
+        parser.removeErrorListeners();
 
+        ParserErrorListener parserErrorListener;
+        parser.addErrorListener(&parserErrorListener);
+
+        // Instantiate the program and go
         antlr4::tree::ParseTree* tree = parser.program();
         antlr4::tree::ParseTreeWalker::DEFAULT.walk(this, tree);
 
-        return mCurrentCodeBlock;
+        // Did we receive any errors?
+        if (parserErrorListener.getErrors().empty())
+        {
+            return mCurrentCodeBlock;
+        }
+
+        for (const std::string& message : parserErrorListener.getErrors())
+        {
+            std::cerr << message << std::endl;
+        }
+
+        delete mCurrentCodeBlock;
+        return nullptr;
     }
 
     CodeBlock* Compiler::compileString(const std::string& input)

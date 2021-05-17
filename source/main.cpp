@@ -31,25 +31,29 @@ int main(int argc, char* argv[])
     TorqueScript::StoredValueStack stack;
     TorqueScript::CodeBlock* compiled = interpreter.compile(evaluated);
 
-    // Load all functions from the codeblock
-    std::vector functions = compiled->getFunctions();
-    for (auto&& function : functions)
+    if (compiled)
     {
-        interpreter.addFunction(function);
+        // Load all functions from the codeblock
+        std::vector functions = compiled->getFunctions();
+        for (auto&& function : functions)
+        {
+            interpreter.addFunction(function);
+        }
+
+        TorqueScript::ExecutionScope scope;
+        compiled->execute(&interpreter, &scope, stack);
+
+        // Produce a disassembly for debugging
+        std::cout << std::endl << "Disassembly: " << std::endl;
+        std::vector<std::string> disassembly = compiled->disassemble();
+
+        for (auto iterator = disassembly.begin(); iterator != disassembly.end(); ++iterator)
+        {
+            std::cout << *iterator << std::endl;
+        }
+
+        delete compiled;
     }
 
-    TorqueScript::ExecutionScope scope;
-    compiled->execute(&interpreter, &scope, stack);
-
-    // Produce a disassembly for debugging
-    std::cout << std::endl << "Disassembly: " << std::endl;
-    std::vector<std::string> disassembly = compiled->disassemble();
-
-    for (auto iterator = disassembly.begin(); iterator != disassembly.end(); ++iterator)
-    {
-        std::cout << *iterator << std::endl;
-    }
-
-    delete compiled;
     return 0;
 }
