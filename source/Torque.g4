@@ -62,8 +62,8 @@ statement : control
 // Used for setting field values in object instantiation & datablocks
 field : LABEL ('[' expression ']')? '=' expression ';' ;
 
-returncontrol : 'return' expression? ;
-breakcontrol : 'break' ;
+returncontrol : RETURN expression? ;
+breakcontrol : BREAK ;
 
 expression : (op=NOT|op=MINUS) expression                                                        # unary
            | expression (op=PLUSPLUS|op=MINUSMINUS)                                              # unary
@@ -138,9 +138,11 @@ SPACE: 'SPC' ;
 NEWLINE: 'NL' ;
 TAB: 'TAB' ;
 NEW: 'new' ;
-FUNCTION: 'function';
-PACKAGE: 'package' ;
-DATABLOCK: 'datablock' ;
+FUNCTION : 'function';
+PACKAGE : 'package' ;
+DATABLOCK : 'datablock' ;
+RETURN : 'return' ;
+BREAK : 'break' ;
 
 TRUE: 'true' ;
 FALSE: 'false' ;
