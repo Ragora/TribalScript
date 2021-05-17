@@ -78,7 +78,11 @@ namespace TorqueScript
 
     void Compiler::popInstructionFrame()
     {
+        std::vector<std::shared_ptr<Instruction>> oldFrame = this->getCurrentInstructionFrame();
         mInstructionStack.pop_back();
+        //std::vector<std::shared_ptr<Instruction>>& newFrame = this->getCurrentInstructionFrame();
+
+        //newFrame.insert(newFrame.end(), oldFrame.begin(), oldFrame.end());
     }
 
     std::vector<std::shared_ptr<Instruction>>& Compiler::getCurrentInstructionFrame()
@@ -100,12 +104,13 @@ namespace TorqueScript
 
     void Compiler::exitFunctiondeclaration(TorqueParser::FunctiondeclarationContext* context)
     {
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-        std::shared_ptr<Function> newFunction = std::shared_ptr<Function>(new Function(context->LABELNAMESPACESINGLE()->getText()));
-        newFunction->addInstructions(currentFrame);
+        std::vector<std::shared_ptr<Instruction>> functionBody = this->getCurrentInstructionFrame();
         this->popInstructionFrame();
 
-        mCurrentCodeBlock->addFunction(newFunction);
+        const std::string functionName = context->LABELNAMESPACESINGLE()->getText();
+        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
+
+        targetFrame.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(functionName, functionBody)));
     }
 
     void Compiler::enterArithmetic(TorqueParser::ArithmeticContext* context)
@@ -292,6 +297,8 @@ namespace TorqueScript
 
     void Compiler::exitProgram(TorqueParser::ProgramContext* context)
     {
+        assert(this->mInstructionStack.size() == 1);
+
         std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
         mCurrentCodeBlock->addInstructions(currentFrame);
         this->popInstructionFrame();
@@ -304,7 +311,6 @@ namespace TorqueScript
 
     void Compiler::exitStatement(TorqueParser::StatementContext* context)
     {
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-        currentFrame.push_back(std::shared_ptr<Instruction>(new PopInstruction()));
+
     }
 }

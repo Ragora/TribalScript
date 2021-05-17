@@ -555,4 +555,39 @@ namespace TorqueScript
                 return "NOP";
             }
     };
+
+    class FunctionDeclarationInstruction : public Instruction
+    {
+        public:
+            FunctionDeclarationInstruction(const std::string& name, const std::vector<std::shared_ptr<Instruction>>& instructions) : mName(name), mInstructions(instructions)
+            {
+
+            }
+
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            {
+                // Register the function
+                std::shared_ptr<Function> newFunction = std::shared_ptr<Function>(new Function(mName));
+                newFunction->addInstructions(mInstructions);
+                interpreter->addFunction(newFunction);
+
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                std::ostringstream out;
+                out << "FunctionDeclaration " << mName << std::endl;
+
+                for (auto&& instruction : mInstructions)
+                {
+                    out << "    " << instruction->disassemble() << std::endl;
+                }
+                return out.str();
+            }
+
+        private:
+            std::string mName;
+            std::vector<std::shared_ptr<Instruction>> mInstructions;
+    };
 }
