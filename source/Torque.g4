@@ -37,25 +37,27 @@ control : whilecontrol
 
 // Object instantiation - we support two forms new TYPENAME(NAME) and new (TYPENAMEEXP)(NAME) both with optional initialization lists
 objectinitialization : '{' (field | newobject ';')* '}' ;
-newobject : 'new' LABEL '(' expression? ')' objectinitialization?
-          | 'new' '(' expression ')' '(' expression? ')' objectinitialization? ;
+newobject : NEW LABEL '(' expression? ')' objectinitialization?
+          | NEW '(' expression ')' '(' expression? ')' objectinitialization? ;
 
 // Functions, datablocks, packages
-paramlist : LOCALVARIABLE (',' LOCALVARIABLE)* ;
-functiondeclaration : 'function' LABELNAMESPACESINGLE '(' paramlist? ')' '{' statement* '}' ;
-packagedeclaration : 'package' LABEL '{' functiondeclaration* '}' ';' ;
+paramlist : (LOCALVARIABLE | GLOBALVARIABLE) (',' (LOCALVARIABLE | GLOBALVARIABLE))* ;
+functiondeclaration : FUNCTION LABELNAMESPACESINGLE '(' paramlist? ')' '{' statement* '}' ;
+packagedeclaration : PACKAGE LABEL '{' functiondeclaration* '}' ';' ;
 
 // Datablock declaration requires at least one field
-datablockdeclaration : 'datablock' LABEL '(' LABEL ')' (':' LABEL)? '{' field+ '}' ';' ;
+datablockdeclaration : DATABLOCK LABEL '(' LABEL ')' (':' LABEL)? '{' field+ '}' ';' ;
 
 outerblock : functiondeclaration
            | packagedeclaration
            | datablockdeclaration ;
 
+actionstatement : expression ';' ;
+
 statement : control
           | returncontrol ';'
           | breakcontrol ';'
-          | expression ';' ;
+          | actionstatement ;
 
 // Used for setting field values in object instantiation & datablocks
 field : LABEL ('[' expression ']')? '=' expression ';' ;
@@ -135,6 +137,10 @@ CONCAT: '@' ;
 SPACE: 'SPC' ;
 NEWLINE: 'NL' ;
 TAB: 'TAB' ;
+NEW: 'new' ;
+FUNCTION: 'function';
+PACKAGE: 'package' ;
+DATABLOCK: 'datablock' ;
 
 TRUE: 'true' ;
 FALSE: 'false' ;

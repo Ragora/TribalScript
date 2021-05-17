@@ -104,8 +104,16 @@ namespace TorqueScript
 
     void Compiler::exitFunctiondeclaration(TorqueParser::FunctiondeclarationContext* context)
     {
-        std::vector<std::shared_ptr<Instruction>> functionBody = this->getCurrentInstructionFrame();
-        this->popInstructionFrame();
+        const unsigned int statementCount = context->statement().size();
+
+        std::vector<std::shared_ptr<Instruction>> functionBody;
+        for (unsigned int iteration = 0; iteration < statementCount; ++iteration)
+        {
+            std::vector<std::shared_ptr<Instruction>> bodyStatement = this->getCurrentInstructionFrame();
+            functionBody.insert(functionBody.begin(), bodyStatement.begin(), bodyStatement.end());
+            this->popInstructionFrame();
+        }
+        functionBody.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(0))); // Add an empty return if we hit end of control but nothing returned
 
         const std::string functionName = context->LABELNAMESPACESINGLE()->getText();
         std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
@@ -297,20 +305,69 @@ namespace TorqueScript
 
     void Compiler::exitProgram(TorqueParser::ProgramContext* context)
     {
-        assert(this->mInstructionStack.size() == 1);
-
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-        mCurrentCodeBlock->addInstructions(currentFrame);
-        this->popInstructionFrame();
+        std::vector<std::shared_ptr<Instruction>> generatedInstructions;
+        while (!this->mInstructionStack.empty())
+        {
+            std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+            generatedInstructions.insert(generatedInstructions.begin(), currentFrame.begin(), currentFrame.end());
+            this->popInstructionFrame();
+        }
+        mCurrentCodeBlock->addInstructions(generatedInstructions);
     }
 
     void Compiler::enterStatement(TorqueParser::StatementContext* context)
     {
-
+        this->pushInstructionFrame();
     }
 
     void Compiler::exitStatement(TorqueParser::StatementContext* context)
     {
 
+    }
+
+    void Compiler::enterActionstatement(TorqueParser::ActionstatementContext* context)
+    {
+
+    }
+
+    void Compiler::exitActionstatement(TorqueParser::ActionstatementContext* context)
+    {
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+        currentFrame.push_back(std::shared_ptr<Instruction>(new PopInstruction()));
+    }
+
+    void Compiler::enterWhilecontrol(TorqueParser::WhilecontrolContext* context)
+    {
+        this->pushInstructionFrame();
+    }
+
+    void Compiler::exitWhilecontrol(TorqueParser::WhilecontrolContext* context)
+    {
+        const unsigned int statementCount = context->statement().size();
+
+        std::vector<std::shared_ptr<Instruction>> whileBody;
+        for (unsigned int iteration = 0; iteration < statementCount; ++iteration)
+        {
+            std::vector<std::shared_ptr<Instruction>> bodyStatement = this->getCurrentInstructionFrame();
+            whileBody.insert(whileBody.end(), bodyStatement.begin(), bodyStatement.end());
+            this->popInstructionFrame();
+        }
+
+        // Next frame should be expression
+        std::vector<std::shared_ptr<Instruction>> whileExpression = this->getCurrentInstructionFrame();
+        this->popInstructionFrame();
+
+        // Our expression should jump over our while body +2 (NOP and jump back) if false
+        whileExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(whileBody.size() + 2)));
+
+        // Our body should return to the expression
+        const unsigned int jumpTarget = whileExpression.size() + whileBody.size();
+        whileBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(-jumpTarget)));
+        whileBody.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
+
+        // Push generated instructions back
+        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
+        targetFrame.insert(targetFrame.end(), whileExpression.begin(), whileExpression.end());
+        targetFrame.insert(targetFrame.end(), whileBody.begin(), whileBody.end());
     }
 }
