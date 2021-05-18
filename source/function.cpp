@@ -45,8 +45,21 @@ namespace TorqueScript
         const unsigned int expectedParameterCount = mParameterNames.size();
         const unsigned int emptyParameters = expectedParameterCount > argumentCount ? expectedParameterCount - argumentCount : 0;
 
+        // If we have too many parameters, just lop them off
+        unsigned int adjustedArgumentCount = argumentCount;
+        if (argumentCount > expectedParameterCount)
+        {
+            const unsigned int removedParameters = argumentCount - expectedParameterCount;
+
+            for (unsigned int iteration = 0; iteration < removedParameters; ++iteration)
+            {
+                stack.pop_back();
+            }
+            adjustedArgumentCount -= removedParameters;
+        }
+
         // Once we know what parameters we're providing for, set the values
-        for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
+        for (unsigned int iteration = 0; iteration < adjustedArgumentCount; ++iteration)
         {
             const std::string nextParameterName = mParameterNames[mParameterNames.size() - (iteration + emptyParameters + 1)];
             scope->setVariable(nextParameterName, stack.back());

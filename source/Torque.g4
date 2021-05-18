@@ -68,7 +68,7 @@ breakcontrol : BREAK ;
 controlexpression : expression ;
 expression : (op=NOT|op=MINUS) expression                                                        # unary
            | expression (op=PLUSPLUS|op=MINUSMINUS)                                              # unary
-           | labelsingle '(' expression? (',' expression)* ')'                                         # call
+           | labelsingle '(' expression? (',' expression)* ')'                                   # call
            | expression '[' expression (',' expression)* ']'                                     # array
            | expression ('.' label)                                                              # subreference
            | '(' expression ')'                                                                  # parenthesis
