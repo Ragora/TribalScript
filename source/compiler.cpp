@@ -262,6 +262,11 @@ namespace TorqueScript
         {
             currentFrame.push_back(std::shared_ptr<Instruction>(new NegateInstruction()));
         }
+        else if (context->PLUSPLUS())
+        {
+            currentFrame.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(1)));
+            currentFrame.push_back(std::shared_ptr<Instruction>(new AddAssignmentInstruction()));
+        }
         else
         {
             throw std::runtime_error("Encountered unhandled unary op type!");
@@ -280,6 +285,10 @@ namespace TorqueScript
         if (context->ASSIGN())
         {
             currentFrame.push_back(std::shared_ptr<Instruction>(new AssignmentInstruction()));
+        }
+        else if (context->ADDASSIGN())
+        {
+            currentFrame.push_back(std::shared_ptr<Instruction>(new AddAssignmentInstruction()));
         }
         else
         {

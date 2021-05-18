@@ -203,6 +203,59 @@ namespace TorqueScript
     };
 
     /**
+     *  @brief Performs an addition of two values on the stack and assigns the result
+     */
+    class AddAssignmentInstruction : public Instruction
+    {
+        public:
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            {
+                assert(stack.size() >= 2);
+
+                // Pull two values off the stack
+                std::shared_ptr<StoredValue> rhsStored = stack.back();
+                stack.pop_back();
+                std::shared_ptr<StoredValue> lhsStored = stack.back();
+                stack.pop_back();
+
+                std::shared_ptr<StoredLocalReferenceValue> localReference = std::dynamic_pointer_cast<StoredLocalReferenceValue>(lhsStored);
+                std::shared_ptr<StoredGlobalReferenceValue> globalReference = std::dynamic_pointer_cast<StoredGlobalReferenceValue>(lhsStored);
+
+                assert(localReference || globalReference);
+
+                float resultRaw = 0.0f;
+                if (localReference)
+                {
+                    resultRaw = localReference->toFloat(scope);
+                }
+                else
+                {
+                    resultRaw = localReference->toFloat(scope);
+                }
+                resultRaw += rhsStored->toFloat(scope);
+
+                std::shared_ptr<StoredValue> result = std::shared_ptr<StoredValue>(new StoredFloatValue(resultRaw, interpreter));
+                if (localReference)
+                {
+                    localReference->setValue(result, scope);
+                }
+                else
+                {
+                    globalReference->setValue(result);
+                }
+
+                // In Torque, the result of the assignment is pushed to stack
+                stack.push_back(result);
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                return "AddAssignment";
+            }
+    };
+
+    /**
      *  @brief Assign to lhs with whatever is on rhs.
      */
     class AssignmentInstruction : public Instruction
