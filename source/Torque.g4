@@ -6,14 +6,14 @@ grammar Torque;
 
 program  : (outerblock | statement)+ | <EOF> ;
 
-elseifcontrol : ('else if' '(' expression ')' '{' statement* '}')
-              | ('else if' '(' expression ')' statement ) ;
+elseifcontrol : (ELSE IF '(' expression ')' '{' statement* '}')
+              | (ELSE IF '(' expression ')' statement ) ;
 
-elsecontrol : 'else' '{' statement* '}'
-            | 'else' statement ;
+elsecontrol : ELSE '{' statement* '}'
+            | ELSE statement ;
 
-ifcontrol : 'if' '(' expression ')' statement elseifcontrol* elsecontrol?
-          | 'if' '(' expression ')' '{' statement* '}' elseifcontrol* elsecontrol? ;
+ifcontrol : IF '(' expression ')' statement elseifcontrol* elsecontrol?
+          | IF '(' expression ')' '{' statement* '}' elseifcontrol* elsecontrol? ;
 
 whilecontrol : WHILE '(' controlexpression ')' '{' statement* '}'
              | WHILE '(' controlexpression ')' statement ;
@@ -23,11 +23,11 @@ forcontrol : FOR '(' controlexpression SEMICOLON controlexpression SEMICOLON con
            | FOR '(' controlexpression SEMICOLON controlexpression SEMICOLON controlexpression ')' '{' statement* '}' ;
 
 // In Torque, the case values are apparently expressions
-switchcase : 'case' expression switchcasealternative* ':' statement+ ;
-switchcasealternative : ('or' expression) ;
+switchcase : CASE expression switchcasealternative* COLON statement+ ;
+switchcasealternative : (OR expression) ;
 
 // Switch has two forms - switch and switch$ for string values
-switchcontrol : 'switch' '$'? '(' expression ')' '{' switchcase* ('default' ':' statement+)? '}' ;
+switchcontrol : SWITCH DOLLARSIGN? '(' expression ')' '{' switchcase* ('default' COLON statement+)? '}' ;
 
 // Control structures
 control : whilecontrol
@@ -46,7 +46,7 @@ functiondeclaration : FUNCTION labelsingle '(' paramlist? ')' '{' statement* '}'
 packagedeclaration : PACKAGE labelsingle '{' functiondeclaration* '}' SEMICOLON ;
 
 // Datablock declaration requires at least one field
-datablockdeclaration : DATABLOCK LABEL '(' LABEL ')' (':' LABEL)? '{' field+ '}' SEMICOLON ;
+datablockdeclaration : DATABLOCK LABEL '(' LABEL ')' (COLON LABEL)? '{' field+ '}' SEMICOLON ;
 
 outerblock : functiondeclaration
            | packagedeclaration
@@ -79,8 +79,8 @@ expression : (op=NOT|op=MINUS) expression                                       
            | expression (op=EQUAL|op=NOTEQUAL|op=STRINGEQUAL|op=STRINGNOTEQUAL) expression       # equality
            | expression (op=BITWISEAND|op=EXCLUSIVEOR|op=BITWISEOR) expression                   # bitwise
            | expression (op=CONCAT|op=SPACE|op=NEWLINE|op=TAB) expression                        # concatenation
-           | expression (op=AND|op=OR) expression                                                # logicalop
-           | expression '?' controlexpression ':' controlexpression                              # ternary
+           | expression (op=LOGICALAND|op=LOGICALOR) expression                                                # logicalop
+           | expression QUESTIONMARK controlexpression COLON controlexpression                              # ternary
            | expression (op=ASSIGN
                         |op=ADDASSIGN
                         |op=MULTASSIGN
@@ -131,8 +131,8 @@ LESS: '<' ;
 LESSEQ: '<=' ;
 BIGGER: '>' ;
 BIGGEREQ: '>=' ;
-AND: '&&' ;
-OR: '||' ;
+LOGICALAND: '&&' ;
+LOGICALOR: '||' ;
 BITWISEAND: '&';
 BITWISEOR: '|';
 EXCLUSIVEOR: '^';
@@ -151,14 +151,19 @@ BREAK : 'break' ;
 FOR : 'for' ;
 WHILE : 'while' ;
 SEMICOLON : ';' ;
-
-TRUE: 'true' ;
-FALSE: 'false' ;
-
-MODULUS: '%' ;
-
+COLON : ':' ;
+IF : 'if' ;
+ELSE : 'else' ;
+TRUE : 'true' ;
+FALSE : 'false' ;
+OR : 'or' ;
+CASE : 'case' ;
+MODULUS : '%' ;
+SWITCH : 'switch' ;
+DOLLARSIGN : '$' ;
 LOCALVARIABLE: '%'LABEL ;
 GLOBALVARIABLE: '$'LABEL ;
+QUESTIONMARK : '?' ;
 
 // Labels can contain numbers but not at the start
 
