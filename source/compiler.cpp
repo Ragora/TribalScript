@@ -346,7 +346,7 @@ namespace TorqueScript
 
     void Compiler::enterWhilecontrol(TorqueParser::WhilecontrolContext* context)
     {
-        this->pushInstructionFrame();
+
     }
 
     void Compiler::exitWhilecontrol(TorqueParser::WhilecontrolContext* context)
@@ -377,5 +377,97 @@ namespace TorqueScript
         std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
         targetFrame.insert(targetFrame.end(), whileExpression.begin(), whileExpression.end());
         targetFrame.insert(targetFrame.end(), whileBody.begin(), whileBody.end());
+    }
+
+    void Compiler::enterControlexpression(TorqueParser::ControlexpressionContext* context)
+    {
+        this->pushInstructionFrame();
+    }
+
+    void Compiler::exitControlexpression(TorqueParser::ControlexpressionContext* context)
+    {
+
+    }
+
+    void Compiler::enterTernary(TorqueParser::TernaryContext* context)
+    {
+
+    }
+
+    void Compiler::exitTernary(TorqueParser::TernaryContext* context)
+    {
+        // A ternary is made up of three expressions
+        std::vector<std::shared_ptr<Instruction>> falseExpression = this->getCurrentInstructionFrame();
+        this->popInstructionFrame();
+        std::vector<std::shared_ptr<Instruction>> trueExpression = this->getCurrentInstructionFrame();
+        this->popInstructionFrame();
+
+        std::vector<std::shared_ptr<Instruction>> statement = this->getCurrentInstructionFrame();
+        this->popInstructionFrame();
+
+        // We add a NOP to the false expressions for a target to jump to
+        falseExpression.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
+
+        // In the true expression we need to jump over the false expression
+        trueExpression.push_back(std::shared_ptr<Instruction>(new JumpInstruction(falseExpression.size())));
+
+        // Jump to the false expression if our expression is false
+        statement.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(falseExpression.size() + 1)));
+
+        // Push generated instructions back
+        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
+        targetFrame.insert(targetFrame.end(), statement.begin(), statement.end());
+        targetFrame.insert(targetFrame.end(), trueExpression.begin(), trueExpression.end());
+        targetFrame.insert(targetFrame.end(), falseExpression.begin(), falseExpression.end());
+    }
+
+    void Compiler::enterForcontrol(TorqueParser::ForcontrolContext* context)
+    {
+
+    }
+
+    void Compiler::exitForcontrol(TorqueParser::ForcontrolContext* context)
+    {
+        // A for control is made up of any number of statements and 3 expressions
+        const unsigned int statementCount = context->statement().size();
+
+        std::vector<std::shared_ptr<Instruction>> forBody;
+        for (unsigned int iteration = 0; iteration < statementCount; ++iteration)
+        {
+            std::vector<std::shared_ptr<Instruction>> bodyStatement = this->getCurrentInstructionFrame();
+            forBody.insert(forBody.begin(), bodyStatement.begin(), bodyStatement.end());
+            this->popInstructionFrame();
+        }
+
+        // A for is made of 3 expressions
+        std::vector<std::shared_ptr<Instruction>> advanceExpression = this->getCurrentInstructionFrame();
+        this->popInstructionFrame();
+        std::vector<std::shared_ptr<Instruction>> conditionExpression = this->getCurrentInstructionFrame();
+        this->popInstructionFrame();
+
+        std::vector<std::shared_ptr<Instruction>> initialExpression = this->getCurrentInstructionFrame();
+
+        this->popInstructionFrame();
+
+        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
+
+        // Push our initial expression out and pop its result
+        initialExpression.push_back(std::shared_ptr<Instruction>(new PopInstruction()));
+        targetFrame.insert(targetFrame.end(), initialExpression.begin(), initialExpression.end());
+
+        // At the end of our loop, run the advance expression
+        forBody.insert(forBody.end(), advanceExpression.begin(), advanceExpression.end());
+
+        // Our body should return to the expression
+        const unsigned int jumpTarget = conditionExpression.size() + forBody.size();
+        forBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(-jumpTarget)));
+        forBody.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
+
+        // Check if our expression is false
+        conditionExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(forBody.size())));
+
+        // Output final code
+        targetFrame.insert(targetFrame.end(), conditionExpression.begin(), conditionExpression.end());
+        targetFrame.insert(targetFrame.end(), forBody.begin(), forBody.end());
     }
 }

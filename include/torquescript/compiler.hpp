@@ -89,6 +89,15 @@ namespace TorqueScript
             virtual void enterWhilecontrol(TorqueParser::WhilecontrolContext* context) override;
             virtual void exitWhilecontrol(TorqueParser::WhilecontrolContext* context) override;
 
+            virtual void enterControlexpression(TorqueParser::ControlexpressionContext* context) override;
+            virtual void exitControlexpression(TorqueParser::ControlexpressionContext* context) override;
+
+            virtual void enterTernary(TorqueParser::TernaryContext* context) override;
+            virtual void exitTernary(TorqueParser::TernaryContext* context) override;
+
+            virtual void enterForcontrol(TorqueParser::ForcontrolContext* context) override;
+            virtual void exitForcontrol(TorqueParser::ForcontrolContext* context) override;
+
         private:
 
             void pushInstructionFrame();

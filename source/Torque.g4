@@ -15,12 +15,12 @@ elsecontrol : 'else' '{' statement* '}'
 ifcontrol : 'if' '(' expression ')' statement elseifcontrol* elsecontrol?
           | 'if' '(' expression ')' '{' statement* '}' elseifcontrol* elsecontrol? ;
 
-whilecontrol : 'while' '(' expression ')' '{' statement* '}'
-             | 'while' '(' expression ')' statement ;
+whilecontrol : WHILE '(' controlexpression ')' '{' statement* '}'
+             | WHILE '(' controlexpression ')' statement ;
 
 // In Torque, all for components are required
-forcontrol : 'for' '(' expression ';' expression ';' expression ')' statement
-           | 'for' '(' expression ';' expression ';' expression ')' '{' statement* '}' ;
+forcontrol : FOR '(' controlexpression ';' controlexpression ';' controlexpression ')' statement
+           | FOR '(' controlexpression ';' controlexpression ';' controlexpression ')' '{' statement* '}' ;
 
 // In Torque, the case values are apparently expressions
 switchcase : 'case' expression switchcasealternative* ':' statement+ ;
@@ -65,6 +65,7 @@ field : LABEL ('[' expression ']')? '=' expression ';' ;
 returncontrol : RETURN expression? ;
 breakcontrol : BREAK ;
 
+controlexpression : expression ;
 expression : (op=NOT|op=MINUS) expression                                                        # unary
            | expression (op=PLUSPLUS|op=MINUSMINUS)                                              # unary
            | LABELNAMESPACESINGLE '(' expression? (',' expression)* ')'                          # call
@@ -79,7 +80,7 @@ expression : (op=NOT|op=MINUS) expression                                       
            | expression (op=BITWISEAND|op=EXCLUSIVEOR|op=BITWISEOR) expression                   # bitwise
            | expression (op=CONCAT|op=SPACE|op=NEWLINE|op=TAB) expression                        # concatenation
            | expression (op=AND|op=OR) expression                                                # logicalop
-           | expression '?' expression ':' expression                                            # ternary
+           | expression '?' controlexpression ':' controlexpression                              # ternary
            | expression (op=ASSIGN
                         |op=ADDASSIGN
                         |op=MULTASSIGN
@@ -143,6 +144,8 @@ PACKAGE : 'package' ;
 DATABLOCK : 'datablock' ;
 RETURN : 'return' ;
 BREAK : 'break' ;
+FOR : 'for' ;
+WHILE : 'while' ;
 
 TRUE: 'true' ;
 FALSE: 'false' ;

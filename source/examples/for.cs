@@ -7,9 +7,3 @@ for (%x = 0; %x < 50; %x++)
         echo(%y);
     }
 }
-
-// Infinite loop
-for(;;)
-{
-
-}
