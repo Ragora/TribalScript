@@ -16,12 +16,12 @@
 
 namespace TorqueScript
 {
-    StoredStringValue::StoredStringValue(const std::string& value, Interpreter* interpreter) : mValue(value), StoredValue(interpreter)
+    StoredStringValue::StoredStringValue(const std::string& value) : mValue(value)
     {
 
     }
 
-    float StoredStringValue::toFloat(ExecutionScope* scope)
+    float StoredStringValue::toFloat(ExecutionState* state)
     {
         try
         {
@@ -33,12 +33,12 @@ namespace TorqueScript
         }
     }
 
-    std::string StoredStringValue::toString(ExecutionScope* scope)
+    std::string StoredStringValue::toString(ExecutionState* state)
     {
         return mValue;
     }
 
-    int StoredStringValue::toInteger(ExecutionScope* scope)
+    int StoredStringValue::toInteger(ExecutionState* state)
     {
         try
         {

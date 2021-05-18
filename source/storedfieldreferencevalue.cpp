@@ -17,48 +17,48 @@
 
 namespace TorqueScript
 {
-    StoredFieldReferenceValue::StoredFieldReferenceValue(std::shared_ptr<SimObject> object, const std::string& name, Interpreter* interpreter) : mSimObject(object), mName(name), StoredValue(interpreter)
+    StoredFieldReferenceValue::StoredFieldReferenceValue(std::shared_ptr<SimObject> object, const std::string& name) : mSimObject(object), mName(name)
     {
 
     }
 
-    float StoredFieldReferenceValue::toFloat(ExecutionScope* scope)
+    float StoredFieldReferenceValue::toFloat(ExecutionState* state)
     {
         assert(mSimObject);
 
         std::shared_ptr<StoredValue> referenced = mSimObject->getField(mName);
         if (referenced)
         {
-            return referenced->toFloat(scope);
+            return referenced->toFloat(state);
         }
         return 0.0f;
     }
 
-    std::string StoredFieldReferenceValue::toString(ExecutionScope* scope)
+    std::string StoredFieldReferenceValue::toString(ExecutionState* state)
     {
         assert(mSimObject);
 
         std::shared_ptr<StoredValue> referenced = mSimObject->getField(mName);
         if (referenced)
         {
-            return referenced->toString(scope);
+            return referenced->toString(state);
         }
         return "";
     }
 
-    int StoredFieldReferenceValue::toInteger(ExecutionScope* scope)
+    int StoredFieldReferenceValue::toInteger(ExecutionState* state)
     {
         assert(mSimObject);
 
         std::shared_ptr<StoredValue> referenced = mSimObject->getField(mName);
         if (referenced)
         {
-            return referenced->toInteger(scope);
+            return referenced->toInteger(state);
         }
         return 0;
     }
 
-    bool StoredFieldReferenceValue::setValue(std::shared_ptr<StoredValue> newValue, ExecutionScope* scope)
+    bool StoredFieldReferenceValue::setValue(std::shared_ptr<StoredValue> newValue, ExecutionState* state)
     {
         assert(mSimObject);
 

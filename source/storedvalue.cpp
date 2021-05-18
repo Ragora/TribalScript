@@ -14,26 +14,22 @@
 
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/interpreter.hpp>
+#include <torquescript/executionstate.hpp>
 
 namespace TorqueScript
 {
-    StoredValue::StoredValue(Interpreter* interpreter) : mInterpreter(interpreter)
+    bool StoredValue::toBoolean(ExecutionState* state)
     {
-
+        return this->toInteger(state) != 0;
     }
 
-    bool StoredValue::toBoolean(ExecutionScope* scope)
+    std::shared_ptr<SimObject> StoredValue::toSimObject(ExecutionState* state)
     {
-        return this->toInteger(scope) != 0;
+        const std::string lookupName = this->toString(state);
+        return state->mInterpreter->getSimObject(lookupName);
     }
 
-    std::shared_ptr<SimObject> StoredValue::toSimObject(ExecutionScope* scope)
-    {
-        const std::string lookupName = this->toString(scope);
-        return mInterpreter->getSimObject(lookupName);
-    }
-
-    bool StoredValue::setValue(std::shared_ptr<StoredValue> newValue, ExecutionScope* scope)
+    bool StoredValue::setValue(std::shared_ptr<StoredValue> newValue, ExecutionState* state)
     {
         return false;
     }

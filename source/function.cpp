@@ -37,8 +37,10 @@ namespace TorqueScript
         }
     }
 
-    void Function::execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack, const unsigned int argumentCount)
+    void Function::execute(ExecutionState* state, const unsigned int argumentCount)
     {
+        state->mExecutionScope->push();
+
         int instructionIndex = 0;
 
         // Calculate expected versus provided to determine what parameters should be left empty
@@ -53,7 +55,7 @@ namespace TorqueScript
 
             for (unsigned int iteration = 0; iteration < removedParameters; ++iteration)
             {
-                stack.pop_back();
+                state->mStack.pop_back();
             }
             adjustedArgumentCount -= removedParameters;
         }
@@ -62,15 +64,17 @@ namespace TorqueScript
         for (unsigned int iteration = 0; iteration < adjustedArgumentCount; ++iteration)
         {
             const std::string nextParameterName = mParameterNames[mParameterNames.size() - (iteration + emptyParameters + 1)];
-            scope->setVariable(nextParameterName, stack.back());
-            stack.pop_back();
+            state->mExecutionScope->setVariable(nextParameterName, state->mStack.back());
+            state->mStack.pop_back();
         }
 
         while (instructionIndex < mInstructions.size() && instructionIndex >= 0)
         {
             std::shared_ptr<Instruction> nextInstruction = mInstructions[instructionIndex];
-            instructionIndex += nextInstruction->execute(interpreter, scope, stack);
+            instructionIndex += nextInstruction->execute(state);
         }
+
+        state->mExecutionScope->pop();
     }
 
     std::string Function::getName()

@@ -22,9 +22,9 @@
 
 namespace TorqueScript
 {
-    class Interpreter;
     class ExecutionScope;
     class SimObject;
+    class ExecutionState;
 
     /**
      *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
@@ -33,33 +33,27 @@ namespace TorqueScript
     class StoredValue
     {
         public:
-            StoredValue(Interpreter* interpreter);
-
-            virtual int toInteger(ExecutionScope* scope) = 0;
+            virtual int toInteger(ExecutionState* state) = 0;
 
             /**
              *  @brief Converts the value in question to a native floating point type.
              *  @param scope The execution scope within which this conversion is occurring.
              *  @return A floating point representation of this value.
              */
-            virtual float toFloat(ExecutionScope* scope) = 0;
+            virtual float toFloat(ExecutionState* state) = 0;
 
             /**
              *  @brief Converts the value in question to a native sting type.
              *  @param scope The execution scope within which this conversion is occurring.
              *  @return A string representation of this value.
              */
-            virtual std::string toString(ExecutionScope* scope) = 0;
+            virtual std::string toString(ExecutionState* state) = 0;
 
-            virtual bool toBoolean(ExecutionScope* scope);
+            virtual bool toBoolean(ExecutionState* state);
 
-            virtual std::shared_ptr<SimObject> toSimObject(ExecutionScope* scope);
+            virtual std::shared_ptr<SimObject> toSimObject(ExecutionState* state);
 
             // In Torque, if we end up trying to set a value of ie. a float it does nothing
-            virtual bool setValue(std::shared_ptr<StoredValue> newValue, ExecutionScope* scope);
-
-        protected:
-            //! The interpreter this value is associated with. Required for global value lookups.
-            Interpreter* mInterpreter;
+            virtual bool setValue(std::shared_ptr<StoredValue> newValue, ExecutionState* state);
     };
 }

@@ -13,50 +13,50 @@
  */
 
 #include <torquescript/storedglobalreferencevalue.hpp>
-#include <torquescript/executionscope.hpp>
+#include <torquescript/executionstate.hpp>
 #include <torquescript/interpreter.hpp>
 
 namespace TorqueScript
 {
-    StoredGlobalReferenceValue::StoredGlobalReferenceValue(const std::string& name, Interpreter* interpreter) : mName(name), StoredValue(interpreter)
+    StoredGlobalReferenceValue::StoredGlobalReferenceValue(const std::string& name) : mName(name)
     {
 
     }
 
-    float StoredGlobalReferenceValue::toFloat(ExecutionScope* scope)
+    float StoredGlobalReferenceValue::toFloat(ExecutionState* state)
     {
-        std::shared_ptr<StoredValue> loaded = mInterpreter->getGlobal(mName);
+        std::shared_ptr<StoredValue> loaded = state->mInterpreter->getGlobal(mName);
         if (loaded)
         {
-            return loaded->toFloat(scope);
+            return loaded->toFloat(state);
         }
         return 0.0f; // In Torque, if we're loading as a float but the variable does not exist we treat it as 0
     }
 
-    int StoredGlobalReferenceValue::toInteger(ExecutionScope* scope)
+    int StoredGlobalReferenceValue::toInteger(ExecutionState* state)
     {
-        std::shared_ptr<StoredValue> loaded = mInterpreter->getGlobal(mName);
+        std::shared_ptr<StoredValue> loaded = state->mInterpreter->getGlobal(mName);
         if (loaded)
         {
-            return loaded->toInteger(scope);
+            return loaded->toInteger(state);
         }
         return 0; // In Torque, if we're loading as a float but the variable does not exist we treat it as 0
     }
 
-    std::string StoredGlobalReferenceValue::toString(ExecutionScope* scope)
+    std::string StoredGlobalReferenceValue::toString(ExecutionState* state)
     {
-        std::shared_ptr<StoredValue> loaded = mInterpreter->getGlobal(mName);
+        std::shared_ptr<StoredValue> loaded = state->mInterpreter->getGlobal(mName);
 
         if (loaded)
         {
-            return loaded->toString(scope);
+            return loaded->toString(state);
         }
         return ""; // In Torque, if we're loading a string but the variable does not exist we treat it as ""
     }
 
-    bool StoredGlobalReferenceValue::setValue(std::shared_ptr<StoredValue> value, ExecutionScope* scope)
+    bool StoredGlobalReferenceValue::setValue(std::shared_ptr<StoredValue> value, ExecutionState* state)
     {
-        mInterpreter->setGlobal(mName, value);
+        state->mInterpreter->setGlobal(mName, value);
         return true;
     }
 }

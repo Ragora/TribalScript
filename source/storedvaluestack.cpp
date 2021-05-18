@@ -13,41 +13,42 @@
  */
 
 #include <torquescript/storedvaluestack.hpp>
+#include <torquescript/executionstate.hpp>
 
 namespace TorqueScript
 {
-    int StoredValueStack::popInteger(ExecutionScope* scope)
+    int StoredValueStack::popInteger(ExecutionState* state)
     {
         if (this->empty())
         {
             return 0;
         }
         std::shared_ptr<StoredValue> currentValue = this->back();
-        int result = currentValue->toInteger(scope);
+        int result = currentValue->toInteger(state);
         this->pop_back();
         return result;
     }
 
-    std::string StoredValueStack::popString(ExecutionScope* scope)
+    std::string StoredValueStack::popString(ExecutionState* state)
     {
         if (this->empty())
         {
             return "";
         }
         std::shared_ptr<StoredValue> currentValue = this->back();
-        std::string result = currentValue->toString(scope);
+        std::string result = currentValue->toString(state);
         this->pop_back();
         return result;
     }
 
-    float StoredValueStack::popFloat(ExecutionScope* scope)
+    float StoredValueStack::popFloat(ExecutionState* state)
     {
         if (this->empty())
         {
             return 0.0f;
         }
         std::shared_ptr<StoredValue> currentValue = this->back();
-        float result = currentValue->toFloat(scope);
+        float result = currentValue->toFloat(state);
         this->pop_back();
         return result;
     }

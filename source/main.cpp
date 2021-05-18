@@ -17,6 +17,7 @@
 #include <torquescript/executionscope.hpp>
 #include <torquescript/codeblock.hpp>
 #include <torquescript/storedvaluestack.hpp>
+#include <torquescript/executionstate.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -34,7 +35,9 @@ int main(int argc, char* argv[])
     if (compiled)
     {
         TorqueScript::ExecutionScope scope;
-        compiled->execute(&interpreter, &scope, stack);
+        TorqueScript::ExecutionState state(&interpreter, &scope);
+
+        compiled->execute(&state);
 
         // Produce a disassembly for debugging
         std::cout << std::endl << "Disassembly: " << std::endl;

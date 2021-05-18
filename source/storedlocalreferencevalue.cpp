@@ -13,48 +13,48 @@
  */
 
 #include <torquescript/storedlocalreferencevalue.hpp>
-#include <torquescript/executionscope.hpp>
+#include <torquescript/executionstate.hpp>
 
 namespace TorqueScript
 {
-    StoredLocalReferenceValue::StoredLocalReferenceValue(const std::string& name, Interpreter* interpreter) : mName(name), StoredValue(interpreter)
+    StoredLocalReferenceValue::StoredLocalReferenceValue(const std::string& name) : mName(name)
     {
 
     }
 
-    float StoredLocalReferenceValue::toFloat(ExecutionScope* scope)
+    float StoredLocalReferenceValue::toFloat(ExecutionState* state)
     {
-        std::shared_ptr<StoredValue> loaded = scope->getVariable(mName);
+        std::shared_ptr<StoredValue> loaded = state->mExecutionScope->getVariable(mName);
         if (loaded)
         {
-            return loaded->toFloat(scope);
+            return loaded->toFloat(state);
         }
         return 0.0f; // In Torque, if we're loading as a float but the variable does not exist we treat it as 0
     }
 
-    int StoredLocalReferenceValue::toInteger(ExecutionScope* scope)
+    int StoredLocalReferenceValue::toInteger(ExecutionState* state)
     {
-        std::shared_ptr<StoredValue> loaded = scope->getVariable(mName);
+        std::shared_ptr<StoredValue> loaded = state->mExecutionScope->getVariable(mName);
         if (loaded)
         {
-            return loaded->toInteger(scope);
+            return loaded->toInteger(state);
         }
         return 0; // In Torque, if we're loading as a float but the variable does not exist we treat it as 0
     }
 
-    std::string StoredLocalReferenceValue::toString(ExecutionScope* scope)
+    std::string StoredLocalReferenceValue::toString(ExecutionState* state)
     {
-        std::shared_ptr<StoredValue> loaded = scope->getVariable(mName);
+        std::shared_ptr<StoredValue> loaded = state->mExecutionScope->getVariable(mName);
         if (loaded)
         {
-            return loaded->toString(scope);
+            return loaded->toString(state);
         }
         return ""; // In Torque, if we're loading a string but the variable does not exist we treat it as ""
     }
 
-    bool StoredLocalReferenceValue::setValue(std::shared_ptr<StoredValue> value, ExecutionScope* scope)
+    bool StoredLocalReferenceValue::setValue(std::shared_ptr<StoredValue> value, ExecutionState* state)
     {
-        scope->setVariable(mName, value);
+        state->mExecutionScope->setVariable(mName, value);
         return true;
     }
 }

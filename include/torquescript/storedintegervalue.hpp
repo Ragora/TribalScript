@@ -19,7 +19,7 @@
 namespace TorqueScript
 {
     class Interpreter;
-    class ExecutionScope;
+    class ExecutionState;
 
     /**
      *  @brief Storage class for an integer value.
@@ -27,11 +27,11 @@ namespace TorqueScript
     class StoredIntegerValue : public StoredValue
     {
         public:
-            StoredIntegerValue(int value, Interpreter* interpreter);
+            StoredIntegerValue(int value);
 
-            virtual int toInteger(ExecutionScope* scope) override;
-            virtual float toFloat(ExecutionScope* scope) override;
-            virtual std::string toString(ExecutionScope* scope) override;
+            virtual int toInteger(ExecutionState* state) override;
+            virtual float toFloat(ExecutionState* state) override;
+            virtual std::string toString(ExecutionState* state) override;
 
         protected:
             //! The stored float value.

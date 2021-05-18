@@ -22,7 +22,7 @@
 namespace TorqueScript
 {
     class Interpreter;
-    class ExecutionScope;
+    class ExecutionState;
     class SimObject;
 
     /**
@@ -31,12 +31,12 @@ namespace TorqueScript
     class StoredFieldReferenceValue : public StoredValue
     {
         public:
-            StoredFieldReferenceValue(std::shared_ptr<SimObject> object, const std::string& name, Interpreter* interpreter);
+            StoredFieldReferenceValue(std::shared_ptr<SimObject> object, const std::string& name);
 
-            virtual int toInteger(ExecutionScope* scope) override;
-            virtual float toFloat(ExecutionScope* scope) override;
-            virtual std::string toString(ExecutionScope* scope) override;
-            virtual bool setValue(std::shared_ptr<StoredValue> newValue, ExecutionScope* scope) override ;
+            virtual int toInteger(ExecutionState* state) override;
+            virtual float toFloat(ExecutionState* state) override;
+            virtual std::string toString(ExecutionState* state) override;
+            virtual bool setValue(std::shared_ptr<StoredValue> newValue, ExecutionState* state) override ;
 
         protected:
             //! The Sim object reference.

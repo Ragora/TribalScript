@@ -21,6 +21,7 @@
 #include <torquescript/function.hpp>
 #include <torquescript/executionscope.hpp>
 #include <torquescript/interpreter.hpp>
+#include <torquescript/executionstate.hpp>
 #include <torquescript/storedvaluestack.hpp>
 #include <torquescript/storedintegervalue.hpp>
 
@@ -31,19 +32,19 @@ namespace TorqueScript
         public:
             Echo() : Function("echo") { }
 
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack, const unsigned int argumentCount) override
+            virtual void execute(ExecutionState* state, const unsigned int argumentCount) override
             {
                 std::string outputString = "";
 
                 for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
                 {
                     // Parameters will flow right to left so we build the string considering this
-                    std::string printedPayload = stack.popString(scope);
+                    std::string printedPayload = state->mStack.popString(state);
                     outputString = printedPayload + outputString;
                 }
 
                 std::cout << "Echo > " << outputString << std::endl;
-                stack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0, interpreter)));
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
             }
     };
 

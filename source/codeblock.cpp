@@ -26,14 +26,14 @@ namespace TorqueScript
         }
     }
 
-    void CodeBlock::execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack)
+    void CodeBlock::execute(ExecutionState* state)
     {
         int instructionIndex = 0;
 
         while (instructionIndex < mInstructions.size() && instructionIndex >= 0)
         {
             std::shared_ptr<Instruction> nextInstruction = mInstructions[instructionIndex];
-            instructionIndex += nextInstruction->execute(interpreter, scope, stack);
+            instructionIndex += nextInstruction->execute(state);
         }
     }
 

@@ -16,22 +16,22 @@
 
 namespace TorqueScript
 {
-    StoredFloatValue::StoredFloatValue(float value, Interpreter* interpreter) : mValue(value), StoredValue(interpreter)
+    StoredFloatValue::StoredFloatValue(float value) : mValue(value)
     {
 
     }
 
-    float StoredFloatValue::toFloat(ExecutionScope* scope)
+    float StoredFloatValue::toFloat(ExecutionState* scope)
     {
         return mValue;
     }
 
-    int StoredFloatValue::toInteger(ExecutionScope* scope)
+    int StoredFloatValue::toInteger(ExecutionState* state)
     {
         return (int)mValue;
     }
 
-    std::string StoredFloatValue::toString(ExecutionScope* scope)
+    std::string StoredFloatValue::toString(ExecutionState* state)
     {
         return std::to_string(mValue);
     }

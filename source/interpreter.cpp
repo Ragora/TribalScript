@@ -18,6 +18,7 @@
 #include <torquescript/compiler.hpp>
 #include <torquescript/executionscope.hpp>
 #include <torquescript/stringhelpers.hpp>
+#include <torquescript/executionstate.hpp>
 
 namespace TorqueScript
 {
@@ -32,7 +33,7 @@ namespace TorqueScript
         delete mCompiler;
     }
 
-    void Interpreter::evaluate(const std::string& input, StoredValueStack& stack)
+    void Interpreter::evaluate(const std::string& input)
     {
         assert(mCompiler);
 
@@ -46,7 +47,9 @@ namespace TorqueScript
         }
 
         ExecutionScope scope;
-        compiled->execute(this, &scope, stack);
+
+        ExecutionState state(this, &scope);
+        compiled->execute(&state);
     }
 
     CodeBlock* Interpreter::compile(const std::string& input)

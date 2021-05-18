@@ -14,29 +14,31 @@
 
 #pragma once
 
-#include <string>
+#include <vector>
+#include <memory>
 
-#include <torquescript/storedvalue.hpp>
+#include <torquescript/interpreter.hpp>
+#include <torquescript/executionscope.hpp>
+#include <torquescript/storedvaluestack.hpp>
 
 namespace TorqueScript
 {
-    class Interpreter;
-    class ExecutionState;
-
     /**
-     *  @brief Storage class for a string value.
+     *  @brief Execution state structure - this is passed around internally in the virtual machine
+     *  for arbitrary access.
      */
-    class StoredStringValue : public StoredValue
+    struct ExecutionState
     {
-        public:
-            StoredStringValue(const std::string& value);
+        ExecutionState(Interpreter* interpreter, ExecutionScope* scope) : mInterpreter(interpreter), mExecutionScope(scope), mVirtualDepth(0)
+        {
 
-            virtual int toInteger(ExecutionState* state) override;
-            virtual float toFloat(ExecutionState* state) override;
-            virtual std::string toString(ExecutionState* state) override;
+        }
 
-        protected:
-            //! The stored string value.
-            std::string mValue;
+        Interpreter* mInterpreter;
+        ExecutionScope* mExecutionScope;
+        StoredValueStack mStack;
+
+        //! Virtual call stack depth. Used to enforce maximums on recursion.
+        unsigned int mVirtualDepth;
     };
 }

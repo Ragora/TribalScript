@@ -47,7 +47,7 @@ namespace TorqueScript
             std::shared_ptr<SimObject> getSimObject(const std::string& name);
 
             CodeBlock* compile(const std::string& input);
-            void evaluate(const std::string& input, StoredValueStack& stack);
+            void evaluate(const std::string& input);
 
             /**
              *  @brief Registers a new function to the interpreter. Ownership is transferred to the interpreter at this

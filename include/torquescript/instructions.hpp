@@ -30,6 +30,7 @@
 #include <torquescript/storedfieldreferencevalue.hpp>
 #include <torquescript/storedlocalreferencevalue.hpp>
 #include <torquescript/storedglobalreferencevalue.hpp>
+#include <torquescript/executionstate.hpp>
 
 namespace TorqueScript
 {
@@ -45,7 +46,7 @@ namespace TorqueScript
              *  switching statement that determines how opcodes will behave.
              *  @param bitstream The bitstream acting as our current stack.
              */
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) = 0;
+            virtual int execute(ExecutionState* state) = 0;
 
             /**
              *  @brief Helper routine to produce a disassembly for this instruction.
@@ -65,9 +66,9 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
-                stack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(mParameter, interpreter)));
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(mParameter)));
                 return 1;
             };
 
@@ -95,9 +96,9 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
-                stack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(mParameter, interpreter)));
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(mParameter)));
                 return 1;
             };
 
@@ -125,9 +126,9 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
-                stack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(mParameter, interpreter)));
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(mParameter)));
                 return 1;
             };
 
@@ -155,9 +156,9 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
-                stack.push_back(std::shared_ptr<StoredValue>(new StoredLocalReferenceValue(mParameter, interpreter)));
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredLocalReferenceValue(mParameter)));
                 return 1;
             };
 
@@ -185,9 +186,9 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
-                stack.push_back(std::shared_ptr<StoredValue>(new StoredGlobalReferenceValue(mParameter, interpreter)));
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredGlobalReferenceValue(mParameter)));
                 return 1;
             };
 
@@ -209,28 +210,28 @@ namespace TorqueScript
     class AddAssignmentInstruction : public Instruction
     {
         public:
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
-                assert(stack.size() >= 2);
+                assert(state->mStack.size() >= 2);
 
                 // Pull two values off the stack
-                std::shared_ptr<StoredValue> rhsStored = stack.back();
-                stack.pop_back();
-                std::shared_ptr<StoredValue> lhsStored = stack.back();
-                stack.pop_back();
+                std::shared_ptr<StoredValue> rhsStored = state->mStack.back();
+                state->mStack.pop_back();
+                std::shared_ptr<StoredValue> lhsStored = state->mStack.back();
+                state->mStack.pop_back();
 
                 float resultRaw = 0.0f;
-                resultRaw = lhsStored->toFloat(scope);
-                resultRaw += rhsStored->toFloat(scope);
+                resultRaw = lhsStored->toFloat(state);
+                resultRaw += rhsStored->toFloat(state);
 
-                std::shared_ptr<StoredValue> result = std::shared_ptr<StoredValue>(new StoredFloatValue(resultRaw, interpreter));
-                if (!lhsStored->setValue(result, scope))
+                std::shared_ptr<StoredValue> result = std::shared_ptr<StoredValue>(new StoredFloatValue(resultRaw));
+                if (!lhsStored->setValue(result, state))
                 {
                     std::cout << "Attempted to perform no-op assignment!" << std::endl;
                 }
 
                 // In Torque, the result of the assignment is pushed to stack
-                stack.push_back(result);
+                state->mStack.push_back(result);
                 return 1;
             };
 
@@ -246,27 +247,23 @@ namespace TorqueScript
     class AssignmentInstruction : public Instruction
     {
         public:
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
-                assert(stack.size() >= 2);
+                assert(state->mStack.size() >= 2);
 
                 // Pull two values off the stack
-                std::shared_ptr<StoredValue> rhsStored = stack.back();
-                stack.pop_back();
-                std::shared_ptr<StoredValue> lhsStored = stack.back();
-                stack.pop_back();
+                std::shared_ptr<StoredValue> rhsStored = state->mStack.back();
+                state->mStack.pop_back();
+                std::shared_ptr<StoredValue> lhsStored = state->mStack.back();
+                state->mStack.pop_back();
 
-                // assert(localReference || globalReference);
-
-
-                if (!lhsStored->setValue(rhsStored, scope))
+                if (!lhsStored->setValue(rhsStored, state))
                 {
                     std::cout << "Attempted to perform no-op assignment!" << std::endl;
                 }
 
-
                 // In Torque, the result of the assignment is pushed to stack
-                stack.push_back(rhsStored);
+                state->mStack.push_back(rhsStored);
                 return 1;
             };
 
@@ -283,20 +280,20 @@ namespace TorqueScript
     class ConcatInstruction : public Instruction
     {
         public:
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
-                assert(stack.size() >= 2);
+                assert(state->mStack.size() >= 2);
 
                 // Pull two values off the stack
-                std::shared_ptr<StoredValue> rhsStored = stack.back();
-                stack.pop_back();
-                std::shared_ptr<StoredValue> lhsStored = stack.back();
-                stack.pop_back();
+                std::shared_ptr<StoredValue> rhsStored = state->mStack.back();
+                state->mStack.pop_back();
+                std::shared_ptr<StoredValue> lhsStored = state->mStack.back();
+                state->mStack.pop_back();
 
-                std::string lhs = lhsStored->toString(scope);
-                std::string rhs = rhsStored->toString(scope);
+                std::string lhs = lhsStored->toString(state);
+                std::string rhs = rhsStored->toString(state);
 
-                stack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(lhs + rhs, interpreter)));
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(lhs + rhs)));
                 return 1;
             };
 
@@ -312,15 +309,15 @@ namespace TorqueScript
     class NegateInstruction : public Instruction
     {
         public:
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
-                assert(stack.size() >= 1);
+                assert(state->mStack.size() >= 1);
 
                 // Pull two values off the stack
-                std::shared_ptr<StoredValue> storedTarget = stack.back();
-                stack.pop_back();
+                std::shared_ptr<StoredValue> storedTarget = state->mStack.back();
+                state->mStack.pop_back();
 
-                stack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(-storedTarget->toFloat(scope), interpreter)));
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(-storedTarget->toFloat(state))));
                 return 1;
             };
 
@@ -341,23 +338,21 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
                 // Ensure we have a string value here - it should be impossible to get anything else as a call name
                 // assert(calledFunctionParameter->getVariableType() == StoredValue::VariableType::STRING);
 
-                std::shared_ptr<Function> functionLookup = interpreter->getFunction(mName);
+                std::shared_ptr<Function> functionLookup = state->mInterpreter->getFunction(mName);
                 if (functionLookup)
                 {
-                    scope->push();
-                    functionLookup->execute(interpreter, scope, stack, mArgc);
-                    scope->pop();
+                    functionLookup->execute(state, mArgc);
                 }
                 else
                 {
                     // FIXME: Virtual logging methods?
                     std::cerr << "Could not find function '" << mName << "' for calling! Placing 0 on the stack." << std::endl;
-                    stack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0, interpreter)));
+                    state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
                 }
                 return 1;
             };
@@ -380,21 +375,21 @@ namespace TorqueScript
     class AddInstruction : public Instruction
     {
         public:
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
-                assert(stack.size() >= 2);
+                assert(state->mStack.size() >= 2);
 
-                std::shared_ptr<StoredValue> rhsStored = stack.back();
-                stack.pop_back();
-                std::shared_ptr<StoredValue> lhsStored = stack.back();
-                stack.pop_back();
+                std::shared_ptr<StoredValue> rhsStored = state->mStack.back();
+                state->mStack.pop_back();
+                std::shared_ptr<StoredValue> lhsStored = state->mStack.back();
+                state->mStack.pop_back();
 
                 // NOTE: For now we normalize to floats
-                float lhs = lhsStored->toFloat(scope);
-                float rhs = rhsStored->toFloat(scope);
+                float lhs = lhsStored->toFloat(state);
+                float rhs = rhsStored->toFloat(state);
 
                 const float result = lhs + rhs;
-                stack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(result, interpreter)));
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(result)));
                 return 1;
             };
 
@@ -410,21 +405,21 @@ namespace TorqueScript
     class LessThanInstruction : public Instruction
     {
         public:
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
-                assert(stack.size() >= 2);
+                assert(state->mStack.size() >= 2);
 
-                std::shared_ptr<StoredValue> rhsStored = stack.back();
-                stack.pop_back();
-                std::shared_ptr<StoredValue> lhsStored = stack.back();
-                stack.pop_back();
+                std::shared_ptr<StoredValue> rhsStored = state->mStack.back();
+                state->mStack.pop_back();
+                std::shared_ptr<StoredValue> lhsStored = state->mStack.back();
+                state->mStack.pop_back();
 
                 // NOTE: For now we normalize to floats
-                float lhs = lhsStored->toFloat(scope);
-                float rhs = rhsStored->toFloat(scope);
+                float lhs = lhsStored->toFloat(state);
+                float rhs = rhsStored->toFloat(state);
 
                 const int result = lhs < rhs ? 1 : 0;
-                stack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(result, interpreter)));
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(result)));
                 return 1;
             };
 
@@ -440,21 +435,21 @@ namespace TorqueScript
     class BitwiseAndInstruction : public Instruction
     {
         public:
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
-                assert(stack.size() >= 2);
+                assert(state->mStack.size() >= 2);
 
-                std::shared_ptr<StoredValue> rhsStored = stack.back();
-                stack.pop_back();
-                std::shared_ptr<StoredValue> lhsStored = stack.back();
-                stack.pop_back();
+                std::shared_ptr<StoredValue> rhsStored = state->mStack.back();
+                state->mStack.pop_back();
+                std::shared_ptr<StoredValue> lhsStored = state->mStack.back();
+                state->mStack.pop_back();
 
                 // NOTE: For now we normalize to floats
-                int lhs = lhsStored->toInteger(scope);
-                int rhs = rhsStored->toInteger(scope);
+                int lhs = lhsStored->toInteger(state);
+                int rhs = rhsStored->toInteger(state);
 
                 const int result = lhs & rhs;
-                stack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(result, interpreter)));
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(result)));
                 return 1;
             };
 
@@ -470,22 +465,22 @@ namespace TorqueScript
     class MultiplyInstruction : public Instruction
     {
         public:
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
-                assert(stack.size() >= 2);
+                assert(state->mStack.size() >= 2);
 
-                std::shared_ptr<StoredValue> lhsStored = stack.back();
-                stack.pop_back();
-                std::shared_ptr<StoredValue> rhsStored = stack.back();
-                stack.pop_back();
+                std::shared_ptr<StoredValue> lhsStored = state->mStack.back();
+                state->mStack.pop_back();
+                std::shared_ptr<StoredValue> rhsStored = state->mStack.back();
+                state->mStack.pop_back();
 
                 // NOTE: For now we normalize to floats
 
-                float lhs = lhsStored->toFloat(scope);
-                float rhs = rhsStored->toFloat(scope);
+                float lhs = lhsStored->toFloat(state);
+                float rhs = rhsStored->toFloat(state);
 
                 const float result = lhs * rhs;
-                stack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(result, interpreter)));
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(result)));
                 return 1;
             };
 
@@ -501,10 +496,10 @@ namespace TorqueScript
     class PopInstruction : public Instruction
     {
         public:
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
-                assert(stack.size() >= 1);
-                stack.pop_back();
+                assert(state->mStack.size() >= 1);
+                state->mStack.pop_back();
 
                 return 1;
             };
@@ -523,7 +518,7 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
                 return mOffset;
             };
@@ -548,14 +543,14 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
-                assert(stack.size() >= 1);
+                assert(state->mStack.size() >= 1);
 
-                std::shared_ptr<StoredValue> booleanStored = stack.back();
-                stack.pop_back();
+                std::shared_ptr<StoredValue> booleanStored = state->mStack.back();
+                state->mStack.pop_back();
 
-                if (booleanStored->toBoolean(scope))
+                if (booleanStored->toBoolean(state))
                 {
                     return mOffset;
                 }
@@ -582,14 +577,14 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
-                assert(stack.size() >= 1);
+                assert(state->mStack.size() >= 1);
 
-                std::shared_ptr<StoredValue> booleanStored = stack.back();
-                stack.pop_back();
+                std::shared_ptr<StoredValue> booleanStored = state->mStack.back();
+                state->mStack.pop_back();
 
-                if (!booleanStored->toBoolean(scope))
+                if (!booleanStored->toBoolean(state))
                 {
                     return mOffset;
                 }
@@ -611,7 +606,7 @@ namespace TorqueScript
     class NOPInstruction : public Instruction
     {
         public:
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
                 return 1;
             };
@@ -630,12 +625,12 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
                 // Register the function
                 std::shared_ptr<Function> newFunction = std::shared_ptr<Function>(new Function(mName, mParameterNames));
                 newFunction->addInstructions(mInstructions);
-                interpreter->addFunction(newFunction);
+                state->mInterpreter->addFunction(newFunction);
 
                 return 1;
             };
@@ -679,33 +674,22 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual int execute(ExecutionState* state) override
             {
-                assert(stack.size() >= 1);
+                assert(state->mStack.size() >= 1);
 
-                std::shared_ptr<StoredValue> targetStored = stack.back();
-                stack.pop_back();
+                std::shared_ptr<StoredValue> targetStored = state->mStack.back();
+                state->mStack.pop_back();
 
-                std::shared_ptr<SimObject> referenced = targetStored->toSimObject(scope);
+                std::shared_ptr<SimObject> referenced = targetStored->toSimObject(state);
                 if (referenced)
                 {
-                    stack.push_back(std::shared_ptr<StoredValue>(new StoredFieldReferenceValue(referenced, mName, interpreter)));
-                    /*
-                    std::shared_ptr<StoredValue> loaded = referenced->getField(mName);
-
-                    if (!loaded)
-                    {
-                        loaded = std::shared_ptr<StoredValue>(new StoredStringValue("", interpreter));
-                    }
-                    stack.push_back(std::shared_ptr<StoredValue>(loaded));
-                    return 1;
-                    */
-
+                    state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredFieldReferenceValue(referenced, mName)));
                     return 1;
                 }
 
                 // If lookup failed, return empty string
-                stack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue("", interpreter)));
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue("")));
                 return 1;
             };
 

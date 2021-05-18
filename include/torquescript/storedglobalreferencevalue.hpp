@@ -22,7 +22,7 @@
 namespace TorqueScript
 {
     class Interpreter;
-    class ExecutionScope;
+    class ExecutionState;
 
     /**
      *  @brief Storage class for a reference to a global value.
@@ -30,13 +30,13 @@ namespace TorqueScript
     class StoredGlobalReferenceValue : public StoredValue
     {
         public:
-            StoredGlobalReferenceValue(const std::string& name, Interpreter* interpreter);
+            StoredGlobalReferenceValue(const std::string& name);
 
-            virtual int toInteger(ExecutionScope* scope) override;
-            virtual float toFloat(ExecutionScope* scope) override;
-            virtual std::string toString(ExecutionScope* scope) override;
+            virtual int toInteger(ExecutionState* state) override;
+            virtual float toFloat(ExecutionState* state) override;
+            virtual std::string toString(ExecutionState* state) override;
 
-            bool setValue(std::shared_ptr<StoredValue> value, ExecutionScope* scope) override;
+            bool setValue(std::shared_ptr<StoredValue> value, ExecutionState* state) override;
 
         protected:
             //! The name of the referenced variable.
