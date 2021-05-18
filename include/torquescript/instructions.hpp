@@ -356,20 +356,17 @@ namespace TorqueScript
     class CallFunctionInstruction : public Instruction
     {
         public:
+            CallFunctionInstruction(const std::string& name, const unsigned int argc) : mName(name), mArgc(argc)
+            {
+
+            }
+
             virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
-                assert(stack.size() >= 1);
-
-                // Pop name from the stack
-                std::shared_ptr<StoredValue> calledFunctionParameter = stack.back();
-                stack.pop_back();
-
                 // Ensure we have a string value here - it should be impossible to get anything else as a call name
                 // assert(calledFunctionParameter->getVariableType() == StoredValue::VariableType::STRING);
 
-                const std::string calledFunctionName = calledFunctionParameter->toString(scope);
-
-                std::shared_ptr<Function> functionLookup = interpreter->getFunction(calledFunctionName);
+                std::shared_ptr<Function> functionLookup = interpreter->getFunction(mName);
                 if (functionLookup)
                 {
                     scope->push();
@@ -379,7 +376,7 @@ namespace TorqueScript
                 else
                 {
                     // FIXME: Virtual logging methods?
-                    std::cerr << "Could not find function '" << calledFunctionName << "' for calling! Placing 0 on the stack." << std::endl;
+                    std::cerr << "Could not find function '" << mName << "' for calling! Placing 0 on the stack." << std::endl;
                     stack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0, interpreter)));
                 }
                 return 1;
@@ -387,8 +384,14 @@ namespace TorqueScript
 
             virtual std::string disassemble() override
             {
-                return "CallFunction";
+                std::ostringstream out;
+                out << "CallFunction " << mName << " argc=" << mArgc;
+                return out.str();
             }
+
+            private:
+                std::string mName;
+                unsigned int mArgc;
     };
 
     /**

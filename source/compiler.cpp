@@ -173,8 +173,7 @@ namespace TorqueScript
         const std::string calledFunctionName = context->LABELNAMESPACESINGLE()->getText();
 
         std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-        currentFrame.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(calledFunctionName)));
-        currentFrame.push_back(std::shared_ptr<Instruction>(new CallFunctionInstruction()));
+        currentFrame.push_back(std::shared_ptr<Instruction>(new CallFunctionInstruction(calledFunctionName, context->expression().size())));
     }
 
     void Compiler::enterValue(TorqueParser::ValueContext* context)
