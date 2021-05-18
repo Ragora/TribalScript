@@ -4,7 +4,7 @@
 
 grammar Torque;
 
-program  : (outerblock | statement)* ;
+program  : (outerblock | statement)+ | <EOF> ;
 
 elseifcontrol : ('else if' '(' expression ')' '{' statement* '}')
               | ('else if' '(' expression ')' statement ) ;
@@ -19,8 +19,8 @@ whilecontrol : WHILE '(' controlexpression ')' '{' statement* '}'
              | WHILE '(' controlexpression ')' statement ;
 
 // In Torque, all for components are required
-forcontrol : FOR '(' controlexpression ';' controlexpression ';' controlexpression ')' statement
-           | FOR '(' controlexpression ';' controlexpression ';' controlexpression ')' '{' statement* '}' ;
+forcontrol : FOR '(' controlexpression SEMICOLON controlexpression SEMICOLON controlexpression ')' statement
+           | FOR '(' controlexpression SEMICOLON controlexpression SEMICOLON controlexpression ')' '{' statement* '}' ;
 
 // In Torque, the case values are apparently expressions
 switchcase : 'case' expression switchcasealternative* ':' statement+ ;
@@ -36,31 +36,31 @@ control : whilecontrol
         | switchcontrol ;
 
 // Object instantiation - we support two forms new TYPENAME(NAME) and new (TYPENAMEEXP)(NAME) both with optional initialization lists
-objectinitialization : '{' (field | newobject ';')* '}' ;
+objectinitialization : '{' (field | newobject SEMICOLON)* '}' ;
 newobject : NEW LABEL '(' expression? ')' objectinitialization?
           | NEW '(' expression ')' '(' expression? ')' objectinitialization? ;
 
 // Functions, datablocks, packages
 paramlist : LOCALVARIABLE (',' LOCALVARIABLE )* ;
 functiondeclaration : FUNCTION labelsingle '(' paramlist? ')' '{' statement* '}' ;
-packagedeclaration : PACKAGE labelsingle '{' functiondeclaration* '}' ';' ;
+packagedeclaration : PACKAGE labelsingle '{' functiondeclaration* '}' SEMICOLON ;
 
 // Datablock declaration requires at least one field
-datablockdeclaration : DATABLOCK LABEL '(' LABEL ')' (':' LABEL)? '{' field+ '}' ';' ;
+datablockdeclaration : DATABLOCK LABEL '(' LABEL ')' (':' LABEL)? '{' field+ '}' SEMICOLON ;
 
 outerblock : functiondeclaration
            | packagedeclaration
            | datablockdeclaration ;
 
-actionstatement : expression ';' ;
+actionstatement : expression SEMICOLON ;
 
 statement : control
-          | returncontrol ';'
-          | breakcontrol ';'
+          | returncontrol SEMICOLON
+          | breakcontrol SEMICOLON
           | actionstatement ;
 
 // Used for setting field values in object instantiation & datablocks
-field : LABEL ('[' expression ']')? '=' expression ';' ;
+field : LABEL ('[' expression ']')? '=' expression SEMICOLON ;
 
 returncontrol : RETURN expression? ;
 breakcontrol : BREAK ;
@@ -150,6 +150,7 @@ RETURN : 'return' ;
 BREAK : 'break' ;
 FOR : 'for' ;
 WHILE : 'while' ;
+SEMICOLON : ';' ;
 
 TRUE: 'true' ;
 FALSE: 'false' ;
