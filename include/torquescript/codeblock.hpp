@@ -35,11 +35,6 @@ namespace TorqueScript
     class CodeBlock
     {
         public:
-            /**
-             *  @brief Registers a new function within this codeblock.
-             *  @param function The function to be added.
-             */
-            void addFunction(std::shared_ptr<Function> function);
 
             /**
              *  @brief Registers the instruction sequence to the codeblock to be executed
@@ -57,8 +52,6 @@ namespace TorqueScript
              *  @brief Produces a disassembly of the CodeBlock code.
              */
             std::vector<std::string> disassemble();
-
-            std::vector<std::shared_ptr<Function>> getFunctions();
 
         private:
             //! All functions registered in this codeblock.

@@ -33,13 +33,6 @@ int main(int argc, char* argv[])
 
     if (compiled)
     {
-        // Load all functions from the codeblock
-        std::vector<std::shared_ptr<TorqueScript::Function>> functions = compiled->getFunctions();
-        for (auto&& function : functions)
-        {
-            interpreter.addFunction(function);
-        }
-
         TorqueScript::ExecutionScope scope;
         compiled->execute(&interpreter, &scope, stack);
 

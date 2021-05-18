@@ -54,8 +54,9 @@ namespace TorqueScript
         return ""; // In Torque, if we're loading a string but the variable does not exist we treat it as ""
     }
 
-    void StoredGlobalReferenceValue::setValue(std::shared_ptr<StoredValue> value)
+    bool StoredGlobalReferenceValue::setValue(std::shared_ptr<StoredValue> value, ExecutionScope* scope)
     {
         mInterpreter->setGlobal(mName, value);
+        return true;
     }
 }

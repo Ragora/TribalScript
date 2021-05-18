@@ -31,11 +31,11 @@ namespace TorqueScript
         public:
             Echo() : Function("echo") { }
 
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack, const unsigned int argumentCount) override
             {
-                // We concat everything on the stack
                 std::string outputString = "";
-                while (!stack.empty())
+
+                for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
                 {
                     // Parameters will flow right to left so we build the string considering this
                     std::string printedPayload = stack.popString(scope);

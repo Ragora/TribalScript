@@ -36,7 +36,7 @@ namespace TorqueScript
             virtual float toFloat(ExecutionScope* scope) override;
             virtual std::string toString(ExecutionScope* scope) override;
 
-            void setValue(std::shared_ptr<StoredValue> value);
+            bool setValue(std::shared_ptr<StoredValue> value, ExecutionScope* scope) override;
 
         protected:
             //! The name of the referenced variable.

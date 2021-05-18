@@ -13,6 +13,7 @@
  */
 
 #include <torquescript/storedvalue.hpp>
+#include <torquescript/interpreter.hpp>
 
 namespace TorqueScript
 {
@@ -24,5 +25,16 @@ namespace TorqueScript
     bool StoredValue::toBoolean(ExecutionScope* scope)
     {
         return this->toInteger(scope) != 0;
+    }
+
+    std::shared_ptr<SimObject> StoredValue::toSimObject(ExecutionScope* scope)
+    {
+        const std::string lookupName = this->toString(scope);
+        return mInterpreter->getSimObject(lookupName);
+    }
+
+    bool StoredValue::setValue(std::shared_ptr<StoredValue> newValue, ExecutionScope* scope)
+    {
+        return false;
     }
 }

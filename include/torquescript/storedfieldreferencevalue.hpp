@@ -12,39 +12,37 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/codeblock.hpp>
-#include <torquescript/instructions.hpp>
-#include <torquescript/stringhelpers.hpp>
+#pragma once
+
+#include <memory>
+#include <string>
+
+#include <torquescript/storedvalue.hpp>
 
 namespace TorqueScript
 {
-    void CodeBlock::addInstructions(const std::vector<std::shared_ptr<Instruction>> instructions)
+    class Interpreter;
+    class ExecutionScope;
+    class SimObject;
+
+    /**
+     *  @brief Storage class for a floating point value.
+     */
+    class StoredFieldReferenceValue : public StoredValue
     {
-        for (auto&& instruction : instructions)
-        {
-            mInstructions.push_back(instruction);
-        }
-    }
+        public:
+            StoredFieldReferenceValue(std::shared_ptr<SimObject> object, const std::string& name, Interpreter* interpreter);
 
-    void CodeBlock::execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack)
-    {
-        int instructionIndex = 0;
+            virtual int toInteger(ExecutionScope* scope) override;
+            virtual float toFloat(ExecutionScope* scope) override;
+            virtual std::string toString(ExecutionScope* scope) override;
+            virtual bool setValue(std::shared_ptr<StoredValue> newValue, ExecutionScope* scope) override ;
 
-        while (instructionIndex < mInstructions.size() && instructionIndex >= 0)
-        {
-            std::shared_ptr<Instruction> nextInstruction = mInstructions[instructionIndex];
-            instructionIndex += nextInstruction->execute(interpreter, scope, stack);
-        }
-    }
+        protected:
+            //! The Sim object reference.
+            std::shared_ptr<SimObject> mSimObject;
 
-    std::vector<std::string> CodeBlock::disassemble()
-    {
-        std::vector<std::string> result;
-
-        for (auto&& instruction : mInstructions)
-        {
-            result.push_back(instruction->disassemble());
-        }
-        return result;
-    }
+            //! The stored field name.
+            std::string mName;
+    };
 }

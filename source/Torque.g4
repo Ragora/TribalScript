@@ -42,8 +42,8 @@ newobject : NEW LABEL '(' expression? ')' objectinitialization?
 
 // Functions, datablocks, packages
 paramlist : (LOCALVARIABLE | GLOBALVARIABLE) (',' (LOCALVARIABLE | GLOBALVARIABLE))* ;
-functiondeclaration : FUNCTION LABELNAMESPACESINGLE '(' paramlist? ')' '{' statement* '}' ;
-packagedeclaration : PACKAGE LABEL '{' functiondeclaration* '}' ';' ;
+functiondeclaration : FUNCTION labelsingle '(' paramlist? ')' '{' statement* '}' ;
+packagedeclaration : PACKAGE labelsingle '{' functiondeclaration* '}' ';' ;
 
 // Datablock declaration requires at least one field
 datablockdeclaration : DATABLOCK LABEL '(' LABEL ')' (':' LABEL)? '{' field+ '}' ';' ;
@@ -68,9 +68,9 @@ breakcontrol : BREAK ;
 controlexpression : expression ;
 expression : (op=NOT|op=MINUS) expression                                                        # unary
            | expression (op=PLUSPLUS|op=MINUSMINUS)                                              # unary
-           | LABELNAMESPACESINGLE '(' expression? (',' expression)* ')'                          # call
+           | labelsingle '(' expression? (',' expression)* ')'                                         # call
            | expression '[' expression (',' expression)* ']'                                     # array
-           | expression ('.' LABEL)+                                                             # subreference
+           | expression ('.' label)                                                              # subreference
            | '(' expression ')'                                                                  # parenthesis
            | expression (op=MULT|op=DIV|op=MODULUS) expression                                   # arithmetic
            | expression (op=PLUS|op=MINUS) expression                                            # arithmetic
@@ -96,10 +96,14 @@ expression : (op=NOT|op=MINUS) expression                                       
            | op=FLOAT                                                                            # value
            | op=GLOBALVARIABLE                                                                   # value
            | op=LOCALVARIABLE                                                                    # value
-           | op=LABELNAMESPACESINGLE                                                             # labelReference
+           | op=LABEL                                                                            # value
            | op=TRUE                                                                             # value
            | op=FALSE                                                                            # value
            | op=STRING                                                                           # value ;
+
+labelsingle : LABEL (sublabel)?;
+label : LABEL (sublabel)*;
+sublabel : '::' LABEL ;
 
 // Lexer
 PLUS: '+' ;
@@ -152,16 +156,11 @@ FALSE: 'false' ;
 
 MODULUS: '%' ;
 
-// Function declarations can be namespaced but only a single deep ie. function one::two() {}
-LABELNAMESPACESINGLE : LABEL ('::' LABEL)? ;
-
-// Some cases like variables can go infinitely deep with namespacing
-LABELNAMESPACE : LABEL ('::' LABEL)* ;
-
-LOCALVARIABLE: '%'LABELNAMESPACE ;
-GLOBALVARIABLE: '$'LABELNAMESPACE ;
+LOCALVARIABLE: '%'LABEL ;
+GLOBALVARIABLE: '$'LABEL ;
 
 // Labels can contain numbers but not at the start
+
 LABEL : [a-zA-Z_]+[a-zA-Z_0-9]* ;
 
 INT :   DIGIT+ ;

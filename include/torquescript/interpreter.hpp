@@ -19,6 +19,7 @@
 #include <memory>
 
 #include <torquescript/function.hpp>
+#include <torquescript/simobject.hpp>
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/stringhelpers.hpp>
 #include <torquescript/storedvaluestack.hpp>
@@ -40,8 +41,10 @@ namespace TorqueScript
             ~Interpreter();
 
             void setGlobal(const std::string& name, std::shared_ptr<StoredValue> value);
-
             std::shared_ptr<StoredValue> getGlobal(const std::string& name);
+
+            void setSimObject(const std::string& name, std::shared_ptr<SimObject> value);
+            std::shared_ptr<SimObject> getSimObject(const std::string& name);
 
             CodeBlock* compile(const std::string& input);
             void evaluate(const std::string& input, StoredValueStack& stack);
@@ -63,5 +66,8 @@ namespace TorqueScript
 
             //! A mapping of global variable names to their stored value instance.
             std::map<std::string, std::shared_ptr<StoredValue>> mGlobalVariables;
+
+            //! A mapping of object names to their sim objects
+            std::map<std::string, std::shared_ptr<SimObject>> mSimObjects;
     };
 }

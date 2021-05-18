@@ -27,6 +27,7 @@
 #include <torquescript/storedfloatvalue.hpp>
 #include <torquescript/storedstringvalue.hpp>
 #include <torquescript/storedintegervalue.hpp>
+#include <torquescript/storedfieldreferencevalue.hpp>
 #include <torquescript/storedlocalreferencevalue.hpp>
 #include <torquescript/storedglobalreferencevalue.hpp>
 
@@ -218,30 +219,14 @@ namespace TorqueScript
                 std::shared_ptr<StoredValue> lhsStored = stack.back();
                 stack.pop_back();
 
-                std::shared_ptr<StoredLocalReferenceValue> localReference = std::dynamic_pointer_cast<StoredLocalReferenceValue>(lhsStored);
-                std::shared_ptr<StoredGlobalReferenceValue> globalReference = std::dynamic_pointer_cast<StoredGlobalReferenceValue>(lhsStored);
-
-                assert(localReference || globalReference);
-
                 float resultRaw = 0.0f;
-                if (localReference)
-                {
-                    resultRaw = localReference->toFloat(scope);
-                }
-                else
-                {
-                    resultRaw = localReference->toFloat(scope);
-                }
+                resultRaw = lhsStored->toFloat(scope);
                 resultRaw += rhsStored->toFloat(scope);
 
                 std::shared_ptr<StoredValue> result = std::shared_ptr<StoredValue>(new StoredFloatValue(resultRaw, interpreter));
-                if (localReference)
+                if (!lhsStored->setValue(result, scope))
                 {
-                    localReference->setValue(result, scope);
-                }
-                else
-                {
-                    globalReference->setValue(result);
+                    std::cout << "Attempted to perform no-op assignment!" << std::endl;
                 }
 
                 // In Torque, the result of the assignment is pushed to stack
@@ -271,19 +256,14 @@ namespace TorqueScript
                 std::shared_ptr<StoredValue> lhsStored = stack.back();
                 stack.pop_back();
 
-                std::shared_ptr<StoredLocalReferenceValue> localReference = std::dynamic_pointer_cast<StoredLocalReferenceValue>(lhsStored);
-                std::shared_ptr<StoredGlobalReferenceValue> globalReference = std::dynamic_pointer_cast<StoredGlobalReferenceValue>(lhsStored);
+                // assert(localReference || globalReference);
 
-                assert(localReference || globalReference);
 
-                if (localReference)
+                if (!lhsStored->setValue(rhsStored, scope))
                 {
-                    localReference->setValue(rhsStored, scope);
+                    std::cout << "Attempted to perform no-op assignment!" << std::endl;
                 }
-                else
-                {
-                    globalReference->setValue(rhsStored);
-                }
+
 
                 // In Torque, the result of the assignment is pushed to stack
                 stack.push_back(rhsStored);
@@ -370,7 +350,7 @@ namespace TorqueScript
                 if (functionLookup)
                 {
                     scope->push();
-                    functionLookup->execute(interpreter, scope, stack);
+                    functionLookup->execute(interpreter, scope, stack, mArgc);
                     scope->pop();
                 }
                 else
@@ -675,5 +655,54 @@ namespace TorqueScript
         private:
             std::string mName;
             std::vector<std::shared_ptr<Instruction>> mInstructions;
+    };
+
+    class SubReferenceInstruction : public Instruction
+    {
+        public:
+            SubReferenceInstruction(const std::string& name) : mName(name)
+            {
+
+            }
+
+            virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
+            {
+                assert(stack.size() >= 1);
+
+                std::shared_ptr<StoredValue> targetStored = stack.back();
+                stack.pop_back();
+
+                std::shared_ptr<SimObject> referenced = targetStored->toSimObject(scope);
+                if (referenced)
+                {
+                    stack.push_back(std::shared_ptr<StoredValue>(new StoredFieldReferenceValue(referenced, mName, interpreter)));
+                    /*
+                    std::shared_ptr<StoredValue> loaded = referenced->getField(mName);
+
+                    if (!loaded)
+                    {
+                        loaded = std::shared_ptr<StoredValue>(new StoredStringValue("", interpreter));
+                    }
+                    stack.push_back(std::shared_ptr<StoredValue>(loaded));
+                    return 1;
+                    */
+
+                    return 1;
+                }
+
+                // If lookup failed, return empty string
+                stack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue("", interpreter)));
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                std::ostringstream out;
+                out << "SubReference " << mName;
+                return out.str();
+            }
+
+        private:
+            std::string mName;
     };
 }

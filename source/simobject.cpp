@@ -12,39 +12,26 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/codeblock.hpp>
-#include <torquescript/instructions.hpp>
+#include <torquescript/simobject.hpp>
 #include <torquescript/stringhelpers.hpp>
 
 namespace TorqueScript
 {
-    void CodeBlock::addInstructions(const std::vector<std::shared_ptr<Instruction>> instructions)
+    std::shared_ptr<StoredValue> SimObject::getField(const std::string& name)
     {
-        for (auto&& instruction : instructions)
+        const std::string searchName = toLowerCase(name);
+        auto search = mValueMap.find(searchName);
+
+        if (search != mValueMap.end())
         {
-            mInstructions.push_back(instruction);
+            return search->second;
         }
+        return nullptr;
     }
 
-    void CodeBlock::execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack)
+    void SimObject::setField(const std::string& name, std::shared_ptr<StoredValue> value)
     {
-        int instructionIndex = 0;
-
-        while (instructionIndex < mInstructions.size() && instructionIndex >= 0)
-        {
-            std::shared_ptr<Instruction> nextInstruction = mInstructions[instructionIndex];
-            instructionIndex += nextInstruction->execute(interpreter, scope, stack);
-        }
-    }
-
-    std::vector<std::string> CodeBlock::disassemble()
-    {
-        std::vector<std::string> result;
-
-        for (auto&& instruction : mInstructions)
-        {
-            result.push_back(instruction->disassemble());
-        }
-        return result;
+        const std::string setName = toLowerCase(name);
+        mValueMap[setName] = value;
     }
 }

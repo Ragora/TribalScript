@@ -32,7 +32,7 @@ namespace TorqueScript
         }
     }
 
-    void Function::execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack)
+    void Function::execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack, const unsigned int argumentCount)
     {
         int instructionIndex = 0;
 

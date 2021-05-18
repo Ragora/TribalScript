@@ -12,9 +12,11 @@ add_library(TorqueCompiler
     storedstringvalue.cpp
     storedintegervalue.cpp
     storedvalue.cpp
+    simobject.cpp
     storedvaluestack.cpp
     storedglobalreferencevalue.cpp
     storedlocalreferencevalue.cpp
+    storedfieldreferencevalue.cpp
     parsererrorlistener.cpp
     ${ANTLR_Torque_CXX_OUTPUTS}
 )

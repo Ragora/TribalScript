@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <assert.h>
+#include <memory>
 #include <variant>
 #include <string>
 
@@ -23,6 +24,7 @@ namespace TorqueScript
 {
     class Interpreter;
     class ExecutionScope;
+    class SimObject;
 
     /**
      *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
@@ -50,6 +52,11 @@ namespace TorqueScript
             virtual std::string toString(ExecutionScope* scope) = 0;
 
             virtual bool toBoolean(ExecutionScope* scope);
+
+            virtual std::shared_ptr<SimObject> toSimObject(ExecutionScope* scope);
+
+            // In Torque, if we end up trying to set a value of ie. a float it does nothing
+            virtual bool setValue(std::shared_ptr<StoredValue> newValue, ExecutionScope* scope);
 
         protected:
             //! The interpreter this value is associated with. Required for global value lookups.

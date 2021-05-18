@@ -115,7 +115,8 @@ namespace TorqueScript
         }
         functionBody.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(0))); // Add an empty return if we hit end of control but nothing returned
 
-        const std::string functionName = context->LABELNAMESPACESINGLE()->getText();
+        const std::string functionName = context->labelsingle()->getText();
+
         std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
 
         targetFrame.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(functionName, functionBody)));
@@ -170,8 +171,7 @@ namespace TorqueScript
 
     void Compiler::exitCall(TorqueParser::CallContext* context)
     {
-        const std::string calledFunctionName = context->LABELNAMESPACESINGLE()->getText();
-
+        const std::string calledFunctionName = context->labelsingle()->getText();
         std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
         currentFrame.push_back(std::shared_ptr<Instruction>(new CallFunctionInstruction(calledFunctionName, context->expression().size())));
     }
@@ -195,6 +195,10 @@ namespace TorqueScript
             const std::string rawString = context->getText();
             const std::string stringContent = rawString.substr(1, rawString.size() - 2);
             currentFrame.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(stringContent)));
+        }
+        else if (context->LABEL())
+        {
+            currentFrame.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(context->getText())));
         }
         else if (context->INT())
         {
@@ -477,5 +481,17 @@ namespace TorqueScript
         // Output final code
         targetFrame.insert(targetFrame.end(), conditionExpression.begin(), conditionExpression.end());
         targetFrame.insert(targetFrame.end(), forBody.begin(), forBody.end());
+    }
+
+    void Compiler::enterSubreference(TorqueParser::SubreferenceContext* context)
+    {
+
+    }
+
+    void Compiler::exitSubreference(TorqueParser::SubreferenceContext* context)
+    {
+        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
+
+        targetFrame.push_back(std::shared_ptr<Instruction>(new SubReferenceInstruction(context->label()->getText())));
     }
 }

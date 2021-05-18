@@ -96,4 +96,22 @@ namespace TorqueScript
         const std::string key = toLowerCase(name);
         mGlobalVariables[key] = value;
     }
+
+    void Interpreter::setSimObject(const std::string& name, std::shared_ptr<SimObject> value)
+    {
+        const std::string setName = toLowerCase(name);
+        mSimObjects[setName] = value;
+    }
+
+    std::shared_ptr<SimObject> Interpreter::getSimObject(const std::string& name)
+    {
+        const std::string searchedName = toLowerCase(name);
+        auto search = mSimObjects.find(searchedName);
+
+        if (search != mSimObjects.end())
+        {
+            return search->second;
+        }
+        return nullptr;
+    }
 }

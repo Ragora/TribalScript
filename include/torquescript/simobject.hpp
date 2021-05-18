@@ -12,39 +12,30 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/codeblock.hpp>
-#include <torquescript/instructions.hpp>
-#include <torquescript/stringhelpers.hpp>
+#pragma once
+
+#include <map>
+#include <string>
+#include <memory>
+
+#include <torquescript/storedvalue.hpp>
 
 namespace TorqueScript
 {
-    void CodeBlock::addInstructions(const std::vector<std::shared_ptr<Instruction>> instructions)
+    class Interpreter;
+    class ExecutionScope;
+
+    /**
+     *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
+     *  This is the base class and should not be instantiated directly.
+     */
+    class SimObject
     {
-        for (auto&& instruction : instructions)
-        {
-            mInstructions.push_back(instruction);
-        }
-    }
+        public:
+            std::shared_ptr<StoredValue> getField(const std::string& name);
+            void setField(const std::string& name, std::shared_ptr<StoredValue> value);
 
-    void CodeBlock::execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack)
-    {
-        int instructionIndex = 0;
-
-        while (instructionIndex < mInstructions.size() && instructionIndex >= 0)
-        {
-            std::shared_ptr<Instruction> nextInstruction = mInstructions[instructionIndex];
-            instructionIndex += nextInstruction->execute(interpreter, scope, stack);
-        }
-    }
-
-    std::vector<std::string> CodeBlock::disassemble()
-    {
-        std::vector<std::string> result;
-
-        for (auto&& instruction : mInstructions)
-        {
-            result.push_back(instruction->disassemble());
-        }
-        return result;
-    }
+        protected:
+            std::map<std::string, std::shared_ptr<StoredValue>> mValueMap;
+    };
 }
