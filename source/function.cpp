@@ -19,9 +19,14 @@
 
 namespace TorqueScript
 {
-    Function::Function(const std::string& name)
+    Function::Function(const std::string& name) : mName(name)
     {
-        mName = toLowerCase(name);
+
+    }
+
+    Function::Function(const std::string& name, const std::vector<std::string>& parameterNames) : mName(name), mParameterNames(parameterNames)
+    {
+
     }
 
     void Function::addInstructions(const std::vector<std::shared_ptr<Instruction>>& instructions)
@@ -35,6 +40,18 @@ namespace TorqueScript
     void Function::execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack, const unsigned int argumentCount)
     {
         int instructionIndex = 0;
+
+        // Calculate expected versus provided to determine what parameters should be left empty
+        const unsigned int expectedParameterCount = mParameterNames.size();
+        const unsigned int emptyParameters = expectedParameterCount > argumentCount ? expectedParameterCount - argumentCount : 0;
+
+        // Once we know what parameters we're providing for, set the values
+        for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
+        {
+            const std::string nextParameterName = mParameterNames[mParameterNames.size() - (iteration + emptyParameters + 1)];
+            scope->setVariable(nextParameterName, stack.back());
+            stack.pop_back();
+        }
 
         while (instructionIndex < mInstructions.size() && instructionIndex >= 0)
         {

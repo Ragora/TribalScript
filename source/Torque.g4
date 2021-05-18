@@ -41,7 +41,7 @@ newobject : NEW LABEL '(' expression? ')' objectinitialization?
           | NEW '(' expression ')' '(' expression? ')' objectinitialization? ;
 
 // Functions, datablocks, packages
-paramlist : (LOCALVARIABLE | GLOBALVARIABLE) (',' (LOCALVARIABLE | GLOBALVARIABLE))* ;
+paramlist : LOCALVARIABLE (',' LOCALVARIABLE )* ;
 functiondeclaration : FUNCTION labelsingle '(' paramlist? ')' '{' statement* '}' ;
 packagedeclaration : PACKAGE labelsingle '{' functiondeclaration* '}' ';' ;
 

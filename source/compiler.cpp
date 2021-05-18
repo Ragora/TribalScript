@@ -104,6 +104,20 @@ namespace TorqueScript
 
     void Compiler::exitFunctiondeclaration(TorqueParser::FunctiondeclarationContext* context)
     {
+        std::vector<std::string> parameterNames;
+        if (context->paramlist())
+        {
+
+            for (auto parameter : context->paramlist()->LOCALVARIABLE())
+            {
+                // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the % prefix
+                const std::string rawString = parameter->getText();
+                const std::string variableName = rawString.substr(1, rawString.size());
+
+                parameterNames.push_back(variableName);
+            }
+        }
+
         const unsigned int statementCount = context->statement().size();
 
         std::vector<std::shared_ptr<Instruction>> functionBody;
@@ -119,7 +133,7 @@ namespace TorqueScript
 
         std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
 
-        targetFrame.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(functionName, functionBody)));
+        targetFrame.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(functionName, parameterNames, functionBody)));
     }
 
     void Compiler::enterArithmetic(TorqueParser::ArithmeticContext* context)

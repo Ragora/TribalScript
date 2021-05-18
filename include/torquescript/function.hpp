@@ -34,6 +34,7 @@ namespace TorqueScript
     {
         public:
             Function(const std::string& name);
+            Function(const std::string& name, const std::vector<std::string>& parameterNames);
 
             void addInstructions(const std::vector<std::shared_ptr<Instruction>>& instructions);
 
@@ -52,5 +53,6 @@ namespace TorqueScript
             //! All instructions associated with this function.
             std::vector<std::shared_ptr<Instruction>> mInstructions;
 
+            std::vector<std::string> mParameterNames;
     };
 }

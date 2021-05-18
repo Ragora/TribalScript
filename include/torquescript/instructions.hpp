@@ -625,7 +625,7 @@ namespace TorqueScript
     class FunctionDeclarationInstruction : public Instruction
     {
         public:
-            FunctionDeclarationInstruction(const std::string& name, const std::vector<std::shared_ptr<Instruction>>& instructions) : mName(name), mInstructions(instructions)
+            FunctionDeclarationInstruction(const std::string& name, const std::vector<std::string> parameterNames, const std::vector<std::shared_ptr<Instruction>>& instructions) : mName(name), mParameterNames(parameterNames), mInstructions(instructions)
             {
 
             }
@@ -633,7 +633,7 @@ namespace TorqueScript
             virtual int execute(Interpreter* interpreter, ExecutionScope* scope, StoredValueStack& stack) override
             {
                 // Register the function
-                std::shared_ptr<Function> newFunction = std::shared_ptr<Function>(new Function(mName));
+                std::shared_ptr<Function> newFunction = std::shared_ptr<Function>(new Function(mName, mParameterNames));
                 newFunction->addInstructions(mInstructions);
                 interpreter->addFunction(newFunction);
 
@@ -643,7 +643,20 @@ namespace TorqueScript
             virtual std::string disassemble() override
             {
                 std::ostringstream out;
-                out << "FunctionDeclaration " << mName << std::endl;
+                out << "FunctionDeclaration " << mName << "(";
+
+                // Generate parameter list
+                for (auto iterator = mParameterNames.begin(); iterator != mParameterNames.end(); ++iterator)
+                {
+                    if (iterator != mParameterNames.begin())
+                    {
+                        out << ", ";
+                    }
+
+                    out << *iterator;
+                }
+
+                out << ")" << std::endl;
 
                 for (auto&& instruction : mInstructions)
                 {
@@ -654,6 +667,7 @@ namespace TorqueScript
 
         private:
             std::string mName;
+            std::vector<std::string> mParameterNames;
             std::vector<std::shared_ptr<Instruction>> mInstructions;
     };
 
