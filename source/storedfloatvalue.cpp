@@ -35,4 +35,9 @@ namespace TorqueScript
     {
         return std::to_string(mValue);
     }
+
+    std::shared_ptr<StoredValue> StoredFloatValue::getReferencedValueCopy(std::shared_ptr<ExecutionState> state)
+    {
+        return std::shared_ptr<StoredValue>(new StoredFloatValue(mValue));
+    }
 }

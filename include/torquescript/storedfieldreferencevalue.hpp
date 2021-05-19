@@ -37,6 +37,7 @@ namespace TorqueScript
             virtual float toFloat(std::shared_ptr<ExecutionState> state) override;
             virtual std::string toString(std::shared_ptr<ExecutionState> state) override;
             virtual bool setValue(std::shared_ptr<StoredValue> newValue, std::shared_ptr<ExecutionState> state) override ;
+            virtual std::shared_ptr<StoredValue> getReferencedValueCopy(std::shared_ptr<ExecutionState> state) override;
 
         protected:
             //! The Sim object reference.

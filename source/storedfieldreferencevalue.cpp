@@ -62,7 +62,17 @@ namespace TorqueScript
     {
         assert(mSimObject);
 
-        mSimObject->setField(mName, newValue);
+        mSimObject->setField(mName, newValue->getReferencedValueCopy(state));
         return true;
+    }
+
+    std::shared_ptr<StoredValue> StoredFieldReferenceValue::getReferencedValueCopy(std::shared_ptr<ExecutionState> state)
+    {
+        assert(mSimObject);
+
+        std::shared_ptr<StoredValue> referenced = mSimObject->getField(mName);
+        assert(referenced);
+
+        return referenced->getReferencedValueCopy(state);
     }
 }

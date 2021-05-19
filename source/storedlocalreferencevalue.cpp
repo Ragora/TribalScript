@@ -54,7 +54,15 @@ namespace TorqueScript
 
     bool StoredLocalReferenceValue::setValue(std::shared_ptr<StoredValue> value, std::shared_ptr<ExecutionState> state)
     {
-        state->mExecutionScope.setVariable(mName, value);
+        state->mExecutionScope.setVariable(mName, value->getReferencedValueCopy(state));
         return true;
+    }
+
+    std::shared_ptr<StoredValue> StoredLocalReferenceValue::getReferencedValueCopy(std::shared_ptr<ExecutionState> state)
+    {
+        std::shared_ptr<StoredValue> loaded = state->mExecutionScope.getVariable(mName);
+        assert(loaded);
+
+        return loaded->getReferencedValueCopy(state);
     }
 }

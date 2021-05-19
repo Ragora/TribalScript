@@ -49,4 +49,9 @@ namespace TorqueScript
             return 0; // In Torque if the value cannot be converted it is treated as zero
         }
     }
+
+    std::shared_ptr<StoredValue> StoredStringValue::getReferencedValueCopy(std::shared_ptr<ExecutionState> state)
+    {
+        return std::shared_ptr<StoredValue>(new StoredStringValue(mValue));
+    }
 }

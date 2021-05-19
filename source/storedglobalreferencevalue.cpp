@@ -56,7 +56,15 @@ namespace TorqueScript
 
     bool StoredGlobalReferenceValue::setValue(std::shared_ptr<StoredValue> value, std::shared_ptr<ExecutionState> state)
     {
-        state->mInterpreter->setGlobal(mName, value);
+        state->mInterpreter->setGlobal(mName, value->getReferencedValueCopy(state));
         return true;
+    }
+
+    std::shared_ptr<StoredValue> StoredGlobalReferenceValue::getReferencedValueCopy(std::shared_ptr<ExecutionState> state)
+    {
+        std::shared_ptr<StoredValue> loaded = state->mInterpreter->getGlobal(mName);
+        assert(loaded);
+
+        return loaded->getReferencedValueCopy(state);
     }
 }
