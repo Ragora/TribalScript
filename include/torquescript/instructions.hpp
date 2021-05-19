@@ -44,7 +44,7 @@ namespace TorqueScript
             /**
              *  @brief Main execution method of the instruction. This serves as our
              *  switching statement that determines how opcodes will behave.
-             *  @param bitstream The bitstream acting as our current stack.
+             *  @param state The current execution state to act upon.
              */
             virtual int execute(std::shared_ptr<ExecutionState> state) = 0;
 
