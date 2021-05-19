@@ -395,12 +395,20 @@ namespace TorqueScript
         whileExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(whileBody.size() + 2)));
 
         // Our body should return to the expression
+        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
+
         const unsigned int jumpTarget = whileExpression.size() + whileBody.size();
         whileBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(-jumpTarget)));
         whileBody.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
 
-        // Push generated instructions back
-        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
+        whileBody.push_back(std::shared_ptr<Instruction>(new PopLoopInstruction()));
+        targetFrame.push_back(std::shared_ptr<Instruction>(new PushLoopInstruction(whileExpression.size() + whileBody.size())));
+
+        // Set comments
+        whileExpression[0]->mComment = "Begin While";
+        whileBody[whileBody.size() - 1]->mComment = "End While";
+
+        // Push generated instructions
         targetFrame.insert(targetFrame.end(), whileExpression.begin(), whileExpression.end());
         targetFrame.insert(targetFrame.end(), whileBody.begin(), whileBody.end());
     }
@@ -491,6 +499,13 @@ namespace TorqueScript
 
         // Check if our expression is false
         conditionExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(forBody.size())));
+
+        forBody.push_back(std::shared_ptr<Instruction>(new PopLoopInstruction()));
+        targetFrame.push_back(std::shared_ptr<Instruction>(new PushLoopInstruction(conditionExpression.size() + forBody.size())));
+
+        // Set comments
+        conditionExpression[0]->mComment = "Begin For";
+        forBody[forBody.size() - 1]->mComment = "End For";
 
         // Output final code
         targetFrame.insert(targetFrame.end(), conditionExpression.begin(), conditionExpression.end());
@@ -600,26 +615,6 @@ namespace TorqueScript
 
         targetFrame.insert(targetFrame.end(), elseIfCode.begin(), elseIfCode.end());
         targetFrame.insert(targetFrame.end(), elseBody.begin(), elseBody.end());
-    }
-
-    void Compiler::enterElseifcontrol(TorqueParser::ElseifcontrolContext* context)
-    {
-        //this->pushInstructionFrame();
-    }
-
-    void Compiler::exitElseifcontrol(TorqueParser::ElseifcontrolContext* context)
-    {
-
-    }
-
-    void Compiler::enterElsecontrol(TorqueParser::ElsecontrolContext* context)
-    {
-        //this->pushInstructionFrame();
-    }
-
-    void Compiler::exitElsecontrol(TorqueParser::ElsecontrolContext* context)
-    {
-
     }
 
     void Compiler::enterReturncontrol(TorqueParser::ReturncontrolContext* context)

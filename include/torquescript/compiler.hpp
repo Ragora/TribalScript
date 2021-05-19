@@ -104,12 +104,6 @@ namespace TorqueScript
             virtual void enterIfcontrol(TorqueParser::IfcontrolContext* context) override;
             virtual void exitIfcontrol(TorqueParser::IfcontrolContext* context) override;
 
-            virtual void enterElseifcontrol(TorqueParser::ElseifcontrolContext* context) override;
-            virtual void exitElseifcontrol(TorqueParser::ElseifcontrolContext* context) override;
-
-            virtual void enterElsecontrol(TorqueParser::ElsecontrolContext* context) override;
-            virtual void exitElsecontrol(TorqueParser::ElsecontrolContext* context) override;
-
             virtual void enterReturncontrol(TorqueParser::ReturncontrolContext* context) override;
             virtual void exitReturncontrol(TorqueParser::ReturncontrolContext* context) override;
 

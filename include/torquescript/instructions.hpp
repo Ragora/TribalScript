@@ -757,4 +757,42 @@ namespace TorqueScript
                 return out.str();
             }
     };
+
+    class PushLoopInstruction : public Instruction
+    {
+        public:
+            PushLoopInstruction(const unsigned int loopSize) : mLoopSize(loopSize)
+            {
+
+            }
+
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
+            {
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                std::ostringstream out;
+                out << "PushLoop " << mLoopSize;
+                return out.str();
+            }
+
+        private:
+            unsigned int mLoopSize;
+    };
+
+    class PopLoopInstruction : public Instruction
+    {
+        public:
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
+            {
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                return "PopLoop";
+            }
+    };
 }
