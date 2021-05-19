@@ -43,7 +43,7 @@ namespace TorqueScript
              *  @brief Default implementation will execute virtual instructions but can be overriden to implement native
              *  functions.
              */
-            virtual void execute(ExecutionState* state, const unsigned int argumentCount);
+            virtual void execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount);
 
             std::string getName();
 

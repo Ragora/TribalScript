@@ -17,7 +17,7 @@
 
 namespace TorqueScript
 {
-    int StoredValueStack::popInteger(ExecutionState* state)
+    int StoredValueStack::popInteger(std::shared_ptr<ExecutionState> state)
     {
         if (this->empty())
         {
@@ -29,7 +29,7 @@ namespace TorqueScript
         return result;
     }
 
-    std::string StoredValueStack::popString(ExecutionState* state)
+    std::string StoredValueStack::popString(std::shared_ptr<ExecutionState> state)
     {
         if (this->empty())
         {
@@ -41,7 +41,7 @@ namespace TorqueScript
         return result;
     }
 
-    float StoredValueStack::popFloat(ExecutionState* state)
+    float StoredValueStack::popFloat(std::shared_ptr<ExecutionState> state)
     {
         if (this->empty())
         {

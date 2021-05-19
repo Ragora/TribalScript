@@ -29,6 +29,7 @@ namespace TorqueScript
     //! Forward declaration to deal with circular dependencies.
     class Compiler;
     class CodeBlock;
+    class ExecutionState;
 
     /**
      *  @brief The interpreter class represents a high level instance of the TorqueScript interpreter.
@@ -47,7 +48,8 @@ namespace TorqueScript
             std::shared_ptr<SimObject> getSimObject(const std::string& name);
 
             CodeBlock* compile(const std::string& input);
-            void evaluate(const std::string& input);
+            void evaluate(const std::string& input, std::shared_ptr<ExecutionState> state = nullptr);
+            void execute(const std::string& path, std::shared_ptr<ExecutionState> state = nullptr);
 
             /**
              *  @brief Registers a new function to the interpreter. Ownership is transferred to the interpreter at this
@@ -56,6 +58,8 @@ namespace TorqueScript
             void addFunction(std::shared_ptr<Function> function);
 
             std::shared_ptr<Function> getFunction(const std::string& name);
+
+            std::shared_ptr<ExecutionState> getExecutionState();
 
         private:
             //! Keep a ready instance of the compiler on hand as it is reusable.

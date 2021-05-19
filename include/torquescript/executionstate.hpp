@@ -29,13 +29,13 @@ namespace TorqueScript
      */
     struct ExecutionState
     {
-        ExecutionState(Interpreter* interpreter, ExecutionScope* scope) : mInterpreter(interpreter), mExecutionScope(scope), mVirtualDepth(0)
+        ExecutionState(Interpreter* interpreter) : mInterpreter(interpreter), mVirtualDepth(0)
         {
 
         }
 
         Interpreter* mInterpreter;
-        ExecutionScope* mExecutionScope;
+        ExecutionScope mExecutionScope;
         StoredValueStack mStack;
 
         //! Virtual call stack depth. Used to enforce maximums on recursion.

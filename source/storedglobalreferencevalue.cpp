@@ -23,7 +23,7 @@ namespace TorqueScript
 
     }
 
-    float StoredGlobalReferenceValue::toFloat(ExecutionState* state)
+    float StoredGlobalReferenceValue::toFloat(std::shared_ptr<ExecutionState> state)
     {
         std::shared_ptr<StoredValue> loaded = state->mInterpreter->getGlobal(mName);
         if (loaded)
@@ -33,7 +33,7 @@ namespace TorqueScript
         return 0.0f; // In Torque, if we're loading as a float but the variable does not exist we treat it as 0
     }
 
-    int StoredGlobalReferenceValue::toInteger(ExecutionState* state)
+    int StoredGlobalReferenceValue::toInteger(std::shared_ptr<ExecutionState> state)
     {
         std::shared_ptr<StoredValue> loaded = state->mInterpreter->getGlobal(mName);
         if (loaded)
@@ -43,7 +43,7 @@ namespace TorqueScript
         return 0; // In Torque, if we're loading as a float but the variable does not exist we treat it as 0
     }
 
-    std::string StoredGlobalReferenceValue::toString(ExecutionState* state)
+    std::string StoredGlobalReferenceValue::toString(std::shared_ptr<ExecutionState> state)
     {
         std::shared_ptr<StoredValue> loaded = state->mInterpreter->getGlobal(mName);
 
@@ -54,7 +54,7 @@ namespace TorqueScript
         return ""; // In Torque, if we're loading a string but the variable does not exist we treat it as ""
     }
 
-    bool StoredGlobalReferenceValue::setValue(std::shared_ptr<StoredValue> value, ExecutionState* state)
+    bool StoredGlobalReferenceValue::setValue(std::shared_ptr<StoredValue> value, std::shared_ptr<ExecutionState> state)
     {
         state->mInterpreter->setGlobal(mName, value);
         return true;

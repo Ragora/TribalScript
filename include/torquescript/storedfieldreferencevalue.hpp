@@ -33,10 +33,10 @@ namespace TorqueScript
         public:
             StoredFieldReferenceValue(std::shared_ptr<SimObject> object, const std::string& name);
 
-            virtual int toInteger(ExecutionState* state) override;
-            virtual float toFloat(ExecutionState* state) override;
-            virtual std::string toString(ExecutionState* state) override;
-            virtual bool setValue(std::shared_ptr<StoredValue> newValue, ExecutionState* state) override ;
+            virtual int toInteger(std::shared_ptr<ExecutionState> state) override;
+            virtual float toFloat(std::shared_ptr<ExecutionState> state) override;
+            virtual std::string toString(std::shared_ptr<ExecutionState> state) override;
+            virtual bool setValue(std::shared_ptr<StoredValue> newValue, std::shared_ptr<ExecutionState> state) override ;
 
         protected:
             //! The Sim object reference.

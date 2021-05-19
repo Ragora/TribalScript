@@ -47,7 +47,7 @@ namespace TorqueScript
             /**
              *  @brief Executes all instructions contained in mInstructions within the provided context.
              */
-            void execute(ExecutionState* state);
+            void execute(std::shared_ptr<ExecutionState> state);
 
             /**
              *  @brief Produces a disassembly of the CodeBlock code.

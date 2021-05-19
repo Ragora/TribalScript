@@ -32,11 +32,11 @@ namespace TorqueScript
         public:
             StoredLocalReferenceValue(const std::string& name);
 
-            virtual int toInteger(ExecutionState* state) override;
-            virtual float toFloat(ExecutionState* state) override;
-            virtual std::string toString(ExecutionState* state) override;
+            virtual int toInteger(std::shared_ptr<ExecutionState> state) override;
+            virtual float toFloat(std::shared_ptr<ExecutionState> state) override;
+            virtual std::string toString(std::shared_ptr<ExecutionState> state) override;
 
-            bool setValue(std::shared_ptr<StoredValue> value, ExecutionState* state) override;
+            bool setValue(std::shared_ptr<StoredValue> value, std::shared_ptr<ExecutionState> state) override;
 
         protected:
             //! The name of the referenced variable.

@@ -16,7 +16,6 @@
 #include <torquescript/interpreter.hpp>
 #include <torquescript/executionscope.hpp>
 #include <torquescript/codeblock.hpp>
-#include <torquescript/storedvaluestack.hpp>
 #include <torquescript/executionstate.hpp>
 
 int main(int argc, char* argv[])
@@ -29,15 +28,12 @@ int main(int argc, char* argv[])
     std::istreambuf_iterator<char> begin(std::cin), end;
     std::string evaluated(begin, end);
 
-    TorqueScript::StoredValueStack stack;
     TorqueScript::CodeBlock* compiled = interpreter.compile(evaluated);
 
     if (compiled)
     {
-        TorqueScript::ExecutionScope scope;
-        TorqueScript::ExecutionState state(&interpreter, &scope);
-
-        compiled->execute(&state);
+        std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+        compiled->execute(state);
 
         // Produce a disassembly for debugging
         std::cout << std::endl << "Disassembly: " << std::endl;

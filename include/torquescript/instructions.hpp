@@ -46,7 +46,7 @@ namespace TorqueScript
              *  switching statement that determines how opcodes will behave.
              *  @param bitstream The bitstream acting as our current stack.
              */
-            virtual int execute(ExecutionState* state) = 0;
+            virtual int execute(std::shared_ptr<ExecutionState> state) = 0;
 
             /**
              *  @brief Helper routine to produce a disassembly for this instruction.
@@ -66,7 +66,7 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(mParameter)));
                 return 1;
@@ -96,7 +96,7 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(mParameter)));
                 return 1;
@@ -126,7 +126,7 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(mParameter)));
                 return 1;
@@ -156,7 +156,7 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredLocalReferenceValue(mParameter)));
                 return 1;
@@ -186,7 +186,7 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredGlobalReferenceValue(mParameter)));
                 return 1;
@@ -210,7 +210,7 @@ namespace TorqueScript
     class AddAssignmentInstruction : public Instruction
     {
         public:
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 assert(state->mStack.size() >= 2);
 
@@ -247,7 +247,7 @@ namespace TorqueScript
     class AssignmentInstruction : public Instruction
     {
         public:
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 assert(state->mStack.size() >= 2);
 
@@ -280,7 +280,7 @@ namespace TorqueScript
     class ConcatInstruction : public Instruction
     {
         public:
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 assert(state->mStack.size() >= 2);
 
@@ -309,7 +309,7 @@ namespace TorqueScript
     class NegateInstruction : public Instruction
     {
         public:
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 assert(state->mStack.size() >= 1);
 
@@ -338,7 +338,7 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 // Ensure we have a string value here - it should be impossible to get anything else as a call name
                 // assert(calledFunctionParameter->getVariableType() == StoredValue::VariableType::STRING);
@@ -375,7 +375,7 @@ namespace TorqueScript
     class AddInstruction : public Instruction
     {
         public:
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 assert(state->mStack.size() >= 2);
 
@@ -405,7 +405,7 @@ namespace TorqueScript
     class LessThanInstruction : public Instruction
     {
         public:
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 assert(state->mStack.size() >= 2);
 
@@ -435,7 +435,7 @@ namespace TorqueScript
     class BitwiseAndInstruction : public Instruction
     {
         public:
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 assert(state->mStack.size() >= 2);
 
@@ -465,7 +465,7 @@ namespace TorqueScript
     class MultiplyInstruction : public Instruction
     {
         public:
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 assert(state->mStack.size() >= 2);
 
@@ -496,7 +496,7 @@ namespace TorqueScript
     class PopInstruction : public Instruction
     {
         public:
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 assert(state->mStack.size() >= 1);
                 state->mStack.pop_back();
@@ -518,7 +518,7 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 return mOffset;
             };
@@ -543,7 +543,7 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 assert(state->mStack.size() >= 1);
 
@@ -577,7 +577,7 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 assert(state->mStack.size() >= 1);
 
@@ -606,7 +606,7 @@ namespace TorqueScript
     class NOPInstruction : public Instruction
     {
         public:
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 return 1;
             };
@@ -625,7 +625,7 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 // Register the function
                 std::shared_ptr<Function> newFunction = std::shared_ptr<Function>(new Function(mName, mParameterNames));
@@ -674,7 +674,7 @@ namespace TorqueScript
 
             }
 
-            virtual int execute(ExecutionState* state) override
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 assert(state->mStack.size() >= 1);
 

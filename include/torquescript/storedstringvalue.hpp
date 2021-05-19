@@ -31,9 +31,9 @@ namespace TorqueScript
         public:
             StoredStringValue(const std::string& value);
 
-            virtual int toInteger(ExecutionState* state) override;
-            virtual float toFloat(ExecutionState* state) override;
-            virtual std::string toString(ExecutionState* state) override;
+            virtual int toInteger(std::shared_ptr<ExecutionState> state) override;
+            virtual float toFloat(std::shared_ptr<ExecutionState> state) override;
+            virtual std::string toString(std::shared_ptr<ExecutionState> state) override;
 
         protected:
             //! The stored string value.

@@ -26,7 +26,7 @@ namespace TorqueScript
         }
     }
 
-    void CodeBlock::execute(ExecutionState* state)
+    void CodeBlock::execute(std::shared_ptr<ExecutionState> state)
     {
         int instructionIndex = 0;
 

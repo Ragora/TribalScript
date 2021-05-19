@@ -22,9 +22,9 @@ namespace TorqueScript
 
     }
 
-    float StoredLocalReferenceValue::toFloat(ExecutionState* state)
+    float StoredLocalReferenceValue::toFloat(std::shared_ptr<ExecutionState> state)
     {
-        std::shared_ptr<StoredValue> loaded = state->mExecutionScope->getVariable(mName);
+        std::shared_ptr<StoredValue> loaded = state->mExecutionScope.getVariable(mName);
         if (loaded)
         {
             return loaded->toFloat(state);
@@ -32,9 +32,9 @@ namespace TorqueScript
         return 0.0f; // In Torque, if we're loading as a float but the variable does not exist we treat it as 0
     }
 
-    int StoredLocalReferenceValue::toInteger(ExecutionState* state)
+    int StoredLocalReferenceValue::toInteger(std::shared_ptr<ExecutionState> state)
     {
-        std::shared_ptr<StoredValue> loaded = state->mExecutionScope->getVariable(mName);
+        std::shared_ptr<StoredValue> loaded = state->mExecutionScope.getVariable(mName);
         if (loaded)
         {
             return loaded->toInteger(state);
@@ -42,9 +42,9 @@ namespace TorqueScript
         return 0; // In Torque, if we're loading as a float but the variable does not exist we treat it as 0
     }
 
-    std::string StoredLocalReferenceValue::toString(ExecutionState* state)
+    std::string StoredLocalReferenceValue::toString(std::shared_ptr<ExecutionState> state)
     {
-        std::shared_ptr<StoredValue> loaded = state->mExecutionScope->getVariable(mName);
+        std::shared_ptr<StoredValue> loaded = state->mExecutionScope.getVariable(mName);
         if (loaded)
         {
             return loaded->toString(state);
@@ -52,9 +52,9 @@ namespace TorqueScript
         return ""; // In Torque, if we're loading a string but the variable does not exist we treat it as ""
     }
 
-    bool StoredLocalReferenceValue::setValue(std::shared_ptr<StoredValue> value, ExecutionState* state)
+    bool StoredLocalReferenceValue::setValue(std::shared_ptr<StoredValue> value, std::shared_ptr<ExecutionState> state)
     {
-        state->mExecutionScope->setVariable(mName, value);
+        state->mExecutionScope.setVariable(mName, value);
         return true;
     }
 }

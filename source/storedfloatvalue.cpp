@@ -21,17 +21,17 @@ namespace TorqueScript
 
     }
 
-    float StoredFloatValue::toFloat(ExecutionState* scope)
+    float StoredFloatValue::toFloat(std::shared_ptr<ExecutionState> state)
     {
         return mValue;
     }
 
-    int StoredFloatValue::toInteger(ExecutionState* state)
+    int StoredFloatValue::toInteger(std::shared_ptr<ExecutionState> state)
     {
         return (int)mValue;
     }
 
-    std::string StoredFloatValue::toString(ExecutionState* state)
+    std::string StoredFloatValue::toString(std::shared_ptr<ExecutionState> state)
     {
         return std::to_string(mValue);
     }

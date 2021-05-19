@@ -22,7 +22,7 @@ namespace TorqueScript
 
     }
 
-    float StoredFieldReferenceValue::toFloat(ExecutionState* state)
+    float StoredFieldReferenceValue::toFloat(std::shared_ptr<ExecutionState> state)
     {
         assert(mSimObject);
 
@@ -34,7 +34,7 @@ namespace TorqueScript
         return 0.0f;
     }
 
-    std::string StoredFieldReferenceValue::toString(ExecutionState* state)
+    std::string StoredFieldReferenceValue::toString(std::shared_ptr<ExecutionState> state)
     {
         assert(mSimObject);
 
@@ -46,7 +46,7 @@ namespace TorqueScript
         return "";
     }
 
-    int StoredFieldReferenceValue::toInteger(ExecutionState* state)
+    int StoredFieldReferenceValue::toInteger(std::shared_ptr<ExecutionState> state)
     {
         assert(mSimObject);
 
@@ -58,7 +58,7 @@ namespace TorqueScript
         return 0;
     }
 
-    bool StoredFieldReferenceValue::setValue(std::shared_ptr<StoredValue> newValue, ExecutionState* state)
+    bool StoredFieldReferenceValue::setValue(std::shared_ptr<StoredValue> newValue, std::shared_ptr<ExecutionState> state)
     {
         assert(mSimObject);
 

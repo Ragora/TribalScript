@@ -21,7 +21,7 @@ namespace TorqueScript
 
     }
 
-    float StoredStringValue::toFloat(ExecutionState* state)
+    float StoredStringValue::toFloat(std::shared_ptr<ExecutionState> state)
     {
         try
         {
@@ -33,12 +33,12 @@ namespace TorqueScript
         }
     }
 
-    std::string StoredStringValue::toString(ExecutionState* state)
+    std::string StoredStringValue::toString(std::shared_ptr<ExecutionState> state)
     {
         return mValue;
     }
 
-    int StoredStringValue::toInteger(ExecutionState* state)
+    int StoredStringValue::toInteger(std::shared_ptr<ExecutionState> state)
     {
         try
         {

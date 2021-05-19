@@ -18,18 +18,18 @@
 
 namespace TorqueScript
 {
-    bool StoredValue::toBoolean(ExecutionState* state)
+    bool StoredValue::toBoolean(std::shared_ptr<ExecutionState> state)
     {
         return this->toInteger(state) != 0;
     }
 
-    std::shared_ptr<SimObject> StoredValue::toSimObject(ExecutionState* state)
+    std::shared_ptr<SimObject> StoredValue::toSimObject(std::shared_ptr<ExecutionState> state)
     {
         const std::string lookupName = this->toString(state);
         return state->mInterpreter->getSimObject(lookupName);
     }
 
-    bool StoredValue::setValue(std::shared_ptr<StoredValue> newValue, ExecutionState* state)
+    bool StoredValue::setValue(std::shared_ptr<StoredValue> newValue, std::shared_ptr<ExecutionState> state)
     {
         return false;
     }

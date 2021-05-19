@@ -37,9 +37,9 @@ namespace TorqueScript
         }
     }
 
-    void Function::execute(ExecutionState* state, const unsigned int argumentCount)
+    void Function::execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
-        state->mExecutionScope->push();
+        state->mExecutionScope.push();
 
         int instructionIndex = 0;
 
@@ -64,7 +64,7 @@ namespace TorqueScript
         for (unsigned int iteration = 0; iteration < adjustedArgumentCount; ++iteration)
         {
             const std::string nextParameterName = mParameterNames[mParameterNames.size() - (iteration + emptyParameters + 1)];
-            state->mExecutionScope->setVariable(nextParameterName, state->mStack.back());
+            state->mExecutionScope.setVariable(nextParameterName, state->mStack.back());
             state->mStack.pop_back();
         }
 
@@ -74,7 +74,7 @@ namespace TorqueScript
             instructionIndex += nextInstruction->execute(state);
         }
 
-        state->mExecutionScope->pop();
+        state->mExecutionScope.pop();
     }
 
     std::string Function::getName()

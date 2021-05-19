@@ -32,7 +32,7 @@ namespace TorqueScript
         public:
             Echo() : Function("echo") { }
 
-            virtual void execute(ExecutionState* state, const unsigned int argumentCount) override
+            virtual void execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
             {
                 std::string outputString = "";
 
