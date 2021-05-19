@@ -216,7 +216,7 @@ namespace TorqueScript
         }
         else if (context->INT())
         {
-            currentFrame.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(std::stoi(context->getText()))));
+            currentFrame.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(std::stoi(context->INT()->getText()))));
         }
         else if (context->LOCALVARIABLE())
         {
