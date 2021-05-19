@@ -683,12 +683,54 @@ namespace TorqueScript
 
     void Compiler::enterSwitchcontrol(TorqueParser::SwitchcontrolContext* context)
     {
-        throw std::runtime_error("Switch Statements not Implemented Yet");
+
     }
 
     void Compiler::exitSwitchcontrol(TorqueParser::SwitchcontrolContext* context)
     {
+        // Load default case if present
+        std::vector<std::shared_ptr<Instruction>> defaultCaseInstructions;
+        if (context->defaultcase())
+        {
+            unsigned int statementCount = context->defaultcase()->statement().size();
 
+            for (unsigned int iteration = 0; iteration < statementCount; ++iteration)
+            {
+                std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+                defaultCaseInstructions.insert(defaultCaseInstructions.begin(), currentFrame.begin(), currentFrame.end());
+                this->popInstructionFrame();
+            }
+        }
+        defaultCaseInstructions.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
+
+        // Now enumerate all case statements
+        std::vector<std::shared_ptr<Instruction>> caseInstructions;
+
+        unsigned int caseCount = context->switchcase().size();
+        for (unsigned int iteration = 0; iteration < caseCount; ++iteration)
+        {
+            std::vector<std::shared_ptr<Instruction>> currentCaseExpression;
+            std::vector<std::shared_ptr<Instruction>> currentCaseInstructions;
+
+            auto caseContext = context->switchcase()[iteration];
+            const unsigned int statementCount = caseContext->statement().size();
+
+            for (unsigned int statementIteration = 0; statementIteration < statementCount; ++statementIteration)
+            {
+                std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+                currentCaseInstructions.insert(currentCaseInstructions.begin(), currentFrame.begin(), currentFrame.end());
+                this->popInstructionFrame();
+            }
+
+            // Load the case expression(s)
+            const unsigned int caseExpressionCount = caseContext->switchcasealternative().size();
+            std::cout << "ALTS:" << caseExpressionCount << std::endl;
+
+
+            //std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+            //currentCaseExpression.insert(currentCaseExpression.begin(), currentFrame.begin(), currentFrame.end());
+            //this->popInstructionFrame();
+        }
     }
 
     void Compiler::enterNewobject(TorqueParser::NewobjectContext* context)
