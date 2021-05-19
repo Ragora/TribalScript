@@ -196,9 +196,9 @@ COLOR_ESCAPE
     :   '\\c' (DIGIT|'p'|'o') ;
 
 EXP :   ('E' | 'e') ('+' | '-')? INT ;
-FLOAT:  DIGIT+ '.' DIGIT* EXP? [Ll]?
-    |   DIGIT+ EXP? [Ll]?
-    |   '.' DIGIT+ EXP? [Ll]?
+FLOAT:  DIGIT+ '.' DIGIT* EXP?
+    |   DIGIT+ EXP?
+    |   '.' DIGIT+ EXP?
     ;
 
 // Ignore line comments
