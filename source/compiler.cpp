@@ -201,7 +201,7 @@ namespace TorqueScript
 
         if (context->FLOAT())
         {
-            currentFrame.push_back(std::shared_ptr<Instruction>(new PushFloatInstruction(std::stof(context->getText()))));
+            currentFrame.push_back(std::shared_ptr<Instruction>(new PushFloatInstruction(std::stof(context->FLOAT()->getText()))));
         }
         else if (context->STRING())
         {
