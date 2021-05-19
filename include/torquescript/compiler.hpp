@@ -110,6 +110,9 @@ namespace TorqueScript
             virtual void enterEquality(TorqueParser::EqualityContext* context) override;
             virtual void exitEquality(TorqueParser::EqualityContext* context) override;
 
+            virtual void enterArray(TorqueParser::ArrayContext* context) override;
+            virtual void exitArray(TorqueParser::ArrayContext* context) override;
+
         private:
 
             void pushInstructionFrame();

@@ -795,4 +795,64 @@ namespace TorqueScript
                 return "PopLoop";
             }
     };
+
+    /**
+     *  @brief Calls a function registered in memory somewhere.
+     */
+    class AccessArrayInstruction : public Instruction
+    {
+        public:
+            AccessArrayInstruction(const std::string& name, const unsigned int argc, bool global) : mName(name), mArgc(argc), mGlobal(global)
+            {
+
+            }
+
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
+            {
+                // When we encounter this instruction, we generate a new variable reference by appending all string representations together
+                // This is what T2 does - it has no concept of arrays despite pretending to
+
+                // FIXME: With more clever use of the ostream we might be able to make this work without the vector
+                std::vector<std::string> variableComponents;
+                for (unsigned int iteration = 0; iteration < mArgc; ++iteration)
+                {
+                    variableComponents.push_back(state->mStack.popString(state));
+                }
+
+                std::ostringstream out;
+                out << mName;
+                for (auto iterator = variableComponents.rbegin(); iterator != variableComponents.rend(); ++iterator)
+                {
+                    if (iterator != variableComponents.rbegin())
+                    {
+                        out << "_";
+                    }
+                    out << *iterator;
+                }
+
+                std::cout << "GEN KEY: " << out.str() << std::endl;
+                std::cout << "GLOBAL: " << mGlobal << std::endl;
+                if (mGlobal)
+                {
+                    state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredGlobalReferenceValue(out.str())));
+                }
+                else
+                {
+                    state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredLocalReferenceValue(out.str())));
+                }
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                std::ostringstream out;
+                out << "AccessArray " << mName << " argc=" << mArgc << " global=" << mGlobal;
+                return out.str();
+            }
+
+            private:
+                std::string mName;
+                unsigned int mArgc;
+                bool mGlobal;
+    };
 }

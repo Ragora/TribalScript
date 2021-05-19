@@ -69,7 +69,7 @@ controlexpression : expression ;
 expression : (op=NOT|op=MINUS) expression                                                        # unary
            | expression (op=PLUSPLUS|op=MINUSMINUS)                                              # unary
            | labelsingle '(' expression? (',' expression)* ')'                                   # call
-           | expression '[' expression (',' expression)* ']'                                     # array
+           | (GLOBALVARIABLE | LOCALVARIABLE) '[' expression (',' expression)* ']'                                     # array
            | expression ('.' label)                                                              # subreference
            | '(' expression ')'                                                                  # parenthesis
            | expression (op=MULT|op=DIV|op=MODULUS) expression                                   # arithmetic

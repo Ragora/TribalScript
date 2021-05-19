@@ -76,6 +76,7 @@ namespace TorqueScript
 
     std::shared_ptr<StoredValue> Interpreter::getGlobal(const std::string& name)
     {
+        std::cout << "ACCESS GLOBAL: " << name << std::endl;
         const std::string key = toLowerCase(name);
 
         auto search = mGlobalVariables.find(key);
@@ -113,6 +114,7 @@ namespace TorqueScript
 
     void Interpreter::setGlobal(const std::string& name, std::shared_ptr<StoredValue> value)
     {
+        std::cout << "SETTING GLOBAL " << name << std::endl;
         const std::string key = toLowerCase(name);
         mGlobalVariables[key] = value;
     }

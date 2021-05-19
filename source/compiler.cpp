@@ -227,7 +227,7 @@ namespace TorqueScript
         }
         else if (context->GLOBALVARIABLE())
         {
-            // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the % prefix
+            // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the $ prefix
             const std::string rawString = context->getText();
             const std::string variableName = rawString.substr(1, rawString.size());
             currentFrame.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(variableName)));
@@ -645,5 +645,36 @@ namespace TorqueScript
         {
             throw std::runtime_error("Unhandled equality op!");
         }
+    }
+
+    void Compiler::enterArray(TorqueParser::ArrayContext* context)
+    {
+
+    }
+
+    void Compiler::exitArray(TorqueParser::ArrayContext* context)
+    {
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+
+        // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the $ or % prefix
+        std::string name = "";
+        bool global = false;
+        if (context->GLOBALVARIABLE())
+        {
+            global = true;
+            const std::string rawString = context->GLOBALVARIABLE()->getText();
+            name = rawString.substr(1, rawString.size());
+        }
+        else if (context->LOCALVARIABLE())
+        {
+            const std::string rawString = context->LOCALVARIABLE()->getText();
+            name = rawString.substr(1, rawString.size());
+        }
+        else
+        {
+            throw std::runtime_error("Encountered unknown variable reference type in array!");
+        }
+
+        currentFrame.push_back(std::shared_ptr<Instruction>(new AccessArrayInstruction(name, context->expression().size(), global)));
     }
 }
