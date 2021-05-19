@@ -52,6 +52,9 @@ namespace TorqueScript
              *  @brief Helper routine to produce a disassembly for this instruction.
              */
             virtual std::string disassemble() = 0;
+
+            //! Compiler generated comment, used for generating easier to follow disassembly
+            std::string mComment;
     };
 
     /**
@@ -430,6 +433,36 @@ namespace TorqueScript
     };
 
     /**
+     *  @brief Compares two values on the stack using an equality.
+     */
+    class EqualsInstruction : public Instruction
+    {
+        public:
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
+            {
+                assert(state->mStack.size() >= 2);
+
+                std::shared_ptr<StoredValue> rhsStored = state->mStack.back();
+                state->mStack.pop_back();
+                std::shared_ptr<StoredValue> lhsStored = state->mStack.back();
+                state->mStack.pop_back();
+
+                // NOTE: For now we normalize to floats
+                float lhs = lhsStored->toFloat(state);
+                float rhs = rhsStored->toFloat(state);
+
+                const int result = lhs == rhs ? 1 : 0;
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(result)));
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                return "Equals";
+            }
+    };
+
+    /**
      *  @brief Performs a bitwise AND against two values.
      */
     class BitwiseAndInstruction : public Instruction
@@ -651,11 +684,16 @@ namespace TorqueScript
                     out << *iterator;
                 }
 
+                // Output all instructions
                 out << ")" << std::endl;
-
                 for (auto&& instruction : mInstructions)
                 {
-                    out << "    " << instruction->disassemble() << std::endl;
+                    out << "    " << instruction->disassemble();
+                    if (instruction->mComment != "")
+                    {
+                        out << " // " << instruction->mComment;
+                    }
+                    out << std::endl;
                 }
                 return out.str();
             }
@@ -702,5 +740,21 @@ namespace TorqueScript
 
         private:
             std::string mName;
+    };
+
+    class ReturnInstruction : public Instruction
+    {
+        public:
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
+            {
+                return 0;
+            };
+
+            virtual std::string disassemble() override
+            {
+                std::ostringstream out;
+                out << "Return";
+                return out.str();
+            }
     };
 }

@@ -71,7 +71,13 @@ namespace TorqueScript
         while (instructionIndex < mInstructions.size() && instructionIndex >= 0)
         {
             std::shared_ptr<Instruction> nextInstruction = mInstructions[instructionIndex];
-            instructionIndex += nextInstruction->execute(state);
+
+            const unsigned int advance = nextInstruction->execute(state);
+            if (advance == 0)
+            {
+                break;
+            }
+            instructionIndex += advance;
         }
 
         state->mExecutionScope.pop();

@@ -508,4 +508,147 @@ namespace TorqueScript
 
         targetFrame.push_back(std::shared_ptr<Instruction>(new SubReferenceInstruction(context->label()->getText())));
     }
+
+    void Compiler::enterIfcontrol(TorqueParser::IfcontrolContext* context)
+    {
+
+    }
+
+    void Compiler::exitIfcontrol(TorqueParser::IfcontrolContext* context)
+    {
+        // Load the else if present
+        std::vector<std::shared_ptr<Instruction>> elseBody;
+        if (context->elsecontrol())
+        {
+            unsigned int statementCount = context->elsecontrol()->statement().size();
+            for (unsigned int iteration = 0; iteration < statementCount; ++iteration)
+            {
+                std::vector<std::shared_ptr<Instruction>> bodyStatement = this->getCurrentInstructionFrame();
+                elseBody.insert(elseBody.begin(), bodyStatement.begin(), bodyStatement.end());
+                this->popInstructionFrame();
+            }
+        }
+        elseBody.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
+
+        // Set comments
+        elseBody[0]->mComment = "Begin Else";
+        elseBody[elseBody.size() - 1]->mComment = "End Else";
+
+        // Deal with else if's
+        std::vector<std::shared_ptr<Instruction>> elseIfCode;
+        unsigned int elseIfCount = context->elseifcontrol().size();
+        for (unsigned int iteration = 0; iteration < elseIfCount; ++iteration)
+        {
+            unsigned int statementCount = context->elseifcontrol()[iteration]->statement().size();
+
+            // Load all statements from else if
+            std::vector<std::shared_ptr<Instruction>> elseIfBody;
+            for (unsigned int elseIfIteration = 0; elseIfIteration < statementCount; ++elseIfIteration)
+            {
+                std::vector<std::shared_ptr<Instruction>> bodyStatement = this->getCurrentInstructionFrame();
+                elseIfBody.insert(elseIfBody.begin(), bodyStatement.begin(), bodyStatement.end());
+                this->popInstructionFrame();
+            }
+
+            // Load the expression
+            std::vector<std::shared_ptr<Instruction>> elseIfExpression = this->getCurrentInstructionFrame();
+            this->popInstructionFrame();
+
+            // If the expression is false, jump to next statement or end
+            elseIfExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(elseIfBody.size() + 2)));
+
+            // The if body should skip over all instructions in the true branch
+            elseIfBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(elseIfCode.size() + elseBody.size() + 1)));
+
+            // Set comments
+            elseIfExpression[0]->mComment = "Begin Else If";
+            elseIfBody[elseIfBody.size() - 1]->mComment = "End Else If";
+
+            elseIfCode.insert(elseIfCode.begin(), elseIfBody.begin(), elseIfBody.end());
+            elseIfCode.insert(elseIfCode.begin(), elseIfExpression.begin(), elseIfExpression.end());
+        }
+
+        // Load the original if now
+        std::vector<std::shared_ptr<Instruction>> ifBody;
+        unsigned int statementCount = context->statement().size();
+
+        for (unsigned int iteration = 0; iteration < statementCount; ++iteration)
+        {
+            std::vector<std::shared_ptr<Instruction>> bodyStatement = this->getCurrentInstructionFrame();
+            ifBody.insert(ifBody.begin(), bodyStatement.begin(), bodyStatement.end());
+            this->popInstructionFrame();
+        }
+
+        std::vector<std::shared_ptr<Instruction>> ifExpression = this->getCurrentInstructionFrame();
+        this->popInstructionFrame();
+
+        // The if body should skip over all instructions in the true branch
+        ifBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(elseIfCode.size() + elseBody.size() + 1)));
+
+        // Make the expression jump over the body if our expression is false
+        ifExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(ifBody.size() + 1)));
+
+        // Set comments
+        ifExpression[0]->mComment = "Begin If";
+        ifBody[ifBody.size() - 1]->mComment = "End If";
+
+        // Output code
+        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
+
+        targetFrame.insert(targetFrame.end(), ifExpression.begin(), ifExpression.end());
+        targetFrame.insert(targetFrame.end(), ifBody.begin(), ifBody.end());
+
+        targetFrame.insert(targetFrame.end(), elseIfCode.begin(), elseIfCode.end());
+        targetFrame.insert(targetFrame.end(), elseBody.begin(), elseBody.end());
+    }
+
+    void Compiler::enterElseifcontrol(TorqueParser::ElseifcontrolContext* context)
+    {
+        //this->pushInstructionFrame();
+    }
+
+    void Compiler::exitElseifcontrol(TorqueParser::ElseifcontrolContext* context)
+    {
+
+    }
+
+    void Compiler::enterElsecontrol(TorqueParser::ElsecontrolContext* context)
+    {
+        //this->pushInstructionFrame();
+    }
+
+    void Compiler::exitElsecontrol(TorqueParser::ElsecontrolContext* context)
+    {
+
+    }
+
+    void Compiler::enterReturncontrol(TorqueParser::ReturncontrolContext* context)
+    {
+
+    }
+
+    void Compiler::exitReturncontrol(TorqueParser::ReturncontrolContext* context)
+    {
+        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
+        targetFrame.push_back(std::shared_ptr<Instruction>(new ReturnInstruction()));
+    }
+
+    void Compiler::enterEquality(TorqueParser::EqualityContext* context)
+    {
+
+    }
+
+    void Compiler::exitEquality(TorqueParser::EqualityContext* context)
+    {
+        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
+
+        if (context->EQUAL())
+        {
+            targetFrame.push_back(std::shared_ptr<Instruction>(new EqualsInstruction()));
+        }
+        else
+        {
+            throw std::runtime_error("Unhandled equality op!");
+        }
+    }
 }

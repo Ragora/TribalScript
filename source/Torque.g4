@@ -6,14 +6,14 @@ grammar Torque;
 
 program  : (outerblock | statement)+ | <EOF> ;
 
-elseifcontrol : (ELSE IF '(' expression ')' '{' statement* '}')
-              | (ELSE IF '(' expression ')' statement ) ;
+elseifcontrol : (ELSE IF '(' controlexpression ')' '{' statement* '}')
+              | (ELSE IF '(' controlexpression ')' statement ) ;
 
 elsecontrol : ELSE '{' statement* '}'
             | ELSE statement ;
 
-ifcontrol : IF '(' expression ')' statement elseifcontrol* elsecontrol?
-          | IF '(' expression ')' '{' statement* '}' elseifcontrol* elsecontrol? ;
+ifcontrol : IF '(' controlexpression ')' statement elseifcontrol* elsecontrol?
+          | IF '(' controlexpression ')' '{' statement* '}' elseifcontrol* elsecontrol? ;
 
 whilecontrol : WHILE '(' controlexpression ')' '{' statement* '}'
              | WHILE '(' controlexpression ')' statement ;
