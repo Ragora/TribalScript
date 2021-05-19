@@ -830,8 +830,6 @@ namespace TorqueScript
                     out << *iterator;
                 }
 
-                std::cout << "GEN KEY: " << out.str() << std::endl;
-                std::cout << "GLOBAL: " << mGlobal << std::endl;
                 if (mGlobal)
                 {
                     state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredGlobalReferenceValue(out.str())));

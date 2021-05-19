@@ -131,6 +131,12 @@ namespace TorqueScript
             virtual void enterLogicalop(TorqueParser::LogicalopContext* context) override;
             virtual void exitLogicalop(TorqueParser::LogicalopContext* context) override;
 
+            virtual void enterLocalVariableValue(TorqueParser::LocalVariableValueContext* context) override;
+            virtual void exitLocalVariableValue(TorqueParser::LocalVariableValueContext* context) override;
+
+            virtual void enterGlobalVariableValue(TorqueParser::GlobalVariableValueContext* context) override;
+            virtual void exitGlobalVariableValue(TorqueParser::GlobalVariableValueContext* context) override;
+
         private:
 
             void pushInstructionFrame();

@@ -91,6 +91,24 @@ TEST(InterpreterTest, Array)
     ASSERT_EQ(result->toInteger(state), 5);
 }
 
+TEST(InterpreterTest, Variables)
+{
+    TorqueScript::Interpreter interpreter;
+    TorqueScript::registerBuiltIns(&interpreter);
+
+    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    interpreter.execute("cases/variables.cs", state);
+
+    // We have a global and a global value within a namespace
+    std::shared_ptr<TorqueScript::StoredValue> resultGlobal = interpreter.getGlobal("global");
+    EXPECT_TRUE(resultGlobal);
+    std::shared_ptr<TorqueScript::StoredValue> resultGlobalNameSpace = interpreter.getGlobal("global::namespaced");
+    EXPECT_TRUE(resultGlobalNameSpace);
+
+    ASSERT_EQ(resultGlobal->toInteger(state), 50);
+    ASSERT_EQ(resultGlobalNameSpace->toInteger(state), 123);
+}
+
 int main()
 {
     testing::InitGoogleTest();

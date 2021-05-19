@@ -41,7 +41,7 @@ newobject : NEW LABEL '(' expression? ')' objectinitialization?
           | NEW '(' expression ')' '(' expression? ')' objectinitialization? ;
 
 // Functions, datablocks, packages
-paramlist : LOCALVARIABLE (',' LOCALVARIABLE )* ;
+paramlist : localvariable (',' localvariable )* ;
 functiondeclaration : FUNCTION labelsingle '(' paramlist? ')' '{' statement* '}' ;
 packagedeclaration : PACKAGE labelsingle '{' functiondeclaration* '}' SEMICOLON ;
 
@@ -69,10 +69,10 @@ controlexpression : expression ;
 expression : (op=NOT|op=MINUS) expression                                                        # unary
            | expression (op=PLUSPLUS|op=MINUSMINUS)                                              # unary
            | labelsingle '(' expression? (',' expression)* ')'                                   # call
-           | (GLOBALVARIABLE | LOCALVARIABLE) '[' expression (',' expression)* ']'                                     # array
+           | (globalvariable | localvariable) '[' expression (',' expression)* ']'                                     # array
            | expression ('.' label)                                                              # subreference
            | '(' expression ')'                                                                  # parenthesis
-           | expression (op=MULT|op=DIV|op=MODULUS) expression                                   # arithmetic
+           | expression (op=MULT|op=DIV|op=PERCENT) expression                                   # arithmetic
            | expression (op=PLUS|op=MINUS) expression                                            # arithmetic
            | expression (op=LEFTSHIFT|op=RIGHTSHIFT) expression                                  # arithmetic
            | expression (op=LESS|op=LESSEQ|op=BIGGER|op=BIGGEREQ) expression                     # relational
@@ -94,8 +94,8 @@ expression : (op=NOT|op=MINUS) expression                                       
            | op=newobject                                                                        # objectInstantiation
            | op=INT                                                                              # value
            | op=FLOAT                                                                            # value
-           | op=GLOBALVARIABLE                                                                   # value
-           | op=LOCALVARIABLE                                                                    # value
+           | op=globalvariable                                                                   # globalVariableValue
+           | op=localvariable                                                                    # localVariableValue
            | op=LABEL                                                                            # value
            | op=TRUE                                                                             # value
            | op=FALSE                                                                            # value
@@ -104,6 +104,9 @@ expression : (op=NOT|op=MINUS) expression                                       
 labelsingle : LABEL (sublabel)?;
 label : LABEL (sublabel)*;
 sublabel : '::' LABEL ;
+
+localvariable: PERCENT label ;
+globalvariable: DOLLARSIGN label ;
 
 // Lexer
 PLUS: '+' ;
@@ -158,11 +161,9 @@ TRUE : 'true' ;
 FALSE : 'false' ;
 OR : 'or' ;
 CASE : 'case' ;
-MODULUS : '%' ;
+PERCENT : '%' ;
 SWITCH : 'switch' ;
 DOLLARSIGN : '$' ;
-LOCALVARIABLE: '%'LABEL ;
-GLOBALVARIABLE: '$'LABEL ;
 QUESTIONMARK : '?' ;
 
 // Labels can contain numbers but not at the start

@@ -108,7 +108,7 @@ namespace TorqueScript
         if (context->paramlist())
         {
 
-            for (auto parameter : context->paramlist()->LOCALVARIABLE())
+            for (auto parameter : context->paramlist()->localvariable())
             {
                 // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the % prefix
                 const std::string rawString = parameter->getText();
@@ -217,20 +217,6 @@ namespace TorqueScript
         else if (context->INT())
         {
             currentFrame.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(std::stoi(context->INT()->getText()))));
-        }
-        else if (context->LOCALVARIABLE())
-        {
-            // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the % prefix
-            const std::string rawString = context->getText();
-            const std::string variableName = rawString.substr(1, rawString.size());
-            currentFrame.push_back(std::shared_ptr<Instruction>(new PushLocalReferenceInstruction(variableName)));
-        }
-        else if (context->GLOBALVARIABLE())
-        {
-            // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the $ prefix
-            const std::string rawString = context->getText();
-            const std::string variableName = rawString.substr(1, rawString.size());
-            currentFrame.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(variableName)));
         }
         else if (context->TRUE())
         {
@@ -656,19 +642,16 @@ namespace TorqueScript
     {
         std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
 
-        // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the $ or % prefix
         std::string name = "";
         bool global = false;
-        if (context->GLOBALVARIABLE())
+        if (context->globalvariable())
         {
             global = true;
-            const std::string rawString = context->GLOBALVARIABLE()->getText();
-            name = rawString.substr(1, rawString.size());
+            name = context->globalvariable()->label()->getText();
         }
-        else if (context->LOCALVARIABLE())
+        else if (context->localvariable())
         {
-            const std::string rawString = context->LOCALVARIABLE()->getText();
-            name = rawString.substr(1, rawString.size());
+            name = context->localvariable()->label()->getText();
         }
         else
         {
@@ -736,5 +719,31 @@ namespace TorqueScript
     void Compiler::exitLogicalop(TorqueParser::LogicalopContext* context)
     {
 
+    }
+
+    void Compiler::enterLocalVariableValue(TorqueParser::LocalVariableValueContext* context)
+    {
+
+    }
+
+    void Compiler::exitLocalVariableValue(TorqueParser::LocalVariableValueContext* context)
+    {
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+
+        const std::string variableName = context->localvariable()->label()->getText();
+        currentFrame.push_back(std::shared_ptr<Instruction>(new PushLocalReferenceInstruction(variableName)));
+    }
+
+    void Compiler::enterGlobalVariableValue(TorqueParser::GlobalVariableValueContext* context)
+    {
+
+    }
+
+    void Compiler::exitGlobalVariableValue(TorqueParser::GlobalVariableValueContext* context)
+    {
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+
+        const std::string variableName = context->globalvariable()->label()->getText();
+        currentFrame.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(variableName)));
     }
 }
