@@ -677,4 +677,64 @@ namespace TorqueScript
 
         currentFrame.push_back(std::shared_ptr<Instruction>(new AccessArrayInstruction(name, context->expression().size(), global)));
     }
+
+    void Compiler::enterDatablockdeclaration(TorqueParser::DatablockdeclarationContext* context)
+    {
+        throw std::runtime_error("Datablocks not Implemented Yet");
+    }
+
+    void Compiler::exitDatablockdeclaration(TorqueParser::DatablockdeclarationContext* context)
+    {
+
+    }
+
+    void Compiler::enterPackagedeclaration(TorqueParser::PackagedeclarationContext* context)
+    {
+        throw std::runtime_error("Packages not Implemented Yet");
+    }
+
+    void Compiler::exitPackagedeclaration(TorqueParser::PackagedeclarationContext* context)
+    {
+
+    }
+
+    void Compiler::enterSwitchcontrol(TorqueParser::SwitchcontrolContext* context)
+    {
+        throw std::runtime_error("Switch Statements not Implemented Yet");
+    }
+
+    void Compiler::exitSwitchcontrol(TorqueParser::SwitchcontrolContext* context)
+    {
+
+    }
+
+    void Compiler::enterNewobject(TorqueParser::NewobjectContext* context)
+    {
+        throw std::runtime_error("New Object Statements not Implemented Yet");
+    }
+
+    void Compiler::exitNewobject(TorqueParser::NewobjectContext* context)
+    {
+
+    }
+
+    void Compiler::enterBreakcontrol(TorqueParser::BreakcontrolContext* context)
+    {
+        throw std::runtime_error("Break Statements not Implemented Yet");
+    }
+
+    void Compiler::exitBreakcontrol(TorqueParser::BreakcontrolContext* context)
+    {
+
+    }
+
+    void Compiler::enterLogicalop(TorqueParser::LogicalopContext* context)
+    {
+        throw std::runtime_error("Logical Operators not Implemented Yet");
+    }
+
+    void Compiler::exitLogicalop(TorqueParser::LogicalopContext* context)
+    {
+
+    }
 }

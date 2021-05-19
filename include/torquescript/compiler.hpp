@@ -113,6 +113,24 @@ namespace TorqueScript
             virtual void enterArray(TorqueParser::ArrayContext* context) override;
             virtual void exitArray(TorqueParser::ArrayContext* context) override;
 
+            virtual void enterDatablockdeclaration(TorqueParser::DatablockdeclarationContext* context) override;
+            virtual void exitDatablockdeclaration(TorqueParser::DatablockdeclarationContext* context) override;
+
+            virtual void enterPackagedeclaration(TorqueParser::PackagedeclarationContext* context) override;
+            virtual void exitPackagedeclaration(TorqueParser::PackagedeclarationContext* context) override;
+
+            virtual void enterSwitchcontrol(TorqueParser::SwitchcontrolContext* context) override;
+            virtual void exitSwitchcontrol(TorqueParser::SwitchcontrolContext* context) override;
+
+            virtual void enterNewobject(TorqueParser::NewobjectContext* context) override;
+            virtual void exitNewobject(TorqueParser::NewobjectContext* context) override;
+
+            virtual void enterBreakcontrol(TorqueParser::BreakcontrolContext* context) override;
+            virtual void exitBreakcontrol(TorqueParser::BreakcontrolContext* context) override;
+
+            virtual void enterLogicalop(TorqueParser::LogicalopContext* context) override;
+            virtual void exitLogicalop(TorqueParser::LogicalopContext* context) override;
+
         private:
 
             void pushInstructionFrame();

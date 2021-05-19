@@ -10,7 +10,7 @@ The project utilizes CMake to perform automatic build generation. However, there
 ### ANTLR4
 
 See https://github.com/antlr/antlr4/blob/master/doc/getting-started.md for setting up ANTLR4 on your platform. If setup appropriately, CMake should autodetect
-your ANTLR4 tool. If it does not, you may set he ANTLR_EXECUTABLE variable in your CMake invocation like:
+your ANTLR4 tool. If it does not, you may set the ANTLR_EXECUTABLE variable in your CMake invocation like:
 
 ```
 -DANTLR_EXECUTABLE=/usr/local/bin/antlr-4.9.2-complete.jar
