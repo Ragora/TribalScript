@@ -91,4 +91,15 @@ namespace TorqueScript
 
         return currentScope.mLoopDescriptors.back();
     }
+
+    bool ExecutionScope::isLoopStackEmpty()
+    {
+        if (mExecutionScopeData.empty())
+        {
+            return true;
+        }
+
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+        return currentScope.mLoopDescriptors.empty();
+    }
 }

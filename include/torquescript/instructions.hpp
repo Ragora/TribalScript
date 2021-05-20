@@ -812,12 +812,16 @@ namespace TorqueScript
         public:
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
-                LoopDescriptor descriptor = state->mExecutionScope.currentLoopDescriptor();
+                if (state->mExecutionScope.isLoopStackEmpty())
+                {
+                    state->mInterpreter->logWarning("Break outside of loop, ignoring ...");
+                    return 1;
+                }
 
+                LoopDescriptor descriptor = state->mExecutionScope.currentLoopDescriptor();
+                // This should lead to a PopLoop instruction so we don't pop here
                 const unsigned int loopProgress = state->mInstructionPointer - descriptor.mInstructionPointer;
-                const int jumpResult = descriptor.mLoopSize - loopProgress;
-                std::cout << "JUMPING " << jumpResult << std::endl;
-                return jumpResult;
+                return descriptor.mLoopSize - loopProgress;
             };
 
             virtual std::string disassemble() override
