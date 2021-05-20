@@ -34,6 +34,7 @@ namespace TorqueScript
             /**
              *  @brief Ask the compiler to generate a codeblock from the provided stream.
              *  @param input The input to generate from.
+             *  @return A CodeBlock representing the compiled output. If an error has occurred, nullptr is returned.
              */
             CodeBlock* compileStream(std::istream& input);
 
@@ -49,7 +50,8 @@ namespace TorqueScript
              */
             CodeBlock* compileFile(const std::string& path);
 
-        public:
+        // Compiler routines
+        private:
             virtual void enterFunctiondeclaration(TorqueParser::FunctiondeclarationContext* context) override;
             virtual void exitFunctiondeclaration(TorqueParser::FunctiondeclarationContext* context) override;
 

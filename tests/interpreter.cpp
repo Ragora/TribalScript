@@ -109,6 +109,30 @@ TEST(InterpreterTest, Variables)
     ASSERT_EQ(resultGlobalNameSpace->toInteger(state), 123);
 }
 
+TEST(InterpreterTest, Switch)
+{
+    TorqueScript::Interpreter interpreter;
+    TorqueScript::registerBuiltIns(&interpreter);
+
+    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    interpreter.execute("cases/switch.cs", state);
+
+    // We have several globals here
+    std::shared_ptr<TorqueScript::StoredValue> resultOne = interpreter.getGlobal("global::one");
+    EXPECT_TRUE(resultOne);
+    std::shared_ptr<TorqueScript::StoredValue> resultTwo = interpreter.getGlobal("global::two");
+    EXPECT_TRUE(resultTwo);
+    std::shared_ptr<TorqueScript::StoredValue> resultThree = interpreter.getGlobal("global::three");
+    EXPECT_TRUE(resultThree);
+    std::shared_ptr<TorqueScript::StoredValue> resultFour = interpreter.getGlobal("global::four");
+    EXPECT_TRUE(resultFour);
+
+    ASSERT_EQ(resultOne->toInteger(state), 5);
+    ASSERT_EQ(resultTwo->toInteger(state), 5);
+    ASSERT_EQ(resultThree->toInteger(state), 10);
+    ASSERT_EQ(resultFour->toInteger(state), -10);
+}
+
 int main()
 {
     testing::InitGoogleTest();

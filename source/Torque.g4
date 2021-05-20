@@ -23,9 +23,8 @@ forcontrol : FOR '(' controlexpression SEMICOLON controlexpression SEMICOLON con
            | FOR '(' controlexpression SEMICOLON controlexpression SEMICOLON controlexpression ')' '{' statement* '}' ;
 
 // In Torque, the case values are apparently expressions
-defaultcase : DEFAULT COLON statement+ ;
-switchcase : CASE controlexpression switchcasealternative* COLON statement+ ;
-switchcasealternative : OR controlexpression ;
+defaultcase : DEFAULT COLON statement* ;
+switchcase : CASE controlexpression (OR controlexpression)* COLON statement* ;
 
 // Switch has two forms - switch and switch$ for string values
 switchcontrol : SWITCH DOLLARSIGN? '(' controlexpression ')' '{' switchcase* defaultcase? '}' ;
