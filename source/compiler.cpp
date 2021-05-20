@@ -18,6 +18,7 @@
 #include <TorqueParser.h>
 
 #include <torquescript/compiler.hpp>
+#include <torquescript/instructionsequence.hpp>
 #include <torquescript/parsererrorlistener.hpp>
 
 namespace TorqueScript
@@ -120,7 +121,7 @@ namespace TorqueScript
 
         const unsigned int statementCount = context->statement().size();
 
-        std::vector<std::shared_ptr<Instruction>> functionBody;
+        InstructionSequence functionBody;
         for (unsigned int iteration = 0; iteration < statementCount; ++iteration)
         {
             std::vector<std::shared_ptr<Instruction>> bodyStatement = this->getCurrentInstructionFrame();
@@ -325,7 +326,7 @@ namespace TorqueScript
 
     void Compiler::exitProgram(TorqueParser::ProgramContext* context)
     {
-        std::vector<std::shared_ptr<Instruction>> generatedInstructions;
+        InstructionSequence generatedInstructions;
         while (!this->mInstructionStack.empty())
         {
             std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
@@ -819,7 +820,8 @@ namespace TorqueScript
 
     void Compiler::enterBreakcontrol(TorqueParser::BreakcontrolContext* context)
     {
-        throw std::runtime_error("Break Statements not Implemented Yet");
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+        currentFrame.push_back(std::shared_ptr<Instruction>(new BreakInstruction()));
     }
 
     void Compiler::exitBreakcontrol(TorqueParser::BreakcontrolContext* context)

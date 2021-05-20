@@ -18,6 +18,8 @@
 #include <vector>
 #include <memory>
 
+#include <torquescript/instructionsequence.hpp>
+
 namespace TorqueScript
 {
     //! Forward declaration to avoid circular dependencies.
@@ -37,7 +39,7 @@ namespace TorqueScript
             Function(const std::string& name);
             Function(const std::string& name, const std::vector<std::string>& parameterNames);
 
-            void addInstructions(const std::vector<std::shared_ptr<Instruction>>& instructions);
+            void addInstructions(const InstructionSequence& instructions);
 
             /**
              *  @brief Default implementation will execute virtual instructions but can be overriden to implement native
@@ -52,7 +54,7 @@ namespace TorqueScript
             std::string mName;
 
             //! All instructions associated with this function.
-            std::vector<std::shared_ptr<Instruction>> mInstructions;
+            InstructionSequence mInstructions;
 
             std::vector<std::string> mParameterNames;
     };

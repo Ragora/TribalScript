@@ -18,21 +18,18 @@
 #include <memory>
 #include <string>
 
-#include <torquescript/storedvalue.hpp>
-
 namespace TorqueScript
 {
+    class Instruction;
     class ExecutionState;
 
     /**
      *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
      *  This is the base class and should not be instantiated directly.
      */
-    class StoredValueStack : public std::vector<std::shared_ptr<StoredValue>>
+    class InstructionSequence : public std::vector<std::shared_ptr<Instruction>>
     {
         public:
-            int popInteger(std::shared_ptr<ExecutionState> state);
-            std::string popString(std::shared_ptr<ExecutionState> state);
-            float popFloat(std::shared_ptr<ExecutionState> state);
+            void execute(std::shared_ptr<ExecutionState> state);
     };
 }

@@ -26,6 +26,7 @@
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/storedvaluestack.hpp>
 #include <torquescript/executionstate.hpp>
+#include <torquescript/instructionsequence.hpp>
 
 namespace TorqueScript
 {
@@ -42,7 +43,7 @@ namespace TorqueScript
              *  immediately.
              *  @param instructions The instructions to execute immediately.
              */
-            void addInstructions(const std::vector<std::shared_ptr<Instruction>> instructions);
+            void addInstructions(const InstructionSequence& instructions);
 
             /**
              *  @brief Executes all instructions contained in mInstructions within the provided context.
@@ -59,6 +60,6 @@ namespace TorqueScript
             std::vector<std::shared_ptr<Function>> mFunctions;
 
             //! All instructions that were generated global to the block - ie. should be executed immediately
-            std::vector<std::shared_ptr<Instruction>> mInstructions;
+            InstructionSequence mInstructions;
     };
 }

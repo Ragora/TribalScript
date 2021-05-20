@@ -31,6 +31,7 @@
 #include <torquescript/storedlocalreferencevalue.hpp>
 #include <torquescript/storedglobalreferencevalue.hpp>
 #include <torquescript/executionstate.hpp>
+#include <torquescript/instructionsequence.hpp>
 
 namespace TorqueScript
 {
@@ -653,7 +654,7 @@ namespace TorqueScript
     class FunctionDeclarationInstruction : public Instruction
     {
         public:
-            FunctionDeclarationInstruction(const std::string& name, const std::vector<std::string> parameterNames, const std::vector<std::shared_ptr<Instruction>>& instructions) : mName(name), mParameterNames(parameterNames), mInstructions(instructions)
+            FunctionDeclarationInstruction(const std::string& name, const std::vector<std::string> parameterNames, const InstructionSequence& instructions) : mName(name), mParameterNames(parameterNames), mInstructions(instructions)
             {
 
             }
@@ -701,7 +702,7 @@ namespace TorqueScript
         private:
             std::string mName;
             std::vector<std::string> mParameterNames;
-            std::vector<std::shared_ptr<Instruction>> mInstructions;
+            InstructionSequence mInstructions;
     };
 
     class SubReferenceInstruction : public Instruction
@@ -775,6 +776,8 @@ namespace TorqueScript
 
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
+                const unsigned int loopPosition = state->mInstructionPointer;
+                state->mExecutionScope.pushLoop(loopPosition, mLoopSize);
                 return 1;
             };
 
@@ -794,12 +797,32 @@ namespace TorqueScript
         public:
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
+                state->mExecutionScope.popLoop();
                 return 1;
             };
 
             virtual std::string disassemble() override
             {
                 return "PopLoop";
+            }
+    };
+
+    class BreakInstruction : public Instruction
+    {
+        public:
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
+            {
+                LoopDescriptor descriptor = state->mExecutionScope.currentLoopDescriptor();
+
+                const unsigned int loopProgress = state->mInstructionPointer - descriptor.mInstructionPointer;
+                const int jumpResult = descriptor.mLoopSize - loopProgress;
+                std::cout << "JUMPING " << jumpResult << std::endl;
+                return jumpResult;
+            };
+
+            virtual std::string disassemble() override
+            {
+                return "Break";
             }
     };
 

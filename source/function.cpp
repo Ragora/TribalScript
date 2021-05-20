@@ -29,7 +29,7 @@ namespace TorqueScript
 
     }
 
-    void Function::addInstructions(const std::vector<std::shared_ptr<Instruction>>& instructions)
+    void Function::addInstructions(const InstructionSequence& instructions)
     {
         for (auto iterator = instructions.begin(); iterator != instructions.end(); ++iterator)
         {
@@ -39,8 +39,6 @@ namespace TorqueScript
 
     void Function::execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
-        int instructionIndex = 0;
-
         // Calculate expected versus provided to determine what parameters should be left empty
         const unsigned int expectedParameterCount = mParameterNames.size();
         const unsigned int emptyParameters = expectedParameterCount > argumentCount ? expectedParameterCount - argumentCount : 0;
@@ -69,27 +67,16 @@ namespace TorqueScript
         }
 
         // Push scope once we're done dealing with locals and load in to current scope
-        state->mExecutionScope.push();
-
+        state->mExecutionScope.pushFrame();
         for (auto localIterator = newLocals.begin(); localIterator != newLocals.end(); ++localIterator)
         {
             auto currentLocal = *localIterator;
             state->mExecutionScope.setVariable(currentLocal.first, currentLocal.second);
         }
 
-        while (instructionIndex < mInstructions.size() && instructionIndex >= 0)
-        {
-            std::shared_ptr<Instruction> nextInstruction = mInstructions[instructionIndex];
+        mInstructions.execute(state);
 
-            const unsigned int advance = nextInstruction->execute(state);
-            if (advance == 0)
-            {
-                break;
-            }
-            instructionIndex += advance;
-        }
-
-        state->mExecutionScope.pop();
+        state->mExecutionScope.popFrame();
     }
 
     std::string Function::getName()

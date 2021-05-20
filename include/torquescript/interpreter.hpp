@@ -47,6 +47,11 @@ namespace TorqueScript
             void setSimObject(const std::string& name, std::shared_ptr<SimObject> value);
             std::shared_ptr<SimObject> getSimObject(const std::string& name);
 
+            /**
+             *  @brief Ask the interpreter to compile the input string and return the resulting
+             *  CodeBlock.
+             *  @param input The string input containing the TorqueScript program.
+             */
             CodeBlock* compile(const std::string& input);
             void evaluate(const std::string& input, std::shared_ptr<ExecutionState> state = nullptr);
             void execute(const std::string& path, std::shared_ptr<ExecutionState> state = nullptr);
@@ -61,8 +66,22 @@ namespace TorqueScript
 
             std::shared_ptr<ExecutionState> getExecutionState();
 
+            /**
+             *  @brief Asks the interpreter to handle a simple echo message.
+             *  @param message The message to echo.
+             */
             virtual void logEcho(const std::string& message);
+
+            /**
+             *  @brief Asks the interpreter to handle an error log message.
+             *  @param message The message to output as an error.
+             */
             virtual void logError(const std::string& message);
+
+            /**
+             *  @brief Asks the interpreter to handle a warning log message.
+             *  @param message The message to output as a warning.
+             */
             virtual void logWarning(const std::string& message);
 
         private:

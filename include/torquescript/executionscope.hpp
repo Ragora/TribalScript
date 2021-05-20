@@ -23,21 +23,42 @@
 
 namespace TorqueScript
 {
+    struct LoopDescriptor
+    {
+        LoopDescriptor(const unsigned int pointer, const unsigned int size) : mInstructionPointer(pointer), mLoopSize(size)
+        {
+
+        }
+
+        unsigned int mInstructionPointer;
+        unsigned int mLoopSize;
+    };
+
+    struct ExecutionScopeData
+    {
+        std::vector<LoopDescriptor> mLoopDescriptors;
+        std::map<std::string, std::shared_ptr<StoredValue>> mLocalVariables;
+    };
+
     /**
      *  @brief A specific scope of execution - this is used to delineate local variables
      *  primarily.
      */
     class ExecutionScope
     {
-        private:
-            //! A mapping of local variable names to their stored value instance.
-            std::vector<std::map<std::string, std::shared_ptr<StoredValue>>> mLocalVariables;
-
         public:
-            void push();
-            void pop();
+            void pushFrame();
+            void popFrame();
+
+            void pushLoop(const unsigned int pointer, const unsigned int depth);
+            LoopDescriptor popLoop();
+            LoopDescriptor currentLoopDescriptor();
 
             std::shared_ptr<StoredValue> getVariable(const std::string& name);
             void setVariable(const std::string& name, std::shared_ptr<StoredValue> variable);
+
+        private:
+            //! A stack of mappings of local variable names to their stored value instance.
+            std::vector<ExecutionScopeData> mExecutionScopeData;
     };
 }

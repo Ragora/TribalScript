@@ -18,29 +18,16 @@
 
 namespace TorqueScript
 {
-    void CodeBlock::addInstructions(const std::vector<std::shared_ptr<Instruction>> instructions)
+    void CodeBlock::addInstructions(const InstructionSequence& instructions)
     {
-        for (auto&& instruction : instructions)
-        {
-            mInstructions.push_back(instruction);
-        }
+        mInstructions.insert(mInstructions.end(), instructions.begin(), instructions.end());
     }
 
     void CodeBlock::execute(std::shared_ptr<ExecutionState> state)
     {
         int instructionIndex = 0;
 
-        while (instructionIndex < mInstructions.size() && instructionIndex >= 0)
-        {
-            std::shared_ptr<Instruction> nextInstruction = mInstructions[instructionIndex];
-
-            const unsigned int advance = nextInstruction->execute(state);
-            if (advance == 0)
-            {
-                break;
-            }
-            instructionIndex += advance;
-        }
+        mInstructions.execute(state);
     }
 
     std::vector<std::string> CodeBlock::disassemble()

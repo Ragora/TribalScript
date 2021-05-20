@@ -29,16 +29,21 @@ namespace TorqueScript
      */
     struct ExecutionState
     {
-        ExecutionState(Interpreter* interpreter) : mInterpreter(interpreter), mVirtualDepth(0)
+        ExecutionState(Interpreter* interpreter) : mInterpreter(interpreter)
         {
 
         }
 
-        Interpreter* mInterpreter;
-        ExecutionScope mExecutionScope;
-        StoredValueStack mStack;
+        //! Instruction pointer - used primarily for handling breaks.
+        unsigned int mInstructionPointer;
 
-        //! Virtual call stack depth. Used to enforce maximums on recursion.
-        unsigned int mVirtualDepth;
+        //! The interpreter instance this state is associated with.
+        Interpreter* mInterpreter;
+
+        //! The execution scope used for managing local variables & for loop structures.
+        ExecutionScope mExecutionScope;
+
+        //! The stack used for execution in this state.
+        StoredValueStack mStack;
     };
 }
