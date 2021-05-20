@@ -39,8 +39,6 @@ namespace TorqueScript
 
     void Function::execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
-        state->mExecutionScope.push();
-
         int instructionIndex = 0;
 
         // Calculate expected versus provided to determine what parameters should be left empty
@@ -61,11 +59,22 @@ namespace TorqueScript
         }
 
         // Once we know what parameters we're providing for, set the values
+        std::map<std::string, std::shared_ptr<StoredValue>> newLocals;
         for (unsigned int iteration = 0; iteration < adjustedArgumentCount; ++iteration)
         {
             const std::string nextParameterName = mParameterNames[mParameterNames.size() - (iteration + emptyParameters + 1)];
-            state->mExecutionScope.setVariable(nextParameterName, state->mStack.back());
+
+            newLocals[nextParameterName] = state->mStack.back()->getReferencedValueCopy(state);
             state->mStack.pop_back();
+        }
+
+        // Push scope once we're done dealing with locals and load in to current scope
+        state->mExecutionScope.push();
+
+        for (auto localIterator = newLocals.begin(); localIterator != newLocals.end(); ++localIterator)
+        {
+            auto currentLocal = *localIterator;
+            state->mExecutionScope.setVariable(currentLocal.first, currentLocal.second);
         }
 
         while (instructionIndex < mInstructions.size() && instructionIndex >= 0)

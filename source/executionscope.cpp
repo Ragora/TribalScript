@@ -25,16 +25,12 @@ namespace TorqueScript
             return nullptr;
         }
 
-        // Here we search the scopes in reverse to find the first match for reference
-        for (auto iterator = mLocalVariables.rbegin(); iterator != mLocalVariables.rend(); ++iterator)
-        {
-            std::map<std::string, std::shared_ptr<StoredValue>>& currentScope = *iterator;
+        std::map<std::string, std::shared_ptr<StoredValue>>& currentScope = *mLocalVariables.rbegin();
 
-            auto search = currentScope.find(lookup);
-            if (search != currentScope.end())
-            {
-                return search->second;
-            }
+        auto search = currentScope.find(lookup);
+        if (search != currentScope.end())
+        {
+            return search->second;
         }
 
         return nullptr;

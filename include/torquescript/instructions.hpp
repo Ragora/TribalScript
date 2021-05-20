@@ -343,9 +343,6 @@ namespace TorqueScript
 
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
-                // Ensure we have a string value here - it should be impossible to get anything else as a call name
-                // assert(calledFunctionParameter->getVariableType() == StoredValue::VariableType::STRING);
-
                 std::shared_ptr<Function> functionLookup = state->mInterpreter->getFunction(mName);
                 if (functionLookup)
                 {
