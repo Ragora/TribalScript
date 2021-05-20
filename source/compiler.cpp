@@ -683,12 +683,128 @@ namespace TorqueScript
 
     void Compiler::enterSwitchcontrol(TorqueParser::SwitchcontrolContext* context)
     {
-        throw std::runtime_error("Switch Statements not Implemented Yet");
+
     }
 
     void Compiler::exitSwitchcontrol(TorqueParser::SwitchcontrolContext* context)
     {
+        std::vector<std::shared_ptr<Instruction>> defaultCaseInstructions;
+        if (context->defaultcase())
+        {
+            TorqueParser::DefaultcaseContext* defaultCase = context->defaultcase();
 
+            // Load instructions for the default case
+            std::vector<TorqueParser::StatementContext*> defaultStatements = defaultCase->statement();
+            for (auto statement : defaultStatements)
+            {
+                std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+                defaultCaseInstructions.insert(defaultCaseInstructions.begin(), currentFrame.begin(), currentFrame.end());
+                this->popInstructionFrame();
+            }
+        }
+
+        // The switch structure is a little more complex - a set of expressions is associated with it so we need to track a list of expressions
+        // and the body code
+        struct SwitchCaseData
+        {
+            std::vector<std::shared_ptr<Instruction>> mCaseBody;
+            std::vector<std::vector<std::shared_ptr<Instruction>>> mExpressions;
+        };
+
+        // Now enumerate all case statements
+        std::vector<SwitchCaseData> caseData;
+        std::vector<TorqueParser::SwitchcaseContext*> switchCases = context->switchcase();
+        for (auto iterator = switchCases.rbegin(); iterator != switchCases.rend(); ++iterator)
+        {
+            caseData.push_back(SwitchCaseData());
+            SwitchCaseData& currentCaseData = caseData.back();
+
+            TorqueParser::SwitchcaseContext* caseContext = *iterator;
+
+            // Load all statements from the case
+            std::vector<TorqueParser::StatementContext*> caseStatements = caseContext->statement();
+            for (auto statementIterator = caseStatements.begin(); statementIterator != caseStatements.end(); ++statementIterator)
+            {
+                std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+                currentCaseData.mCaseBody.insert(currentCaseData.mCaseBody.begin(), currentFrame.begin(), currentFrame.end());
+                this->popInstructionFrame();
+            }
+
+            // Load all expressions
+            std::vector<TorqueParser::ControlexpressionContext*> caseExpressions = caseContext->controlexpression();
+            for (auto expressionIterator = caseExpressions.begin(); expressionIterator != caseExpressions.end(); ++expressionIterator)
+            {
+                currentCaseData.mExpressions.push_back(std::vector<std::shared_ptr<Instruction>>());
+                std::vector<std::shared_ptr<Instruction>>& currentExpression = currentCaseData.mExpressions.back();
+
+                std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+                currentExpression.insert(currentExpression.begin(), currentFrame.begin(), currentFrame.end());
+                this->popInstructionFrame();
+            }
+        }
+
+        // Finally load the expression to switch on
+        std::vector<std::shared_ptr<Instruction>> switchExpression = this->getCurrentInstructionFrame();
+        this->popInstructionFrame();
+
+        // Once we know our expression, we need to cycle through our stored case data and generate handlers for each one
+        for (SwitchCaseData& currentCaseData : caseData)
+        {
+            std::vector<std::shared_ptr<Instruction>> generatedConditions;
+
+            // For each sub expression we push our expression
+            const unsigned int expressionCount = currentCaseData.mExpressions.size();
+            for (auto expressionIteration = currentCaseData.mExpressions.begin(); expressionIteration != currentCaseData.mExpressions.end(); ++expressionIteration)
+            {
+                std::vector<std::shared_ptr<Instruction>>& expression = *expressionIteration;
+
+                // Check if the expression is true - if so, jump to body immediately unless we're the last check then we jump false over the body
+                if (expressionIteration == currentCaseData.mExpressions.begin())
+                {
+                    generatedConditions.insert(generatedConditions.begin(), std::shared_ptr<Instruction>(new JumpFalseInstruction(currentCaseData.mCaseBody.size() + 2)));
+                }
+                else
+                {
+                    generatedConditions.insert(generatedConditions.begin(), std::shared_ptr<Instruction>(new JumpTrueInstruction(generatedConditions.size() + 1)));
+                }
+
+                generatedConditions.insert(generatedConditions.begin(), std::shared_ptr<Instruction>(new EqualsInstruction()));
+                generatedConditions.insert(generatedConditions.begin(), switchExpression.begin(), switchExpression.end());
+                generatedConditions.insert(generatedConditions.begin(), expression.begin(), expression.end());
+
+                generatedConditions[0]->mComment = "Begin Case";
+                generatedConditions[generatedConditions.size() - 1]->mComment = "End Case";
+            }
+            currentCaseData.mCaseBody.insert(currentCaseData.mCaseBody.begin(), generatedConditions.begin(), generatedConditions.end());
+        }
+
+        // Stick the default case entry at the end
+        caseData.insert(caseData.begin(), SwitchCaseData());
+        SwitchCaseData& defaultCaseData = caseData.front();
+        defaultCaseData.mCaseBody.insert(defaultCaseData.mCaseBody.begin(), defaultCaseInstructions.begin(), defaultCaseInstructions.end());
+        defaultCaseData.mCaseBody.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
+        defaultCaseData.mCaseBody[0]->mComment = "Begin Default Case";
+        defaultCaseData.mCaseBody[defaultCaseData.mCaseBody.size() - 1]->mComment = "End Default Case";
+
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+
+        // Output code and insert jumps for true branches
+        for (auto iterator = caseData.begin(); iterator != caseData.end(); ++iterator)
+        {
+            SwitchCaseData& currentCaseData = *iterator;
+
+            // Generate a jump to end for the true case
+            if (currentFrame.size() != 0)
+            {
+                currentCaseData.mCaseBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(currentFrame.size())));
+            }
+            else
+            {
+                currentCaseData.mCaseBody.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
+            }
+
+            currentFrame.insert(currentFrame.begin(), currentCaseData.mCaseBody.begin(), currentCaseData.mCaseBody.end());
+        }
     }
 
     void Compiler::enterNewobject(TorqueParser::NewobjectContext* context)

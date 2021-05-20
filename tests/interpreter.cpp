@@ -109,6 +109,21 @@ TEST(InterpreterTest, Variables)
     ASSERT_EQ(resultGlobalNameSpace->toInteger(state), 123);
 }
 
+TEST(InterpreterTest, Combined)
+{
+    TorqueScript::Interpreter interpreter;
+    TorqueScript::registerBuiltIns(&interpreter);
+
+    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    interpreter.execute("cases/combined.cs", state);
+
+    // We have several globals here
+    std::shared_ptr<TorqueScript::StoredValue> result = interpreter.getGlobal("result");
+    EXPECT_TRUE(result);
+
+    ASSERT_EQ(result->toInteger(state), 120);
+}
+
 int main()
 {
     testing::InitGoogleTest();
