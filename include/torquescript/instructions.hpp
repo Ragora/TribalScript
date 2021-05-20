@@ -747,6 +747,13 @@ namespace TorqueScript
         public:
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
+                assert(state->mStack.size() >= 1);
+
+                std::shared_ptr<StoredValue> targetStored = state->mStack.back();
+                state->mStack.pop_back();
+
+                // For if we return a variable reference, we want to pass back a copy
+                state->mStack.push_back(std::shared_ptr<StoredValue>(targetStored->getReferencedValueCopy(state)));
                 return 0;
             };
 
