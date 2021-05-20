@@ -134,4 +134,19 @@ namespace TorqueScript
         }
         return nullptr;
     }
+
+    void Interpreter::logEcho(const std::string& message)
+    {
+        std::cout << "Echo > " << message << std::endl;
+    }
+
+    void Interpreter::logError(const std::string& message)
+    {
+        std::cerr << "Error > " << message << std::endl;
+    }
+
+    void Interpreter::logWarning(const std::string& message)
+    {
+        std::cout << "Warning > " << message << std::endl;
+    }
 }

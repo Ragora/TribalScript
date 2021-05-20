@@ -43,7 +43,7 @@ namespace TorqueScript
                     outputString = printedPayload + outputString;
                 }
 
-                std::cout << "Echo > " << outputString << std::endl;
+                state->mInterpreter->logEcho(outputString);
                 state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
             }
     };

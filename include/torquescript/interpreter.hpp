@@ -61,6 +61,10 @@ namespace TorqueScript
 
             std::shared_ptr<ExecutionState> getExecutionState();
 
+            virtual void logEcho(const std::string& message);
+            virtual void logError(const std::string& message);
+            virtual void logWarning(const std::string& message);
+
         private:
             //! Keep a ready instance of the compiler on hand as it is reusable.
             Compiler* mCompiler;

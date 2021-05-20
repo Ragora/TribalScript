@@ -230,7 +230,7 @@ namespace TorqueScript
                 std::shared_ptr<StoredValue> result = std::shared_ptr<StoredValue>(new StoredFloatValue(resultRaw));
                 if (!lhsStored->setValue(result, state))
                 {
-                    std::cout << "Attempted to perform no-op assignment!" << std::endl;
+                    state->mInterpreter->logError("Attempted to perform no-op assignment!");
                 }
 
                 // In Torque, the result of the assignment is pushed to stack
@@ -262,7 +262,7 @@ namespace TorqueScript
 
                 if (!lhsStored->setValue(rhsStored, state))
                 {
-                    std::cout << "Attempted to perform no-op assignment!" << std::endl;
+                    state->mInterpreter->logError("Attempted to perform no-op assignment!");
                 }
 
                 // In Torque, the result of the assignment is pushed to stack
@@ -350,8 +350,11 @@ namespace TorqueScript
                 }
                 else
                 {
-                    // FIXME: Virtual logging methods?
-                    std::cerr << "Could not find function '" << mName << "' for calling! Placing 0 on the stack." << std::endl;
+                    std::ostringstream stream;
+
+                    stream << "Could not find function '" << mName << "' for calling! Placing 0 on the stack.";
+                    state->mInterpreter->logError(stream.str());
+
                     state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
                 }
                 return 1;
