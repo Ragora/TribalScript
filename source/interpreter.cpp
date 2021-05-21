@@ -26,6 +26,9 @@ namespace TorqueScript
     {
         mCompiler = new Compiler();
         mMaxRecursionDepth = 1024;
+
+        // "" is the default top-level
+        this->addFunctionRegistry("");
     }
 
     Interpreter::~Interpreter()
@@ -87,28 +90,39 @@ namespace TorqueScript
         return nullptr;
     }
 
-    void Interpreter::addFunction(std::shared_ptr<Function> function)
+    void Interpreter::addFunction(std::shared_ptr<Function> function, const std::string& package)
     {
+        // Make sure the registry exists - if it already does this does nothing
+        this->addFunctionRegistry(package);
+        FunctionRegistry* registry = this->findFunctionRegistry(package);
+
         const std::string storedName = toLowerCase(function->getName());
-        auto search = mFunctions.find(storedName);
-
-        if (search != mFunctions.end())
-        {
-            mFunctions.erase(search);
-        }
-
-        mFunctions[storedName] = function;
+        const std::string storedNameSpace = toLowerCase(function->getNameSpace());
+        registry->mFunctions[storedNameSpace][storedName] = function;
     }
 
-    std::shared_ptr<Function> Interpreter::getFunction(const std::string& name)
+    std::shared_ptr<Function> Interpreter::getFunction(const std::string& space, const std::string& name)
     {
+        // Search registries back to front
         const std::string searchedName = toLowerCase(name);
-        auto search = mFunctions.find(searchedName);
+        const std::string searchedNameSpace = toLowerCase(space);
 
-        if (search != mFunctions.end())
+        for (auto iterator = mFunctionRegistries.rbegin(); iterator != mFunctionRegistries.rend(); ++iterator)
         {
-            return search->second;
+            FunctionRegistry& registry = *iterator;
+
+            auto namespaceSearch = registry.mFunctions.find(searchedNameSpace);
+            if (namespaceSearch != registry.mFunctions.end())
+            {
+                auto nameSearch = namespaceSearch->second.find(searchedName);
+                if (nameSearch != namespaceSearch->second.end())
+                {
+                    return nameSearch->second;
+                }
+                //return search->second;
+            }
         }
+
         return nullptr;
     }
 
@@ -149,5 +163,44 @@ namespace TorqueScript
     void Interpreter::logWarning(const std::string& message)
     {
         std::cout << "Warning > " << message << std::endl;
+    }
+
+    FunctionRegistry* Interpreter::findFunctionRegistry(const std::string packageName)
+    {
+        std::string searchedName = toLowerCase(packageName);
+        for (FunctionRegistry& registry : mFunctionRegistries)
+        {
+            if (registry.mPackageName == searchedName)
+            {
+                return &registry;
+            }
+        }
+        return nullptr;
+    }
+
+    void Interpreter::removeFunctionRegistry(const std::string& packageName)
+    {
+        std::string removedName = toLowerCase(packageName);
+        for (auto iterator = mFunctionRegistries.begin(); iterator != mFunctionRegistries.end(); ++iterator)
+        {
+            FunctionRegistry& registry = *iterator;
+
+            if (registry.mPackageName == packageName)
+            {
+                mFunctionRegistries.erase(iterator);
+                return;
+            }
+        }
+    }
+
+    void Interpreter::addFunctionRegistry(const std::string& packageName)
+    {
+        std::string addedName = toLowerCase(packageName);
+        if (this->findFunctionRegistry(packageName))
+        {
+            return;
+        }
+
+        mFunctionRegistries.push_back(FunctionRegistry(packageName));
     }
 }

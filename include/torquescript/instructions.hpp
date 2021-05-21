@@ -337,14 +337,14 @@ namespace TorqueScript
     class CallFunctionInstruction : public Instruction
     {
         public:
-            CallFunctionInstruction(const std::string& name, const unsigned int argc) : mName(name), mArgc(argc)
+            CallFunctionInstruction(const std::string& space, const std::string& name, const unsigned int argc) : mNameSpace(space), mName(name), mArgc(argc)
             {
 
             }
 
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
-                std::shared_ptr<Function> functionLookup = state->mInterpreter->getFunction(mName);
+                std::shared_ptr<Function> functionLookup = state->mInterpreter->getFunction(mNameSpace, mName);
                 if (functionLookup)
                 {
                     functionLookup->execute(state, mArgc);
@@ -364,12 +364,26 @@ namespace TorqueScript
             virtual std::string disassemble() override
             {
                 std::ostringstream out;
-                out << "CallFunction " << mName << " argc=" << mArgc;
+
+                if (mNameSpace == "")
+                {
+                    out << "CallFunction " << mName << " argc=" << mArgc;
+                }
+                else
+                {
+                    out << "CallFunction " << mNameSpace << "::" << mName << " argc=" << mArgc;
+                }
                 return out.str();
             }
 
             private:
+                //! The namespace of the function to call.
+                std::string mNameSpace;
+
+                //! The name of the function to call.
                 std::string mName;
+
+                //! How many arguments are being passed to the function to call.
                 unsigned int mArgc;
     };
 
@@ -654,7 +668,7 @@ namespace TorqueScript
     class FunctionDeclarationInstruction : public Instruction
     {
         public:
-            FunctionDeclarationInstruction(const std::string& name, const std::vector<std::string> parameterNames, const InstructionSequence& instructions) : mName(name), mParameterNames(parameterNames), mInstructions(instructions)
+            FunctionDeclarationInstruction(const std::string& space, const std::string& name, const std::vector<std::string> parameterNames, const InstructionSequence& instructions) : mNameSpace(space), mName(name), mParameterNames(parameterNames), mInstructions(instructions)
             {
 
             }
@@ -662,9 +676,9 @@ namespace TorqueScript
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 // Register the function
-                std::shared_ptr<Function> newFunction = std::shared_ptr<Function>(new Function(mName, mParameterNames));
+                std::shared_ptr<Function> newFunction = std::shared_ptr<Function>(new Function(mNameSpace, mName, mParameterNames));
                 newFunction->addInstructions(mInstructions);
-                state->mInterpreter->addFunction(newFunction);
+                state->mInterpreter->addFunction(newFunction, "");
 
                 return 1;
             };
@@ -672,7 +686,15 @@ namespace TorqueScript
             virtual std::string disassemble() override
             {
                 std::ostringstream out;
-                out << "FunctionDeclaration " << mName << "(";
+
+                if (mNameSpace == "")
+                {
+                    out << "FunctionDeclaration " << mName << "(";
+                }
+                else
+                {
+                    out << "FunctionDeclaration " << mNameSpace << "::" << mName << "(";
+                }
 
                 // Generate parameter list
                 for (auto iterator = mParameterNames.begin(); iterator != mParameterNames.end(); ++iterator)
@@ -700,6 +722,7 @@ namespace TorqueScript
             }
 
         private:
+            std::string mNameSpace;
             std::string mName;
             std::vector<std::string> mParameterNames;
             InstructionSequence mInstructions;

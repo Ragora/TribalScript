@@ -31,6 +31,20 @@ namespace TorqueScript
     class CodeBlock;
     class ExecutionState;
 
+    struct FunctionRegistry
+    {
+        FunctionRegistry(const std::string& package) : mPackageName(package)
+        {
+
+        }
+
+        //! The package this registry belongs to.
+        std::string mPackageName;
+
+        //! A mapping of function namespaces to a mapping of function names to the function object.
+        std::map<std::string, std::map<std::string, std::shared_ptr<Function>>> mFunctions;
+    };
+
     /**
      *  @brief The interpreter class represents a high level instance of the TorqueScript interpreter.
      *  It is where execution control flow begins.
@@ -59,9 +73,12 @@ namespace TorqueScript
             /**
              *  @brief Registers a new function to the interpreter.
              */
-            void addFunction(std::shared_ptr<Function> function);
+            void addFunction(std::shared_ptr<Function> function, const std::string& package);
+            std::shared_ptr<Function> getFunction(const std::string& space, const std::string& name);
+            FunctionRegistry* findFunctionRegistry(const std::string packageName);
+            void addFunctionRegistry(const std::string& packageName);
 
-            std::shared_ptr<Function> getFunction(const std::string& name);
+            void removeFunctionRegistry(const std::string& packageName);
 
             std::shared_ptr<ExecutionState> getExecutionState();
 
@@ -90,8 +107,8 @@ namespace TorqueScript
             //! Keep a ready instance of the compiler on hand as it is reusable.
             Compiler* mCompiler;
 
-            //! A mapping of function names to the function object.
-            std::map<std::string, std::shared_ptr<Function>> mFunctions;
+            //! A mapping of function namespaces to a mapping of function names to the function object.
+            std::vector<FunctionRegistry> mFunctionRegistries;
 
             //! A mapping of global variable names to their stored value instance.
             std::map<std::string, std::shared_ptr<StoredValue>> mGlobalVariables;

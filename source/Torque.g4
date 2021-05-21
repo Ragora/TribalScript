@@ -42,8 +42,8 @@ newobject : NEW LABEL '(' expression? ')' objectinitialization?
 
 // Functions, datablocks, packages
 paramlist : localvariable (',' localvariable )* ;
-functiondeclaration : FUNCTION labelsingle '(' paramlist? ')' '{' statement* '}' ;
-packagedeclaration : PACKAGE labelsingle '{' functiondeclaration* '}' SEMICOLON ;
+functiondeclaration : FUNCTION labelsinglenamespace '(' paramlist? ')' '{' statement* '}' ;
+packagedeclaration : PACKAGE labelnonamespace '{' functiondeclaration* '}' SEMICOLON ;
 
 // Datablock declaration requires at least one field
 datablockdeclaration : DATABLOCK LABEL '(' LABEL ')' (COLON LABEL)? '{' field+ '}' SEMICOLON ;
@@ -68,10 +68,10 @@ breakcontrol : BREAK ;
 controlexpression : expression ;
 expression : (op=NOT|op=MINUS) expression                                                        # unary
            | expression (op=PLUSPLUS|op=MINUSMINUS)                                              # unary
-           | labelsingle '(' expression? (',' expression)* ')'                                   # call
+           | labelsinglenamespace '(' expression? (',' expression)* ')'                          # call
            | (globalvariable | localvariable) '[' expression (',' expression)* ']'               # array
            | expression ('.' label)                                                              # subreference
-           | expression ('.' label '(' expression? (',' expression)* ')' )                       # subcall
+           | expression ('.' labelnonamespace '(' expression? (',' expression)* ')' )            # subcall
            | '(' expression ')'                                                                  # parenthesis
            | expression (op=MULT|op=DIV|op=PERCENT) expression                                   # arithmetic
            | expression (op=PLUS|op=MINUS) expression                                            # arithmetic
@@ -102,8 +102,9 @@ expression : (op=NOT|op=MINUS) expression                                       
            | op=FALSE                                                                            # value
            | op=STRING                                                                           # value ;
 
-labelsingle : LABEL (sublabel)?;
+labelsinglenamespace : LABEL (sublabel)?;
 label : LABEL (sublabel)*;
+labelnonamespace : LABEL ;
 sublabel : '::' LABEL ;
 
 localvariable: PERCENT label ;

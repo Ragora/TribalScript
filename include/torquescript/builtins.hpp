@@ -30,7 +30,7 @@ namespace TorqueScript
     class Echo : public Function
     {
         public:
-            Echo() : Function("echo") { }
+            Echo() : Function("", "echo") { }
 
             virtual void execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
             {
@@ -50,6 +50,6 @@ namespace TorqueScript
 
     void registerBuiltIns(Interpreter* interpreter)
     {
-        interpreter->addFunction(std::shared_ptr<Function>(new Echo()));
+        interpreter->addFunction(std::shared_ptr<Function>(new Echo()), "");
     }
 }

@@ -19,12 +19,12 @@
 
 namespace TorqueScript
 {
-    Function::Function(const std::string& name) : mName(name)
+    Function::Function(const std::string& space, const std::string& name) : mNameSpace(space), mName(name)
     {
 
     }
 
-    Function::Function(const std::string& name, const std::vector<std::string>& parameterNames) : mName(name), mParameterNames(parameterNames)
+    Function::Function(const std::string& space, const std::string& name, const std::vector<std::string>& parameterNames) : mNameSpace(space), mName(name), mParameterNames(parameterNames)
     {
 
     }
@@ -90,5 +90,10 @@ namespace TorqueScript
     std::string Function::getName()
     {
         return mName;
+    }
+
+    std::string Function::getNameSpace()
+    {
+        return mNameSpace;
     }
 }
