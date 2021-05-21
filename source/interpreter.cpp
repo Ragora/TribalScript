@@ -132,27 +132,33 @@ namespace TorqueScript
 
     std::shared_ptr<Function> Interpreter::getFunctionParent(Function* function)
     {
+        const std::string searchedPackage = toLowerCase(function->getPackage());
+        const std::string searchedNameSpace = toLowerCase(function->getNameSpace());
+        const std::string searchedFunction = toLowerCase(function->getName());
+
         // Search registries back to front
         bool shouldSearchFunction = false;
         for (auto iterator = mFunctionRegistries.rbegin(); iterator != mFunctionRegistries.rend(); ++iterator)
         {
             FunctionRegistry& registry = *iterator;
-
             // Ignore inactive registries
             if (!registry.mActive)
             {
                 continue;
             }
-            else if (!shouldSearchFunction && registry.mActive && registry.mPackageName == function->getPackage())
+            else if (!shouldSearchFunction)
             {
-                shouldSearchFunction = true;
+                if (registry.mActive && registry.mPackageName == searchedPackage)
+                {
+                    shouldSearchFunction = true;
+                }
                 continue;
             }
 
-            auto namespaceSearch = registry.mFunctions.find(function->getNameSpace());
+            auto namespaceSearch = registry.mFunctions.find(searchedNameSpace);
             if (namespaceSearch != registry.mFunctions.end())
             {
-                auto nameSearch = namespaceSearch->second.find(function->getName());
+                auto nameSearch = namespaceSearch->second.find(searchedFunction);
                 if (nameSearch != namespaceSearch->second.end())
                 {
                     return nameSearch->second;
