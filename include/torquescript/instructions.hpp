@@ -887,4 +887,48 @@ namespace TorqueScript
                 unsigned int mArgc;
                 bool mGlobal;
     };
+
+    /**
+     *  @brief Calls a function registered in memory somewhere.
+     */
+    class CallBoundFunctionInstruction : public Instruction
+    {
+        public:
+            CallBoundFunctionInstruction(const std::string& name, const unsigned int argc) : mName(name), mArgc(argc)
+            {
+
+            }
+
+            virtual int execute(std::shared_ptr<ExecutionState> state) override
+            {
+                assert(state->mStack.size() >= 1);
+
+                std::shared_ptr<StoredValue> targetStored = state->mStack.back();
+                state->mStack.pop_back();
+
+                // Retrieve the referenced SimObject
+                std::shared_ptr<SimObject> targetSim = targetStored->toSimObject(state);
+                if (!targetSim)
+                {
+                    std::ostringstream output;
+                    output << "Cannot find object '" << targetStored->toString(state) << "' to call function '" << mName << "'!";
+                    state->mInterpreter->logWarning(output.str());
+                }
+
+                // TODO: Implement calling for when this lookup does succeed
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                std::ostringstream out;
+                out << "CallBoundFunctionInstruction " << mName << " argc=" << mArgc;
+                return out.str();
+            }
+
+            private:
+                std::string mName;
+                unsigned int mArgc;
+    };
 }

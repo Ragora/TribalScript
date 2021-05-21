@@ -864,4 +864,16 @@ namespace TorqueScript
         const std::string variableName = context->globalvariable()->label()->getText();
         currentFrame.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(variableName)));
     }
+
+    void Compiler::enterSubcall(TorqueParser::SubcallContext* context)
+    {
+
+    }
+
+    void Compiler::exitSubcall(TorqueParser::SubcallContext* context)
+    {
+        const std::string calledFunctionName = context->label()->getText();
+        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+        currentFrame.push_back(std::shared_ptr<Instruction>(new CallBoundFunctionInstruction(calledFunctionName, context->expression().size())));
+    }
 }

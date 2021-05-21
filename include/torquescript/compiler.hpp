@@ -140,6 +140,9 @@ namespace TorqueScript
             virtual void enterGlobalVariableValue(TorqueParser::GlobalVariableValueContext* context) override;
             virtual void exitGlobalVariableValue(TorqueParser::GlobalVariableValueContext* context) override;
 
+            virtual void enterSubcall(TorqueParser::SubcallContext* context) override;
+            virtual void exitSubcall(TorqueParser::SubcallContext* context) override;
+
         private:
 
             void pushInstructionFrame();

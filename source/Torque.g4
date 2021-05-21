@@ -69,8 +69,9 @@ controlexpression : expression ;
 expression : (op=NOT|op=MINUS) expression                                                        # unary
            | expression (op=PLUSPLUS|op=MINUSMINUS)                                              # unary
            | labelsingle '(' expression? (',' expression)* ')'                                   # call
-           | (globalvariable | localvariable) '[' expression (',' expression)* ']'                                     # array
+           | (globalvariable | localvariable) '[' expression (',' expression)* ']'               # array
            | expression ('.' label)                                                              # subreference
+           | expression ('.' label '(' expression? (',' expression)* ')' )                       # subcall
            | '(' expression ')'                                                                  # parenthesis
            | expression (op=MULT|op=DIV|op=PERCENT) expression                                   # arithmetic
            | expression (op=PLUS|op=MINUS) expression                                            # arithmetic
