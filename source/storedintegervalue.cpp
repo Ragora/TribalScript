@@ -31,6 +31,11 @@ namespace TorqueScript
         return mValue;
     }
 
+    bool StoredIntegerValue::isInteger(std::shared_ptr<ExecutionState> state)
+    {
+        return true;
+    }
+
     std::string StoredIntegerValue::toString(std::shared_ptr<ExecutionState> state)
     {
         return std::to_string(mValue);

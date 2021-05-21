@@ -371,7 +371,7 @@ namespace TorqueScript
                     }
 
                     // Otherwise, call it
-                    parentFunction->execute(state, mArgc);
+                    parentFunction->execute(nullptr, state, mArgc);
 
                     return 1;
                 }
@@ -379,7 +379,7 @@ namespace TorqueScript
                 std::shared_ptr<Function> functionLookup = state->mInterpreter->getFunction(mNameSpace, mName);
                 if (functionLookup)
                 {
-                    functionLookup->execute(state, mArgc);
+                    functionLookup->execute(nullptr, state, mArgc);
                 }
                 else
                 {
@@ -978,7 +978,17 @@ namespace TorqueScript
                     state->mInterpreter->logWarning(output.str());
                 }
 
-                // TODO: Implement calling for when this lookup does succeed
+                // FIXME: For now we assume 'SimObject' is the classname
+                const std::string className = "SimObject";
+
+                // Ask the interpreter to lookup the function
+                std::shared_ptr<Function> calledFunction = state->mInterpreter->getFunction(className, mName);
+                if (calledFunction)
+                {
+                    calledFunction->execute(targetSim, state, mArgc);
+                    return 1;
+                }
+
                 state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
                 return 1;
             };

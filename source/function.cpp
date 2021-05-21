@@ -37,7 +37,7 @@ namespace TorqueScript
         }
     }
 
-    void Function::execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    void Function::execute(std::shared_ptr<SimObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
         // Calculate expected versus provided to determine what parameters should be left empty
         const unsigned int expectedParameterCount = mParameterNames.size();

@@ -25,11 +25,26 @@ namespace TorqueScript
 
     std::shared_ptr<SimObject> StoredValue::toSimObject(std::shared_ptr<ExecutionState> state)
     {
+        // Search by ID first
+        if (this->isInteger(state))
+        {
+            std::shared_ptr<SimObject> idLookup = state->mInterpreter->mSimObjectRegistry.getSimObject(this->toInteger(state));
+            if (idLookup)
+            {
+                return idLookup;
+            }
+        }
+
         const std::string lookupName = this->toString(state);
-        return state->mInterpreter->getSimObject(lookupName);
+        return state->mInterpreter->mSimObjectRegistry.getSimObject(lookupName);
     }
 
     bool StoredValue::setValue(std::shared_ptr<StoredValue> newValue, std::shared_ptr<ExecutionState> state)
+    {
+        return false;
+    }
+
+    bool StoredValue::isInteger(std::shared_ptr<ExecutionState> state)
     {
         return false;
     }

@@ -24,6 +24,7 @@ namespace TorqueScript
 {
     class Interpreter;
     class ExecutionScope;
+    class Interpreter;
 
     /**
      *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
@@ -34,6 +35,9 @@ namespace TorqueScript
         public:
             std::shared_ptr<StoredValue> getField(const std::string& name);
             void setField(const std::string& name, std::shared_ptr<StoredValue> value);
+
+            unsigned int getID(Interpreter* interpreter);
+            std::string getName(Interpreter* interpreter);
 
         protected:
             std::map<std::string, std::shared_ptr<StoredValue>> mValueMap;

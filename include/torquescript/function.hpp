@@ -29,6 +29,7 @@ namespace TorqueScript
     class StoredValue;
     class StoredValueStack;
     class ExecutionState;
+    class SimObject;
 
     /**
      *  @brief A function is callable subroutine from anywhere in the language.
@@ -45,7 +46,7 @@ namespace TorqueScript
              *  @brief Default implementation will execute virtual instructions but can be overriden to implement native
              *  functions.
              */
-            virtual void execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount);
+            virtual void execute(std::shared_ptr<SimObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount);
 
             std::string getName();
             std::string getNameSpace();

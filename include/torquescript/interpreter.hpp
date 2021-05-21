@@ -23,6 +23,7 @@
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/stringhelpers.hpp>
 #include <torquescript/storedvaluestack.hpp>
+#include <torquescript/simobjectregistry.hpp>
 
 #define NAMESPACE_EMPTY ""
 #define PACKAGE_EMPTY ""
@@ -63,9 +64,6 @@ namespace TorqueScript
 
             void setGlobal(const std::string& name, std::shared_ptr<StoredValue> value);
             std::shared_ptr<StoredValue> getGlobal(const std::string& name);
-
-            void setSimObject(const std::string& name, std::shared_ptr<SimObject> value);
-            std::shared_ptr<SimObject> getSimObject(const std::string& name);
 
             /**
              *  @brief Ask the interpreter to compile the input string and return the resulting
@@ -112,6 +110,8 @@ namespace TorqueScript
             //! The maximum recursion depth allowed by this interpreter. If set to 0, no limit is enforced.
             unsigned int mMaxRecursionDepth;
 
+            SimObjectRegistry mSimObjectRegistry;
+
         private:
             //! Keep a ready instance of the compiler on hand as it is reusable.
             Compiler* mCompiler;
@@ -121,8 +121,5 @@ namespace TorqueScript
 
             //! A mapping of global variable names to their stored value instance.
             std::map<std::string, std::shared_ptr<StoredValue>> mGlobalVariables;
-
-            //! A mapping of object names to their sim objects
-            std::map<std::string, std::shared_ptr<SimObject>> mSimObjects;
     };
 }

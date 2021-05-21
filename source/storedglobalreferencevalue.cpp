@@ -67,4 +67,14 @@ namespace TorqueScript
 
         return loaded->getReferencedValueCopy(state);
     }
+
+    bool StoredGlobalReferenceValue::isInteger(std::shared_ptr<ExecutionState> state)
+    {
+        std::shared_ptr<StoredValue> loaded = state->mInterpreter->getGlobal(mName);
+        if (loaded)
+        {
+            return loaded->isInteger(state);
+        }
+        return false;
+    }
 }

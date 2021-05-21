@@ -55,6 +55,8 @@ namespace TorqueScript
 
             virtual std::shared_ptr<StoredValue> getReferencedValueCopy(std::shared_ptr<ExecutionState> state) = 0;
 
+            virtual bool isInteger(std::shared_ptr<ExecutionState> state);
+
             // In Torque, if we end up trying to set a value of ie. a float it does nothing
             virtual bool setValue(std::shared_ptr<StoredValue> newValue, std::shared_ptr<ExecutionState> state);
     };

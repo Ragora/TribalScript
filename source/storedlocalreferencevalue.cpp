@@ -65,4 +65,14 @@ namespace TorqueScript
 
         return loaded->getReferencedValueCopy(state);
     }
+
+    bool StoredLocalReferenceValue::isInteger(std::shared_ptr<ExecutionState> state)
+    {
+        std::shared_ptr<StoredValue> loaded = state->mExecutionScope.getVariable(mName);
+        if (loaded)
+        {
+            return loaded->isInteger(state);
+        }
+        return false;
+    }
 }

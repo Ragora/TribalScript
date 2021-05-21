@@ -24,6 +24,8 @@
 #include <torquescript/executionstate.hpp>
 #include <torquescript/storedvaluestack.hpp>
 #include <torquescript/storedintegervalue.hpp>
+#include <torquescript/storedstringvalue.hpp>
+#include <torquescript/simobject.hpp>
 
 namespace TorqueScript
 {
@@ -32,7 +34,7 @@ namespace TorqueScript
         public:
             Echo() : Function(PACKAGE_EMPTY, NAMESPACE_EMPTY, "echo") { }
 
-            virtual void execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
+            virtual void execute(std::shared_ptr<SimObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
             {
                 std::string outputString = "";
 
@@ -53,7 +55,7 @@ namespace TorqueScript
         public:
             ActivatePackage() : Function(PACKAGE_EMPTY, NAMESPACE_EMPTY, "activatepackage") { }
 
-            virtual void execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
+            virtual void execute(std::shared_ptr<SimObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
             {
                 std::string outputString = "";
 
@@ -72,7 +74,7 @@ namespace TorqueScript
         public:
             DeactivatePackage() : Function(PACKAGE_EMPTY, NAMESPACE_EMPTY, "deactivatepackage") { }
 
-            virtual void execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
+            virtual void execute(std::shared_ptr<SimObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
             {
                 std::string outputString = "";
 
@@ -86,10 +88,35 @@ namespace TorqueScript
             }
     };
 
+    class Delete : public Function
+    {
+        public:
+            Delete() : Function(PACKAGE_EMPTY, "SimObject", "delete") { }
+
+            virtual void execute(std::shared_ptr<SimObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
+            {
+                state->mInterpreter->mSimObjectRegistry.removeSimObject(thisObject);
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+            }
+    };
+
+    class GetName : public Function
+    {
+        public:
+            GetName() : Function(PACKAGE_EMPTY, "SimObject", "getName") { }
+
+            virtual void execute(std::shared_ptr<SimObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
+            {
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(thisObject->getName(state->mInterpreter))));
+            }
+    };
+
     void registerBuiltIns(Interpreter* interpreter)
     {
         interpreter->addFunction(std::shared_ptr<Function>(new Echo()));
+        interpreter->addFunction(std::shared_ptr<Function>(new GetName()));
         interpreter->addFunction(std::shared_ptr<Function>(new DeactivatePackage()));
         interpreter->addFunction(std::shared_ptr<Function>(new ActivatePackage()));
+        interpreter->addFunction(std::shared_ptr<Function>(new Delete()));
     }
 }

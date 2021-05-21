@@ -14,6 +14,7 @@
 
 #include <torquescript/simobject.hpp>
 #include <torquescript/stringhelpers.hpp>
+#include <torquescript/interpreter.hpp>
 
 namespace TorqueScript
 {
@@ -33,5 +34,15 @@ namespace TorqueScript
     {
         const std::string setName = toLowerCase(name);
         mValueMap[setName] = value;
+    }
+
+    unsigned int SimObject::getID(Interpreter* interpreter)
+    {
+        return interpreter->mSimObjectRegistry.getSimObjectID(this);
+    }
+
+    std::string SimObject::getName(Interpreter* interpreter)
+    {
+        return interpreter->mSimObjectRegistry.getSimObjectName(this);
     }
 }

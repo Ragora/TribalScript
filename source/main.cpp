@@ -17,11 +17,16 @@
 #include <torquescript/executionscope.hpp>
 #include <torquescript/codeblock.hpp>
 #include <torquescript/executionstate.hpp>
+#include <torquescript/simobject.hpp>
 
 int main(int argc, char* argv[])
 {
     TorqueScript::Interpreter interpreter;
     TorqueScript::registerBuiltIns(&interpreter);
+
+    // Add a test simobject
+    std::shared_ptr<TorqueScript::SimObject> testObject = std::shared_ptr<TorqueScript::SimObject>(new TorqueScript::SimObject());
+    interpreter.mSimObjectRegistry.setSimObject("abc", testObject);
 
     std::cout << "Type TorqueScript Program, use EOF (CTRL+D on Unix, CTRL+Z on Windows) to End Input" << std::endl << std::endl;
 
