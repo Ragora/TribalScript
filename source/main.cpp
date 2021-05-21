@@ -32,9 +32,6 @@ int main(int argc, char* argv[])
 
     if (compiled)
     {
-        std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
-        compiled->execute(state);
-
         // Produce a disassembly for debugging
         std::cout << std::endl << "Disassembly: " << std::endl;
         std::vector<std::string> disassembly = compiled->disassemble();
@@ -43,6 +40,10 @@ int main(int argc, char* argv[])
         {
             std::cout << *iterator << std::endl;
         }
+        std::cout << std::endl;
+
+        std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+        compiled->execute(state);
 
         delete compiled;
     }

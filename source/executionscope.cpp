@@ -20,15 +20,15 @@ namespace TorqueScript
     {
         std::string lookup = toLowerCase(name);
 
-        if (mLocalVariables.empty())
+        if (mExecutionScopeData.empty())
         {
             return nullptr;
         }
 
-        std::map<std::string, std::shared_ptr<StoredValue>>& currentScope = *mLocalVariables.rbegin();
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
 
-        auto search = currentScope.find(lookup);
-        if (search != currentScope.end())
+        auto search = currentScope.mLocalVariables.find(lookup);
+        if (search != currentScope.mLocalVariables.end())
         {
             return search->second;
         }
@@ -41,22 +41,65 @@ namespace TorqueScript
         std::string key = toLowerCase(name);
 
         // Initialize if necessary
-        if (mLocalVariables.empty())
+        if (mExecutionScopeData.empty())
         {
-            this->push();
+            this->pushFrame();
         }
 
-        std::map<std::string, std::shared_ptr<StoredValue>>& currentScope = mLocalVariables.back();
-        currentScope[key] = variable;
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+        currentScope.mLocalVariables[key] = variable;
     }
 
-    void ExecutionScope::push()
+    void ExecutionScope::pushFrame()
     {
-        mLocalVariables.push_back(std::map<std::string, std::shared_ptr<StoredValue>>());
+        mExecutionScopeData.push_back(ExecutionScopeData());
     }
 
-    void ExecutionScope::pop()
+    void ExecutionScope::popFrame()
     {
-        mLocalVariables.pop_back();
+        mExecutionScopeData.pop_back();
+    }
+
+    void ExecutionScope::pushLoop(const unsigned int pointer, const unsigned int depth)
+    {
+        // Initialize if necessary
+        if (mExecutionScopeData.empty())
+        {
+            this->pushFrame();
+        }
+
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+        currentScope.mLoopDescriptors.push_back(LoopDescriptor(pointer, depth));
+    }
+
+    LoopDescriptor ExecutionScope::popLoop()
+    {
+        LoopDescriptor result = this->currentLoopDescriptor();
+
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+        currentScope.mLoopDescriptors.pop_back();
+        return result;
+    }
+
+    LoopDescriptor ExecutionScope::currentLoopDescriptor()
+    {
+        assert(!mExecutionScopeData.empty());
+
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+
+        assert(!currentScope.mLoopDescriptors.empty());
+
+        return currentScope.mLoopDescriptors.back();
+    }
+
+    bool ExecutionScope::isLoopStackEmpty()
+    {
+        if (mExecutionScopeData.empty())
+        {
+            return true;
+        }
+
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+        return currentScope.mLoopDescriptors.empty();
     }
 }

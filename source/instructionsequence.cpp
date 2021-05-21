@@ -12,27 +12,27 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-
-#include <vector>
-#include <memory>
-#include <string>
-
-#include <torquescript/storedvalue.hpp>
+#include <torquescript/instructionsequence.hpp>
+#include <torquescript/executionstate.hpp>
+#include <torquescript/instructions.hpp>
 
 namespace TorqueScript
 {
-    class ExecutionState;
-
-    /**
-     *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
-     *  This is the base class and should not be instantiated directly.
-     */
-    class StoredValueStack : public std::vector<std::shared_ptr<StoredValue>>
+    void InstructionSequence::execute(std::shared_ptr<ExecutionState> state)
     {
-        public:
-            int popInteger(std::shared_ptr<ExecutionState> state);
-            std::string popString(std::shared_ptr<ExecutionState> state);
-            float popFloat(std::shared_ptr<ExecutionState> state);
-    };
+        int instructionIndex = 0;
+
+        while (instructionIndex < this->size() && instructionIndex >= 0)
+        {
+            std::shared_ptr<Instruction> nextInstruction = this->at(instructionIndex);
+
+            state->mInstructionPointer = instructionIndex;
+            const int advance = nextInstruction->execute(state);
+            if (advance == 0)
+            {
+                break;
+            }
+            instructionIndex += advance;
+        }
+    }
 }
