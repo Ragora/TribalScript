@@ -24,8 +24,8 @@ namespace TorqueScript
     class ExecutionState;
 
     /**
-     *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
-     *  This is the base class and should not be instantiated directly.
+     *  @brief Storage class for a sequence of instructions to be executed. Also implements the
+     *  primary execution code for running Torque Script virtual instructions.
      */
     class InstructionSequence : public std::vector<std::shared_ptr<Instruction>>
     {

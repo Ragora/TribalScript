@@ -54,6 +54,7 @@ namespace TorqueScript
             LoopDescriptor popLoop();
             LoopDescriptor currentLoopDescriptor();
             bool isLoopStackEmpty();
+            unsigned int getFrameDepth();
 
             std::shared_ptr<StoredValue> getVariable(const std::string& name);
             void setVariable(const std::string& name, std::shared_ptr<StoredValue> variable);

@@ -74,19 +74,19 @@ namespace TorqueScript
 
     void Compiler::pushInstructionFrame()
     {
-        mInstructionStack.push_back(std::vector<std::shared_ptr<Instruction>>());
+        mInstructionStack.push_back(InstructionSequence());
     }
 
     void Compiler::popInstructionFrame()
     {
-        std::vector<std::shared_ptr<Instruction>> oldFrame = this->getCurrentInstructionFrame();
+        InstructionSequence oldFrame = this->getCurrentInstructionFrame();
         mInstructionStack.pop_back();
         //std::vector<std::shared_ptr<Instruction>>& newFrame = this->getCurrentInstructionFrame();
 
         //newFrame.insert(newFrame.end(), oldFrame.begin(), oldFrame.end());
     }
 
-    std::vector<std::shared_ptr<Instruction>>& Compiler::getCurrentInstructionFrame()
+    InstructionSequence& Compiler::getCurrentInstructionFrame()
     {
         if (mInstructionStack.empty())
         {

@@ -25,6 +25,7 @@ namespace TorqueScript
     Interpreter::Interpreter()
     {
         mCompiler = new Compiler();
+        mMaxRecursionDepth = 1024;
     }
 
     Interpreter::~Interpreter()

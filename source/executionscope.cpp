@@ -102,4 +102,9 @@ namespace TorqueScript
         ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
         return currentScope.mLoopDescriptors.empty();
     }
+
+    unsigned int ExecutionScope::getFrameDepth()
+    {
+        return mExecutionScopeData.size();
+    }
 }

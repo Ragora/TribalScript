@@ -66,6 +66,14 @@ namespace TorqueScript
             state->mStack.pop_back();
         }
 
+        // Once we've cleared the stack, check if we're at max recursion depth
+        if (state->mInterpreter->mMaxRecursionDepth > 0 && state->mExecutionScope.getFrameDepth() >= state->mInterpreter->mMaxRecursionDepth)
+        {
+            state->mInterpreter->logError("Reached maximum recursion depth! Pushing 0 and returning.");
+            state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+            return;
+        }
+
         // Push scope once we're done dealing with locals and load in to current scope
         state->mExecutionScope.pushFrame();
         for (auto localIterator = newLocals.begin(); localIterator != newLocals.end(); ++localIterator)

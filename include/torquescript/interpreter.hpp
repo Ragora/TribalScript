@@ -84,6 +84,9 @@ namespace TorqueScript
              */
             virtual void logWarning(const std::string& message);
 
+            //! The maximum recursion depth allowed by this interpreter. If set to 0, no limit is enforced.
+            unsigned int mMaxRecursionDepth;
+
         private:
             //! Keep a ready instance of the compiler on hand as it is reusable.
             Compiler* mCompiler;

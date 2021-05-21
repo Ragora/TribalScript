@@ -21,6 +21,7 @@
 
 #include <torquescript/codeblock.hpp>
 #include <torquescript/instructions.hpp>
+#include <torquescript/instructionsequence.hpp>
 
 namespace TorqueScript
 {
@@ -143,11 +144,11 @@ namespace TorqueScript
 
             void pushInstructionFrame();
             void popInstructionFrame();
-            std::vector<std::shared_ptr<Instruction>>& getCurrentInstructionFrame();
+            InstructionSequence& getCurrentInstructionFrame();
 
             //! Codeblock we are currently generating. This is only used as temporary storage space as the tree is running.
             CodeBlock* mCurrentCodeBlock;
 
-            std::vector<std::vector<std::shared_ptr<Instruction>>> mInstructionStack;
+            std::vector<InstructionSequence> mInstructionStack;
     };
 }
