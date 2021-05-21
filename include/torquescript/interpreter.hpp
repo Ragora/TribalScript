@@ -79,8 +79,10 @@ namespace TorqueScript
             /**
              *  @brief Registers a new function to the interpreter.
              */
-            void addFunction(std::shared_ptr<Function> function, const std::string& package);
+            void addFunction(std::shared_ptr<Function> function);
             std::shared_ptr<Function> getFunction(const std::string& space, const std::string& name);
+            std::shared_ptr<Function> getFunctionParent(Function* function);
+
             FunctionRegistry* findFunctionRegistry(const std::string packageName);
             void addFunctionRegistry(const std::string& packageName);
             void activateFunctionRegistry(const std::string& packageName);

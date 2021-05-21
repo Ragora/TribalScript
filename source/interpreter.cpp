@@ -91,9 +91,10 @@ namespace TorqueScript
         return nullptr;
     }
 
-    void Interpreter::addFunction(std::shared_ptr<Function> function, const std::string& package)
+    void Interpreter::addFunction(std::shared_ptr<Function> function)
     {
         // Make sure the registry exists - if it already does this does nothing
+        std::string package = function->getPackage();
         this->addFunctionRegistry(package);
         FunctionRegistry* registry = this->findFunctionRegistry(package);
 
@@ -122,7 +123,39 @@ namespace TorqueScript
                     {
                         return nameSearch->second;
                     }
-                    //return search->second;
+                }
+            }
+        }
+
+        return nullptr;
+    }
+
+    std::shared_ptr<Function> Interpreter::getFunctionParent(Function* function)
+    {
+        // Search registries back to front
+        bool shouldSearchFunction = false;
+        for (auto iterator = mFunctionRegistries.rbegin(); iterator != mFunctionRegistries.rend(); ++iterator)
+        {
+            FunctionRegistry& registry = *iterator;
+
+            // Ignore inactive registries
+            if (!registry.mActive)
+            {
+                continue;
+            }
+            else if (!shouldSearchFunction && registry.mActive && registry.mPackageName == function->getPackage())
+            {
+                shouldSearchFunction = true;
+                continue;
+            }
+
+            auto namespaceSearch = registry.mFunctions.find(function->getNameSpace());
+            if (namespaceSearch != registry.mFunctions.end())
+            {
+                auto nameSearch = namespaceSearch->second.find(function->getName());
+                if (nameSearch != namespaceSearch->second.end())
+                {
+                    return nameSearch->second;
                 }
             }
         }

@@ -43,16 +43,16 @@ namespace TorqueScript
         // Initialize if necessary
         if (mExecutionScopeData.empty())
         {
-            this->pushFrame();
+            this->pushFrame(nullptr);
         }
 
         ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
         currentScope.mLocalVariables[key] = variable;
     }
 
-    void ExecutionScope::pushFrame()
+    void ExecutionScope::pushFrame(Function* function)
     {
-        mExecutionScopeData.push_back(ExecutionScopeData());
+        mExecutionScopeData.push_back(ExecutionScopeData(function));
     }
 
     void ExecutionScope::popFrame()
@@ -65,7 +65,7 @@ namespace TorqueScript
         // Initialize if necessary
         if (mExecutionScopeData.empty())
         {
-            this->pushFrame();
+            this->pushFrame(nullptr);
         }
 
         ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
@@ -106,5 +106,16 @@ namespace TorqueScript
     unsigned int ExecutionScope::getFrameDepth()
     {
         return mExecutionScopeData.size();
+    }
+
+    Function* ExecutionScope::getCurrentFunction()
+    {
+        if (mExecutionScopeData.empty())
+        {
+            return nullptr;
+        }
+
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+        return currentScope.mCurrentFunction;
     }
 }

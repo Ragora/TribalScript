@@ -30,7 +30,7 @@ namespace TorqueScript
     class Echo : public Function
     {
         public:
-            Echo() : Function(NAMESPACE_EMPTY, "echo") { }
+            Echo() : Function(PACKAGE_EMPTY, NAMESPACE_EMPTY, "echo") { }
 
             virtual void execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
             {
@@ -51,7 +51,7 @@ namespace TorqueScript
     class ActivatePackage : public Function
     {
         public:
-            ActivatePackage() : Function(NAMESPACE_EMPTY, "activatepackage") { }
+            ActivatePackage() : Function(PACKAGE_EMPTY, NAMESPACE_EMPTY, "activatepackage") { }
 
             virtual void execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
             {
@@ -70,7 +70,7 @@ namespace TorqueScript
     class DeactivatePackage : public Function
     {
         public:
-            DeactivatePackage() : Function(NAMESPACE_EMPTY, "deactivatepackage") { }
+            DeactivatePackage() : Function(PACKAGE_EMPTY, NAMESPACE_EMPTY, "deactivatepackage") { }
 
             virtual void execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
             {
@@ -88,8 +88,8 @@ namespace TorqueScript
 
     void registerBuiltIns(Interpreter* interpreter)
     {
-        interpreter->addFunction(std::shared_ptr<Function>(new Echo()), PACKAGE_EMPTY);
-        interpreter->addFunction(std::shared_ptr<Function>(new DeactivatePackage()), PACKAGE_EMPTY);
-        interpreter->addFunction(std::shared_ptr<Function>(new ActivatePackage()), PACKAGE_EMPTY);
+        interpreter->addFunction(std::shared_ptr<Function>(new Echo()));
+        interpreter->addFunction(std::shared_ptr<Function>(new DeactivatePackage()));
+        interpreter->addFunction(std::shared_ptr<Function>(new ActivatePackage()));
     }
 }

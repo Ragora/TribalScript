@@ -20,6 +20,7 @@
 
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/stringhelpers.hpp>
+#include <torquescript/function.hpp>
 
 namespace TorqueScript
 {
@@ -36,6 +37,12 @@ namespace TorqueScript
 
     struct ExecutionScopeData
     {
+        ExecutionScopeData(Function* function) : mCurrentFunction(function)
+        {
+
+        }
+
+        Function* mCurrentFunction;
         std::vector<LoopDescriptor> mLoopDescriptors;
         std::map<std::string, std::shared_ptr<StoredValue>> mLocalVariables;
     };
@@ -47,7 +54,7 @@ namespace TorqueScript
     class ExecutionScope
     {
         public:
-            void pushFrame();
+            void pushFrame(Function* function);
             void popFrame();
 
             void pushLoop(const unsigned int pointer, const unsigned int depth);
@@ -55,6 +62,8 @@ namespace TorqueScript
             LoopDescriptor currentLoopDescriptor();
             bool isLoopStackEmpty();
             unsigned int getFrameDepth();
+
+            Function* getCurrentFunction();
 
             std::shared_ptr<StoredValue> getVariable(const std::string& name);
             void setVariable(const std::string& name, std::shared_ptr<StoredValue> variable);

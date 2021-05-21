@@ -344,6 +344,38 @@ namespace TorqueScript
 
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
+                const std::string namespaceName = toLowerCase(mNameSpace);
+
+                // If we're calling a parent function, perform an alternative lookup
+                if (namespaceName == "parent")
+                {
+                    Function* currentFunction = state->mExecutionScope.getCurrentFunction();
+                    if (currentFunction == nullptr)
+                    {
+                        state->mInterpreter->logError("Attempted to call parent:: function at root!");
+                        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+                        return 1;
+                    }
+
+                    // Once we have a valid function pointer, ask the interpreter to find a super function higher up the chain
+                    std::shared_ptr<Function> parentFunction = state->mInterpreter->getFunctionParent(currentFunction);
+                    if (!parentFunction)
+                    {
+                        std::ostringstream stream;
+
+                        stream << "Could not find parent function '" << mName << "' for calling! Placing 0 on the stack.";
+                        state->mInterpreter->logError(stream.str());
+
+                        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+                        return 1;
+                    }
+
+                    // Otherwise, call it
+                    parentFunction->execute(state, mArgc);
+
+                    return 1;
+                }
+
                 std::shared_ptr<Function> functionLookup = state->mInterpreter->getFunction(mNameSpace, mName);
                 if (functionLookup)
                 {
@@ -676,9 +708,9 @@ namespace TorqueScript
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 // Register the function
-                std::shared_ptr<Function> newFunction = std::shared_ptr<Function>(new Function(mNameSpace, mName, mParameterNames));
+                std::shared_ptr<Function> newFunction = std::shared_ptr<Function>(new Function(mPackageName, mNameSpace, mName, mParameterNames));
                 newFunction->addInstructions(mInstructions);
-                state->mInterpreter->addFunction(newFunction, mPackageName);
+                state->mInterpreter->addFunction(newFunction);
 
                 return 1;
             };
