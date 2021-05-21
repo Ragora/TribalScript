@@ -337,14 +337,46 @@ namespace TorqueScript
     class CallFunctionInstruction : public Instruction
     {
         public:
-            CallFunctionInstruction(const std::string& name, const unsigned int argc) : mName(name), mArgc(argc)
+            CallFunctionInstruction(const std::string& space, const std::string& name, const unsigned int argc) : mNameSpace(space), mName(name), mArgc(argc)
             {
 
             }
 
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
-                std::shared_ptr<Function> functionLookup = state->mInterpreter->getFunction(mName);
+                const std::string namespaceName = toLowerCase(mNameSpace);
+
+                // If we're calling a parent function, perform an alternative lookup
+                if (namespaceName == "parent")
+                {
+                    Function* currentFunction = state->mExecutionScope.getCurrentFunction();
+                    if (currentFunction == nullptr)
+                    {
+                        state->mInterpreter->logError("Attempted to call parent:: function at root!");
+                        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+                        return 1;
+                    }
+
+                    // Once we have a valid function pointer, ask the interpreter to find a super function higher up the chain
+                    std::shared_ptr<Function> parentFunction = state->mInterpreter->getFunctionParent(currentFunction);
+                    if (!parentFunction)
+                    {
+                        std::ostringstream stream;
+
+                        stream << "Could not find parent function '" << mName << "' for calling! Placing 0 on the stack.";
+                        state->mInterpreter->logError(stream.str());
+
+                        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+                        return 1;
+                    }
+
+                    // Otherwise, call it
+                    parentFunction->execute(state, mArgc);
+
+                    return 1;
+                }
+
+                std::shared_ptr<Function> functionLookup = state->mInterpreter->getFunction(mNameSpace, mName);
                 if (functionLookup)
                 {
                     functionLookup->execute(state, mArgc);
@@ -364,12 +396,26 @@ namespace TorqueScript
             virtual std::string disassemble() override
             {
                 std::ostringstream out;
-                out << "CallFunction " << mName << " argc=" << mArgc;
+
+                if (mNameSpace == "")
+                {
+                    out << "CallFunction " << mName << " argc=" << mArgc;
+                }
+                else
+                {
+                    out << "CallFunction " << mNameSpace << "::" << mName << " argc=" << mArgc;
+                }
                 return out.str();
             }
 
             private:
+                //! The namespace of the function to call.
+                std::string mNameSpace;
+
+                //! The name of the function to call.
                 std::string mName;
+
+                //! How many arguments are being passed to the function to call.
                 unsigned int mArgc;
     };
 
@@ -654,7 +700,7 @@ namespace TorqueScript
     class FunctionDeclarationInstruction : public Instruction
     {
         public:
-            FunctionDeclarationInstruction(const std::string& name, const std::vector<std::string> parameterNames, const InstructionSequence& instructions) : mName(name), mParameterNames(parameterNames), mInstructions(instructions)
+            FunctionDeclarationInstruction(const std::string package, const std::string& space, const std::string& name, const std::vector<std::string> parameterNames, const InstructionSequence& instructions) : mPackageName(package), mNameSpace(space), mName(name), mParameterNames(parameterNames), mInstructions(instructions)
             {
 
             }
@@ -662,7 +708,7 @@ namespace TorqueScript
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
                 // Register the function
-                std::shared_ptr<Function> newFunction = std::shared_ptr<Function>(new Function(mName, mParameterNames));
+                std::shared_ptr<Function> newFunction = std::shared_ptr<Function>(new Function(mPackageName, mNameSpace, mName, mParameterNames));
                 newFunction->addInstructions(mInstructions);
                 state->mInterpreter->addFunction(newFunction);
 
@@ -672,7 +718,22 @@ namespace TorqueScript
             virtual std::string disassemble() override
             {
                 std::ostringstream out;
-                out << "FunctionDeclaration " << mName << "(";
+
+                if (mNameSpace == NAMESPACE_EMPTY)
+                {
+                    out << "FunctionDeclaration " << mName;
+                }
+                else
+                {
+                    out << "FunctionDeclaration " << mNameSpace << "::" << mName;
+                }
+
+                if (mPackageName != PACKAGE_EMPTY)
+                {
+                    out << "[in Package " << mPackageName << "] ";
+                }
+
+                out << "(";
 
                 // Generate parameter list
                 for (auto iterator = mParameterNames.begin(); iterator != mParameterNames.end(); ++iterator)
@@ -700,6 +761,8 @@ namespace TorqueScript
             }
 
         private:
+            std::string mPackageName;
+            std::string mNameSpace;
             std::string mName;
             std::vector<std::string> mParameterNames;
             InstructionSequence mInstructions;

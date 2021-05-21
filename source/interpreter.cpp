@@ -26,6 +26,10 @@ namespace TorqueScript
     {
         mCompiler = new Compiler();
         mMaxRecursionDepth = 1024;
+
+        // "" is the default top-level
+        this->addFunctionRegistry(PACKAGE_EMPTY);
+        this->activateFunctionRegistry(PACKAGE_EMPTY);
     }
 
     Interpreter::~Interpreter()
@@ -89,26 +93,79 @@ namespace TorqueScript
 
     void Interpreter::addFunction(std::shared_ptr<Function> function)
     {
+        // Make sure the registry exists - if it already does this does nothing
+        std::string package = function->getPackage();
+        this->addFunctionRegistry(package);
+        FunctionRegistry* registry = this->findFunctionRegistry(package);
+
         const std::string storedName = toLowerCase(function->getName());
-        auto search = mFunctions.find(storedName);
-
-        if (search != mFunctions.end())
-        {
-            mFunctions.erase(search);
-        }
-
-        mFunctions[storedName] = function;
+        const std::string storedNameSpace = toLowerCase(function->getNameSpace());
+        registry->mFunctions[storedNameSpace][storedName] = function;
     }
 
-    std::shared_ptr<Function> Interpreter::getFunction(const std::string& name)
+    std::shared_ptr<Function> Interpreter::getFunction(const std::string& space, const std::string& name)
     {
+        // Search registries back to front
         const std::string searchedName = toLowerCase(name);
-        auto search = mFunctions.find(searchedName);
+        const std::string searchedNameSpace = toLowerCase(space);
 
-        if (search != mFunctions.end())
+        for (auto iterator = mFunctionRegistries.rbegin(); iterator != mFunctionRegistries.rend(); ++iterator)
         {
-            return search->second;
+            FunctionRegistry& registry = *iterator;
+
+            if (registry.mActive)
+            {
+                auto namespaceSearch = registry.mFunctions.find(searchedNameSpace);
+                if (namespaceSearch != registry.mFunctions.end())
+                {
+                    auto nameSearch = namespaceSearch->second.find(searchedName);
+                    if (nameSearch != namespaceSearch->second.end())
+                    {
+                        return nameSearch->second;
+                    }
+                }
+            }
         }
+
+        return nullptr;
+    }
+
+    std::shared_ptr<Function> Interpreter::getFunctionParent(Function* function)
+    {
+        const std::string searchedPackage = toLowerCase(function->getPackage());
+        const std::string searchedNameSpace = toLowerCase(function->getNameSpace());
+        const std::string searchedFunction = toLowerCase(function->getName());
+
+        // Search registries back to front
+        bool shouldSearchFunction = false;
+        for (auto iterator = mFunctionRegistries.rbegin(); iterator != mFunctionRegistries.rend(); ++iterator)
+        {
+            FunctionRegistry& registry = *iterator;
+            // Ignore inactive registries
+            if (!registry.mActive)
+            {
+                continue;
+            }
+            else if (!shouldSearchFunction)
+            {
+                if (registry.mActive && registry.mPackageName == searchedPackage)
+                {
+                    shouldSearchFunction = true;
+                }
+                continue;
+            }
+
+            auto namespaceSearch = registry.mFunctions.find(searchedNameSpace);
+            if (namespaceSearch != registry.mFunctions.end())
+            {
+                auto nameSearch = namespaceSearch->second.find(searchedFunction);
+                if (nameSearch != namespaceSearch->second.end())
+                {
+                    return nameSearch->second;
+                }
+            }
+        }
+
         return nullptr;
     }
 
@@ -149,5 +206,82 @@ namespace TorqueScript
     void Interpreter::logWarning(const std::string& message)
     {
         std::cout << "Warning > " << message << std::endl;
+    }
+
+    FunctionRegistry* Interpreter::findFunctionRegistry(const std::string packageName)
+    {
+        std::string searchedName = toLowerCase(packageName);
+        for (FunctionRegistry& registry : mFunctionRegistries)
+        {
+            if (registry.mPackageName == searchedName)
+            {
+                return &registry;
+            }
+        }
+        return nullptr;
+    }
+
+    void Interpreter::removeFunctionRegistry(const std::string& packageName)
+    {
+        // We cannot remove root level
+        assert(packageName != "");
+
+        std::string removedName = toLowerCase(packageName);
+        for (auto iterator = mFunctionRegistries.begin(); iterator != mFunctionRegistries.end(); ++iterator)
+        {
+            FunctionRegistry& registry = *iterator;
+
+            if (registry.mPackageName == packageName)
+            {
+                mFunctionRegistries.erase(iterator);
+                return;
+            }
+        }
+    }
+
+    void Interpreter::addFunctionRegistry(const std::string& packageName)
+    {
+        std::string addedName = toLowerCase(packageName);
+        if (this->findFunctionRegistry(packageName))
+        {
+            return;
+        }
+
+        mFunctionRegistries.push_back(FunctionRegistry(packageName));
+    }
+
+    void Interpreter::activateFunctionRegistry(const std::string& packageName)
+    {
+        std::string activatedName = toLowerCase(packageName);
+
+        // When we activate a package, it gets moved to the back to take precedence in the stack
+        for (auto iterator = mFunctionRegistries.begin(); iterator != mFunctionRegistries.end(); ++iterator)
+        {
+            FunctionRegistry& registry = *iterator;
+
+            if (registry.mPackageName == packageName)
+            {
+                if (!registry.mActive)
+                {
+                    registry.mActive = true;
+                    std::rotate(iterator, iterator + 1, mFunctionRegistries.end());
+                }
+
+                return;
+            }
+        }
+    }
+
+    void Interpreter::deactivateFunctionRegistry(const std::string& packageName)
+    {
+        std::string deactivatedName = toLowerCase(packageName);
+
+        FunctionRegistry* deactivated = this->findFunctionRegistry(deactivatedName);
+        if (!deactivated)
+        {
+            return;
+        }
+
+        deactivated->mActive = false;
     }
 }

@@ -130,11 +130,17 @@ namespace TorqueScript
         }
         functionBody.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(0))); // Add an empty return if we hit end of control but nothing returned
 
-        const std::string functionName = context->labelsingle()->getText();
+        //const std::string functionName = context->labelsinglenamespace()->getText();
+        std::string functionNameSpace = "";
+        std::string functionName = context->labelsinglenamespace()->getText();
+        if (context->labelsinglenamespace()->sublabel())
+        {
+            functionNameSpace = context->labelsinglenamespace()->LABEL()->getText();
+            functionName = context->labelsinglenamespace()->sublabel()->LABEL()->getText();
+        }
 
         std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
-
-        targetFrame.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(functionName, parameterNames, functionBody)));
+        targetFrame.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(mCurrentPackageName, functionNameSpace, functionName, parameterNames, functionBody)));
     }
 
     void Compiler::enterArithmetic(TorqueParser::ArithmeticContext* context)
@@ -186,9 +192,16 @@ namespace TorqueScript
 
     void Compiler::exitCall(TorqueParser::CallContext* context)
     {
-        const std::string calledFunctionName = context->labelsingle()->getText();
+        std::string calledNamespace = "";
+        std::string calledFunctionName = context->labelsinglenamespace()->getText();
+        if (context->labelsinglenamespace()->sublabel())
+        {
+            calledNamespace = context->labelsinglenamespace()->LABEL()->getText();
+            calledFunctionName = context->labelsinglenamespace()->sublabel()->LABEL()->getText();
+        }
+
         std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-        currentFrame.push_back(std::shared_ptr<Instruction>(new CallFunctionInstruction(calledFunctionName, context->expression().size())));
+        currentFrame.push_back(std::shared_ptr<Instruction>(new CallFunctionInstruction(calledNamespace, calledFunctionName, context->expression().size())));
     }
 
     void Compiler::enterValue(TorqueParser::ValueContext* context)
@@ -674,12 +687,14 @@ namespace TorqueScript
 
     void Compiler::enterPackagedeclaration(TorqueParser::PackagedeclarationContext* context)
     {
-        throw std::runtime_error("Packages not Implemented Yet");
+        assert(mCurrentPackageName == "");
+
+        mCurrentPackageName = context->labelnonamespace()->getText();
     }
 
     void Compiler::exitPackagedeclaration(TorqueParser::PackagedeclarationContext* context)
     {
-
+        mCurrentPackageName = "";
     }
 
     void Compiler::enterSwitchcontrol(TorqueParser::SwitchcontrolContext* context)
@@ -872,7 +887,7 @@ namespace TorqueScript
 
     void Compiler::exitSubcall(TorqueParser::SubcallContext* context)
     {
-        const std::string calledFunctionName = context->label()->getText();
+        const std::string calledFunctionName = context->labelnonamespace()->getText();
         std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
         currentFrame.push_back(std::shared_ptr<Instruction>(new CallBoundFunctionInstruction(calledFunctionName, context->expression().size())));
     }

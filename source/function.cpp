@@ -19,12 +19,12 @@
 
 namespace TorqueScript
 {
-    Function::Function(const std::string& name) : mName(name)
+    Function::Function(const std::string& package, const std::string& space, const std::string& name) : mPackage(toLowerCase(package)), mNameSpace(toLowerCase(space)), mName(toLowerCase(name))
     {
 
     }
 
-    Function::Function(const std::string& name, const std::vector<std::string>& parameterNames) : mName(name), mParameterNames(parameterNames)
+    Function::Function(const std::string& package, const std::string& space, const std::string& name, const std::vector<std::string>& parameterNames) : mPackage(package), mNameSpace(space), mName(name), mParameterNames(parameterNames)
     {
 
     }
@@ -75,7 +75,7 @@ namespace TorqueScript
         }
 
         // Push scope once we're done dealing with locals and load in to current scope
-        state->mExecutionScope.pushFrame();
+        state->mExecutionScope.pushFrame(this);
         for (auto localIterator = newLocals.begin(); localIterator != newLocals.end(); ++localIterator)
         {
             auto currentLocal = *localIterator;
@@ -90,5 +90,15 @@ namespace TorqueScript
     std::string Function::getName()
     {
         return mName;
+    }
+
+    std::string Function::getNameSpace()
+    {
+        return mNameSpace;
+    }
+
+    std::string Function::getPackage()
+    {
+        return mPackage;
     }
 }

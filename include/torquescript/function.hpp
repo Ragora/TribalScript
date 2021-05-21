@@ -36,8 +36,8 @@ namespace TorqueScript
     class Function
     {
         public:
-            Function(const std::string& name);
-            Function(const std::string& name, const std::vector<std::string>& parameterNames);
+            Function(const std::string& package, const std::string& space, const std::string& name);
+            Function(const std::string& package, const std::string& space, const std::string& name, const std::vector<std::string>& parameterNames);
 
             void addInstructions(const InstructionSequence& instructions);
 
@@ -48,8 +48,17 @@ namespace TorqueScript
             virtual void execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount);
 
             std::string getName();
+            std::string getNameSpace();
+            std::string getPackage();
+
 
         private:
+            //! The package of the function.
+            std::string mPackage;
+
+            //! The namespace of the function.
+            std::string mNameSpace;
+
             //! The name of the function.
             std::string mName;
 

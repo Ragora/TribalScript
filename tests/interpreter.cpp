@@ -124,6 +124,38 @@ TEST(InterpreterTest, Combined)
     ASSERT_EQ(result->toInteger(state), 120);
 }
 
+TEST(InterpreterTest, Package)
+{
+    TorqueScript::Interpreter interpreter;
+    TorqueScript::registerBuiltIns(&interpreter);
+
+    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    interpreter.execute("cases/package.cs", state);
+
+    // We have several globals here
+    std::shared_ptr<TorqueScript::StoredValue> before = interpreter.getGlobal("before");
+    EXPECT_TRUE(before);
+    std::shared_ptr<TorqueScript::StoredValue> afterA = interpreter.getGlobal("afterA");
+    EXPECT_TRUE(afterA);
+    std::shared_ptr<TorqueScript::StoredValue> afterB = interpreter.getGlobal("afterB");
+    EXPECT_TRUE(afterB);
+
+    std::shared_ptr<TorqueScript::StoredValue> beforeNamespace = interpreter.getGlobal("beforenamespace");
+    EXPECT_TRUE(beforeNamespace);
+    std::shared_ptr<TorqueScript::StoredValue> afterANamespace = interpreter.getGlobal("afterAnamespace");
+    EXPECT_TRUE(afterANamespace);
+    std::shared_ptr<TorqueScript::StoredValue> afterBNamespace = interpreter.getGlobal("afterBnamespace");
+    EXPECT_TRUE(afterBNamespace);
+
+    ASSERT_EQ(before->toInteger(state), 1);
+    ASSERT_EQ(afterA->toInteger(state), 2);
+    ASSERT_EQ(afterB->toInteger(state), 3);
+
+    ASSERT_EQ(beforeNamespace->toInteger(state), 2);
+    ASSERT_EQ(afterANamespace->toInteger(state), 4);
+    ASSERT_EQ(afterBNamespace->toInteger(state), 6);
+}
+
 int main()
 {
     testing::InitGoogleTest();

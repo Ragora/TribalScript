@@ -24,12 +24,32 @@
 #include <torquescript/stringhelpers.hpp>
 #include <torquescript/storedvaluestack.hpp>
 
+#define NAMESPACE_EMPTY ""
+#define PACKAGE_EMPTY ""
+
 namespace TorqueScript
 {
     //! Forward declaration to deal with circular dependencies.
     class Compiler;
     class CodeBlock;
     class ExecutionState;
+
+    struct FunctionRegistry
+    {
+        FunctionRegistry(const std::string& package) : mPackageName(package), mActive(false)
+        {
+
+        }
+
+        //! The package this registry belongs to.
+        std::string mPackageName;
+
+        //! Whether or not the registry is currently active.
+        bool mActive;
+
+        //! A mapping of function namespaces to a mapping of function names to the function object.
+        std::map<std::string, std::map<std::string, std::shared_ptr<Function>>> mFunctions;
+    };
 
     /**
      *  @brief The interpreter class represents a high level instance of the TorqueScript interpreter.
@@ -60,8 +80,14 @@ namespace TorqueScript
              *  @brief Registers a new function to the interpreter.
              */
             void addFunction(std::shared_ptr<Function> function);
+            std::shared_ptr<Function> getFunction(const std::string& space, const std::string& name);
+            std::shared_ptr<Function> getFunctionParent(Function* function);
 
-            std::shared_ptr<Function> getFunction(const std::string& name);
+            FunctionRegistry* findFunctionRegistry(const std::string packageName);
+            void addFunctionRegistry(const std::string& packageName);
+            void activateFunctionRegistry(const std::string& packageName);
+            void deactivateFunctionRegistry(const std::string& packageName);
+            void removeFunctionRegistry(const std::string& packageName);
 
             std::shared_ptr<ExecutionState> getExecutionState();
 
@@ -90,8 +116,8 @@ namespace TorqueScript
             //! Keep a ready instance of the compiler on hand as it is reusable.
             Compiler* mCompiler;
 
-            //! A mapping of function names to the function object.
-            std::map<std::string, std::shared_ptr<Function>> mFunctions;
+            //! A mapping of function namespaces to a mapping of function names to the function object.
+            std::vector<FunctionRegistry> mFunctionRegistries;
 
             //! A mapping of global variable names to their stored value instance.
             std::map<std::string, std::shared_ptr<StoredValue>> mGlobalVariables;

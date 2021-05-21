@@ -30,7 +30,7 @@ namespace TorqueScript
     class Echo : public Function
     {
         public:
-            Echo() : Function("echo") { }
+            Echo() : Function(PACKAGE_EMPTY, NAMESPACE_EMPTY, "echo") { }
 
             virtual void execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
             {
@@ -48,8 +48,48 @@ namespace TorqueScript
             }
     };
 
+    class ActivatePackage : public Function
+    {
+        public:
+            ActivatePackage() : Function(PACKAGE_EMPTY, NAMESPACE_EMPTY, "activatepackage") { }
+
+            virtual void execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
+            {
+                std::string outputString = "";
+
+                for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
+                {
+                    std::string activatedPackage = state->mStack.popString(state);
+                    state->mInterpreter->activateFunctionRegistry(activatedPackage);
+                }
+
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+            }
+    };
+
+    class DeactivatePackage : public Function
+    {
+        public:
+            DeactivatePackage() : Function(PACKAGE_EMPTY, NAMESPACE_EMPTY, "deactivatepackage") { }
+
+            virtual void execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
+            {
+                std::string outputString = "";
+
+                for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
+                {
+                    std::string deactivatedPackage = state->mStack.popString(state);
+                    state->mInterpreter->deactivateFunctionRegistry(deactivatedPackage);
+                }
+
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+            }
+    };
+
     void registerBuiltIns(Interpreter* interpreter)
     {
         interpreter->addFunction(std::shared_ptr<Function>(new Echo()));
+        interpreter->addFunction(std::shared_ptr<Function>(new DeactivatePackage()));
+        interpreter->addFunction(std::shared_ptr<Function>(new ActivatePackage()));
     }
 }
