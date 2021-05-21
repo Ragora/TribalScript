@@ -140,7 +140,7 @@ namespace TorqueScript
         }
 
         std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
-        targetFrame.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(functionNameSpace, functionName, parameterNames, functionBody)));
+        targetFrame.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(mCurrentPackageName, functionNameSpace, functionName, parameterNames, functionBody)));
     }
 
     void Compiler::enterArithmetic(TorqueParser::ArithmeticContext* context)
@@ -687,12 +687,14 @@ namespace TorqueScript
 
     void Compiler::enterPackagedeclaration(TorqueParser::PackagedeclarationContext* context)
     {
-        throw std::runtime_error("Packages not Implemented Yet");
+        assert(mCurrentPackageName == "");
+
+        mCurrentPackageName = context->labelnonamespace()->getText();
     }
 
     void Compiler::exitPackagedeclaration(TorqueParser::PackagedeclarationContext* context)
     {
-
+        mCurrentPackageName = "";
     }
 
     void Compiler::enterSwitchcontrol(TorqueParser::SwitchcontrolContext* context)

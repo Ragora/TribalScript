@@ -145,6 +145,9 @@ namespace TorqueScript
 
         private:
 
+            //! Current package being processed.
+            std::string mCurrentPackageName;
+
             void pushInstructionFrame();
             void popInstructionFrame();
             InstructionSequence& getCurrentInstructionFrame();

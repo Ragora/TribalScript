@@ -28,7 +28,8 @@ namespace TorqueScript
         mMaxRecursionDepth = 1024;
 
         // "" is the default top-level
-        this->addFunctionRegistry("");
+        this->addFunctionRegistry(PACKAGE_EMPTY);
+        this->activateFunctionRegistry(PACKAGE_EMPTY);
     }
 
     Interpreter::~Interpreter()
@@ -111,15 +112,18 @@ namespace TorqueScript
         {
             FunctionRegistry& registry = *iterator;
 
-            auto namespaceSearch = registry.mFunctions.find(searchedNameSpace);
-            if (namespaceSearch != registry.mFunctions.end())
+            if (registry.mActive)
             {
-                auto nameSearch = namespaceSearch->second.find(searchedName);
-                if (nameSearch != namespaceSearch->second.end())
+                auto namespaceSearch = registry.mFunctions.find(searchedNameSpace);
+                if (namespaceSearch != registry.mFunctions.end())
                 {
-                    return nameSearch->second;
+                    auto nameSearch = namespaceSearch->second.find(searchedName);
+                    if (nameSearch != namespaceSearch->second.end())
+                    {
+                        return nameSearch->second;
+                    }
+                    //return search->second;
                 }
-                //return search->second;
             }
         }
 
@@ -180,6 +184,9 @@ namespace TorqueScript
 
     void Interpreter::removeFunctionRegistry(const std::string& packageName)
     {
+        // We cannot remove root level
+        assert(packageName != "");
+
         std::string removedName = toLowerCase(packageName);
         for (auto iterator = mFunctionRegistries.begin(); iterator != mFunctionRegistries.end(); ++iterator)
         {
@@ -202,5 +209,40 @@ namespace TorqueScript
         }
 
         mFunctionRegistries.push_back(FunctionRegistry(packageName));
+    }
+
+    void Interpreter::activateFunctionRegistry(const std::string& packageName)
+    {
+        std::string activatedName = toLowerCase(packageName);
+
+        // When we activate a package, it gets moved to the back to take precedence in the stack
+        for (auto iterator = mFunctionRegistries.begin(); iterator != mFunctionRegistries.end(); ++iterator)
+        {
+            FunctionRegistry& registry = *iterator;
+
+            if (registry.mPackageName == packageName)
+            {
+                if (!registry.mActive)
+                {
+                    registry.mActive = true;
+                    std::rotate(iterator, iterator + 1, mFunctionRegistries.end());
+                }
+
+                return;
+            }
+        }
+    }
+
+    void Interpreter::deactivateFunctionRegistry(const std::string& packageName)
+    {
+        std::string deactivatedName = toLowerCase(packageName);
+
+        FunctionRegistry* deactivated = this->findFunctionRegistry(deactivatedName);
+        if (!deactivated)
+        {
+            return;
+        }
+
+        deactivated->mActive = false;
     }
 }

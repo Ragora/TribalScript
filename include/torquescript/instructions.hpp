@@ -668,7 +668,7 @@ namespace TorqueScript
     class FunctionDeclarationInstruction : public Instruction
     {
         public:
-            FunctionDeclarationInstruction(const std::string& space, const std::string& name, const std::vector<std::string> parameterNames, const InstructionSequence& instructions) : mNameSpace(space), mName(name), mParameterNames(parameterNames), mInstructions(instructions)
+            FunctionDeclarationInstruction(const std::string package, const std::string& space, const std::string& name, const std::vector<std::string> parameterNames, const InstructionSequence& instructions) : mPackageName(package), mNameSpace(space), mName(name), mParameterNames(parameterNames), mInstructions(instructions)
             {
 
             }
@@ -678,7 +678,7 @@ namespace TorqueScript
                 // Register the function
                 std::shared_ptr<Function> newFunction = std::shared_ptr<Function>(new Function(mNameSpace, mName, mParameterNames));
                 newFunction->addInstructions(mInstructions);
-                state->mInterpreter->addFunction(newFunction, "");
+                state->mInterpreter->addFunction(newFunction, mPackageName);
 
                 return 1;
             };
@@ -687,14 +687,21 @@ namespace TorqueScript
             {
                 std::ostringstream out;
 
-                if (mNameSpace == "")
+                if (mNameSpace == NAMESPACE_EMPTY)
                 {
-                    out << "FunctionDeclaration " << mName << "(";
+                    out << "FunctionDeclaration " << mName;
                 }
                 else
                 {
-                    out << "FunctionDeclaration " << mNameSpace << "::" << mName << "(";
+                    out << "FunctionDeclaration " << mNameSpace << "::" << mName;
                 }
+
+                if (mPackageName != PACKAGE_EMPTY)
+                {
+                    out << "[in Package " << mPackageName << "] ";
+                }
+
+                out << "(";
 
                 // Generate parameter list
                 for (auto iterator = mParameterNames.begin(); iterator != mParameterNames.end(); ++iterator)
@@ -722,6 +729,7 @@ namespace TorqueScript
             }
 
         private:
+            std::string mPackageName;
             std::string mNameSpace;
             std::string mName;
             std::vector<std::string> mParameterNames;

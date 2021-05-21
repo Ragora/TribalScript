@@ -24,6 +24,9 @@
 #include <torquescript/stringhelpers.hpp>
 #include <torquescript/storedvaluestack.hpp>
 
+#define NAMESPACE_EMPTY ""
+#define PACKAGE_EMPTY ""
+
 namespace TorqueScript
 {
     //! Forward declaration to deal with circular dependencies.
@@ -33,13 +36,16 @@ namespace TorqueScript
 
     struct FunctionRegistry
     {
-        FunctionRegistry(const std::string& package) : mPackageName(package)
+        FunctionRegistry(const std::string& package) : mPackageName(package), mActive(false)
         {
 
         }
 
         //! The package this registry belongs to.
         std::string mPackageName;
+
+        //! Whether or not the registry is currently active.
+        bool mActive;
 
         //! A mapping of function namespaces to a mapping of function names to the function object.
         std::map<std::string, std::map<std::string, std::shared_ptr<Function>>> mFunctions;
@@ -77,7 +83,8 @@ namespace TorqueScript
             std::shared_ptr<Function> getFunction(const std::string& space, const std::string& name);
             FunctionRegistry* findFunctionRegistry(const std::string packageName);
             void addFunctionRegistry(const std::string& packageName);
-
+            void activateFunctionRegistry(const std::string& packageName);
+            void deactivateFunctionRegistry(const std::string& packageName);
             void removeFunctionRegistry(const std::string& packageName);
 
             std::shared_ptr<ExecutionState> getExecutionState();
