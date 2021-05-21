@@ -57,8 +57,7 @@ namespace TorqueScript
             void execute(const std::string& path, std::shared_ptr<ExecutionState> state = nullptr);
 
             /**
-             *  @brief Registers a new function to the interpreter. Ownership is transferred to the interpreter at this
-             *  point.
+             *  @brief Registers a new function to the interpreter.
              */
             void addFunction(std::shared_ptr<Function> function);
 

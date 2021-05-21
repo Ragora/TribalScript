@@ -5,7 +5,7 @@ language in an easily embeddable manner outside of Torque Game Engine.
 
 ## Building
 
-The project utilizes CMake to perform automatic build generation. However, there are two dependencies you must setup on your machine.
+The project utilizes CMake to perform automatic build generation. However, there is one dependency you must setup on your machine, listed below.
 
 ### ANTLR4
 

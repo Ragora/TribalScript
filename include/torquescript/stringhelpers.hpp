@@ -17,4 +17,5 @@
 namespace TorqueScript
 {
     std::string toLowerCase(const std::string& in);
+    std::string expandEscapeSequences(const std::string& in);
 }

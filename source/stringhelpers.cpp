@@ -12,7 +12,9 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <regex>
 #include <string>
+#include <iostream>
 #include <algorithm>
 
 #include <torquescript/stringhelpers.hpp>
@@ -23,6 +25,71 @@ namespace TorqueScript
     {
         std::string result = in;
         std::transform(result.begin(), result.end(), result.begin(), [](unsigned char character) { return std::tolower(character); });
+        return result;
+    }
+
+    std::string expandEscapeSequences(const std::string& in)
+    {
+        std::regex colorRegex("\\\\c([0-9])");
+        std::regex hexRegex("\\\\x([0-9a-f]{1,2})");
+
+        std::string result = in;
+
+        // Handle hex escapes
+        std::smatch match;
+        while (std::regex_search(result, match, hexRegex))
+        {
+            const unsigned char hexValue = std::stoul(match[1], nullptr, 16);
+            std::string hexString(1, hexValue);
+
+            const std::string beginning = result.substr(0, match.position());
+            const std::string ending = result.substr(match.position() + match.length(), result.size());
+            result = beginning + hexString + ending;
+        }
+
+        // Handle color escapes - in T2 these are just aliases for an unprintable
+        while (std::regex_search(result, match, colorRegex))
+        {
+            const unsigned char integerValue = std::stoul(match[1], nullptr, 10);
+            std::string colorString = "";
+            switch (integerValue)
+            {
+                case 0:
+                    colorString = "\x02";
+                    break;
+                case 1:
+                    colorString = "\x03";
+                    break;
+                case 2:
+                    colorString = "\x04";
+                    break;
+                case 3:
+                    colorString = "\x05";
+                    break;
+                case 4:
+                    colorString = "\x06";
+                    break;
+                case 5:
+                    colorString = "\x07";
+                    break;
+                case 6:
+                    colorString = "\x08";
+                    break;
+                case 7:
+                    colorString = "\x0B";
+                    break;
+                case 8:
+                    colorString = "\x0C";
+                    break;
+                case 9:
+                    colorString = "\x0E";
+                    break;
+            }
+
+            const std::string beginning = result.substr(0, match.position());
+            const std::string ending = result.substr(match.position() + match.length(), result.size());
+            result = beginning + colorString + ending;
+        }
         return result;
     }
 }

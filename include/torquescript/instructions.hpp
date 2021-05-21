@@ -132,7 +132,7 @@ namespace TorqueScript
 
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(mParameter)));
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(expandEscapeSequences(mParameter))));
                 return 1;
             };
 
