@@ -1,0 +1,4 @@
+<map id="TorqueScript::MultiplyInstruction" name="TorqueScript::MultiplyInstruction">
+<area shape="rect" id="node1" title="Adds together two values on the stack and pushes the sum." alt="" coords="5,80,237,107"/>
+<area shape="rect" id="node2" href="$classTorqueScript_1_1Instruction.html" title="Base instruction class. All instructions in the interpreter should dervive from this class and implem..." alt="" coords="32,5,211,32"/>
+</map>
