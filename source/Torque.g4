@@ -66,10 +66,10 @@ returncontrol : RETURN expression? ;
 breakcontrol : BREAK ;
 
 controlexpression : expression ;
-expression : (op=NOT|op=MINUS) expression                                                        # unary
+expression : (op=NOT|op=MINUS|TILDE) expression                                                        # unary
            | expression (op=PLUSPLUS|op=MINUSMINUS)                                              # unary
            | labelsinglenamespace '(' expression? (',' expression)* ')'                          # call
-           | (globalvariable | localvariable) '[' expression (',' expression)* ']'               # array
+           | expression '[' expression (',' expression)* ']'                                     # array
            | expression ('.' label)                                                              # subreference
            | expression ('.' labelnonamespace '(' expression? (',' expression)* ')' )            # subcall
            | '(' expression ')'                                                                  # parenthesis
@@ -80,8 +80,8 @@ expression : (op=NOT|op=MINUS) expression                                       
            | expression (op=EQUAL|op=NOTEQUAL|op=STRINGEQUAL|op=STRINGNOTEQUAL) expression       # equality
            | expression (op=BITWISEAND|op=EXCLUSIVEOR|op=BITWISEOR) expression                   # bitwise
            | expression (op=CONCAT|op=SPACE|op=NEWLINE|op=TAB) expression                        # concatenation
-           | expression (op=LOGICALAND|op=LOGICALOR) expression                                                # logicalop
-           | expression QUESTIONMARK controlexpression COLON controlexpression                              # ternary
+           | expression (op=LOGICALAND|op=LOGICALOR) expression                                  # logicalop
+           | expression QUESTIONMARK controlexpression COLON controlexpression                   # ternary
            | expression (op=ASSIGN
                         |op=ADDASSIGN
                         |op=MULTASSIGN
@@ -94,6 +94,7 @@ expression : (op=NOT|op=MINUS) expression                                       
                         |op=RIGHTSHIFTASSIGN)  expression                                        # assignment
            | op=newobject                                                                        # objectInstantiation
            | op=INT                                                                              # value
+           | op=HEXINT                                                                           # value
            | op=FLOAT                                                                            # value
            | op=globalvariable                                                                   # globalVariableValue
            | op=localvariable                                                                    # localVariableValue
@@ -144,6 +145,7 @@ EXCLUSIVEOR: '^';
 LEFTSHIFT: '<<';
 RIGHTSHIFT: '>>';
 CONCAT: '@' ;
+TILDE: '~' ;
 SPACE: 'SPC' ;
 NEWLINE: 'NL' ;
 TAB: 'TAB' ;
@@ -174,6 +176,7 @@ QUESTIONMARK : '?' ;
 LABEL : [a-zA-Z_]+[a-zA-Z_0-9]* ;
 
 INT :   DIGIT+ ;
+HEXINT : '0x' HEXDIGIT+ ;
 DIGIT:  '0'..'9' ;
 
 HEXDIGIT : ('0'..'9'|'a'..'f'|'A'..'F') ;
@@ -184,7 +187,7 @@ STRING
     ;
 
 fragment
-ESC :   '\\' ([abtnfrv]|'"'|'\'')
+ESC :   '\\' ([abtnfrv]|'"'|'\\')
     |   HEX_ESCAPE
     |   COLOR_ESCAPE
     ;

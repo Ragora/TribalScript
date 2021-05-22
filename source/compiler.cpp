@@ -240,6 +240,10 @@ namespace TorqueScript
         {
             currentFrame.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(0)));
         }
+        else if (context->HEXINT())
+        {
+            currentFrame.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(std::stoul(context->HEXINT()->getText(), nullptr, 16))));
+        }
         else
         {
             throw std::runtime_error("Encountered unhandled value type!");
@@ -654,25 +658,7 @@ namespace TorqueScript
 
     void Compiler::exitArray(TorqueParser::ArrayContext* context)
     {
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-
-        std::string name = "";
-        bool global = false;
-        if (context->globalvariable())
-        {
-            global = true;
-            name = context->globalvariable()->label()->getText();
-        }
-        else if (context->localvariable())
-        {
-            name = context->localvariable()->label()->getText();
-        }
-        else
-        {
-            throw std::runtime_error("Encountered unknown variable reference type in array!");
-        }
-
-        currentFrame.push_back(std::shared_ptr<Instruction>(new AccessArrayInstruction(name, context->expression().size(), global)));
+        throw std::runtime_error("Array Accesses not Implemented Yet");
     }
 
     void Compiler::enterDatablockdeclaration(TorqueParser::DatablockdeclarationContext* context)
