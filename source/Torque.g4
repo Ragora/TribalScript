@@ -1,178 +1,175 @@
-/*
-    MIT License
-*/
+/**
+ *  Copyright 2021 Robert MacGregor
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction,
+ *  including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+ *  subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ *  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 grammar Torque;
 
-program  : (outerblock | statement)+ | <EOF> ;
+program  : statement* ;
 
-elseifcontrol : (ELSE IF '(' controlexpression ')' '{' statement* '}')
-              | (ELSE IF '(' controlexpression ')' statement ) ;
+/*
+    Main Blocks
+*/
+function_declaration : FUNCTION LABEL '(' function_declaration_parameters? ')' '{' expression_statement* '}'
+                     | FUNCTION LABEL '::' LABEL '(' function_declaration_parameters? ')' '{' expression_statement* '}' ;
+function_declaration_parameters : localvariable (',' localvariable)* ;
 
-elsecontrol : ELSE '{' statement* '}'
-            | ELSE statement ;
+package_declaration : PACKAGE LABEL '{' function_declaration+ '}' ';' ;
 
-ifcontrol : IF '(' controlexpression ')' statement elseifcontrol* elsecontrol?
-          | IF '(' controlexpression ')' '{' statement* '}' elseifcontrol* elsecontrol? ;
+datablock_declaration : DATABLOCK LABEL '(' LABEL ')' (':' LABEL)? '{' field_assign+ '}' ';' ;
 
-whilecontrol : WHILE '(' controlexpression ')' '{' statement* '}'
-             | WHILE '(' controlexpression ')' statement ;
+field_assign : labelwithkeywords '=' expression ';'
+             | labelwithkeywords '[' expression_list ']' '=' expression ';' ;
+object_initialization : '{' field_assign* (object_declaration ';')* '}' ;
 
-// In Torque, all for components are required
-forcontrol : FOR '(' controlexpression SEMICOLON controlexpression SEMICOLON controlexpression ')' statement
-           | FOR '(' controlexpression SEMICOLON controlexpression SEMICOLON controlexpression ')' '{' statement* '}' ;
+// NOTE: In T2 it's possible to pass multiple values, what do they do exactly?
+object_declaration : NEW LABEL '(' expression_list? ')' object_initialization?
+                   | NEW '(' expression ')' '(' expression_list? ')' object_initialization? ;
 
-// In Torque, the case values are apparently expressions
-defaultcase : DEFAULT COLON statement* ;
-switchcase : CASE controlexpression (OR controlexpression)* COLON statement* ;
+/*
+    Control blocks
+*/
+control_statements : '{' expression_statement* '}'
+                   | expression_statement ;
 
-// Switch has two forms - switch and switch$ for string values
-switchcontrol : SWITCH DOLLARSIGN? '(' controlexpression ')' '{' switchcase* defaultcase? '}' ;
+while_control : WHILE '(' expression ')' control_statements ;
 
-// Control structures
-control : whilecontrol
-        | ifcontrol
-        | forcontrol
-        | switchcontrol ;
+for_control : FOR '(' expression ';' expression ';' expression ')' control_statements ;
 
-// Object instantiation - we support two forms new TYPENAME(NAME) and new (TYPENAMEEXP)(NAME) both with optional initialization lists
-objectinitialization : '{' (field | newobject SEMICOLON)* '}' ;
-newobject : NEW LABEL '(' expression? ')' objectinitialization?
-          | NEW '(' expression ')' '(' expression? ')' objectinitialization? ;
+else_control : ELSE control_statements ;
+elseif_control : ELSE IF '(' expression ')' control_statements ;
+if_control : IF '(' expression ')' control_statements elseif_control* else_control? ;
 
-// Functions, datablocks, packages
-paramlist : localvariable (',' localvariable )* ;
-functiondeclaration : FUNCTION labelsinglenamespace '(' paramlist? ')' '{' statement* '}' ;
-packagedeclaration : PACKAGE labelnonamespace '{' functiondeclaration* '}' SEMICOLON ;
+default_control : DEFAULT ':' expression_statement* ;
+case_control : CASE expression ('or' expression)* ':' expression_statement* ;
+switch_control : SWITCH '$'? '(' expression ')' '{' case_control+ default_control? '}' ;
 
-// Datablock declaration requires at least one field
-datablockdeclaration : DATABLOCK LABEL '(' LABEL ')' (COLON LABEL)? '{' field+ '}' SEMICOLON ;
+break_control : BREAK ;
+return_control : RETURN expression? ;
 
-outerblock : functiondeclaration
-           | packagedeclaration
-           | datablockdeclaration ;
+/*
+    Expressions and Statements
+*/
 
-actionstatement : expression SEMICOLON ;
+expression_statement : expression ';'
+                     | while_control
+                     | for_control
+                     | if_control
+                     | switch_control
+                     | break_control ';'
+                     | return_control ';' ;
 
-statement : control
-          | returncontrol SEMICOLON
-          | breakcontrol SEMICOLON
-          | actionstatement ;
+statement : function_declaration
+          | package_declaration
+          | datablock_declaration
+          | expression_statement  ;
 
-// Used for setting field values in object instantiation & datablocks
-field : LABEL ('[' expression ']')? '=' expression SEMICOLON ;
+expression_list : expression (',' expression)* ;
 
-returncontrol : RETURN expression? ;
-breakcontrol : BREAK ;
+functioncall_expression : LABEL '(' expression_list? ')'
+                        | LABEL '::' LABEL '(' expression_list? ')' ;
 
-controlexpression : expression ;
-expression : (op=NOT|op=MINUS|TILDE) expression                                                        # unary
-           | expression (op=PLUSPLUS|op=MINUSMINUS)                                              # unary
-           | labelsinglenamespace '(' expression? (',' expression)* ')'                          # call
-           | expression '[' expression (',' expression)* ']'                                     # array
-           | expression ('.' label)                                                              # subreference
-           | expression ('.' labelnonamespace '(' expression? (',' expression)* ')' )            # subcall
-           | '(' expression ')'                                                                  # parenthesis
-           | expression (op=MULT|op=DIV|op=PERCENT) expression                                   # arithmetic
-           | expression (op=PLUS|op=MINUS) expression                                            # arithmetic
-           | expression (op=LEFTSHIFT|op=RIGHTSHIFT) expression                                  # arithmetic
-           | expression (op=LESS|op=LESSEQ|op=BIGGER|op=BIGGEREQ) expression                     # relational
-           | expression (op=EQUAL|op=NOTEQUAL|op=STRINGEQUAL|op=STRINGNOTEQUAL) expression       # equality
-           | expression (op=BITWISEAND|op=EXCLUSIVEOR|op=BITWISEOR) expression                   # bitwise
-           | expression (op=CONCAT|op=SPACE|op=NEWLINE|op=TAB) expression                        # concatenation
-           | expression (op=LOGICALAND|op=LOGICALOR) expression                                  # logicalop
-           | expression QUESTIONMARK controlexpression COLON controlexpression                   # ternary
+expression : '(' expression ')'                                                 # parentheses
+           | expression '.' expression                                          # subfield
+           | expression '^' expression                                          # bitwise
+           | expression '&' expression                                          # bitwise
+           | expression '|' expression                                          # bitwise
+           | expression (op=MODULUS|op=PLUS|op=MINUS|op=MULTIPLY|op=DIVIDE) expression                                     # arithmetic
+           | (op=MINUS|op=NOT|op=TILDE) expression                              # unary
+           | expression '?' expression ':' expression                           # ternary
+           | expression (op=LESSTHAN
+                        |op=GREATERTHAN
+                        |op=LESSTHANOREQUAL
+                        |op=GREATERTHANOREQUAL) expression                      # relational
+           | expression '==' expression                                         # equality
+           | expression '!=' expression                                         # equality
+           | expression '||' expression                                         # logical
+           | expression '<<' expression                                         # bitshift
+           | expression '>>' expression                                         # bitshift
+           | expression '&&' expression                                         # logical
+           | expression '$=' expression                                         # equality
+           | expression '!$=' expression                                        # equality
+           | expression '@' expression                                          # concat
+           | expression 'TAB' expression                                        # concat
+           | expression 'SPC' expression                                        # concat
+           | expression 'NL' expression                                         # concat
+           | (globalvariable | localvariable | LABEL) '[' expression_list ']'   # array
+           | localvariable                                                      # localValue
+           | globalvariable                                                     # globalValue
+           | functioncall_expression                                            # call
+           | object_declaration                                                 # objectDeclaration
            | expression (op=ASSIGN
-                        |op=ADDASSIGN
-                        |op=MULTASSIGN
-                        |op=SUBASSIGN
+                        |op=PLUSASSIGN
+                        |op=MINUSASSIGN
+                        |op=MULTIPLYASSIGN
+                        |op=DIVIDEASSIGN
+                        |op=ORASSIGN
                         |op=MODULUSASSIGN
-                        |op=BITWISEORASSIGN
-                        |op=BITWISEANDASSIGN
-                        |op=EXLUSIVEORASSIGN
-                        |op=LEFTSHIFTASSIGN
-                        |op=RIGHTSHIFTASSIGN)  expression                                        # assignment
-           | op=newobject                                                                        # objectInstantiation
-           | op=INT                                                                              # value
-           | op=HEXINT                                                                           # value
-           | op=FLOAT                                                                            # value
-           | op=globalvariable                                                                   # globalVariableValue
-           | op=localvariable                                                                    # localVariableValue
-           | op=LABEL                                                                            # value
-           | op=TRUE                                                                             # value
-           | op=FALSE                                                                            # value
-           | op=STRING                                                                           # value ;
+                        |op=ANDASSIGN) expression                               # assign
+           | expression '++'                                                    # increment
+           | expression '--'                                                    # decrement
+           | INT                                                                # value
+           | HEXINT                                                             # value
+           | STRING                                                             # value
+           | TAGGEDSTRING                                                       # value
+           | FLOAT                                                              # value
+           | LABEL                                                              # value
+           | TRUE                                                               # value
+           | FALSE                                                              # value ;
 
-labelsinglenamespace : LABEL (sublabel)?;
-label : LABEL (sublabel)*;
-labelnonamespace : LABEL ;
-sublabel : '::' LABEL ;
+// For the grammar to work correctly, we need to explicitly allow these keywords to be used in variable names
+labelwithkeywords : LABEL | PACKAGE | RETURN | WHILE | FALSE | TRUE | FUNCTION | ELSE | IF | DATABLOCK | CASE ;
+localvariable : '%' labelwithkeywords ('::' labelwithkeywords)* ;
+globalvariable : '$' labelwithkeywords ('::' labelwithkeywords)* ;
 
-localvariable: PERCENT label ;
-globalvariable: DOLLARSIGN label ;
-
-// Lexer
-PLUS: '+' ;
-PLUSPLUS: '++' ;
-MINUSMINUS: '--' ;
-MINUS: '-' ;
-MULT: '*' ;
-DIV: '/' ;
-NOT: '!';
-EQUAL: '==' ;
-ASSIGN: '=' ;
-NOTEQUAL: '!=';
-ADDASSIGN: '+=';
-MULTASSIGN: '*=';
-SUBASSIGN: '-=';
-MODULUSASSIGN: '%=' ;
-STRINGNOTEQUAL: '!$=' ;
-LEFTSHIFTASSIGN: '<<=' ;
-RIGHTSHIFTASSIGN: '>>=' ;
-BITWISEORASSIGN: '|=' ;
-BITWISEANDASSIGN: '&=' ;
-EXLUSIVEORASSIGN: '^=' ;
-STRINGEQUAL: '$=' ;
-LESS: '<' ;
-LESSEQ: '<=' ;
-BIGGER: '>' ;
-BIGGEREQ: '>=' ;
-LOGICALAND: '&&' ;
-LOGICALOR: '||' ;
-BITWISEAND: '&';
-BITWISEOR: '|';
-EXCLUSIVEOR: '^';
-LEFTSHIFT: '<<';
-RIGHTSHIFT: '>>';
-CONCAT: '@' ;
-TILDE: '~' ;
-SPACE: 'SPC' ;
-NEWLINE: 'NL' ;
-TAB: 'TAB' ;
-NEW: 'new' ;
-FUNCTION : 'function';
-PACKAGE : 'package' ;
+/*
+    Lexer
+*/
 DATABLOCK : 'datablock' ;
-RETURN : 'return' ;
-BREAK : 'break' ;
-FOR : 'for' ;
-DEFAULT : 'default' ;
-WHILE : 'while' ;
-SEMICOLON : ';' ;
-COLON : ':' ;
-IF : 'if' ;
+PACKAGE : 'package' ;
+FUNCTION : 'function' ;
+IF : 'if';
 ELSE : 'else' ;
+SWITCH : 'switch';
+CASE : 'case' ;
+RETURN : 'return';
+BREAK : 'break';
+NEW : 'new' ;
+WHILE : 'while' ;
+FOR : 'for' ;
 TRUE : 'true' ;
 FALSE : 'false' ;
-OR : 'or' ;
-CASE : 'case' ;
-PERCENT : '%' ;
-SWITCH : 'switch' ;
-DOLLARSIGN : '$' ;
-QUESTIONMARK : '?' ;
+DEFAULT : 'default' ;
+PLUS : '+' ;
+MINUS : '-' ;
+MULTIPLY : '*' ;
+DIVIDE : '/' ;
+MODULUS : '%' ;
+ASSIGN : '=';
+PLUSASSIGN : '+=' ;
+MULTIPLYASSIGN : '*=' ;
+ORASSIGN : '|=' ;
+ANDASSIGN : '&=' ;
+MODULUSASSIGN : '%=' ;
+DIVIDEASSIGN : '/=' ;
+MINUSASSIGN : '-=' ;
+LESSTHAN : '<' ;
+GREATERTHAN : '>' ;
+LESSTHANOREQUAL : '<=' ;
+GREATERTHANOREQUAL : '>=' ;
+NOT : '!' ;
+TILDE : '~' ;
 
 // Labels can contain numbers but not at the start
-
 LABEL : [a-zA-Z_]+[a-zA-Z_0-9]* ;
 
 INT :   DIGIT+ ;
@@ -181,13 +178,11 @@ DIGIT:  '0'..'9' ;
 
 HEXDIGIT : ('0'..'9'|'a'..'f'|'A'..'F') ;
 
-STRING
-    :   '"' ( ESC | ~[\\"] )*? '"'
-    |   '\'' ( ESC | ~[\\'] )*? '\''
-    ;
+STRING : '"' ( ESC | ~[\\"] )*? '"' ;
+TAGGEDSTRING : '\'' ( ESC | ~[\\'] )*? '\'' ;
 
 fragment
-ESC :   '\\' ([abtnfrv]|'"'|'\\')
+ESC :   '\\' ([abtnfrv]|'"'|'\''|'\\')
     |   HEX_ESCAPE
     |   COLOR_ESCAPE
     ;

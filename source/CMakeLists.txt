@@ -1,4 +1,4 @@
-antlr_target(Torque Torque.g4 LISTENER)
+antlr_target(Torque Torque.g4 VISITOR)
 include_directories(${ANTLR_Torque_OUTPUT_DIR})
 
 file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/source/*.cpp)
