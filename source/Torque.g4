@@ -90,14 +90,14 @@ expression : '(' expression ')'                                                 
                         |op=GREATERTHAN
                         |op=LESSTHANOREQUAL
                         |op=GREATERTHANOREQUAL) expression                      # relational
-           | expression '==' expression                                         # equality
-           | expression '!=' expression                                         # equality
            | expression '||' expression                                         # logical
            | expression '<<' expression                                         # bitshift
            | expression '>>' expression                                         # bitshift
            | expression '&&' expression                                         # logical
-           | expression '$=' expression                                         # equality
-           | expression '!$=' expression                                        # equality
+           | expression (op=EQUALS
+                        |op=NOTEQUAL
+                        |op=STRINGEQUALS
+                        |op=STRINGNOTEQUAL) expression                          # equality
            | expression '@' expression                                          # concat
            | expression 'TAB' expression                                        # concat
            | expression 'SPC' expression                                        # concat
@@ -168,7 +168,10 @@ LESSTHANOREQUAL : '<=' ;
 GREATERTHANOREQUAL : '>=' ;
 NOT : '!' ;
 TILDE : '~' ;
-
+EQUALS : '==' ;
+STRINGEQUALS : '$=' ;
+NOTEQUAL : '!=' ;
+STRINGNOTEQUAL : '!$=' ;
 // Labels can contain numbers but not at the start
 LABEL : [a-zA-Z_]+[a-zA-Z_0-9]* ;
 

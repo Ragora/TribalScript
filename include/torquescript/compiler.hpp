@@ -177,10 +177,106 @@ namespace TorqueScript
                     InstructionSequence forCode = this->visitFor_control(context->for_control()).as<InstructionSequence>();
                     generated.insert(generated.end(), forCode.begin(), forCode.end());
                 }
+                else if (context->if_control())
+                {
+                    InstructionSequence ifCode = this->visitIf_control(context->if_control()).as<InstructionSequence>();
+                    generated.insert(generated.end(), ifCode.begin(), ifCode.end());
+                }
                 else
                 {
                     throw std::runtime_error("Unhandled expression statement type!");
                 }
+
+                return generated;
+            }
+
+            virtual antlrcpp::Any visitIf_control(TorqueParser::If_controlContext* context) override
+            {
+                assert(context->expression());
+
+                InstructionSequence generated;
+
+                // Here we intentionally process in reverse order due to the nature of the jumps needing to know how to far to jump over existing code
+
+                // Process else
+                InstructionSequence elseBody;
+                if (context->else_control())
+                {
+                    TorqueParser::Control_statementsContext* elseControlStatements = context->else_control()->control_statements();
+
+                    std::vector<TorqueParser::Expression_statementContext*> elseStatements = elseControlStatements->expression_statement();
+                    for (TorqueParser::Expression_statementContext* elseStatement : elseStatements)
+                    {
+                        InstructionSequence elseCode = this->visitExpression(elseStatement->expression()).as<InstructionSequence>();
+                        elseBody.insert(elseBody.end(), elseCode.begin(), elseCode.end());
+                    }
+                }
+                elseBody.push_back(std::shared_ptr<Instruction>(new NOPInstruction())); // Add a NOP for jump targets
+                generated.insert(generated.end(), elseBody.begin(), elseBody.end());
+
+                // Process else if's present
+                std::vector<TorqueParser::Elseif_controlContext*> elseIfs = context->elseif_control();
+                for (TorqueParser::Elseif_controlContext* elseIf : elseIfs)
+                {
+                    InstructionSequence elseIfBody;
+                    InstructionSequence elseIfExpression = this->visitExpression(elseIf->expression()).as<InstructionSequence>();
+
+                    TorqueParser::Control_statementsContext* elseIfControlStatements = elseIf->control_statements();
+                    if (elseIfControlStatements)
+                    {
+                        std::vector<TorqueParser::Expression_statementContext*> elseIfStatements = elseIfControlStatements->expression_statement();
+
+                        for (TorqueParser::Expression_statementContext* elseIfStatement : elseIfStatements)
+                        {
+                            InstructionSequence elseIfCode = this->visitExpression(elseIfStatement->expression()).as<InstructionSequence>();
+                            elseIfBody.insert(elseIfBody.end(), elseIfCode.begin(), elseIfCode.end());
+                        }
+                    }
+
+                    // The expression must jump over our body if false
+                    elseIfExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(elseIfBody.size() + 2)));
+
+                    // The body, when done, must jump over the remaining code
+                    elseIfBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(generated.size())));
+
+                    generated.insert(generated.begin(), elseIfBody.begin(), elseIfBody.end());
+                    generated.insert(generated.begin(), elseIfExpression.begin(), elseIfExpression.end());
+                }
+
+                // Load if expression and primary body
+                InstructionSequence ifExpression = this->visitExpression(context->expression()).as<InstructionSequence>();
+
+                InstructionSequence ifBody;
+                TorqueParser::Control_statementsContext* ifControlStatements = context->control_statements();
+
+                if (ifControlStatements)
+                {
+                    std::vector<TorqueParser::Expression_statementContext*> ifStatements = ifControlStatements->expression_statement();
+                    for (TorqueParser::Expression_statementContext* ifStatement : ifStatements)
+                    {
+                        InstructionSequence ifCode = this->visitExpression(ifStatement->expression()).as<InstructionSequence>();
+                        ifBody.insert(ifBody.end(), ifCode.begin(), ifCode.end());
+                    }
+                }
+
+                // The expression must jump over our body if false
+                ifExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(ifBody.size() + 2)));
+
+                // The body, when done, must jump over the remaining code
+                ifBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(generated.size())));
+
+                generated.insert(generated.begin(), ifBody.begin(), ifBody.end());
+                generated.insert(generated.begin(), ifExpression.begin(), ifExpression.end());
+
+                /*
+                virtual size_t getRuleIndex() const override;
+                antlr4::tree::TerminalNode *IF();
+                ExpressionContext *expression();
+                Control_statementsContext *control_statements();
+                std::vector<Elseif_controlContext *> elseif_control();
+                Elseif_controlContext* elseif_control(size_t i);
+                Else_controlContext *else_control();
+                */
 
                 return generated;
             }
@@ -280,7 +376,9 @@ namespace TorqueScript
                 TorqueParser::AssignContext* assign = dynamic_cast<TorqueParser::AssignContext*>(context);
                 TorqueParser::ParenthesesContext* parentheses = dynamic_cast<TorqueParser::ParenthesesContext*>(context);
                 TorqueParser::IncrementContext* increment = dynamic_cast<TorqueParser::IncrementContext*>(context);
-                TorqueParser::DecrementContext* decrement = dynamic_cast<TorqueParser::DecrementContext*>(decrement);
+                TorqueParser::DecrementContext* decrement = dynamic_cast<TorqueParser::DecrementContext*>(context);
+                TorqueParser::EqualityContext* equality = dynamic_cast<TorqueParser::EqualityContext*>(context);
+                TorqueParser::TernaryContext* ternary = dynamic_cast<TorqueParser::TernaryContext*>(context);
 
                 if (call)
                 {
@@ -372,6 +470,29 @@ namespace TorqueScript
                     generated.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(1)));
                     generated.push_back(std::shared_ptr<Instruction>(new AddAssignmentInstruction()));
                 }
+                else if (ternary)
+                {
+                    std::vector<TorqueParser::ExpressionContext*> expressions = ternary->expression();
+                    assert(expressions.size() == 3);
+
+                    InstructionSequence expression = this->visitExpression(expressions[0]).as<InstructionSequence>();
+                    InstructionSequence trueCode = this->visitExpression(expressions[1]).as<InstructionSequence>();
+                    InstructionSequence falseCode = this->visitExpression(expressions[2]).as<InstructionSequence>();
+
+                    // We add a NOP to the false expressions for a target to jump to
+                    falseCode.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
+
+                    // In the true expression we need to jump over the false expression
+                    trueCode.push_back(std::shared_ptr<Instruction>(new JumpInstruction(falseCode.size())));
+
+                    // Jump to the false expression if our expression is false
+                    expression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(falseCode.size() + 1)));
+
+                    // Push generated instructions back
+                    generated.insert(generated.end(), expression.begin(), expression.end());
+                    generated.insert(generated.end(), trueCode.begin(), trueCode.end());
+                    generated.insert(generated.end(), falseCode.begin(), falseCode.end());
+                }
                 else if (relational)
                 {
                     std::vector<TorqueParser::ExpressionContext*> expressions = relational->expression();
@@ -388,6 +509,24 @@ namespace TorqueScript
                     else
                     {
                         throw std::runtime_error("Unhandled Relational Type!");
+                    }
+                }
+                else if (equality)
+                {
+                    std::vector<TorqueParser::ExpressionContext*> expressions = equality->expression();
+                    InstructionSequence lhsCode = this->visitExpression(expressions[0]).as<InstructionSequence>();
+                    InstructionSequence rhsCode = this->visitExpression(expressions[1]).as<InstructionSequence>();
+
+                    generated.insert(generated.end(), lhsCode.begin(), lhsCode.end());
+                    generated.insert(generated.end(), rhsCode.begin(), rhsCode.end());
+
+                    if (equality->EQUALS())
+                    {
+                        generated.push_back(std::shared_ptr<Instruction>(new EqualsInstruction()));
+                    }
+                    else
+                    {
+                        throw std::runtime_error("Unknown equality type!");
                     }
                 }
                 else if (arithmetic)
