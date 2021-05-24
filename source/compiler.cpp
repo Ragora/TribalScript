@@ -38,7 +38,8 @@ namespace TorqueScript
 
         // Instantiate the program and go
         CompilerVisitor visitor;
-        InstructionSequence instructions = visitor.visitProgram(parser.program()).as<InstructionSequence>();
+
+        InstructionSequence instructions = visitor.collapseInstructions(visitor.visitProgram(parser.program()).as<GeneratedInstructions>());
 
         // Did we receive any errors?
         if (parserErrorListener.getErrors().empty())
