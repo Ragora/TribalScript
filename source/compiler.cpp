@@ -18,6 +18,7 @@
 #include <TorqueParser.h>
 
 #include <torquescript/compiler.hpp>
+#include <torquescript/compilervisitor.hpp>
 #include <torquescript/instructionsequence.hpp>
 #include <torquescript/parsererrorlistener.hpp>
 

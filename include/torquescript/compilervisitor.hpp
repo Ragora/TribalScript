@@ -67,6 +67,8 @@ namespace TorqueScript
 
             InstructionSequence collapseInstructions(GeneratedInstructions instructions);
 
+            virtual antlrcpp::Any visitUnary(TorqueParser::UnaryContext* context) override;
+
         private:
             std::string mCurrentPackage;
     };

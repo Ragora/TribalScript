@@ -43,10 +43,8 @@ namespace TorqueScript
 
     antlrcpp::Any CompilerVisitor::visitPackage_declaration(TorqueParser::Package_declarationContext* context)
     {
-        GeneratedInstructions generated;
-
         mCurrentPackage = context->LABEL()->getText();
-        this->visitChildren(context);
+        GeneratedInstructions generated = this->visitChildren(context).as<GeneratedInstructions>();
         mCurrentPackage = "";
         return generated;
     }
@@ -527,7 +525,7 @@ namespace TorqueScript
     antlrcpp::Any CompilerVisitor::visitValue(TorqueParser::ValueContext* context)
     {
         InstructionSequence out;
-        GeneratedInstructions generated;
+        GeneratedInstructions generated = this->visitChildren(context).as<GeneratedInstructions>();
 
         if (context->INT())
         {
@@ -651,6 +649,24 @@ namespace TorqueScript
         out.insert(out.end(), collapsedParameters.begin(), collapsedParameters.end());
         out.push_back(std::shared_ptr<Instruction>(new CallFunctionInstruction(calledFunctionNameSpace, calledFunctionName, callParameters.size())));
 
+        generated.push_back(out);
+        return generated;
+    }
+
+    antlrcpp::Any CompilerVisitor::visitUnary(TorqueParser::UnaryContext* context)
+    {
+        InstructionSequence out = this->collapseInstructions(this->visitChildren(context).as<GeneratedInstructions>());
+
+        if (context->MINUS())
+        {
+            out.push_back(std::shared_ptr<Instruction>(new NegateInstruction()));
+        }
+        else
+        {
+            throw std::runtime_error("Unknown Unary Type!");
+        }
+
+        GeneratedInstructions generated;
         generated.push_back(out);
         return generated;
     }

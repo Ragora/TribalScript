@@ -14,7 +14,7 @@
 
 grammar Torque;
 
-program  : statement* ;
+program  : statement+ | <EOF> ;
 
 /*
     Main Blocks
