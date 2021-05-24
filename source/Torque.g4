@@ -78,13 +78,22 @@ expression_list : expression (',' expression)* ;
 functioncall_expression : LABEL '(' expression_list? ')'
                         | LABEL '::' LABEL '(' expression_list? ')' ;
 
-expression : '(' expression ')'                                                 # parentheses
-           | expression '.' expression                                          # subfield
+expression : (op=MINUS
+             |op=NOT
+             |op=TILDE) expression                                              # unary
+           | functioncall_expression                                            # call
+           | (globalvariable | localvariable | LABEL) '[' expression_list ']'   # array
+           | '(' expression ')'                                                 # parentheses
+           | expression '.' LABEL                                               # subfield
+           | expression '.' LABEL '(' expression_list? ')'                      # subcall
            | expression '^' expression                                          # bitwise
            | expression '&' expression                                          # bitwise
            | expression '|' expression                                          # bitwise
-           | expression (op=MODULUS|op=PLUS|op=MINUS|op=MULTIPLY|op=DIVIDE) expression                                     # arithmetic
-           | (op=MINUS|op=NOT|op=TILDE) expression                              # unary
+           | expression (op=MODULUS
+                        |op=PLUS
+                        |op=MINUS
+                        |op=MULTIPLY
+                        |op=DIVIDE) expression                                  # arithmetic
            | expression '?' expression ':' expression                           # ternary
            | expression (op=LESSTHAN
                         |op=GREATERTHAN
@@ -98,14 +107,12 @@ expression : '(' expression ')'                                                 
                         |op=NOTEQUAL
                         |op=STRINGEQUALS
                         |op=STRINGNOTEQUAL) expression                          # equality
-           | expression '@' expression                                          # concat
-           | expression 'TAB' expression                                        # concat
-           | expression 'SPC' expression                                        # concat
-           | expression 'NL' expression                                         # concat
-           | (globalvariable | localvariable | LABEL) '[' expression_list ']'   # array
+           | expression (op=CONCAT
+                        |op=TABCONCAT
+                        |op=SPACECONCAT
+                        |op=NEWLINECONCAT) expression                           # concat
            | localvariable                                                      # localValue
            | globalvariable                                                     # globalValue
-           | functioncall_expression                                            # call
            | object_declaration                                                 # objectDeclaration
            | expression (op=ASSIGN
                         |op=PLUSASSIGN
@@ -172,6 +179,11 @@ EQUALS : '==' ;
 STRINGEQUALS : '$=' ;
 NOTEQUAL : '!=' ;
 STRINGNOTEQUAL : '!$=' ;
+CONCAT : '@' ;
+SPACECONCAT : 'SPC' ;
+TABCONCAT : 'TAB' ;
+NEWLINECONCAT : 'NL' ;
+
 // Labels can contain numbers but not at the start
 LABEL : [a-zA-Z_]+[a-zA-Z_0-9]* ;
 

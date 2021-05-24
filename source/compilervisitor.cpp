@@ -299,6 +299,34 @@ namespace TorqueScript
         return generated;
     }
 
+    antlrcpp::Any CompilerVisitor::visitSubfield(TorqueParser::SubfieldContext* context)
+    {
+        GeneratedInstructions generated;
+
+        InstructionSequence sequence = this->collapseInstructions(this->visitChildren(context).as<GeneratedInstructions>());
+        sequence.push_back(std::shared_ptr<Instruction>(new SubReferenceInstruction(context->LABEL()->getText())));
+        generated.push_back(sequence);
+        return generated;
+    }
+
+    antlrcpp::Any CompilerVisitor::visitConcat(TorqueParser::ConcatContext* context)
+    {
+        GeneratedInstructions generated;
+
+        InstructionSequence sequence = this->collapseInstructions(this->visitChildren(context).as<GeneratedInstructions>());
+        if (context->CONCAT())
+        {
+            sequence.push_back(std::shared_ptr<Instruction>(new ConcatInstruction()));
+        }
+        else
+        {
+            throw std::runtime_error("Unhandled concat type!");
+        }
+
+        generated.push_back(sequence);
+        return generated;
+    }
+
     antlrcpp::Any CompilerVisitor::visitArithmetic(TorqueParser::ArithmeticContext* context)
     {
         GeneratedInstructions generated;
@@ -615,6 +643,24 @@ namespace TorqueScript
         }
         out.push_back(std::shared_ptr<Instruction>(new PushLocalReferenceInstruction(variableName)));
 
+        generated.push_back(out);
+        return generated;
+    }
+
+    antlrcpp::Any CompilerVisitor::visitSubcall(TorqueParser::SubcallContext* context)
+    {
+        const std::string calledFunctionName = context->LABEL()->getText();
+
+        InstructionSequence out = this->collapseInstructions(this->visitChildren(context).as<GeneratedInstructions>());
+        unsigned int argumentCount = 0;
+
+        if (context->expression_list())
+        {
+            argumentCount = context->expression_list()->expression().size();
+        }
+        out.push_back(std::shared_ptr<Instruction>(new CallBoundFunctionInstruction(calledFunctionName, argumentCount)));
+
+        GeneratedInstructions generated;
         generated.push_back(out);
         return generated;
     }

@@ -68,6 +68,10 @@ namespace TorqueScript
             InstructionSequence collapseInstructions(GeneratedInstructions instructions);
 
             virtual antlrcpp::Any visitUnary(TorqueParser::UnaryContext* context) override;
+            virtual antlrcpp::Any visitConcat(TorqueParser::ConcatContext* context) override;
+            virtual antlrcpp::Any visitSubfield(TorqueParser::SubfieldContext* context) override;
+
+            virtual antlrcpp::Any visitSubcall(TorqueParser::SubcallContext* context) override;
 
         private:
             std::string mCurrentPackage;
