@@ -381,6 +381,9 @@ namespace TorqueScript
         // At the end of our loop, run the advance expression
         forBody.insert(forBody.end(), forAdvance.begin(), forAdvance.end());
 
+        // Pop the result of the expression
+        forInitializer.push_back(std::shared_ptr<Instruction>(new PopInstruction()));
+
         // Our body should return to the expression
         const unsigned int jumpTarget = forCondition.size() + forBody.size();
         forBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(-jumpTarget)));
@@ -753,6 +756,48 @@ namespace TorqueScript
         {
             out.push_back(std::shared_ptr<Instruction>(new PopInstruction()));
         }
+
+        GeneratedInstructions generated;
+        generated.push_back(out);
+        return generated;
+    }
+
+    antlrcpp::Any CompilerVisitor::visitArray(TorqueParser::ArrayContext* context)
+    {
+        GeneratedInstructions childInstructions = this->visitChildren(context).as<GeneratedInstructions>();
+        InstructionSequence out = this->collapseInstructions(childInstructions);
+
+        const unsigned int expressionCount = childInstructions.size() - 1;
+
+        std::string name = "";
+        std::vector<TorqueParser::LabelwithkeywordsContext*> nameComponents;
+        bool global = false;
+        if (context->globalvariable())
+        {
+            global = true;
+            nameComponents = context->globalvariable()->labelwithkeywords();
+        }
+        else if (context->localvariable())
+        {
+            nameComponents = context->localvariable()->labelwithkeywords();
+        }
+        else
+        {
+            throw std::runtime_error("Encountered unknown variable reference type in array!");
+        }
+
+        for (TorqueParser::LabelwithkeywordsContext* component : nameComponents)
+        {
+            if (name == "")
+            {
+                name = component->getText();
+            }
+            else
+            {
+                name += "::" + component->getText();
+            }
+        }
+        out.push_back(std::shared_ptr<Instruction>(new AccessArrayInstruction(name, expressionCount, global)));
 
         GeneratedInstructions generated;
         generated.push_back(out);
