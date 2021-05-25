@@ -274,6 +274,7 @@ namespace TorqueScript
             InstructionSequence statementSequence = this->collapseInstructions(statementCode);
             functionBody.insert(functionBody.end(), statementSequence.begin(), statementSequence.end());
         }
+        functionBody.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(0))); // Add an empty return if we hit end of control but nothing returned
 
         // Generate final declaration
         out.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(mCurrentPackage, functionNameSpace, functionName, parameterNames, functionBody)));
@@ -717,6 +718,21 @@ namespace TorqueScript
         return generated;
     }
 
+    antlrcpp::Any CompilerVisitor::visitReturn_control(TorqueParser::Return_controlContext* context)
+    {
+        InstructionSequence out = this->collapseInstructions(this->visitChildren(context).as<GeneratedInstructions>());
+
+        for (std::shared_ptr<Instruction> instruction : out)
+        {
+            std::cout << instruction->disassemble() << std::endl;
+        }
+        out.push_back(std::shared_ptr<Instruction>(new ReturnInstruction()));
+
+        GeneratedInstructions generated;
+        generated.push_back(out);
+        return generated;
+    }
+
     InstructionSequence CompilerVisitor::collapseInstructions(GeneratedInstructions instructions)
     {
         InstructionSequence result;
@@ -726,5 +742,20 @@ namespace TorqueScript
             result.insert(result.end(), sequence.begin(), sequence.end());
         }
         return result;
+    }
+
+    antlrcpp::Any CompilerVisitor::visitExpression_statement(TorqueParser::Expression_statementContext* context)
+    {
+        InstructionSequence out = this->collapseInstructions(this->visitChildren(context).as<GeneratedInstructions>());
+
+        // Only pop if we're an expression doing something
+        if (context->expression())
+        {
+            out.push_back(std::shared_ptr<Instruction>(new PopInstruction()));
+        }
+
+        GeneratedInstructions generated;
+        generated.push_back(out);
+        return generated;
     }
 }

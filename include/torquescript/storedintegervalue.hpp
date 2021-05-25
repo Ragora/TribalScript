@@ -34,6 +34,7 @@ namespace TorqueScript
             virtual std::string toString(std::shared_ptr<ExecutionState> state) override;
             virtual std::shared_ptr<StoredValue> getReferencedValueCopy(std::shared_ptr<ExecutionState> state) override;
             virtual bool isInteger(std::shared_ptr<ExecutionState> state) override;
+            virtual std::string getRepresentation() override;
 
         protected:
             //! The stored float value.

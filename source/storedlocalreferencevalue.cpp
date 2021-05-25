@@ -12,6 +12,8 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <sstream>
+
 #include <torquescript/storedlocalreferencevalue.hpp>
 #include <torquescript/executionstate.hpp>
 
@@ -74,5 +76,12 @@ namespace TorqueScript
             return loaded->isInteger(state);
         }
         return false;
+    }
+
+    std::string StoredLocalReferenceValue::getRepresentation()
+    {
+        std::ostringstream result;
+        result << "StoredLocalReferenceValue " << mName;
+        return result.str();
     }
 }

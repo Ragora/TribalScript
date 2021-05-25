@@ -73,6 +73,10 @@ namespace TorqueScript
 
             virtual antlrcpp::Any visitSubcall(TorqueParser::SubcallContext* context) override;
 
+            virtual antlrcpp::Any visitReturn_control(TorqueParser::Return_controlContext* context) override;
+
+            virtual antlrcpp::Any visitExpression_statement(TorqueParser::Expression_statementContext* context) override;
+
         private:
             std::string mCurrentPackage;
     };

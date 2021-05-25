@@ -12,6 +12,8 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <sstream>
+
 #include <torquescript/storedfieldreferencevalue.hpp>
 #include <torquescript/simobject.hpp>
 
@@ -74,5 +76,12 @@ namespace TorqueScript
         assert(referenced);
 
         return referenced->getReferencedValueCopy(state);
+    }
+
+    std::string StoredFieldReferenceValue::getRepresentation()
+    {
+        std::ostringstream result;
+        result << "StoredFieldReferenceValue " << mName;
+        return result.str();
     }
 }
