@@ -803,4 +803,14 @@ namespace TorqueScript
         generated.push_back(out);
         return generated;
     }
+
+    antlrcpp::Any CompilerVisitor::visitDatablock_declaration(TorqueParser::Datablock_declarationContext* context)
+    {
+        throw std::runtime_error("Datablock Decalaration not Implemented Yet");
+    }
+
+    antlrcpp::Any CompilerVisitor::visitObjectDeclaration(TorqueParser::ObjectDeclarationContext* context)
+    {
+        throw std::runtime_error("Object Declaration not Implemented Yet");
+    }
 }
