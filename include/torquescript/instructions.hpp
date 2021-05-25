@@ -192,6 +192,7 @@ namespace TorqueScript
 
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
+                std::cout << "PUSHED GLOBAL" << std::endl;
                 state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredGlobalReferenceValue(mParameter)));
                 return 1;
             };

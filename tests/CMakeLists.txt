@@ -10,6 +10,30 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 # Init all tests
-add_executable(InterpreterTest interpreter.cpp)
-target_link_libraries(InterpreterTest TorqueCompiler gtest_main)
-add_test(NAME InterpreterTest COMMAND InterpreterTest)
+add_executable(IfTest if.cpp)
+target_link_libraries(IfTest TorqueCompiler gtest_main)
+add_test(NAME IfTest COMMAND IfTest)
+
+add_executable(WhileTest while.cpp)
+target_link_libraries(WhileTest TorqueCompiler gtest_main)
+add_test(NAME WhileTest COMMAND WhileTest)
+
+add_executable(ForTest for.cpp)
+target_link_libraries(ForTest TorqueCompiler gtest_main)
+add_test(NAME ForTest COMMAND ForTest)
+
+add_executable(PackageTest package.cpp)
+target_link_libraries(PackageTest TorqueCompiler gtest_main)
+add_test(NAME PackageTest COMMAND PackageTest)
+
+add_executable(VariablesTest variables.cpp)
+target_link_libraries(VariablesTest TorqueCompiler gtest_main)
+add_test(NAME VariablesTest COMMAND VariablesTest)
+
+add_executable(CombinedTest combined.cpp)
+target_link_libraries(CombinedTest TorqueCompiler gtest_main)
+add_test(NAME CombinedTest COMMAND CombinedTest)
+
+add_executable(ArrayTest array.cpp)
+target_link_libraries(ArrayTest TorqueCompiler gtest_main)
+add_test(NAME ArrayTest COMMAND ArrayTest)

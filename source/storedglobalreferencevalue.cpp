@@ -12,6 +12,8 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <sstream>
+
 #include <torquescript/storedglobalreferencevalue.hpp>
 #include <torquescript/executionstate.hpp>
 #include <torquescript/interpreter.hpp>
@@ -76,5 +78,12 @@ namespace TorqueScript
             return loaded->isInteger(state);
         }
         return false;
+    }
+
+    std::string StoredGlobalReferenceValue::getRepresentation()
+    {
+        std::ostringstream result;
+        result << "StoredGlobalReferenceValue " << mName;
+        return result.str();
     }
 }

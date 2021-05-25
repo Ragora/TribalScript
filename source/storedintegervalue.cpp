@@ -12,6 +12,8 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <sstream>
+
 #include <torquescript/storedintegervalue.hpp>
 
 namespace TorqueScript
@@ -44,5 +46,12 @@ namespace TorqueScript
     std::shared_ptr<StoredValue> StoredIntegerValue::getReferencedValueCopy(std::shared_ptr<ExecutionState> state)
     {
         return std::shared_ptr<StoredValue>(new StoredIntegerValue(mValue));
+    }
+
+    std::string StoredIntegerValue::getRepresentation()
+    {
+        std::ostringstream result;
+        result << "StoredIntegerValue: " << mValue;
+        return result.str();
     }
 }

@@ -34,5 +34,7 @@ namespace TorqueScript
             int popInteger(std::shared_ptr<ExecutionState> state);
             std::string popString(std::shared_ptr<ExecutionState> state);
             float popFloat(std::shared_ptr<ExecutionState> state);
+
+            std::vector<std::string> dump();
     };
 }

@@ -39,6 +39,7 @@ namespace TorqueScript
             virtual bool isInteger(std::shared_ptr<ExecutionState> state) override;
 
             bool setValue(std::shared_ptr<StoredValue> value, std::shared_ptr<ExecutionState> state) override;
+            virtual std::string getRepresentation() override;
 
         protected:
             //! The name of the referenced variable.

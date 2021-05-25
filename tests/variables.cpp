@@ -12,31 +12,35 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <memory>
 
+#include "gtest/gtest.h"
+
+#include <torquescript/interpreter.hpp>
 #include <torquescript/storedvalue.hpp>
+#include <torquescript/builtins.hpp>
+#include <torquescript/executionstate.hpp>
 
-namespace TorqueScript
+TEST(InterpreterTest, Variables)
 {
-    class Interpreter;
-    class ExecutionState;
+    TorqueScript::Interpreter interpreter;
+    TorqueScript::registerBuiltIns(&interpreter);
 
-    /**
-     *  @brief Storage class for a floating point value.
-     */
-    class StoredFloatValue : public StoredValue
-    {
-        public:
-            StoredFloatValue(float value);
+    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    interpreter.execute("cases/variables.cs", state);
 
-            virtual int toInteger(std::shared_ptr<ExecutionState> state) override;
-            virtual float toFloat(std::shared_ptr<ExecutionState> state) override;
-            virtual std::string toString(std::shared_ptr<ExecutionState> state) override;
-            virtual std::shared_ptr<StoredValue> getReferencedValueCopy(std::shared_ptr<ExecutionState> state) override;
-            virtual std::string getRepresentation() override;
+    // We have a global and a global value within a namespace
+    std::shared_ptr<TorqueScript::StoredValue> resultGlobal = interpreter.getGlobal("global");
+    EXPECT_TRUE(resultGlobal);
+    std::shared_ptr<TorqueScript::StoredValue> resultGlobalNameSpace = interpreter.getGlobal("global::namespaced");
+    EXPECT_TRUE(resultGlobalNameSpace);
 
-        protected:
-            //! The stored float value.
-            float mValue;
-    };
+    ASSERT_EQ(resultGlobal->toInteger(state), 50);
+    ASSERT_EQ(resultGlobalNameSpace->toInteger(state), 123);
+}
+
+int main()
+{
+    testing::InitGoogleTest();
+    return RUN_ALL_TESTS();
 }

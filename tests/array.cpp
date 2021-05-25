@@ -12,31 +12,33 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <memory>
 
+#include "gtest/gtest.h"
+
+#include <torquescript/interpreter.hpp>
 #include <torquescript/storedvalue.hpp>
+#include <torquescript/builtins.hpp>
+#include <torquescript/executionstate.hpp>
 
-namespace TorqueScript
+TEST(InterpreterTest, Array)
 {
-    class Interpreter;
-    class ExecutionState;
+    TorqueScript::Interpreter interpreter;
+    TorqueScript::registerBuiltIns(&interpreter);
 
-    /**
-     *  @brief Storage class for a floating point value.
-     */
-    class StoredFloatValue : public StoredValue
-    {
-        public:
-            StoredFloatValue(float value);
+    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    interpreter.execute("cases/array.cs", state);
 
-            virtual int toInteger(std::shared_ptr<ExecutionState> state) override;
-            virtual float toFloat(std::shared_ptr<ExecutionState> state) override;
-            virtual std::string toString(std::shared_ptr<ExecutionState> state) override;
-            virtual std::shared_ptr<StoredValue> getReferencedValueCopy(std::shared_ptr<ExecutionState> state) override;
-            virtual std::string getRepresentation() override;
+    // The assignment performed is: $result[1,2,3] = %value;
+    // However, in Torque Script this is treated as a single variable key $result1_2_3
+    std::shared_ptr<TorqueScript::StoredValue> result = interpreter.getGlobal("result1_2_3");
+    EXPECT_TRUE(result);
 
-        protected:
-            //! The stored float value.
-            float mValue;
-    };
+    ASSERT_EQ(result->toInteger(state), 5);
+}
+
+int main()
+{
+    testing::InitGoogleTest();
+    return RUN_ALL_TESTS();
 }

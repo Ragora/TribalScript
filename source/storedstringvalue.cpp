@@ -12,6 +12,8 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <sstream>
+
 #include <torquescript/storedstringvalue.hpp>
 
 namespace TorqueScript
@@ -53,5 +55,12 @@ namespace TorqueScript
     std::shared_ptr<StoredValue> StoredStringValue::getReferencedValueCopy(std::shared_ptr<ExecutionState> state)
     {
         return std::shared_ptr<StoredValue>(new StoredStringValue(mValue));
+    }
+
+    std::string StoredStringValue::getRepresentation()
+    {
+        std::ostringstream result;
+        result << "StoredStringValue: " << mValue;
+        return result.str();
     }
 }

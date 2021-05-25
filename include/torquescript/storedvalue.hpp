@@ -59,5 +59,7 @@ namespace TorqueScript
 
             // In Torque, if we end up trying to set a value of ie. a float it does nothing
             virtual bool setValue(std::shared_ptr<StoredValue> newValue, std::shared_ptr<ExecutionState> state);
+
+            virtual std::string getRepresentation() = 0;
     };
 }

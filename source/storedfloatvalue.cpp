@@ -12,6 +12,8 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <sstream>
+
 #include <torquescript/storedfloatvalue.hpp>
 
 namespace TorqueScript
@@ -39,5 +41,12 @@ namespace TorqueScript
     std::shared_ptr<StoredValue> StoredFloatValue::getReferencedValueCopy(std::shared_ptr<ExecutionState> state)
     {
         return std::shared_ptr<StoredValue>(new StoredFloatValue(mValue));
+    }
+
+    std::string StoredFloatValue::getRepresentation()
+    {
+        std::ostringstream result;
+        result << "StoredFloatValue: " << mValue;
+        return result.str();
     }
 }
