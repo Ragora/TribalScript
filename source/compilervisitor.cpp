@@ -669,7 +669,7 @@ namespace TorqueScript
         return generated;
     }
 
-    antlrcpp::Any CompilerVisitor::visitFunctioncall_expression(TorqueParser::Functioncall_expressionContext* context)
+    antlrcpp::Any CompilerVisitor::visitCall(TorqueParser::CallContext* context)
     {
         InstructionSequence out;
         GeneratedInstructions generated;
@@ -752,7 +752,7 @@ namespace TorqueScript
         InstructionSequence out = this->collapseInstructions(this->visitChildren(context).as<GeneratedInstructions>());
 
         // Only pop if we're an expression doing something
-        if (context->expression())
+        if (context->primary_expression())
         {
             out.push_back(std::shared_ptr<Instruction>(new PopInstruction()));
         }
@@ -806,11 +806,16 @@ namespace TorqueScript
 
     antlrcpp::Any CompilerVisitor::visitDatablock_declaration(TorqueParser::Datablock_declarationContext* context)
     {
-        throw std::runtime_error("Datablock Decalaration not Implemented Yet");
+        throw std::runtime_error("Datablock Declaration not Implemented Yet");
     }
 
-    antlrcpp::Any CompilerVisitor::visitObjectDeclaration(TorqueParser::ObjectDeclarationContext* context)
+    antlrcpp::Any CompilerVisitor::visitObject_declaration(TorqueParser::Object_declarationContext* context)
     {
         throw std::runtime_error("Object Declaration not Implemented Yet");
+    }
+
+    antlrcpp::Any CompilerVisitor::visitSubarray(TorqueParser::SubarrayContext* context)
+    {
+        throw std::runtime_error("Subarray not Implemented Yet");
     }
 }

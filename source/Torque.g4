@@ -54,17 +54,19 @@ case_control : CASE expression ('or' expression)* ':' expression_statement* ;
 switch_control : SWITCH '$'? '(' expression ')' '{' case_control+ default_control? '}' ;
 
 break_control : BREAK ;
+continue_control : CONTINUE ;
 return_control : RETURN expression? ;
 
 /*
     Expressions and Statements
 */
 
-expression_statement : expression ';'
+expression_statement : primary_expression ';'
                      | while_control
                      | for_control
                      | if_control
                      | switch_control
+                     | continue_control ';'
                      | break_control ';'
                      | return_control ';' ;
 
@@ -75,17 +77,52 @@ statement : function_declaration
 
 expression_list : expression (',' expression)* ;
 
-functioncall_expression : LABEL '(' expression_list? ')'
-                        | LABEL '::' LABEL '(' expression_list? ')' ;
+functioncall_expression : LABEL '(' expression_list? ')'                        # call
+                        | LABEL '::' LABEL '(' expression_list? ')'             # call
+                        | (lvalue | rvalue) '.' LABEL '(' expression_list? ')'  # subcall ;
+
+// Root level expression - because expressions like `1;` are not valid - it must be actionable
+primary_expression : functioncall_expression                                       # callExpression
+                   | primary_expression '.' primary_expression                     # primaryExpressionSubfield
+                   | lvalue (op=ASSIGN
+                            |op=PLUSASSIGN
+                            |op=MINUSASSIGN
+                            |op=MULTIPLYASSIGN
+                            |op=DIVIDEASSIGN
+                            |op=ORASSIGN
+                            |op=MODULUSASSIGN
+                            |op=ANDASSIGN) expression                               # assign
+                   | lvalue '++'                                                    # increment
+                   | lvalue '--'                                                    # decrement
+                   | object_declaration                                             # objectDeclarationExpression ;
+
+// Only valid on the right side of an assignment, however still valid on the left side of a '.'
+rvalue : INT                                                                # value
+       | HEXINT                                                             # value
+       | STRING                                                             # value
+       | TAGGEDSTRING                                                       # value
+       | FLOAT                                                              # value
+       | LABEL                                                              # value
+       | TRUE                                                               # value
+       | FALSE                                                              # value
+       | object_declaration                                                 # objectDeclarationRValue ;
+
+// Valid on both the left and right sides of an assignment
+lvalue : (globalvariable | localvariable | LABEL) '[' expression_list ']'   # array
+       | lvalue '.' LABEL '[' expression_list ']'                           # subarray
+       | rvalue '.' LABEL '[' expression_list ']'                           # subarray
+       | localvariable                                                      # localValue
+       | globalvariable                                                     # globalValue
+       | rvalue '.' LABEL                                                   # subfield
+       | lvalue '.' LABEL                                                   # subfield ;
 
 expression : (op=MINUS
              |op=NOT
              |op=TILDE) expression                                              # unary
-           | functioncall_expression                                            # call
-           | (globalvariable | localvariable | LABEL) '[' expression_list ']'   # array
+           | primary_expression                                                 # primaryExpressionReference
+           | expression '.' expression                                          # subfieldExpression
+           | lvalue                                                             # lvalueExpression
            | '(' expression ')'                                                 # parentheses
-           | expression '.' LABEL                                               # subfield
-           | expression '.' LABEL '(' expression_list? ')'                      # subcall
            | expression '^' expression                                          # bitwise
            | expression '&' expression                                          # bitwise
            | expression '|' expression                                          # bitwise
@@ -111,27 +148,7 @@ expression : (op=MINUS
                         |op=TABCONCAT
                         |op=SPACECONCAT
                         |op=NEWLINECONCAT) expression                           # concat
-           | localvariable                                                      # localValue
-           | globalvariable                                                     # globalValue
-           | object_declaration                                                 # objectDeclaration
-           | expression (op=ASSIGN
-                        |op=PLUSASSIGN
-                        |op=MINUSASSIGN
-                        |op=MULTIPLYASSIGN
-                        |op=DIVIDEASSIGN
-                        |op=ORASSIGN
-                        |op=MODULUSASSIGN
-                        |op=ANDASSIGN) expression                               # assign
-           | expression '++'                                                    # increment
-           | expression '--'                                                    # decrement
-           | INT                                                                # value
-           | HEXINT                                                             # value
-           | STRING                                                             # value
-           | TAGGEDSTRING                                                       # value
-           | FLOAT                                                              # value
-           | LABEL                                                              # value
-           | TRUE                                                               # value
-           | FALSE                                                              # value ;
+           | rvalue                                                             # rvalueExpression ;
 
 // For the grammar to work correctly, we need to explicitly allow these keywords to be used in variable names
 labelwithkeywords : LABEL | PACKAGE | RETURN | WHILE | FALSE | TRUE | FUNCTION | ELSE | IF | DATABLOCK | CASE ;
@@ -183,6 +200,7 @@ CONCAT : '@' ;
 SPACECONCAT : 'SPC' ;
 TABCONCAT : 'TAB' ;
 NEWLINECONCAT : 'NL' ;
+CONTINUE : 'continue' ;
 
 // Labels can contain numbers but not at the start
 LABEL : [a-zA-Z_]+[a-zA-Z_0-9]* ;
@@ -197,7 +215,7 @@ STRING : '"' ( ESC | ~[\\"] )*? '"' ;
 TAGGEDSTRING : '\'' ( ESC | ~[\\'] )*? '\'' ;
 
 fragment
-ESC :   '\\' ([abtnfrv]|'"'|'\''|'\\')
+ESC :   '\\' ([A-Za-z0-9|{}])
     |   HEX_ESCAPE
     |   COLOR_ESCAPE
     ;
