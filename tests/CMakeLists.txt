@@ -37,3 +37,7 @@ add_test(NAME CombinedTest COMMAND CombinedTest)
 add_executable(ArrayTest array.cpp)
 target_link_libraries(ArrayTest TorqueCompiler gtest_main)
 add_test(NAME ArrayTest COMMAND ArrayTest)
+
+add_executable(SwitchTest switch.cpp)
+target_link_libraries(SwitchTest TorqueCompiler gtest_main)
+add_test(NAME SwitchTest COMMAND SwitchTest)
