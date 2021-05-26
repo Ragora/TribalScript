@@ -120,6 +120,7 @@ expression : (op=MINUS
              |op=NOT
              |op=TILDE) expression                                              # unary
            | primary_expression                                                 # primaryExpressionReference
+           | expression '.' expression                                          # subfieldExpression
            | lvalue                                                             # lvalueExpression
            | '(' expression ')'                                                 # parentheses
            | expression '^' expression                                          # bitwise
