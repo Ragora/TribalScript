@@ -77,12 +77,12 @@ statement : function_declaration
 
 expression_list : expression (',' expression)* ;
 
-functioncall_expression : LABEL '(' expression_list? ')'
-                        | LABEL '::' LABEL '(' expression_list? ')'
-                        | (lvalue | rvalue) '.' LABEL '(' expression_list? ')' ;
+functioncall_expression : LABEL '(' expression_list? ')'                        # call
+                        | LABEL '::' LABEL '(' expression_list? ')'             # call
+                        | (lvalue | rvalue) '.' LABEL '(' expression_list? ')'  # subcall ;
 
 // Root level expression - because expressions like `1;` are not valid - it must be actionable
-primary_expression : functioncall_expression                                       # call
+primary_expression : functioncall_expression                                       # callExpression
                    | primary_expression '.' primary_expression                     # primaryExpressionSubfield
                    | lvalue (op=ASSIGN
                             |op=PLUSASSIGN

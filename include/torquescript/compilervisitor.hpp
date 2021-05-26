@@ -63,13 +63,13 @@ namespace TorqueScript
 
             virtual antlrcpp::Any visitLocalvariable(TorqueParser::LocalvariableContext* context) override;
 
-            virtual antlrcpp::Any visitFunctioncall_expression(TorqueParser::Functioncall_expressionContext* context) override;
-
             InstructionSequence collapseInstructions(GeneratedInstructions instructions);
 
             virtual antlrcpp::Any visitUnary(TorqueParser::UnaryContext* context) override;
             virtual antlrcpp::Any visitConcat(TorqueParser::ConcatContext* context) override;
             virtual antlrcpp::Any visitSubfield(TorqueParser::SubfieldContext* context) override;
+
+            virtual antlrcpp::Any visitCall(TorqueParser::CallContext* context) override;
 
             virtual antlrcpp::Any visitSubcall(TorqueParser::SubcallContext* context) override;
 
@@ -80,7 +80,7 @@ namespace TorqueScript
 
             virtual antlrcpp::Any visitDatablock_declaration(TorqueParser::Datablock_declarationContext* context) override;
 
-            virtual antlrcpp::Any visitObjectDeclaration(TorqueParser::ObjectDeclarationContext* context) override;
+            virtual antlrcpp::Any visitObject_declaration(TorqueParser::Object_declarationContext* context) override;
 
         private:
             std::string mCurrentPackage;
