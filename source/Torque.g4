@@ -94,7 +94,7 @@ primary_expression : functioncall_expression                                    
                             |op=ANDASSIGN) expression                               # assign
                    | lvalue '++'                                                    # increment
                    | lvalue '--'                                                    # decrement
-                   | object_declaration                                             # objectDeclaration ;
+                   | object_declaration                                             # objectDeclarationExpression ;
 
 // Only valid on the right side of an assignment, however still valid on the left side of a '.'
 rvalue : INT                                                                # value
@@ -104,7 +104,8 @@ rvalue : INT                                                                # va
        | FLOAT                                                              # value
        | LABEL                                                              # value
        | TRUE                                                               # value
-       | FALSE                                                              # value ;
+       | FALSE                                                              # value
+       | object_declaration                                                 # objectDeclarationRValue ;
 
 // Valid on both the left and right sides of an assignment
 lvalue : (globalvariable | localvariable | LABEL) '[' expression_list ']'   # array
