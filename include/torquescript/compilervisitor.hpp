@@ -82,6 +82,8 @@ namespace TorqueScript
 
             virtual antlrcpp::Any visitObject_declaration(TorqueParser::Object_declarationContext* context) override;
 
+            virtual antlrcpp::Any visitSubarray(TorqueParser::SubarrayContext* context) override;
+
         private:
             std::string mCurrentPackage;
     };
