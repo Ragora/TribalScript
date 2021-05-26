@@ -12,32 +12,32 @@ FetchContent_MakeAvailable(googletest)
 # Init all tests
 add_executable(IfTest if.cpp)
 target_link_libraries(IfTest TorqueCompiler gtest_main)
-add_test(NAME IfTest COMMAND IfTest)
+add_test(NAME IfTest COMMAND IfTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
 
 add_executable(WhileTest while.cpp)
 target_link_libraries(WhileTest TorqueCompiler gtest_main)
-add_test(NAME WhileTest COMMAND WhileTest)
+add_test(NAME WhileTest COMMAND WhileTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
 
 add_executable(ForTest for.cpp)
 target_link_libraries(ForTest TorqueCompiler gtest_main)
-add_test(NAME ForTest COMMAND ForTest)
+add_test(NAME ForTest COMMAND ForTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
 
 add_executable(PackageTest package.cpp)
 target_link_libraries(PackageTest TorqueCompiler gtest_main)
-add_test(NAME PackageTest COMMAND PackageTest)
+add_test(NAME PackageTest COMMAND PackageTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
 
 add_executable(VariablesTest variables.cpp)
 target_link_libraries(VariablesTest TorqueCompiler gtest_main)
-add_test(NAME VariablesTest COMMAND VariablesTest)
+add_test(NAME VariablesTest COMMAND VariablesTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
 
 add_executable(CombinedTest combined.cpp)
 target_link_libraries(CombinedTest TorqueCompiler gtest_main)
-add_test(NAME CombinedTest COMMAND CombinedTest)
+add_test(NAME CombinedTest COMMAND CombinedTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
 
 add_executable(ArrayTest array.cpp)
 target_link_libraries(ArrayTest TorqueCompiler gtest_main)
-add_test(NAME ArrayTest COMMAND ArrayTest)
+add_test(NAME ArrayTest COMMAND ArrayTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
 
 add_executable(SwitchTest switch.cpp)
 target_link_libraries(SwitchTest TorqueCompiler gtest_main)
-add_test(NAME SwitchTest COMMAND SwitchTest)
+add_test(NAME SwitchTest COMMAND SwitchTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
