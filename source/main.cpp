@@ -12,6 +12,8 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <ctime>
+
 #include <torquescript/builtins.hpp>
 #include <torquescript/interpreter.hpp>
 #include <torquescript/executionscope.hpp>
@@ -21,6 +23,8 @@
 
 int main(int argc, char* argv[])
 {
+    std::srand(std::time(nullptr));
+
     TorqueScript::Interpreter interpreter;
     TorqueScript::registerBuiltIns(&interpreter);
 

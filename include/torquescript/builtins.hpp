@@ -25,6 +25,7 @@
 #include <torquescript/storedvaluestack.hpp>
 #include <torquescript/storedintegervalue.hpp>
 #include <torquescript/storedstringvalue.hpp>
+#include <torquescript/storedfloatvalue.hpp>
 #include <torquescript/consoleobject.hpp>
 
 namespace TorqueScript
@@ -77,9 +78,17 @@ namespace TorqueScript
         state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(state->mInterpreter->mConsoleObjectRegistry.getConsoleObjectName(thisObject))));
     }
 
+    static void GetRandomBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    {
+        // FIXME: If argC == 1, generate int between 0 and value, if argC == 2, generate int between min and max
+        const float result = (float)std::rand() / RAND_MAX;
+        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(result)));
+    }
+
     void registerBuiltIns(Interpreter* interpreter)
     {
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(EchoBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "echo")));
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetRandomBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "getRandom")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(ActivatePackageBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "activatePackage")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(DeactivatePackageBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "deactivatePackage")));
 
