@@ -13,7 +13,7 @@
  */
 
 #include <torquescript/nativefunction.hpp>
-#include <torquescript/instructions/instruction.hpp>
+#include <torquescript/instructions.hpp>
 #include <torquescript/stringhelpers.hpp>
 #include <torquescript/storedvaluestack.hpp>
 
