@@ -15,20 +15,20 @@
 #include <sstream>
 
 #include <torquescript/storedfieldreferencevalue.hpp>
-#include <torquescript/simobject.hpp>
+#include <torquescript/consoleobject.hpp>
 
 namespace TorqueScript
 {
-    StoredFieldReferenceValue::StoredFieldReferenceValue(std::shared_ptr<SimObject> object, const std::string& name) : mSimObject(object), mName(name)
+    StoredFieldReferenceValue::StoredFieldReferenceValue(std::shared_ptr<ConsoleObject> object, const std::string& name) : mConsoleObject(object), mName(name)
     {
 
     }
 
     float StoredFieldReferenceValue::toFloat(std::shared_ptr<ExecutionState> state)
     {
-        assert(mSimObject);
+        assert(mConsoleObject);
 
-        std::shared_ptr<StoredValue> referenced = mSimObject->getField(mName);
+        std::shared_ptr<StoredValue> referenced = mConsoleObject->getTaggedField(mName);
         if (referenced)
         {
             return referenced->toFloat(state);
@@ -38,9 +38,9 @@ namespace TorqueScript
 
     std::string StoredFieldReferenceValue::toString(std::shared_ptr<ExecutionState> state)
     {
-        assert(mSimObject);
+        assert(mConsoleObject);
 
-        std::shared_ptr<StoredValue> referenced = mSimObject->getField(mName);
+        std::shared_ptr<StoredValue> referenced = mConsoleObject->getTaggedField(mName);
         if (referenced)
         {
             return referenced->toString(state);
@@ -50,9 +50,9 @@ namespace TorqueScript
 
     int StoredFieldReferenceValue::toInteger(std::shared_ptr<ExecutionState> state)
     {
-        assert(mSimObject);
+        assert(mConsoleObject);
 
-        std::shared_ptr<StoredValue> referenced = mSimObject->getField(mName);
+        std::shared_ptr<StoredValue> referenced = mConsoleObject->getTaggedField(mName);
         if (referenced)
         {
             return referenced->toInteger(state);
@@ -62,17 +62,17 @@ namespace TorqueScript
 
     bool StoredFieldReferenceValue::setValue(std::shared_ptr<StoredValue> newValue, std::shared_ptr<ExecutionState> state)
     {
-        assert(mSimObject);
+        assert(mConsoleObject);
 
-        mSimObject->setField(mName, newValue->getReferencedValueCopy(state));
+        mConsoleObject->setTaggedField(mName, newValue->getReferencedValueCopy(state));
         return true;
     }
 
     std::shared_ptr<StoredValue> StoredFieldReferenceValue::getReferencedValueCopy(std::shared_ptr<ExecutionState> state)
     {
-        assert(mSimObject);
+        assert(mConsoleObject);
 
-        std::shared_ptr<StoredValue> referenced = mSimObject->getField(mName);
+        std::shared_ptr<StoredValue> referenced = mConsoleObject->getTaggedField(mName);
         assert(referenced);
 
         return referenced->getReferencedValueCopy(state);

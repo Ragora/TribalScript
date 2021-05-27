@@ -23,7 +23,7 @@
 namespace TorqueScript
 {
     class ExecutionScope;
-    class SimObject;
+    class ConsoleObject;
     class ExecutionState;
 
     /**
@@ -51,7 +51,7 @@ namespace TorqueScript
 
             virtual bool toBoolean(std::shared_ptr<ExecutionState> state);
 
-            virtual std::shared_ptr<SimObject> toSimObject(std::shared_ptr<ExecutionState> state);
+            virtual std::shared_ptr<ConsoleObject> toConsoleObject(std::shared_ptr<ExecutionState> state);
 
             virtual std::shared_ptr<StoredValue> getReferencedValueCopy(std::shared_ptr<ExecutionState> state) = 0;
 

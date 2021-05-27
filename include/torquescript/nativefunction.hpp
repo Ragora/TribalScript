@@ -14,32 +14,32 @@
 
 #pragma once
 
-#include <map>
 #include <string>
+#include <vector>
 #include <memory>
 
-#include <torquescript/storedvalue.hpp>
+#include <torquescript/function.hpp>
 
 namespace TorqueScript
 {
-    class Interpreter;
-    class ExecutionScope;
-    class Interpreter;
+    typedef void (*NativeFunctionPointer)(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount);
 
     /**
-     *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
-     *  This is the base class and should not be instantiated directly.
+     *  @brief A NativeFunction is a specialization of Function that allows native C++ programming to be called from within the
+     *  interpreter.
      */
-    class SimObject
+    class NativeFunction : public Function
     {
         public:
-            std::shared_ptr<StoredValue> getField(const std::string& name);
-            void setField(const std::string& name, std::shared_ptr<StoredValue> value);
+            NativeFunction(NativeFunctionPointer native, const std::string& package, const std::string& space, const std::string& name);
 
-            unsigned int getID(Interpreter* interpreter);
-            std::string getName(Interpreter* interpreter);
+            /**
+             *  @brief Executes the native function provided to the interpreter.
+             */
+            virtual void execute(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override;
 
-        protected:
-            std::map<std::string, std::shared_ptr<StoredValue>> mValueMap;
+        private:
+            //! The pointer to the native function to call.
+            NativeFunctionPointer mNativeFunction;
     };
 }

@@ -19,7 +19,7 @@
 #include <memory>
 
 #include <torquescript/function.hpp>
-#include <torquescript/simobject.hpp>
+#include <torquescript/consoleobject.hpp>
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/stringhelpers.hpp>
 #include <torquescript/storedvaluestack.hpp>
@@ -34,30 +34,30 @@ namespace TorqueScript
     class CodeBlock;
     class ExecutionState;
 
-    class SimObjectRegistry
+    class ConsoleObjectRegistry
     {
         public:
-            SimObjectRegistry();
+            ConsoleObjectRegistry();
 
-            void setSimObject(const std::string& name, std::shared_ptr<SimObject> value);
-            std::shared_ptr<SimObject> getSimObject(const std::string& name);
-            std::shared_ptr<SimObject> getSimObject(const unsigned int id);
+            void setConsoleObject(const std::string& name, std::shared_ptr<ConsoleObject> value);
+            std::shared_ptr<ConsoleObject> getConsoleObject(const std::string& name);
+            std::shared_ptr<ConsoleObject> getConsoleObject(const unsigned int id);
 
-            std::string getSimObjectName(SimObject* target);
-            unsigned int getSimObjectID(SimObject* target);
+            std::string getConsoleObjectName(std::shared_ptr<ConsoleObject> target);
+            unsigned int getConsoleObjectID(std::shared_ptr<ConsoleObject> target);
 
-            unsigned int addSimObject(std::shared_ptr<SimObject> value);
+            unsigned int addConsoleObject(std::shared_ptr<ConsoleObject> value);
 
-            void removeSimObject(const std::string& name);
-            void removeSimObject(std::shared_ptr<SimObject> target);
+            void removeConsoleObject(const std::string& name);
+            void removeConsoleObject(std::shared_ptr<ConsoleObject> target);
 
         private:
             unsigned int mNextObjectID;
 
             //! A mapping of object IDs to their sim objects
-            std::map<unsigned int, std::shared_ptr<SimObject>> mSimObjectsByID;
+            std::map<unsigned int, std::shared_ptr<ConsoleObject>> mConsoleObjectsByID;
 
             //! A mapping of object names to their sim objects
-            std::map<std::string, std::shared_ptr<SimObject>> mSimObjectsByName;
+            std::map<std::string, std::shared_ptr<ConsoleObject>> mConsoleObjectsByName;
     };
 }

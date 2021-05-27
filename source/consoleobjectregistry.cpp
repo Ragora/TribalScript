@@ -14,7 +14,7 @@
 
 #include <assert.h>
 
-#include <torquescript/simobjectregistry.hpp>
+#include <torquescript/consoleobjectregistry.hpp>
 #include <torquescript/compiler.hpp>
 #include <torquescript/executionscope.hpp>
 #include <torquescript/stringhelpers.hpp>
@@ -22,37 +22,37 @@
 
 namespace TorqueScript
 {
-    SimObjectRegistry::SimObjectRegistry() : mNextObjectID(0)
+    ConsoleObjectRegistry::ConsoleObjectRegistry() : mNextObjectID(0)
     {
 
     }
 
-    void SimObjectRegistry::setSimObject(const std::string& name, std::shared_ptr<SimObject> value)
+    void ConsoleObjectRegistry::setConsoleObject(const std::string& name, std::shared_ptr<ConsoleObject> value)
     {
         const std::string setName = toLowerCase(name);
-        mSimObjectsByName[setName] = value;
+        mConsoleObjectsByName[setName] = value;
 
         // Ensure an ID mapping exists
-        this->addSimObject(value);
+        this->addConsoleObject(value);
     }
 
-    std::shared_ptr<SimObject> SimObjectRegistry::getSimObject(const std::string& name)
+    std::shared_ptr<ConsoleObject> ConsoleObjectRegistry::getConsoleObject(const std::string& name)
     {
         const std::string searchedName = toLowerCase(name);
-        auto search = mSimObjectsByName.find(searchedName);
+        auto search = mConsoleObjectsByName.find(searchedName);
 
-        if (search != mSimObjectsByName.end())
+        if (search != mConsoleObjectsByName.end())
         {
             return search->second;
         }
         return nullptr;
     }
 
-    std::shared_ptr<SimObject> SimObjectRegistry::getSimObject(const unsigned int id)
+    std::shared_ptr<ConsoleObject> ConsoleObjectRegistry::getConsoleObject(const unsigned int id)
     {
-        auto search = mSimObjectsByID.find(id);
+        auto search = mConsoleObjectsByID.find(id);
 
-        if (search != mSimObjectsByID.end())
+        if (search != mConsoleObjectsByID.end())
         {
             return search->second;
         }
@@ -60,43 +60,43 @@ namespace TorqueScript
         return nullptr;
     }
 
-    void SimObjectRegistry::removeSimObject(const std::string& name)
+    void ConsoleObjectRegistry::removeConsoleObject(const std::string& name)
     {
         const std::string removedName = toLowerCase(name);
 
-        auto search = mSimObjectsByName.find(removedName);
-        if (search != mSimObjectsByName.end())
+        auto search = mConsoleObjectsByName.find(removedName);
+        if (search != mConsoleObjectsByName.end())
         {
-            mSimObjectsByName.erase(search);
+            mConsoleObjectsByName.erase(search);
         }
     }
 
-    void SimObjectRegistry::removeSimObject(std::shared_ptr<SimObject> target)
+    void ConsoleObjectRegistry::removeConsoleObject(std::shared_ptr<ConsoleObject> target)
     {
         // Remove from name mapping & ID mapping
-        for (auto iterator = mSimObjectsByName.begin(); iterator != mSimObjectsByName.end(); ++iterator)
+        for (auto iterator = mConsoleObjectsByName.begin(); iterator != mConsoleObjectsByName.end(); ++iterator)
         {
             if (iterator->second == target)
             {
-                mSimObjectsByName.erase(iterator);
+                mConsoleObjectsByName.erase(iterator);
                 break;
             }
         }
 
-        for (auto iterator = mSimObjectsByID.begin(); iterator != mSimObjectsByID.end(); ++iterator)
+        for (auto iterator = mConsoleObjectsByID.begin(); iterator != mConsoleObjectsByID.end(); ++iterator)
         {
             if (iterator->second == target)
             {
-                mSimObjectsByID.erase(iterator);
+                mConsoleObjectsByID.erase(iterator);
                 break;
             }
         }
     }
 
-    unsigned int SimObjectRegistry::addSimObject(std::shared_ptr<SimObject> value)
+    unsigned int ConsoleObjectRegistry::addConsoleObject(std::shared_ptr<ConsoleObject> value)
     {
         // Check if it exists already in our ID mapping
-        for (auto iterator = mSimObjectsByID.begin(); iterator != mSimObjectsByID.end(); ++iterator)
+        for (auto iterator = mConsoleObjectsByID.begin(); iterator != mConsoleObjectsByID.end(); ++iterator)
         {
             if (iterator->second == value)
             {
@@ -106,16 +106,16 @@ namespace TorqueScript
 
         const unsigned int result = mNextObjectID++;
 
-        mSimObjectsByID[result] = value;
+        mConsoleObjectsByID[result] = value;
         return result;
     }
 
-    std::string SimObjectRegistry::getSimObjectName(SimObject* target)
+    std::string ConsoleObjectRegistry::getConsoleObjectName(std::shared_ptr<ConsoleObject> target)
     {
         // Search name set
-        for (auto iterator = mSimObjectsByName.begin(); iterator != mSimObjectsByName.end(); ++iterator)
+        for (auto iterator = mConsoleObjectsByName.begin(); iterator != mConsoleObjectsByName.end(); ++iterator)
         {
-            if (iterator->second.get() == target)
+            if (iterator->second == target)
             {
                 return iterator->first;
             }
@@ -123,11 +123,11 @@ namespace TorqueScript
         return "";
     }
 
-    unsigned int SimObjectRegistry::getSimObjectID(SimObject* target)
+    unsigned int ConsoleObjectRegistry::getConsoleObjectID(std::shared_ptr<ConsoleObject> target)
     {
-        for (auto iterator = mSimObjectsByID.begin(); iterator != mSimObjectsByID.end(); ++iterator)
+        for (auto iterator = mConsoleObjectsByID.begin(); iterator != mConsoleObjectsByID.end(); ++iterator)
         {
-            if (iterator->second.get() == target)
+            if (iterator->second == target)
             {
                 return iterator->first;
             }

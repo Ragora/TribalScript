@@ -12,37 +12,27 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/simobject.hpp>
+#include <torquescript/consoleobject.hpp>
 #include <torquescript/stringhelpers.hpp>
 #include <torquescript/interpreter.hpp>
 
 namespace TorqueScript
 {
-    std::shared_ptr<StoredValue> SimObject::getField(const std::string& name)
+    std::shared_ptr<StoredValue> ConsoleObject::getTaggedField(const std::string& name)
     {
         const std::string searchName = toLowerCase(name);
-        auto search = mValueMap.find(searchName);
+        auto search = mTaggedFields.find(searchName);
 
-        if (search != mValueMap.end())
+        if (search != mTaggedFields.end())
         {
             return search->second;
         }
         return nullptr;
     }
 
-    void SimObject::setField(const std::string& name, std::shared_ptr<StoredValue> value)
+    void ConsoleObject::setTaggedField(const std::string& name, std::shared_ptr<StoredValue> value)
     {
         const std::string setName = toLowerCase(name);
-        mValueMap[setName] = value;
-    }
-
-    unsigned int SimObject::getID(Interpreter* interpreter)
-    {
-        return interpreter->mSimObjectRegistry.getSimObjectID(this);
-    }
-
-    std::string SimObject::getName(Interpreter* interpreter)
-    {
-        return interpreter->mSimObjectRegistry.getSimObjectName(this);
+        mTaggedFields[setName] = value;
     }
 }

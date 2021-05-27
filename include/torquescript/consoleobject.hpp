@@ -14,37 +14,43 @@
 
 #pragma once
 
-#include <memory>
+#include <map>
 #include <string>
+#include <memory>
 
 #include <torquescript/storedvalue.hpp>
 
 namespace TorqueScript
 {
     class Interpreter;
-    class ExecutionState;
-    class ConsoleObject;
+    class ExecutionScope;
+    class Interpreter;
 
     /**
-     *  @brief Storage class for a floating point value.
+     *  @brief Base class for object instances recognized by the interpreter. These object instances
+     *  may contain member fields addressable the interpreter as well as tagged fields which are arbitrarily
+     *  mapped values.
      */
-    class StoredFieldReferenceValue : public StoredValue
+    class ConsoleObject
     {
         public:
-            StoredFieldReferenceValue(std::shared_ptr<ConsoleObject> object, const std::string& name);
+            /**
+             *  @brief Retrieves a tagged field by name from the object.
+             *  @param The tagged field name to retrieve, which is case insensitive.
+             *  @return A StoredValue pointer of the value currently in that tagged field
+             *  slot.
+             */
+            std::shared_ptr<StoredValue> getTaggedField(const std::string& name);
 
-            virtual int toInteger(std::shared_ptr<ExecutionState> state) override;
-            virtual float toFloat(std::shared_ptr<ExecutionState> state) override;
-            virtual std::string toString(std::shared_ptr<ExecutionState> state) override;
-            virtual bool setValue(std::shared_ptr<StoredValue> newValue, std::shared_ptr<ExecutionState> state) override;
-            virtual std::shared_ptr<StoredValue> getReferencedValueCopy(std::shared_ptr<ExecutionState> state) override;
-            virtual std::string getRepresentation() override;
+            /**
+             *  @brief Sets a tagged field by name on the object.
+             *  @param name The tagged field name to set, which is case insensitive.
+             *  @param value The value to set.
+             */
+            void setTaggedField(const std::string& name, std::shared_ptr<StoredValue> value);
 
         protected:
-            //! The Sim object reference.
-            std::shared_ptr<ConsoleObject> mConsoleObject;
-
-            //! The stored field name.
-            std::string mName;
+            //! A mapping of tagged field names to their stored values.
+            std::map<std::string, std::shared_ptr<StoredValue>> mTaggedFields;
     };
 }

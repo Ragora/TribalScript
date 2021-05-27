@@ -783,7 +783,7 @@ namespace TorqueScript
                 std::shared_ptr<StoredValue> targetStored = state->mStack.back();
                 state->mStack.pop_back();
 
-                std::shared_ptr<SimObject> referenced = targetStored->toSimObject(state);
+                std::shared_ptr<ConsoleObject> referenced = targetStored->toConsoleObject(state);
                 if (referenced)
                 {
                     state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredFieldReferenceValue(referenced, mName)));
@@ -969,8 +969,8 @@ namespace TorqueScript
                 std::shared_ptr<StoredValue> targetStored = state->mStack.back();
                 state->mStack.pop_back();
 
-                // Retrieve the referenced SimObject
-                std::shared_ptr<SimObject> targetSim = targetStored->toSimObject(state);
+                // Retrieve the referenced ConsoleObject
+                std::shared_ptr<ConsoleObject> targetSim = targetStored->toConsoleObject(state);
                 if (!targetSim)
                 {
                     std::ostringstream output;
@@ -978,8 +978,8 @@ namespace TorqueScript
                     state->mInterpreter->logWarning(output.str());
                 }
 
-                // FIXME: For now we assume 'SimObject' is the classname
-                const std::string className = "SimObject";
+                // FIXME: For now we assume 'ConsoleObject' is the classname
+                const std::string className = "ConsoleObject";
 
                 // Ask the interpreter to lookup the function
                 std::shared_ptr<Function> calledFunction = state->mInterpreter->getFunction(className, mName);

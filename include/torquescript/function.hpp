@@ -29,10 +29,11 @@ namespace TorqueScript
     class StoredValue;
     class StoredValueStack;
     class ExecutionState;
-    class SimObject;
+    class ConsoleObject;
 
     /**
-     *  @brief A function is callable subroutine from anywhere in the language.
+     *  @brief A function is callable subroutine from anywhere in the language, defined by a script. A NativeFunction is a specialization
+     *  of this that allows native C++ programming to be called from within the interpreter.
      */
     class Function
     {
@@ -46,7 +47,7 @@ namespace TorqueScript
              *  @brief Default implementation will execute virtual instructions but can be overriden to implement native
              *  functions.
              */
-            virtual void execute(std::shared_ptr<SimObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount);
+            virtual void execute(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount);
 
             std::string getName();
             std::string getNameSpace();

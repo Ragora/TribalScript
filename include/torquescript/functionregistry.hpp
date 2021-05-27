@@ -12,40 +12,30 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/storedvalue.hpp>
-#include <torquescript/interpreter.hpp>
-#include <torquescript/executionstate.hpp>
+#pragma once
+
+#include <map>
+#include <string>
+#include <memory>
+
+#include <torquescript/function.hpp>
 
 namespace TorqueScript
 {
-    bool StoredValue::toBoolean(std::shared_ptr<ExecutionState> state)
+    struct FunctionRegistry
     {
-        return this->toInteger(state) != 0;
-    }
-
-    std::shared_ptr<ConsoleObject> StoredValue::toConsoleObject(std::shared_ptr<ExecutionState> state)
-    {
-        // Search by ID first
-        if (this->isInteger(state))
+        FunctionRegistry(const std::string& package) : mPackageName(package), mActive(false)
         {
-            std::shared_ptr<ConsoleObject> idLookup = state->mInterpreter->mConsoleObjectRegistry.getConsoleObject(this->toInteger(state));
-            if (idLookup)
-            {
-                return idLookup;
-            }
+
         }
 
-        const std::string lookupName = this->toString(state);
-        return state->mInterpreter->mConsoleObjectRegistry.getConsoleObject(lookupName);
-    }
+        //! The package this registry belongs to.
+        std::string mPackageName;
 
-    bool StoredValue::setValue(std::shared_ptr<StoredValue> newValue, std::shared_ptr<ExecutionState> state)
-    {
-        return false;
-    }
+        //! Whether or not the registry is currently active.
+        bool mActive;
 
-    bool StoredValue::isInteger(std::shared_ptr<ExecutionState> state)
-    {
-        return false;
-    }
+        //! A mapping of function namespaces to a mapping of function names to the function object.
+        std::map<std::string, std::map<std::string, std::shared_ptr<Function>>> mFunctions;
+    };
 }

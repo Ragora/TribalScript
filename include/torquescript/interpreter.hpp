@@ -19,11 +19,12 @@
 #include <memory>
 
 #include <torquescript/function.hpp>
-#include <torquescript/simobject.hpp>
+#include <torquescript/consoleobject.hpp>
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/stringhelpers.hpp>
+#include <torquescript/functionregistry.hpp>
 #include <torquescript/storedvaluestack.hpp>
-#include <torquescript/simobjectregistry.hpp>
+#include <torquescript/consoleobjectregistry.hpp>
 
 #define NAMESPACE_EMPTY ""
 #define PACKAGE_EMPTY ""
@@ -34,23 +35,6 @@ namespace TorqueScript
     class Compiler;
     class CodeBlock;
     class ExecutionState;
-
-    struct FunctionRegistry
-    {
-        FunctionRegistry(const std::string& package) : mPackageName(package), mActive(false)
-        {
-
-        }
-
-        //! The package this registry belongs to.
-        std::string mPackageName;
-
-        //! Whether or not the registry is currently active.
-        bool mActive;
-
-        //! A mapping of function namespaces to a mapping of function names to the function object.
-        std::map<std::string, std::map<std::string, std::shared_ptr<Function>>> mFunctions;
-    };
 
     /**
      *  @brief The interpreter class represents a high level instance of the TorqueScript interpreter.
@@ -110,7 +94,8 @@ namespace TorqueScript
             //! The maximum recursion depth allowed by this interpreter. If set to 0, no limit is enforced.
             unsigned int mMaxRecursionDepth;
 
-            SimObjectRegistry mSimObjectRegistry;
+            //! The ConsoleObjectRegistry associated with this interpreter. It is used to store all ConsoleObject instances associated with the interpreter.
+            ConsoleObjectRegistry mConsoleObjectRegistry;
 
         private:
             //! Keep a ready instance of the compiler on hand as it is reusable.

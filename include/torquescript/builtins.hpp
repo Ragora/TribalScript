@@ -18,105 +18,72 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <torquescript/function.hpp>
+#include <torquescript/nativefunction.hpp>
 #include <torquescript/executionscope.hpp>
 #include <torquescript/interpreter.hpp>
 #include <torquescript/executionstate.hpp>
 #include <torquescript/storedvaluestack.hpp>
 #include <torquescript/storedintegervalue.hpp>
 #include <torquescript/storedstringvalue.hpp>
-#include <torquescript/simobject.hpp>
+#include <torquescript/consoleobject.hpp>
 
 namespace TorqueScript
 {
-    class Echo : public Function
+    static void EchoBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
-        public:
-            Echo() : Function(PACKAGE_EMPTY, NAMESPACE_EMPTY, "echo") { }
+        std::string outputString = "";
 
-            virtual void execute(std::shared_ptr<SimObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
-            {
-                std::string outputString = "";
+        for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
+        {
+            // Parameters will flow right to left so we build the string considering this
+            std::string printedPayload = state->mStack.popString(state);
+            outputString = printedPayload + outputString;
+        }
 
-                for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
-                {
-                    // Parameters will flow right to left so we build the string considering this
-                    std::string printedPayload = state->mStack.popString(state);
-                    outputString = printedPayload + outputString;
-                }
+        state->mInterpreter->logEcho(outputString);
+        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+    }
 
-                state->mInterpreter->logEcho(outputString);
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
-            }
-    };
-
-    class ActivatePackage : public Function
+    static void ActivatePackageBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
-        public:
-            ActivatePackage() : Function(PACKAGE_EMPTY, NAMESPACE_EMPTY, "activatepackage") { }
+        for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
+        {
+            std::string activatedPackage = state->mStack.popString(state);
+            state->mInterpreter->activateFunctionRegistry(activatedPackage);
+        }
 
-            virtual void execute(std::shared_ptr<SimObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
-            {
-                std::string outputString = "";
+        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+    }
 
-                for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
-                {
-                    std::string activatedPackage = state->mStack.popString(state);
-                    state->mInterpreter->activateFunctionRegistry(activatedPackage);
-                }
-
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
-            }
-    };
-
-    class DeactivatePackage : public Function
+    static void DeactivatePackageBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
-        public:
-            DeactivatePackage() : Function(PACKAGE_EMPTY, NAMESPACE_EMPTY, "deactivatepackage") { }
+        for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
+        {
+            std::string deactivatedPackage = state->mStack.popString(state);
+            state->mInterpreter->deactivateFunctionRegistry(deactivatedPackage);
+        }
 
-            virtual void execute(std::shared_ptr<SimObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
-            {
-                std::string outputString = "";
+        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+    }
 
-                for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
-                {
-                    std::string deactivatedPackage = state->mStack.popString(state);
-                    state->mInterpreter->deactivateFunctionRegistry(deactivatedPackage);
-                }
-
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
-            }
-    };
-
-    class Delete : public Function
+    static void DeleteBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
-        public:
-            Delete() : Function(PACKAGE_EMPTY, "SimObject", "delete") { }
+        state->mInterpreter->mConsoleObjectRegistry.removeConsoleObject(thisObject);
+        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+    }
 
-            virtual void execute(std::shared_ptr<SimObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
-            {
-                state->mInterpreter->mSimObjectRegistry.removeSimObject(thisObject);
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
-            }
-    };
-
-    class GetName : public Function
+    static void GetNameBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
-        public:
-            GetName() : Function(PACKAGE_EMPTY, "SimObject", "getName") { }
-
-            virtual void execute(std::shared_ptr<SimObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
-            {
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(thisObject->getName(state->mInterpreter))));
-            }
-    };
+        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(state->mInterpreter->mConsoleObjectRegistry.getConsoleObjectName(thisObject))));
+    }
 
     void registerBuiltIns(Interpreter* interpreter)
     {
-        interpreter->addFunction(std::shared_ptr<Function>(new Echo()));
-        interpreter->addFunction(std::shared_ptr<Function>(new GetName()));
-        interpreter->addFunction(std::shared_ptr<Function>(new DeactivatePackage()));
-        interpreter->addFunction(std::shared_ptr<Function>(new ActivatePackage()));
-        interpreter->addFunction(std::shared_ptr<Function>(new Delete()));
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(EchoBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "echo")));
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(ActivatePackageBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "activatePackage")));
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(DeactivatePackageBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "deactivatePackage")));
+
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetNameBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "getName")));
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(DeleteBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "delete")));
     }
 }
