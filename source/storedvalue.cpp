@@ -53,14 +53,13 @@ namespace TorqueScript
         {
             case StoredValueType::LocalReference:
                 variableName = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-                state->mExecutionScope.setVariable(variableName, this->getReferencedValueCopy(state));
+                state->mExecutionScope.setVariable(variableName, newValue.getReferencedValueCopy(state));
                 return true;
             case StoredValueType::GlobalReference:
                 variableName = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-                state->mInterpreter->setGlobal(variableName, this->getReferencedValueCopy(state));
+                state->mInterpreter->setGlobal(variableName, newValue.getReferencedValueCopy(state));
                 return true;
         }
-
         return false;
     }
 
@@ -149,11 +148,13 @@ namespace TorqueScript
         {
             case StoredValueType::LocalReference:
                 stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
+				
                 referenced = state->mExecutionScope.getVariable(stringValue);
                 if (referenced)
                 {
                     return referenced->getReferencedValueCopy(state);
                 }
+				break;
             case StoredValueType::GlobalReference:
                 stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
                 referenced = state->mInterpreter->getGlobal(stringValue);
@@ -161,6 +162,7 @@ namespace TorqueScript
                 {
                     return referenced->getReferencedValueCopy(state);
                 }
+				break;
             case StoredValueType::Integer:
                 return StoredValue(mStorage.mInteger);
             case StoredValueType::Float:
@@ -168,7 +170,7 @@ namespace TorqueScript
             case StoredValueType::String:
                 return StoredValue(mStorage.mStringID, StoredValueType::String);
         }
-
+	
         throw std::runtime_error("Unknown Conversion");
     }
 
