@@ -767,7 +767,7 @@ namespace TorqueScript
     class SubReferenceInstruction : public Instruction
     {
         public:
-            SubReferenceInstruction(const std::string& name) : mName(name)
+            SubReferenceInstruction(const std::size_t value) : mStringID(value)
             {
 
             }
@@ -782,8 +782,8 @@ namespace TorqueScript
                 std::shared_ptr<ConsoleObject> referenced = targetStored.toConsoleObject(state);
                 if (referenced)
                 {
-                    //state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredFieldReferenceValue(referenced, mName)));
-                    //return 1;
+                    state->mStack.push_back(StoredValue(referenced, mStringID));
+                    return 1;
                 }
 
                 state->mStack.push_back(StoredValue(0));
@@ -793,12 +793,12 @@ namespace TorqueScript
             virtual std::string disassemble() override
             {
                 std::ostringstream out;
-                out << "SubReference " << mName;
+                out << "SubReference " << mStringID;
                 return out.str();
             }
 
         private:
-            std::string mName;
+            std::size_t mStringID;
     };
 
     class ReturnInstruction : public Instruction

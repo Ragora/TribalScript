@@ -33,7 +33,8 @@ namespace TorqueScript
         Float,
         String,
         LocalReference,
-        GlobalReference
+        GlobalReference,
+        SubfieldReference
     };
 
     union StoredValueUnion
@@ -70,22 +71,27 @@ namespace TorqueScript
     class StoredValue
     {
         public:
-            StoredValue() : mType(StoredValueType::NullType), mStorage()
+            StoredValue() : mType(StoredValueType::NullType), mStorage(), mConsoleObject(nullptr)
             {
 
             }
 
-            StoredValue(const int value) : mType(StoredValueType::Integer), mStorage(value)
+            StoredValue(const int value) : mType(StoredValueType::Integer), mStorage(value), mConsoleObject(nullptr)
             {
 
             }
 
-            StoredValue(const float value) : mType(StoredValueType::Float), mStorage(value)
+            StoredValue(const float value) : mType(StoredValueType::Float), mStorage(value), mConsoleObject(nullptr)
             {
 
             }
 
-            StoredValue(const std::size_t value, const StoredValueType type) : mType(type), mStorage(value)
+            StoredValue(const std::size_t value, const StoredValueType type) : mType(type), mStorage(value), mConsoleObject(nullptr)
+            {
+
+            }
+
+            StoredValue(std::shared_ptr<ConsoleObject> object, const std::size_t field) : mType(StoredValueType::SubfieldReference), mStorage(field), mConsoleObject(object)
             {
 
             }
@@ -122,5 +128,7 @@ namespace TorqueScript
         private:
             StoredValueType mType;
             StoredValueUnion mStorage;
+
+            std::shared_ptr<ConsoleObject> mConsoleObject;
     };
 }
