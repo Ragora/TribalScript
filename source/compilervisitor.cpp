@@ -624,7 +624,9 @@ namespace TorqueScript
                 variableName += "::" + component->getText();
             }
         }
-        out.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(variableName)));
+
+        const std::size_t stringID = mStringTable->getOrAssign(variableName);
+        out.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(stringID)));
 
         generated.push_back(out);
         return generated;
@@ -650,7 +652,9 @@ namespace TorqueScript
                 variableName += "::" + component->getText();
             }
         }
-        out.push_back(std::shared_ptr<Instruction>(new PushLocalReferenceInstruction(variableName)));
+
+        const std::size_t stringID = mStringTable->getOrAssign(variableName);
+        out.push_back(std::shared_ptr<Instruction>(new PushLocalReferenceInstruction(stringID)));
 
         generated.push_back(out);
         return generated;

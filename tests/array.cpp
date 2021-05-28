@@ -31,7 +31,7 @@ TEST(InterpreterTest, Array)
 
     // The assignment performed is: $result[1,2,3] = %value;
     // However, in Torque Script this is treated as a single variable key $result1_2_3
-    std::shared_ptr<TorqueScript::StoredValue> result = interpreter.getGlobal("result1_2_3");
+    TorqueScript::StoredValue* result = interpreter.getGlobal("result1_2_3");
     EXPECT_TRUE(result);
 
     ASSERT_EQ(result->toInteger(state), 5);

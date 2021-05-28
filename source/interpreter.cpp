@@ -79,14 +79,14 @@ namespace TorqueScript
         return mCompiler->compileString(input, &mStringTable);
     }
 
-    std::shared_ptr<StoredValue> Interpreter::getGlobal(const std::string& name)
+    StoredValue* Interpreter::getGlobal(const std::string& name)
     {
         const std::string key = toLowerCase(name);
 
         auto search = mGlobalVariables.find(key);
         if (search != mGlobalVariables.end())
         {
-            return search->second;
+            return &search->second;
         }
         return nullptr;
     }
@@ -169,7 +169,7 @@ namespace TorqueScript
         return nullptr;
     }
 
-    void Interpreter::setGlobal(const std::string& name, std::shared_ptr<StoredValue> value)
+    void Interpreter::setGlobal(const std::string& name, StoredValue value)
     {
         const std::string key = toLowerCase(name);
         mGlobalVariables[key] = value;

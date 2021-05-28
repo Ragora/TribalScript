@@ -47,7 +47,7 @@ namespace TorqueScript
         Function* mCurrentFunction;
 
         std::vector<LoopDescriptor> mLoopDescriptors;
-        std::map<std::string, std::shared_ptr<StoredValue>> mLocalVariables;
+        std::map<std::string, StoredValue> mLocalVariables;
     };
 
     /**
@@ -68,8 +68,8 @@ namespace TorqueScript
 
             Function* getCurrentFunction();
 
-            std::shared_ptr<StoredValue> getVariable(const std::string& name);
-            void setVariable(const std::string& name, std::shared_ptr<StoredValue> variable);
+            StoredValue* getVariable(const std::string& name);
+            void setVariable(const std::string& name, StoredValue variable);
 
         private:
             //! A stack of mappings of local variable names to their stored value instance.

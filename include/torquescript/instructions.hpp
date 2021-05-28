@@ -24,12 +24,6 @@
 #include <torquescript/executionscope.hpp>
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/storedvaluestack.hpp>
-#include <torquescript/storedfloatvalue.hpp>
-#include <torquescript/storedstringvalue.hpp>
-#include <torquescript/storedintegervalue.hpp>
-#include <torquescript/storedfieldreferencevalue.hpp>
-#include <torquescript/storedlocalreferencevalue.hpp>
-#include <torquescript/storedglobalreferencevalue.hpp>
 #include <torquescript/executionstate.hpp>
 #include <torquescript/instructionsequence.hpp>
 
@@ -72,7 +66,7 @@ namespace TorqueScript
 
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(mParameter)));
+                state->mStack.push_back(StoredValue(mParameter));
                 return 1;
             };
 
@@ -102,7 +96,7 @@ namespace TorqueScript
 
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(mParameter)));
+                state->mStack.push_back(StoredValue(mParameter));
                 return 1;
             };
 
@@ -125,14 +119,14 @@ namespace TorqueScript
     class PushStringInstruction : public Instruction
     {
         public:
-            PushStringInstruction(const unsigned int value) : mStringID(value)
+            PushStringInstruction(const std::size_t value) : mStringID(value)
             {
 
             }
 
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(expandEscapeSequences(state->mInterpreter->mStringTable.getString(mStringID)))));
+                state->mStack.push_back(StoredValue(mStringID, StoredValueType::String));
                 return 1;
             };
 
@@ -145,7 +139,7 @@ namespace TorqueScript
 
         private:
             //! The string table ID of the parameter to push.
-            unsigned int mStringID;
+            std::size_t mStringID;
     };
 
     /**
@@ -155,27 +149,27 @@ namespace TorqueScript
     class PushLocalReferenceInstruction : public Instruction
     {
         public:
-            PushLocalReferenceInstruction(const std::string& value) : mParameter(value)
+            PushLocalReferenceInstruction(const std::size_t value) : mStringID(value)
             {
 
             }
 
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredLocalReferenceValue(mParameter)));
+                state->mStack.push_back(StoredValue(mStringID, StoredValueType::LocalReference));
                 return 1;
             };
 
             virtual std::string disassemble() override
             {
                 std::ostringstream out;
-                out << "PushLocalReference " << mParameter;
+                out << "PushLocalReference " << mStringID;
                 return out.str();
             }
 
         private:
             //! The value to push.
-            std::string mParameter;
+            std::size_t mStringID;
     };
 
     /**
@@ -185,27 +179,27 @@ namespace TorqueScript
     class PushGlobalReferenceInstruction : public Instruction
     {
         public:
-            PushGlobalReferenceInstruction(const std::string& value) : mParameter(value)
+            PushGlobalReferenceInstruction(const std::size_t value) : mStringID(value)
             {
 
             }
 
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredGlobalReferenceValue(mParameter)));
+                state->mStack.push_back(StoredValue(mStringID, StoredValueType::GlobalReference));
                 return 1;
             };
 
             virtual std::string disassemble() override
             {
                 std::ostringstream out;
-                out << "PushGlobalReference " << mParameter;
+                out << "PushGlobalReference " << mStringID;
                 return out.str();
             }
 
         private:
             //! The value to push.
-            std::string mParameter;
+            std::size_t mStringID;
     };
 
     /**
@@ -219,17 +213,17 @@ namespace TorqueScript
                 assert(state->mStack.size() >= 2);
 
                 // Pull two values off the stack
-                std::shared_ptr<StoredValue> rhsStored = state->mStack.back();
+                StoredValue rhsStored = state->mStack.back();
                 state->mStack.pop_back();
-                std::shared_ptr<StoredValue> lhsStored = state->mStack.back();
+                StoredValue lhsStored = state->mStack.back();
                 state->mStack.pop_back();
 
                 float resultRaw = 0.0f;
-                resultRaw = lhsStored->toFloat(state);
-                resultRaw += rhsStored->toFloat(state);
+                resultRaw = lhsStored.toFloat(state);
+                resultRaw += rhsStored.toFloat(state);
 
-                std::shared_ptr<StoredValue> result = std::shared_ptr<StoredValue>(new StoredFloatValue(resultRaw));
-                if (!lhsStored->setValue(result, state))
+                StoredValue result = StoredValue(resultRaw);
+                if (!lhsStored.setValue(result, state))
                 {
                     state->mInterpreter->logError("Attempted to perform no-op assignment!");
                 }
@@ -256,12 +250,12 @@ namespace TorqueScript
                 assert(state->mStack.size() >= 2);
 
                 // Pull two values off the stack
-                std::shared_ptr<StoredValue> rhsStored = state->mStack.back();
+                StoredValue rhsStored = state->mStack.back();
                 state->mStack.pop_back();
-                std::shared_ptr<StoredValue> lhsStored = state->mStack.back();
+                StoredValue lhsStored = state->mStack.back();
                 state->mStack.pop_back();
 
-                if (!lhsStored->setValue(rhsStored, state))
+                if (!lhsStored.setValue(rhsStored, state))
                 {
                     state->mInterpreter->logError("Attempted to perform no-op assignment!");
                 }
@@ -289,15 +283,17 @@ namespace TorqueScript
                 assert(state->mStack.size() >= 2);
 
                 // Pull two values off the stack
-                std::shared_ptr<StoredValue> rhsStored = state->mStack.back();
+                StoredValue rhsStored = state->mStack.back();
                 state->mStack.pop_back();
-                std::shared_ptr<StoredValue> lhsStored = state->mStack.back();
+                StoredValue lhsStored = state->mStack.back();
                 state->mStack.pop_back();
 
-                std::string lhs = lhsStored->toString(state);
-                std::string rhs = rhsStored->toString(state);
+                std::string lhs = lhsStored.toString(state);
+                std::string rhs = rhsStored.toString(state);
 
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(lhs + rhs)));
+                // Generate a new string ID
+                const std::size_t requestedStringID = state->mInterpreter->mStringTable.getOrAssign(lhs + rhs);
+                state->mStack.push_back(StoredValue(requestedStringID, StoredValueType::String));
                 return 1;
             };
 
@@ -318,10 +314,10 @@ namespace TorqueScript
                 assert(state->mStack.size() >= 1);
 
                 // Pull two values off the stack
-                std::shared_ptr<StoredValue> storedTarget = state->mStack.back();
+                StoredValue storedTarget = state->mStack.back();
                 state->mStack.pop_back();
 
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(-storedTarget->toFloat(state))));
+                state->mStack.push_back(StoredValue(-storedTarget.toFloat(state)));
                 return 1;
             };
 
@@ -353,7 +349,7 @@ namespace TorqueScript
                     if (currentFunction == nullptr)
                     {
                         state->mInterpreter->logError("Attempted to call parent:: function at root!");
-                        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+                        state->mStack.push_back(StoredValue(0));
                         return 1;
                     }
 
@@ -366,7 +362,7 @@ namespace TorqueScript
                         stream << "Could not find parent function '" << mName << "' for calling! Placing 0 on the stack.";
                         state->mInterpreter->logError(stream.str());
 
-                        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+                        state->mStack.push_back(StoredValue(0));
                         return 1;
                     }
 
@@ -388,7 +384,7 @@ namespace TorqueScript
                     stream << "Could not find function '" << mName << "' for calling! Placing 0 on the stack.";
                     state->mInterpreter->logError(stream.str());
 
-                    state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+                    state->mStack.push_back(StoredValue(0));
                 }
                 return 1;
             };
@@ -429,17 +425,17 @@ namespace TorqueScript
             {
                 assert(state->mStack.size() >= 2);
 
-                std::shared_ptr<StoredValue> rhsStored = state->mStack.back();
+                StoredValue rhsStored = state->mStack.back();
                 state->mStack.pop_back();
-                std::shared_ptr<StoredValue> lhsStored = state->mStack.back();
+                StoredValue lhsStored = state->mStack.back();
                 state->mStack.pop_back();
 
                 // NOTE: For now we normalize to floats
-                float lhs = lhsStored->toFloat(state);
-                float rhs = rhsStored->toFloat(state);
+                float lhs = lhsStored.toFloat(state);
+                float rhs = rhsStored.toFloat(state);
 
                 const float result = lhs + rhs;
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(result)));
+                state->mStack.push_back(StoredValue(result));
                 return 1;
             };
 
@@ -459,17 +455,17 @@ namespace TorqueScript
             {
                 assert(state->mStack.size() >= 2);
 
-                std::shared_ptr<StoredValue> rhsStored = state->mStack.back();
+                StoredValue rhsStored = state->mStack.back();
                 state->mStack.pop_back();
-                std::shared_ptr<StoredValue> lhsStored = state->mStack.back();
+                StoredValue lhsStored = state->mStack.back();
                 state->mStack.pop_back();
 
                 // NOTE: For now we normalize to floats
-                float lhs = lhsStored->toFloat(state);
-                float rhs = rhsStored->toFloat(state);
+                float lhs = lhsStored.toFloat(state);
+                float rhs = rhsStored.toFloat(state);
 
                 const int result = lhs < rhs ? 1 : 0;
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(result)));
+                state->mStack.push_back(StoredValue(result));
                 return 1;
             };
 
@@ -489,17 +485,17 @@ namespace TorqueScript
             {
                 assert(state->mStack.size() >= 2);
 
-                std::shared_ptr<StoredValue> rhsStored = state->mStack.back();
+                StoredValue rhsStored = state->mStack.back();
                 state->mStack.pop_back();
-                std::shared_ptr<StoredValue> lhsStored = state->mStack.back();
+                StoredValue lhsStored = state->mStack.back();
                 state->mStack.pop_back();
 
                 // NOTE: For now we normalize to floats
-                float lhs = lhsStored->toFloat(state);
-                float rhs = rhsStored->toFloat(state);
+                float lhs = lhsStored.toFloat(state);
+                float rhs = rhsStored.toFloat(state);
 
                 const int result = lhs == rhs ? 1 : 0;
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(result)));
+                state->mStack.push_back(StoredValue(result));
                 return 1;
             };
 
@@ -519,17 +515,17 @@ namespace TorqueScript
             {
                 assert(state->mStack.size() >= 2);
 
-                std::shared_ptr<StoredValue> rhsStored = state->mStack.back();
+                StoredValue rhsStored = state->mStack.back();
                 state->mStack.pop_back();
-                std::shared_ptr<StoredValue> lhsStored = state->mStack.back();
+                StoredValue lhsStored = state->mStack.back();
                 state->mStack.pop_back();
 
                 // NOTE: For now we normalize to floats
-                int lhs = lhsStored->toInteger(state);
-                int rhs = rhsStored->toInteger(state);
+                int lhs = lhsStored.toInteger(state);
+                int rhs = rhsStored.toInteger(state);
 
                 const int result = lhs & rhs;
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(result)));
+                state->mStack.push_back(StoredValue(result));
                 return 1;
             };
 
@@ -549,18 +545,18 @@ namespace TorqueScript
             {
                 assert(state->mStack.size() >= 2);
 
-                std::shared_ptr<StoredValue> lhsStored = state->mStack.back();
+                StoredValue lhsStored = state->mStack.back();
                 state->mStack.pop_back();
-                std::shared_ptr<StoredValue> rhsStored = state->mStack.back();
+                StoredValue rhsStored = state->mStack.back();
                 state->mStack.pop_back();
 
                 // NOTE: For now we normalize to floats
 
-                float lhs = lhsStored->toFloat(state);
-                float rhs = rhsStored->toFloat(state);
+                float lhs = lhsStored.toFloat(state);
+                float rhs = rhsStored.toFloat(state);
 
                 const float result = lhs * rhs;
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(result)));
+                state->mStack.push_back(StoredValue(result));
                 return 1;
             };
 
@@ -627,10 +623,10 @@ namespace TorqueScript
             {
                 assert(state->mStack.size() >= 1);
 
-                std::shared_ptr<StoredValue> booleanStored = state->mStack.back();
+                StoredValue booleanStored = state->mStack.back();
                 state->mStack.pop_back();
 
-                if (booleanStored->toBoolean(state))
+                if (booleanStored.toBoolean(state))
                 {
                     return mOffset;
                 }
@@ -661,10 +657,10 @@ namespace TorqueScript
             {
                 assert(state->mStack.size() >= 1);
 
-                std::shared_ptr<StoredValue> booleanStored = state->mStack.back();
+                StoredValue booleanStored = state->mStack.back();
                 state->mStack.pop_back();
 
-                if (!booleanStored->toBoolean(state))
+                if (!booleanStored.toBoolean(state))
                 {
                     return mOffset;
                 }
@@ -780,18 +776,17 @@ namespace TorqueScript
             {
                 assert(state->mStack.size() >= 1);
 
-                std::shared_ptr<StoredValue> targetStored = state->mStack.back();
+                StoredValue targetStored = state->mStack.back();
                 state->mStack.pop_back();
 
-                std::shared_ptr<ConsoleObject> referenced = targetStored->toConsoleObject(state);
+                std::shared_ptr<ConsoleObject> referenced = targetStored.toConsoleObject(state);
                 if (referenced)
                 {
-                    state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredFieldReferenceValue(referenced, mName)));
-                    return 1;
+                    //state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredFieldReferenceValue(referenced, mName)));
+                    //return 1;
                 }
 
-                // If lookup failed, return empty string
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue("")));
+                state->mStack.push_back(StoredValue(0));
                 return 1;
             };
 
@@ -813,11 +808,11 @@ namespace TorqueScript
             {
                 assert(state->mStack.size() >= 1);
 
-                std::shared_ptr<StoredValue> targetStored = state->mStack.back();
+                StoredValue targetStored = state->mStack.back();
                 state->mStack.pop_back();
 
                 // For if we return a variable reference, we want to pass back a copy
-                state->mStack.push_back(std::shared_ptr<StoredValue>(targetStored->getReferencedValueCopy(state)));
+                state->mStack.push_back(targetStored.getReferencedValueCopy(state));
                 return 0;
             };
 
@@ -927,13 +922,14 @@ namespace TorqueScript
                     out << *iterator;
                 }
 
+                const std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(out.str());
                 if (mGlobal)
                 {
-                    state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredGlobalReferenceValue(out.str())));
+                    state->mStack.push_back(StoredValue(stringID, StoredValueType::GlobalReference));
                 }
                 else
                 {
-                    state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredLocalReferenceValue(out.str())));
+                    state->mStack.push_back(StoredValue(stringID, StoredValueType::LocalReference));
                 }
                 return 1;
             };
@@ -966,15 +962,15 @@ namespace TorqueScript
             {
                 assert(state->mStack.size() >= 1);
 
-                std::shared_ptr<StoredValue> targetStored = state->mStack.back();
+                StoredValue targetStored = state->mStack.back();
                 state->mStack.pop_back();
 
                 // Retrieve the referenced ConsoleObject
-                std::shared_ptr<ConsoleObject> targetSim = targetStored->toConsoleObject(state);
+                std::shared_ptr<ConsoleObject> targetSim = targetStored.toConsoleObject(state);
                 if (!targetSim)
                 {
                     std::ostringstream output;
-                    output << "Cannot find object '" << targetStored->toString(state) << "' to call function '" << mName << "'!";
+                    output << "Cannot find object '" << targetStored.toString(state) << "' to call function '" << mName << "'!";
                     state->mInterpreter->logWarning(output.str());
                 }
 
@@ -989,7 +985,7 @@ namespace TorqueScript
                     return 1;
                 }
 
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+                state->mStack.push_back(StoredValue(0));
                 return 1;
             };
 

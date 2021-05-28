@@ -57,12 +57,12 @@ namespace TorqueScript
         }
 
         // Once we know what parameters we're providing for, set the values
-        std::map<std::string, std::shared_ptr<StoredValue>> newLocals;
+        std::map<std::string, StoredValue> newLocals;
         for (unsigned int iteration = 0; iteration < adjustedArgumentCount; ++iteration)
         {
             const std::string nextParameterName = mParameterNames[mParameterNames.size() - (iteration + emptyParameters + 1)];
 
-            newLocals[nextParameterName] = state->mStack.back()->getReferencedValueCopy(state);
+            newLocals[nextParameterName] = state->mStack.back().getReferencedValueCopy(state);
             state->mStack.pop_back();
         }
 
@@ -70,7 +70,7 @@ namespace TorqueScript
         if (state->mInterpreter->mMaxRecursionDepth > 0 && state->mExecutionScope.getFrameDepth() >= state->mInterpreter->mMaxRecursionDepth)
         {
             state->mInterpreter->logError("Reached maximum recursion depth! Pushing 0 and returning.");
-            state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+            state->mStack.push_back(StoredValue(0));
             return;
         }
 

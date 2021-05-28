@@ -47,8 +47,9 @@ namespace TorqueScript
             Interpreter();
             ~Interpreter();
 
-            void setGlobal(const std::string& name, std::shared_ptr<StoredValue> value);
-            std::shared_ptr<StoredValue> getGlobal(const std::string& name);
+            void setGlobal(const std::string& name, StoredValue value);
+
+            StoredValue* getGlobal(const std::string& name);
 
             /**
              *  @brief Ask the interpreter to compile the input string and return the resulting
@@ -109,6 +110,6 @@ namespace TorqueScript
             std::vector<FunctionRegistry> mFunctionRegistries;
 
             //! A mapping of global variable names to their stored value instance.
-            std::map<std::string, std::shared_ptr<StoredValue>> mGlobalVariables;
+            std::map<std::string, StoredValue> mGlobalVariables;
     };
 }

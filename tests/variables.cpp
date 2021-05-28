@@ -30,9 +30,9 @@ TEST(InterpreterTest, Variables)
     interpreter.execute("cases/variables.cs", state);
 
     // We have a global and a global value within a namespace
-    std::shared_ptr<TorqueScript::StoredValue> resultGlobal = interpreter.getGlobal("global");
+    TorqueScript::StoredValue* resultGlobal = interpreter.getGlobal("global");
     EXPECT_TRUE(resultGlobal);
-    std::shared_ptr<TorqueScript::StoredValue> resultGlobalNameSpace = interpreter.getGlobal("global::namespaced");
+    TorqueScript::StoredValue* resultGlobalNameSpace = interpreter.getGlobal("global::namespaced");
     EXPECT_TRUE(resultGlobalNameSpace);
 
     ASSERT_EQ(resultGlobal->toInteger(state), 50);
