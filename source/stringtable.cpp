@@ -16,37 +16,21 @@
 
 namespace TorqueScript
 {
-    StringTable::StringTable()
+    std::size_t StringTable::getOrAssign(const std::string& string)
     {
-        mEntryCount = 0;
-    }
+        std::hash<std::string> hasher;
 
-    unsigned int StringTable::getOrAssign(const std::string& string)
-    {
-        const unsigned int existingID = this->getID(string);
-        if (existingID != 0)
+        const std::size_t stringHash = hasher(string);
+        auto search = this->find(stringHash);
+
+        if (search == this->end())
         {
-            return existingID;
+            this->emplace(std::make_pair(stringHash, string));
         }
-
-        const unsigned int newID = ++mEntryCount;
-        this->emplace(std::make_pair(newID, string));
-        return newID;
+        return stringHash;
     }
 
-    unsigned int StringTable::getID(const std::string& string)
-    {
-        for (auto search : *this)
-        {
-            if (search.second == string)
-            {
-                return search.first;
-            }
-        }
-        return 0;
-    }
-
-    const std::string& StringTable::getString(const unsigned int id)
+    const std::string& StringTable::getString(const std::size_t id)
     {
         return this->at(id);
     }
