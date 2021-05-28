@@ -22,6 +22,7 @@
 #include <torquescript/consoleobject.hpp>
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/stringhelpers.hpp>
+#include <torquescript/stringtable.hpp>
 #include <torquescript/functionregistry.hpp>
 #include <torquescript/storedvaluestack.hpp>
 #include <torquescript/consoleobjectregistry.hpp>
@@ -96,6 +97,9 @@ namespace TorqueScript
 
             //! The ConsoleObjectRegistry associated with this interpreter. It is used to store all ConsoleObject instances associated with the interpreter.
             ConsoleObjectRegistry mConsoleObjectRegistry;
+
+            //! The string table associated with this interpreter.
+            StringTable mStringTable;
 
         private:
             //! Keep a ready instance of the compiler on hand as it is reusable.

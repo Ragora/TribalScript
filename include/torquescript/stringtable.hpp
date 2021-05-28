@@ -12,40 +12,24 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/codeblock.hpp>
-#include <torquescript/instructions.hpp>
-#include <torquescript/stringhelpers.hpp>
-#include <torquescript/instructionsequence.hpp>
+#pragma once
+
+#include <map>
+#include <string>
 
 namespace TorqueScript
 {
-    CodeBlock::CodeBlock(const InstructionSequence& instructions)
+    class StringTable : public std::map<unsigned int, std::string>
     {
-        mInstructions.insert(mInstructions.end(), instructions.begin(), instructions.end());
-    }
+        public:
+            StringTable();
 
-    void CodeBlock::execute(std::shared_ptr<ExecutionState> state)
-    {
-        int instructionIndex = 0;
+            unsigned int getOrAssign(const std::string& string);
+            unsigned int getID(const std::string& string);
 
-        mInstructions.execute(state);
-    }
+            const std::string& getString(const unsigned int id);
 
-    std::vector<std::string> CodeBlock::disassemble()
-    {
-        std::vector<std::string> result;
-
-        for (auto&& instruction : mInstructions)
-        {
-            std::ostringstream out;
-            out << instruction->disassemble();
-
-            if (instruction->mComment != "")
-            {
-                out << " // " << instruction->mComment;
-            }
-            result.push_back(out.str());
-        }
-        return result;
-    }
+        private:
+            unsigned int mEntryCount;
+    };
 }

@@ -12,40 +12,42 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/codeblock.hpp>
-#include <torquescript/instructions.hpp>
-#include <torquescript/stringhelpers.hpp>
-#include <torquescript/instructionsequence.hpp>
+#include <torquescript/stringtable.hpp>
 
 namespace TorqueScript
 {
-    CodeBlock::CodeBlock(const InstructionSequence& instructions)
+    StringTable::StringTable()
     {
-        mInstructions.insert(mInstructions.end(), instructions.begin(), instructions.end());
+        mEntryCount = 0;
     }
 
-    void CodeBlock::execute(std::shared_ptr<ExecutionState> state)
+    unsigned int StringTable::getOrAssign(const std::string& string)
     {
-        int instructionIndex = 0;
-
-        mInstructions.execute(state);
-    }
-
-    std::vector<std::string> CodeBlock::disassemble()
-    {
-        std::vector<std::string> result;
-
-        for (auto&& instruction : mInstructions)
+        const unsigned int existingID = this->getID(string);
+        if (existingID != 0)
         {
-            std::ostringstream out;
-            out << instruction->disassemble();
-
-            if (instruction->mComment != "")
-            {
-                out << " // " << instruction->mComment;
-            }
-            result.push_back(out.str());
+            return existingID;
         }
-        return result;
+
+        const unsigned int newID = ++mEntryCount;
+        this->emplace(std::make_pair(newID, string));
+        return newID;
+    }
+
+    unsigned int StringTable::getID(const std::string& string)
+    {
+        for (auto search : *this)
+        {
+            if (search.second == string)
+            {
+                return search.first;
+            }
+        }
+        return 0;
+    }
+
+    const std::string& StringTable::getString(const unsigned int id)
+    {
+        return this->at(id);
     }
 }
