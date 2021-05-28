@@ -23,6 +23,11 @@
 
 namespace TorqueScript
 {
+    CompilerVisitor::CompilerVisitor(StringTable* stringTable) : mStringTable(stringTable), TorqueBaseVisitor()
+    {
+
+    }
+
     antlrcpp::Any CompilerVisitor::defaultResult()
     {
         return GeneratedInstructions();
@@ -572,11 +577,11 @@ namespace TorqueScript
             // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the enclosing quotations
             const std::string rawString = context->STRING()->getText();
             const std::string stringContent = rawString.substr(1, rawString.size() - 2);
-            out.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(stringContent)));
+            out.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(mStringTable->getOrAssign(stringContent))));
         }
         else if (context->LABEL())
         {
-            out.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(context->LABEL()->getText())));
+            out.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(mStringTable->getOrAssign(context->LABEL()->getText()))));
         }
         else if (context->TRUE())
         {

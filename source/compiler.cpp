@@ -24,7 +24,7 @@
 
 namespace TorqueScript
 {
-    CodeBlock* Compiler::compileStream(std::istream& input)
+    CodeBlock* Compiler::compileStream(std::istream& input, StringTable* stringTable)
     {
         antlr4::ANTLRInputStream antlrStream(input);
         TorqueLexer lexer(&antlrStream);
@@ -38,15 +38,14 @@ namespace TorqueScript
         parser.addErrorListener(&parserErrorListener);
 
         // Instantiate the program and go
-        CompilerVisitor visitor;
+        CompilerVisitor visitor(stringTable);
 
         InstructionSequence instructions = visitor.collapseInstructions(visitor.visitProgram(parser.program()).as<GeneratedInstructions>());
 
         // Did we receive any errors?
         if (parserErrorListener.getErrors().empty())
         {
-            CodeBlock* result = new CodeBlock();
-            result->addInstructions(instructions);
+            CodeBlock* result = new CodeBlock(instructions);
 
             return result;
         }
@@ -59,18 +58,18 @@ namespace TorqueScript
         return nullptr;
     }
 
-    CodeBlock* Compiler::compileString(const std::string& input)
+    CodeBlock* Compiler::compileString(const std::string& input, StringTable* stringTable)
     {
         std::stringstream stream;
         stream << input;
-        return this->compileStream(stream);
+        return this->compileStream(stream, stringTable);
     }
 
-    CodeBlock* Compiler::compileFile(const std::string& path)
+    CodeBlock* Compiler::compileFile(const std::string& path, StringTable* stringTable)
     {
         std::ifstream fileStream;
         fileStream.open(path);
 
-        return this->compileStream(fileStream);
+        return this->compileStream(fileStream, stringTable);
     }
 }

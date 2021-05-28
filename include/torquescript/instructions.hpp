@@ -125,27 +125,27 @@ namespace TorqueScript
     class PushStringInstruction : public Instruction
     {
         public:
-            PushStringInstruction(const std::string& value) : mParameter(value)
+            PushStringInstruction(const unsigned int value) : mStringID(value)
             {
 
             }
 
             virtual int execute(std::shared_ptr<ExecutionState> state) override
             {
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(expandEscapeSequences(mParameter))));
+                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(expandEscapeSequences(state->mInterpreter->mStringTable.getString(mStringID)))));
                 return 1;
             };
 
             virtual std::string disassemble() override
             {
                 std::ostringstream out;
-                out << "PushString " << mParameter;
+                out << "PushString " << mStringID;
                 return out.str();
             }
 
         private:
-            //! The value to push.
-            std::string mParameter;
+            //! The string table ID of the parameter to push.
+            unsigned int mStringID;
     };
 
     /**

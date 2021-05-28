@@ -12,40 +12,26 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/codeblock.hpp>
-#include <torquescript/instructions.hpp>
-#include <torquescript/stringhelpers.hpp>
-#include <torquescript/instructionsequence.hpp>
+#include <torquescript/stringtable.hpp>
 
 namespace TorqueScript
 {
-    CodeBlock::CodeBlock(const InstructionSequence& instructions)
+    std::size_t StringTable::getOrAssign(const std::string& string)
     {
-        mInstructions.insert(mInstructions.end(), instructions.begin(), instructions.end());
-    }
+        std::hash<std::string> hasher;
 
-    void CodeBlock::execute(std::shared_ptr<ExecutionState> state)
-    {
-        int instructionIndex = 0;
+        const std::size_t stringHash = hasher(string);
+        auto search = this->find(stringHash);
 
-        mInstructions.execute(state);
-    }
-
-    std::vector<std::string> CodeBlock::disassemble()
-    {
-        std::vector<std::string> result;
-
-        for (auto&& instruction : mInstructions)
+        if (search == this->end())
         {
-            std::ostringstream out;
-            out << instruction->disassemble();
-
-            if (instruction->mComment != "")
-            {
-                out << " // " << instruction->mComment;
-            }
-            result.push_back(out.str());
+            this->emplace(std::make_pair(stringHash, string));
         }
-        return result;
+        return stringHash;
+    }
+
+    const std::string& StringTable::getString(const std::size_t id)
+    {
+        return this->at(id);
     }
 }

@@ -20,6 +20,7 @@
 #include <TorqueBaseVisitor.h>
 
 #include <torquescript/codeblock.hpp>
+#include <torquescript/stringtable.hpp>
 #include <torquescript/instructions.hpp>
 #include <torquescript/instructionsequence.hpp>
 
@@ -37,18 +38,18 @@ namespace TorqueScript
              *  @param input The input to generate from.
              *  @return A CodeBlock representing the compiled output. If an error has occurred, nullptr is returned.
              */
-            CodeBlock* compileStream(std::istream& input);
+            CodeBlock* compileStream(std::istream& input, StringTable* stringTable);
 
             /**
              *  @brief Ask the compiler to generate a codeblock from the provided string.
              *  @param input The string to generate from.
              */
-            CodeBlock* compileString(const std::string& input);
+            CodeBlock* compileString(const std::string& input, StringTable* stringTable);
 
             /**
              *  @brief Ask the compiler to generate a codeblock from the provided file.
              *  @param path The path to load from.
              */
-            CodeBlock* compileFile(const std::string& path);
+            CodeBlock* compileFile(const std::string& path, StringTable* stringTable);
     };
 }

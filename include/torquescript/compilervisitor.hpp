@@ -20,6 +20,7 @@
 #include <TorqueBaseVisitor.h>
 
 #include <torquescript/codeblock.hpp>
+#include <torquescript/stringtable.hpp>
 #include <torquescript/instructions.hpp>
 #include <torquescript/instructionsequence.hpp>
 
@@ -30,6 +31,8 @@ namespace TorqueScript
     class CompilerVisitor : public TorqueBaseVisitor
     {
         public:
+            CompilerVisitor(StringTable* stringTable);
+
             virtual antlrcpp::Any defaultResult() override;
 
             virtual antlrcpp::Any visitChildren(antlr4::tree::ParseTree *node) override;
@@ -85,6 +88,8 @@ namespace TorqueScript
             virtual antlrcpp::Any visitSubarray(TorqueParser::SubarrayContext* context) override;
 
         private:
+            StringTable* mStringTable;
+
             std::string mCurrentPackage;
     };
 }

@@ -21,6 +21,8 @@
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/stringhelpers.hpp>
 #include <torquescript/function.hpp>
+#include <torquescript/stringtable.hpp>
+#include <torquescript/codeblock.hpp>
 
 namespace TorqueScript
 {
@@ -43,6 +45,7 @@ namespace TorqueScript
         }
 
         Function* mCurrentFunction;
+
         std::vector<LoopDescriptor> mLoopDescriptors;
         std::map<std::string, std::shared_ptr<StoredValue>> mLocalVariables;
     };

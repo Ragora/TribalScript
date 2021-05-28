@@ -57,7 +57,7 @@ namespace TorqueScript
 
     void Interpreter::execute(const std::string& path, std::shared_ptr<ExecutionState> state)
     {
-        CodeBlock* compiled = mCompiler->compileFile(path);
+        CodeBlock* compiled = mCompiler->compileFile(path, &mStringTable);
 
         // FIXME: Some kind of error was encountered. Ask the compiler?
         if (!compiled)
@@ -76,7 +76,7 @@ namespace TorqueScript
 
     CodeBlock* Interpreter::compile(const std::string& input)
     {
-        return mCompiler->compileString(input);
+        return mCompiler->compileString(input, &mStringTable);
     }
 
     std::shared_ptr<StoredValue> Interpreter::getGlobal(const std::string& name)

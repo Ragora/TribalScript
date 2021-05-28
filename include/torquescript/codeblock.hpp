@@ -19,17 +19,16 @@
 #include <vector>
 #include <memory>
 
-#include <torquescript/instructions.hpp>
-#include <torquescript/executionscope.hpp>
-#include <torquescript/interpreter.hpp>
-#include <torquescript/function.hpp>
-#include <torquescript/storedvalue.hpp>
-#include <torquescript/storedvaluestack.hpp>
-#include <torquescript/executionstate.hpp>
+#include <torquescript/stringtable.hpp>
 #include <torquescript/instructionsequence.hpp>
 
 namespace TorqueScript
 {
+    class InstructionSequence;
+    class StringTable;
+    class ExecutionState;
+    class Function;
+
     /**
      *  @brief A CodeBlock defines a piece of executable code generated from a single input (Ie. a file).
      *  This includes global executable code and subroutines, datablocks, etc.
@@ -37,13 +36,7 @@ namespace TorqueScript
     class CodeBlock
     {
         public:
-
-            /**
-             *  @brief Registers the instruction sequence to the codeblock to be executed
-             *  immediately.
-             *  @param instructions The instructions to execute immediately.
-             */
-            void addInstructions(const InstructionSequence& instructions);
+            CodeBlock(const InstructionSequence& instructions);
 
             /**
              *  @brief Executes all instructions contained in mInstructions within the provided context.

@@ -25,6 +25,7 @@ namespace TorqueScript
     //! Forward declaration to avoid circular dependencies.
     class Interpreter;
     class Instruction;
+    class CodeBlock;
     class ExecutionScope;
     class StoredValue;
     class StoredValueStack;
@@ -52,7 +53,6 @@ namespace TorqueScript
             std::string getName();
             std::string getNameSpace();
             std::string getPackage();
-
 
         private:
             //! The package of the function.
