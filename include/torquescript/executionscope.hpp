@@ -14,9 +14,9 @@
 
 #pragma once
 
-#include <map>
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/stringhelpers.hpp>
@@ -47,7 +47,7 @@ namespace TorqueScript
         Function* mCurrentFunction;
 
         std::vector<LoopDescriptor> mLoopDescriptors;
-        std::map<std::string, StoredValue> mLocalVariables;
+        std::unordered_map<std::string, StoredValue> mLocalVariables;
     };
 
     /**

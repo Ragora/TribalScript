@@ -14,9 +14,9 @@
 
 #pragma once
 
-#include <map>
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 #include <torquescript/function.hpp>
 #include <torquescript/consoleobject.hpp>
@@ -55,9 +55,9 @@ namespace TorqueScript
             unsigned int mNextObjectID;
 
             //! A mapping of object IDs to their sim objects
-            std::map<unsigned int, std::shared_ptr<ConsoleObject>> mConsoleObjectsByID;
+            std::unordered_map<unsigned int, std::shared_ptr<ConsoleObject>> mConsoleObjectsByID;
 
             //! A mapping of object names to their sim objects
-            std::map<std::string, std::shared_ptr<ConsoleObject>> mConsoleObjectsByName;
+            std::unordered_map<std::string, std::shared_ptr<ConsoleObject>> mConsoleObjectsByName;
     };
 }

@@ -14,9 +14,9 @@
 
 #pragma once
 
-#include <map>
 #include <string>
 #include <memory>
+#include <unordered_map>
 
 #include <torquescript/function.hpp>
 
@@ -36,6 +36,6 @@ namespace TorqueScript
         bool mActive;
 
         //! A mapping of function namespaces to a mapping of function names to the function object.
-        std::map<std::string, std::map<std::string, std::shared_ptr<Function>>> mFunctions;
+        std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<Function>>> mFunctions;
     };
 }

@@ -14,9 +14,9 @@
 
 #pragma once
 
-#include <map>
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 #include <torquescript/function.hpp>
 #include <torquescript/consoleobject.hpp>
@@ -110,6 +110,6 @@ namespace TorqueScript
             std::vector<FunctionRegistry> mFunctionRegistries;
 
             //! A mapping of global variable names to their stored value instance.
-            std::map<std::string, StoredValue> mGlobalVariables;
+            std::unordered_map<std::string, StoredValue> mGlobalVariables;
     };
 }

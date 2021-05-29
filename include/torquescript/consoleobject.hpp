@@ -14,9 +14,9 @@
 
 #pragma once
 
-#include <map>
 #include <string>
 #include <memory>
+#include <unordered_map>
 
 #include <torquescript/storedvalue.hpp>
 
@@ -51,6 +51,6 @@ namespace TorqueScript
 
         protected:
             //! A mapping of tagged field names to their stored values.
-            std::map<std::string, StoredValue> mTaggedFields;
+            std::unordered_map<std::string, StoredValue> mTaggedFields;
     };
 }
