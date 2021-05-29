@@ -30,18 +30,18 @@ TEST(InterpreterTest, Package)
     interpreter.execute("cases/package.cs", state);
 
     // We have several globals here
-    std::shared_ptr<TorqueScript::StoredValue> before = interpreter.getGlobal("before");
+    TorqueScript::StoredValue* before = interpreter.getGlobal("before");
     EXPECT_TRUE(before);
-    std::shared_ptr<TorqueScript::StoredValue> afterA = interpreter.getGlobal("afterA");
+    TorqueScript::StoredValue* afterA = interpreter.getGlobal("afterA");
     EXPECT_TRUE(afterA);
-    std::shared_ptr<TorqueScript::StoredValue> afterB = interpreter.getGlobal("afterB");
+    TorqueScript::StoredValue* afterB = interpreter.getGlobal("afterB");
     EXPECT_TRUE(afterB);
 
-    std::shared_ptr<TorqueScript::StoredValue> beforeNamespace = interpreter.getGlobal("beforenamespace");
+    TorqueScript::StoredValue* beforeNamespace = interpreter.getGlobal("beforenamespace");
     EXPECT_TRUE(beforeNamespace);
-    std::shared_ptr<TorqueScript::StoredValue> afterANamespace = interpreter.getGlobal("afterAnamespace");
+    TorqueScript::StoredValue* afterANamespace = interpreter.getGlobal("afterAnamespace");
     EXPECT_TRUE(afterANamespace);
-    std::shared_ptr<TorqueScript::StoredValue> afterBNamespace = interpreter.getGlobal("afterBnamespace");
+    TorqueScript::StoredValue* afterBNamespace = interpreter.getGlobal("afterBnamespace");
     EXPECT_TRUE(afterBNamespace);
 
     ASSERT_EQ(before->toInteger(state), 1);

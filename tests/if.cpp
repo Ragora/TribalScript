@@ -30,13 +30,13 @@ TEST(InterpreterTest, If)
     interpreter.execute("cases/if.cs", state);
 
     // Here we have three values
-    std::shared_ptr<TorqueScript::StoredValue> resultOne = interpreter.getGlobal("one");
+    TorqueScript::StoredValue* resultOne = interpreter.getGlobal("one");
     EXPECT_TRUE(resultOne);
-    std::shared_ptr<TorqueScript::StoredValue> resultTwo = interpreter.getGlobal("two");
+    TorqueScript::StoredValue* resultTwo = interpreter.getGlobal("two");
     EXPECT_TRUE(resultTwo);
-    std::shared_ptr<TorqueScript::StoredValue> resultThree = interpreter.getGlobal("three");
+    TorqueScript::StoredValue* resultThree = interpreter.getGlobal("three");
     EXPECT_TRUE(resultThree);
-    std::shared_ptr<TorqueScript::StoredValue> resultFour = interpreter.getGlobal("four");
+    TorqueScript::StoredValue* resultFour = interpreter.getGlobal("four");
     EXPECT_TRUE(resultFour);
 
     ASSERT_EQ(resultOne->toInteger(state), 10);

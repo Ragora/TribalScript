@@ -29,13 +29,13 @@ TEST(InterpreterTest, ForLoop)
     std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
     interpreter.execute("cases/switch.cs", state);
 
-    std::shared_ptr<TorqueScript::StoredValue> resultOne = interpreter.getGlobal("global::one");
+    TorqueScript::StoredValue* resultOne = interpreter.getGlobal("global::one");
     EXPECT_TRUE(resultOne);
-    std::shared_ptr<TorqueScript::StoredValue> resultTwo = interpreter.getGlobal("global::two");
+    TorqueScript::StoredValue* resultTwo = interpreter.getGlobal("global::two");
     EXPECT_TRUE(resultTwo);
-    std::shared_ptr<TorqueScript::StoredValue> resultThree = interpreter.getGlobal("global::three");
+    TorqueScript::StoredValue* resultThree = interpreter.getGlobal("global::three");
     EXPECT_TRUE(resultThree);
-    std::shared_ptr<TorqueScript::StoredValue> resultFour = interpreter.getGlobal("global::four");
+    TorqueScript::StoredValue* resultFour = interpreter.getGlobal("global::four");
     EXPECT_TRUE(resultFour);
 
     ASSERT_EQ(resultOne->toInteger(state), 5);

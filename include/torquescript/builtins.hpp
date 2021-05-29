@@ -23,9 +23,6 @@
 #include <torquescript/interpreter.hpp>
 #include <torquescript/executionstate.hpp>
 #include <torquescript/storedvaluestack.hpp>
-#include <torquescript/storedintegervalue.hpp>
-#include <torquescript/storedstringvalue.hpp>
-#include <torquescript/storedfloatvalue.hpp>
 #include <torquescript/consoleobject.hpp>
 
 namespace TorqueScript
@@ -42,7 +39,7 @@ namespace TorqueScript
         }
 
         state->mInterpreter->logEcho(outputString);
-        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+        state->mStack.push_back(StoredValue(0));
     }
 
     static void ActivatePackageBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
@@ -53,7 +50,7 @@ namespace TorqueScript
             state->mInterpreter->activateFunctionRegistry(activatedPackage);
         }
 
-        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+        state->mStack.push_back(StoredValue(0));
     }
 
     static void DeactivatePackageBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
@@ -64,25 +61,26 @@ namespace TorqueScript
             state->mInterpreter->deactivateFunctionRegistry(deactivatedPackage);
         }
 
-        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+        state->mStack.push_back(StoredValue(0));
     }
 
     static void DeleteBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
         state->mInterpreter->mConsoleObjectRegistry.removeConsoleObject(thisObject);
-        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
+        state->mStack.push_back(StoredValue(0));
     }
 
     static void GetNameBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
-        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredStringValue(state->mInterpreter->mConsoleObjectRegistry.getConsoleObjectName(thisObject))));
+        const std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(state->mInterpreter->mConsoleObjectRegistry.getConsoleObjectName(thisObject));
+        state->mStack.push_back(StoredValue(stringID, StoredValueType::String));
     }
 
     static void GetRandomBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
         // FIXME: If argC == 1, generate int between 0 and value, if argC == 2, generate int between min and max
         const float result = (float)std::rand() / RAND_MAX;
-        state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredFloatValue(result)));
+        state->mStack.push_back(StoredValue(result));
     }
 
     void registerBuiltIns(Interpreter* interpreter)

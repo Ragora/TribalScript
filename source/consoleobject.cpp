@@ -18,19 +18,19 @@
 
 namespace TorqueScript
 {
-    std::shared_ptr<StoredValue> ConsoleObject::getTaggedField(const std::string& name)
+    StoredValue* ConsoleObject::getTaggedField(const std::string& name)
     {
         const std::string searchName = toLowerCase(name);
         auto search = mTaggedFields.find(searchName);
 
         if (search != mTaggedFields.end())
         {
-            return search->second;
+            return &search->second;
         }
         return nullptr;
     }
 
-    void ConsoleObject::setTaggedField(const std::string& name, std::shared_ptr<StoredValue> value)
+    void ConsoleObject::setTaggedField(const std::string& name, StoredValue value)
     {
         const std::string setName = toLowerCase(name);
         mTaggedFields[setName] = value;

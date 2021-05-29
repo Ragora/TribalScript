@@ -30,7 +30,7 @@ TEST(InterpreterTest, Combined)
     interpreter.execute("cases/combined.cs", state);
 
     // We have several globals here
-    std::shared_ptr<TorqueScript::StoredValue> result = interpreter.getGlobal("result");
+    TorqueScript::StoredValue* result = interpreter.getGlobal("result");
     EXPECT_TRUE(result);
 
     ASSERT_EQ(result->toInteger(state), 120);

@@ -26,6 +26,44 @@ namespace TorqueScript
     class ConsoleObject;
     class ExecutionState;
 
+    enum StoredValueType
+    {
+        NullType,
+        Integer,
+        Float,
+        String,
+        LocalReference,
+        GlobalReference,
+        SubfieldReference
+    };
+
+    union StoredValueUnion
+    {
+        int mInteger;
+        float mFloat;
+        std::size_t mStringID;
+
+        StoredValueUnion()
+        {
+
+        }
+
+        StoredValueUnion(const int value) : mInteger(value)
+        {
+
+        }
+
+        StoredValueUnion(const float value) : mFloat(value)
+        {
+
+        }
+
+        StoredValueUnion(const std::size_t value) : mStringID(value)
+        {
+
+        }
+    };
+
     /**
      *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
      *  This is the base class and should not be instantiated directly.
@@ -33,33 +71,64 @@ namespace TorqueScript
     class StoredValue
     {
         public:
-            virtual int toInteger(std::shared_ptr<ExecutionState> state) = 0;
+            StoredValue() : mType(StoredValueType::NullType), mStorage(), mConsoleObject(nullptr)
+            {
+
+            }
+
+            StoredValue(const int value) : mType(StoredValueType::Integer), mStorage(value), mConsoleObject(nullptr)
+            {
+
+            }
+
+            StoredValue(const float value) : mType(StoredValueType::Float), mStorage(value), mConsoleObject(nullptr)
+            {
+
+            }
+
+            StoredValue(const std::size_t value, const StoredValueType type) : mType(type), mStorage(value), mConsoleObject(nullptr)
+            {
+
+            }
+
+            StoredValue(std::shared_ptr<ConsoleObject> object, const std::size_t field) : mType(StoredValueType::SubfieldReference), mStorage(field), mConsoleObject(object)
+            {
+
+            }
+
+            int toInteger(std::shared_ptr<ExecutionState> state);
 
             /**
              *  @brief Converts the value in question to a native floating point type.
              *  @param scope The execution scope within which this conversion is occurring.
              *  @return A floating point representation of this value.
              */
-            virtual float toFloat(std::shared_ptr<ExecutionState> state) = 0;
+            float toFloat(std::shared_ptr<ExecutionState> state);
 
             /**
              *  @brief Converts the value in question to a native sting type.
              *  @param scope The execution scope within which this conversion is occurring.
              *  @return A string representation of this value.
              */
-            virtual std::string toString(std::shared_ptr<ExecutionState> state) = 0;
+            std::string toString(std::shared_ptr<ExecutionState> state);
 
-            virtual bool toBoolean(std::shared_ptr<ExecutionState> state);
+            bool toBoolean(std::shared_ptr<ExecutionState> state);
 
-            virtual std::shared_ptr<ConsoleObject> toConsoleObject(std::shared_ptr<ExecutionState> state);
+            std::shared_ptr<ConsoleObject> toConsoleObject(std::shared_ptr<ExecutionState> state);
 
-            virtual std::shared_ptr<StoredValue> getReferencedValueCopy(std::shared_ptr<ExecutionState> state) = 0;
+            StoredValue getReferencedValueCopy(std::shared_ptr<ExecutionState> state);
 
-            virtual bool isInteger(std::shared_ptr<ExecutionState> state);
+            bool isInteger(std::shared_ptr<ExecutionState> state);
 
             // In Torque, if we end up trying to set a value of ie. a float it does nothing
-            virtual bool setValue(std::shared_ptr<StoredValue> newValue, std::shared_ptr<ExecutionState> state);
+            bool setValue(StoredValue newValue, std::shared_ptr<ExecutionState> state);
 
-            virtual std::string getRepresentation() = 0;
+            std::string getRepresentation();
+
+        private:
+            StoredValueType mType;
+            StoredValueUnion mStorage;
+
+            std::shared_ptr<ConsoleObject> mConsoleObject;
     };
 }

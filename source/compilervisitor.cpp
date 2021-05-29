@@ -310,7 +310,9 @@ namespace TorqueScript
         GeneratedInstructions generated;
 
         InstructionSequence sequence = this->collapseInstructions(this->visitChildren(context).as<GeneratedInstructions>());
-        sequence.push_back(std::shared_ptr<Instruction>(new SubReferenceInstruction(context->LABEL()->getText())));
+
+        const std::size_t stringID = mStringTable->getOrAssign(context->LABEL()->getText());
+        sequence.push_back(std::shared_ptr<Instruction>(new SubReferenceInstruction(stringID)));
         generated.push_back(sequence);
         return generated;
     }
@@ -624,7 +626,9 @@ namespace TorqueScript
                 variableName += "::" + component->getText();
             }
         }
-        out.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(variableName)));
+
+        const std::size_t stringID = mStringTable->getOrAssign(variableName);
+        out.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(stringID)));
 
         generated.push_back(out);
         return generated;
@@ -650,7 +654,9 @@ namespace TorqueScript
                 variableName += "::" + component->getText();
             }
         }
-        out.push_back(std::shared_ptr<Instruction>(new PushLocalReferenceInstruction(variableName)));
+
+        const std::size_t stringID = mStringTable->getOrAssign(variableName);
+        out.push_back(std::shared_ptr<Instruction>(new PushLocalReferenceInstruction(stringID)));
 
         generated.push_back(out);
         return generated;

@@ -40,17 +40,17 @@ namespace TorqueScript
              *  @return A StoredValue pointer of the value currently in that tagged field
              *  slot.
              */
-            std::shared_ptr<StoredValue> getTaggedField(const std::string& name);
+            StoredValue* getTaggedField(const std::string& name);
 
             /**
              *  @brief Sets a tagged field by name on the object.
              *  @param name The tagged field name to set, which is case insensitive.
              *  @param value The value to set.
              */
-            void setTaggedField(const std::string& name, std::shared_ptr<StoredValue> value);
+            void setTaggedField(const std::string& name, StoredValue value);
 
         protected:
             //! A mapping of tagged field names to their stored values.
-            std::map<std::string, std::shared_ptr<StoredValue>> mTaggedFields;
+            std::map<std::string, StoredValue> mTaggedFields;
     };
 }

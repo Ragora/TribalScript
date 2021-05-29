@@ -30,7 +30,7 @@ TEST(InterpreterTest, WhileLoop)
     interpreter.execute("cases/while.cs", state);
 
     // After execution, the result of $global should be 110
-    std::shared_ptr<TorqueScript::StoredValue> result = interpreter.getGlobal("global");
+    TorqueScript::StoredValue* result = interpreter.getGlobal("global");
     EXPECT_TRUE(result);
 
     ASSERT_EQ(result->toInteger(state), 110);
