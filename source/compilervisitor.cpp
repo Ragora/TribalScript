@@ -581,6 +581,13 @@ namespace TorqueScript
             const std::string stringContent = rawString.substr(1, rawString.size() - 2);
             out.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(mStringTable->getOrAssign(stringContent))));
         }
+        else if (context->TAGGEDSTRING())
+        {
+            // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the enclosing quotations
+            const std::string rawString = context->TAGGEDSTRING()->getText();
+            const std::string stringContent = rawString.substr(1, rawString.size() - 2);
+            out.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(mStringTable->getOrAssign(stringContent))));
+        }
         else if (context->LABEL())
         {
             out.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(mStringTable->getOrAssign(context->LABEL()->getText()))));
