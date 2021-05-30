@@ -293,6 +293,20 @@ namespace TorqueScript
             {
 
             }
+
+            virtual InstructionSequence compile(StringTable* stringTable) override
+            {
+                InstructionSequence out;
+
+                InstructionSequence lhsCode = mLeft->compile(stringTable);
+                InstructionSequence rhsCode = mRight->compile(stringTable);
+
+                out.insert(out.end(), lhsCode.begin(), lhsCode.end());
+                out.insert(out.end(), rhsCode.begin(), rhsCode.end());
+                out.push_back(std::shared_ptr<Instruction>(new EqualsInstruction()));
+
+                return out;
+            }
     };
 
     class LessThanNode : public InfixExpressionNode
@@ -326,6 +340,18 @@ namespace TorqueScript
             NegateNode(ASTNode* inner) : UnaryNode(inner)
             {
 
+            }
+
+            virtual InstructionSequence compile(StringTable* stringTable) override
+            {
+                InstructionSequence out;
+
+                InstructionSequence innerCode = mInner->compile(stringTable);
+
+                out.insert(out.end(), innerCode.begin(), innerCode.end());
+                out.push_back(std::shared_ptr<Instruction>(new NegateInstruction()));
+
+                return out;
             }
     };
 
