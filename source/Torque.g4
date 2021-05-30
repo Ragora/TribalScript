@@ -126,11 +126,9 @@ expression : (op=MINUS
            | expression '^' expression                                          # bitwise
            | expression '&' expression                                          # bitwise
            | expression '|' expression                                          # bitwise
-           | expression (op=MODULUS
-                        |op=PLUS
-                        |op=MINUS
-                        |op=MULTIPLY
-                        |op=DIVIDE) expression                                  # arithmetic
+           | expression (op=MODULUS|op=MULTIPLY|op=DIVIDE) expression           # arithmetic
+           | expression (op=PLUS
+                        |op=MINUS) expression                                   # arithmetic
            | expression '?' expression ':' expression                           # ternary
            | expression (op=LESSTHAN
                         |op=GREATERTHAN
