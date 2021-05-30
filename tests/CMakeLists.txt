@@ -41,3 +41,7 @@ add_test(NAME ArrayTest COMMAND ArrayTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR
 add_executable(SwitchTest switch.cpp)
 target_link_libraries(SwitchTest TorqueCompiler gtest_main)
 add_test(NAME SwitchTest COMMAND SwitchTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+
+add_executable(OpOrderTest opOrder.cpp)
+target_link_libraries(OpOrderTest TorqueCompiler gtest_main)
+add_test(NAME OpOrderTest COMMAND OpOrderTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
