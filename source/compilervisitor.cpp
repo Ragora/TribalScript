@@ -159,6 +159,44 @@ namespace TorqueScript
         return result;
     }
 
+    antlrcpp::Any CompilerVisitor::visitSubfield(TorqueParser::SubfieldContext* context)
+    {
+        std::vector<ASTNode*> parent = this->visitChildren(context).as<std::vector<ASTNode*>>();
+        assert(parent.size() == 1);
+
+        std::vector<ASTNode*> result;
+        result.push_back(new SubFieldNode(parent[0], context->LABEL()->getText()));
+        return result;
+    }
+
+    antlrcpp::Any CompilerVisitor::visitArray(TorqueParser::ArrayContext* context)
+    {
+        std::vector<ASTNode*> parameters = this->visitChildren(context).as<std::vector<ASTNode*>>();
+        assert(parameters.size() >= 2);
+
+        std::vector<ASTNode*> result;
+        ASTNode* target = parameters[0];
+        parameters.erase(parameters.begin());
+
+        result.push_back(new ArrayNode(target, parameters));
+        return result;
+    }
+
+    antlrcpp::Any CompilerVisitor::visitSubcall(TorqueParser::SubcallContext* context)
+    {
+        const std::string calledFunctionName = context->LABEL()->getText();
+
+        std::vector<ASTNode*> parameters = this->visitChildren(context).as<std::vector<ASTNode*>>();
+        assert(parameters.size() >= 1);
+
+        ASTNode* target = parameters[0];
+        parameters.erase(parameters.begin());
+
+        std::vector<ASTNode*> result;
+        result.push_back(new SubFunctionCallNode(target, calledFunctionName, parameters));
+        return result;
+    }
+
     antlrcpp::Any CompilerVisitor::visitValue(TorqueParser::ValueContext* context)
     {
         std::vector<ASTNode*> result;
@@ -241,6 +279,72 @@ namespace TorqueScript
         return result;
     }
 
+    antlrcpp::Any CompilerVisitor::visitRelational(TorqueParser::RelationalContext* context)
+    {
+        std::vector<ASTNode*> result = this->visitChildren(context).as<std::vector<ASTNode*>>();
+        assert(result.size() == 2);
+
+        ASTNode* right = result.back();
+        result.pop_back();
+        ASTNode* left = result.back();
+        result.pop_back();
+
+        if (context->LESSTHAN())
+        {
+            result.push_back(new LessThanNode(left, right));
+        }
+        else
+        {
+            throw std::runtime_error("Unhandled Relational Type!");
+        }
+
+        return result;
+    }
+
+    antlrcpp::Any CompilerVisitor::visitEquality(TorqueParser::EqualityContext* context)
+    {
+        std::vector<ASTNode*> result = this->visitChildren(context).as<std::vector<ASTNode*>>();
+        assert(result.size() == 2);
+
+        ASTNode* right = result.back();
+        result.pop_back();
+        ASTNode* left = result.back();
+        result.pop_back();
+
+        if (context->EQUALS())
+        {
+            result.push_back(new EqualsNode(left, right));
+        }
+        else
+        {
+            throw std::runtime_error("Unknown equality type!");
+        }
+
+        return result;
+    }
+
+    antlrcpp::Any CompilerVisitor::visitConcat(TorqueParser::ConcatContext* context)
+    {
+        std::vector<ASTNode*> result = this->visitChildren(context).as<std::vector<ASTNode*>>();
+        assert(result.size() == 2);
+
+        ASTNode* right = result.back();
+        result.pop_back();
+        ASTNode* left = result.back();
+        result.pop_back();
+
+        if (context->CONCAT())
+        {
+            result.push_back(new ConcatNode(left, right));
+        }
+        else
+        {
+            throw std::runtime_error("Unhandled concat type!");
+        }
+
+        return result;
+    }
+
     antlrcpp::Any CompilerVisitor::visitUnary(TorqueParser::UnaryContext* context)
     {
         std::vector<ASTNode*> result = this->visitChildren(context).as<std::vector<ASTNode*>>();
@@ -261,6 +365,18 @@ namespace TorqueScript
         return result;
     }
 
+    antlrcpp::Any CompilerVisitor::visitIncrement(TorqueParser::IncrementContext* context)
+    {
+        std::vector<ASTNode*> result = this->visitChildren(context).as<std::vector<ASTNode*>>();
+        assert(result.size() == 1);
+
+        ASTNode* incremented = result.back();
+        result.pop_back();
+
+        result.push_back(new IncrementNode(incremented));
+        return result;
+    }
+
     antlrcpp::Any CompilerVisitor::visitWhile_control(TorqueParser::While_controlContext* context)
     {
         std::vector<ASTNode*> result;
@@ -273,6 +389,144 @@ namespace TorqueScript
         return result;
     }
 
+    antlrcpp::Any CompilerVisitor::visitIf_control(TorqueParser::If_controlContext* context)
+    {
+        std::vector<ASTNode*> ifContent = this->visitChildren(context).as<std::vector<ASTNode*>>();
+
+        // Should be at least one entry
+        assert(ifContent.size() >= 1);
+
+        // Here we have to be a bit more careful about deconstructing our payload
+        std::vector<ASTNode*> elseBody;
+        if (context->else_control())
+        {
+            const unsigned int elseStatementCount = context->else_control()->control_statements()->expression_statement().size();
+
+            if (elseStatementCount)
+            {
+                elseBody.insert(elseBody.end(), ifContent.end() - elseStatementCount, ifContent.end());
+                ifContent.erase(ifContent.end() - elseStatementCount, ifContent.end());
+            }
+
+            assert(elseBody.size() == elseStatementCount);
+        }
+
+        // Handle all else ifs
+        std::vector<ElseIfNode*> elseIfs;
+        std::vector<TorqueParser::Elseif_controlContext*> elseIfControl = context->elseif_control();
+        for (TorqueParser::Elseif_controlContext* elseIf : elseIfControl)
+        {
+            TorqueParser::Control_statementsContext* elseIfControlStatements = elseIf->control_statements();
+
+            std::vector<ASTNode*> elseIfBody;
+            if (elseIfControlStatements)
+            {
+                const unsigned int elseIfStatementCount = elseIfControlStatements->expression_statement().size();
+
+                if (elseIfStatementCount)
+                {
+                    elseIfBody.insert(elseIfBody.end(), ifContent.end() - elseIfStatementCount, ifContent.end());
+                    ifContent.erase(ifContent.end() - elseIfStatementCount, ifContent.end());
+                }
+
+                assert(elseIfBody.size() == elseIfStatementCount);
+            }
+
+            // Load the expression
+            ASTNode* elseIfExpression = ifContent.back();
+            ifContent.pop_back();
+
+            elseIfs.push_back(new ElseIfNode(elseIfExpression, elseIfBody));
+        }
+
+        // Handle primary if
+        std::vector<ASTNode*> ifBody;
+        if (context->control_statements())
+        {
+            const unsigned int ifStatementCount = context->control_statements()->expression_statement().size();
+
+            if (ifStatementCount)
+            {
+                ifBody.insert(ifBody.end(), ifContent.end() - ifStatementCount, ifContent.end());
+                ifContent.erase(ifContent.end() - ifStatementCount, ifContent.end());
+            }
+
+            assert(ifBody.size() == ifStatementCount);
+        }
+        ASTNode* ifExpression = ifContent.back();
+        ifContent.pop_back();
+
+        assert(ifContent.size() == 0);
+
+        // Output final result
+        std::vector<ASTNode*> result;
+        result.push_back(new IfNode(ifExpression, ifBody, elseIfs, elseBody));
+        return result;
+    }
+
+    antlrcpp::Any CompilerVisitor::visitSwitch_control(TorqueParser::Switch_controlContext* context)
+    {
+        std::vector<ASTNode*> switchContent = this->visitChildren(context).as<std::vector<ASTNode*>>();
+
+        // Should be at least one entry
+        assert(switchContent.size() >= 1);
+
+        // Load default body if present
+        std::vector<ASTNode*> defaultBody;
+        if (context->default_control())
+        {
+            const unsigned int defaultStatementCount = context->default_control()->expression_statement().size();
+
+            if (defaultStatementCount)
+            {
+                defaultBody.insert(defaultBody.end(), switchContent.end() - defaultStatementCount, switchContent.end());
+                switchContent.erase(switchContent.end() - defaultStatementCount, switchContent.end());
+            }
+
+            assert(defaultBody.size() == defaultStatementCount);
+        }
+
+        // Load all switch statements
+        std::vector<SwitchCaseNode*> switchCases;
+        std::vector<TorqueParser::Case_controlContext*> switchCaseControl = context->case_control();
+        for (auto iterator = switchCaseControl.rbegin(); iterator != switchCaseControl.rend(); ++iterator)
+        {
+            TorqueParser::Case_controlContext* caseContext = *iterator;
+
+            const unsigned int caseStatementCount = caseContext->expression_statement().size();
+            const unsigned int caseExpressionCount = caseContext->expression().size();
+
+            std::vector<ASTNode*> caseBody;
+            if (caseStatementCount)
+            {
+                caseBody.insert(caseBody.end(), switchContent.end() - caseStatementCount, switchContent.end());
+                switchContent.erase(switchContent.end() - caseStatementCount, switchContent.end());
+
+                assert(caseBody.size() == caseStatementCount);
+            }
+
+            std::vector<ASTNode*> caseExpressions;
+            caseExpressions.insert(caseExpressions.end(), switchContent.end() - caseExpressionCount, switchContent.end());
+            switchContent.erase(switchContent.end() - caseExpressionCount, switchContent.end());
+
+            assert(caseExpressions.size() == caseExpressionCount);
+
+
+            switchCases.push_back(new SwitchCaseNode(caseExpressions, caseBody));
+        }
+
+        // Load switch expression
+        ASTNode* switchExpression = switchContent.back();
+        switchContent.pop_back();
+
+        assert(switchContent.size() == 0);
+
+        // Output final result
+        std::vector<ASTNode*> result;
+        result.push_back(new SwitchNode(switchExpression, switchCases, defaultBody));
+        return result;
+    }
+
     antlrcpp::Any CompilerVisitor::visitFor_control(TorqueParser::For_controlContext* context)
     {
         std::vector<ASTNode*> forContent = this->visitChildren(context).as<std::vector<ASTNode*>>();
@@ -281,13 +535,23 @@ namespace TorqueScript
         std::vector<ASTNode*> result;
 
         // First three nodes should be initializer, expression & advance
-        ASTNode* initializer = *forContent.begin();
-        ASTNode* expression = *(forContent.begin() + 1);
-        ASTNode* advance = *(forContent.begin() + 2);
+        ASTNode* initializer = forContent[0];
+        ASTNode* expression =  forContent[1];
+        ASTNode* advance = forContent[2];
         forContent.erase(forContent.begin(), forContent.begin() + 2);
 
         // Remaining content is for body
         result.push_back(new ForNode(initializer, expression, advance, forContent));
+        return result;
+    }
+
+    antlrcpp::Any CompilerVisitor::visitTernary(TorqueParser::TernaryContext* context)
+    {
+        std::vector<ASTNode*> ternaryContent = this->visitChildren(context).as<std::vector<ASTNode*>>();
+        assert(ternaryContent.size() == 3);
+
+        std::vector<ASTNode*> result;
+        result.push_back(new TernaryNode(ternaryContent[0], ternaryContent[1], ternaryContent[2]));
         return result;
     }
 
@@ -318,6 +582,22 @@ namespace TorqueScript
         }
 
         result.push_back(new GlobalVariableNode(variableName));
+        return result;
+    }
+
+    antlrcpp::Any CompilerVisitor::visitReturn_control(TorqueParser::Return_controlContext* context)
+    {
+        std::vector<ASTNode*> result = this->visitChildren(context).as<std::vector<ASTNode*>>();
+        assert(result.size() <= 1);
+
+        ASTNode* expression = nullptr;
+        if (result.size() == 1)
+        {
+            expression = result.back();
+            result.pop_back();
+        }
+
+        result.push_back(new ReturnNode(expression));
         return result;
     }
 

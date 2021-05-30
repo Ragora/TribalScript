@@ -45,10 +45,22 @@ namespace TorqueScript
         // Did we receive any errors?
         if (parserErrorListener.getErrors().empty())
         {
-            //CodeBlock* result = new CodeBlock(instructions);
+            InstructionSequence instructions;
+            for (ASTNode* node : tree)
+            {
+                InstructionSequence childInstructions = node->compile(stringTable);
+                instructions.insert(instructions.end(), childInstructions.begin(), childInstructions.end());
 
-            //return result;
-            return nullptr;
+                delete node;
+            }
+
+            CodeBlock* result = new CodeBlock(instructions);
+            return result;
+        }
+
+        for (ASTNode* node : tree)
+        {
+            delete node;
         }
 
         for (const std::string& message : parserErrorListener.getErrors())

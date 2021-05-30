@@ -19,23 +19,18 @@
 #include <string>
 #include <memory>
 
+#include <torquescript/stringtable.hpp>
+#include <torquescript/instructionsequence.hpp>
+
 namespace TorqueScript
 {
     class ASTNode
     {
         public:
-            virtual ~ASTNode() = default;
-    };
-
-    class ProgramNode : public ASTNode
-    {
-        public:
-            ProgramNode(const std::vector<ASTNode*>& children) : mChildren(children)
+            virtual InstructionSequence compile(StringTable* stringTable)
             {
-
+                throw std::runtime_error("Not Implemented");
             }
-
-            std::vector<ASTNode*> mChildren;
     };
 
     class FunctionDeclarationNode : public ASTNode
@@ -45,6 +40,32 @@ namespace TorqueScript
                                     mNameSpace(space), mName(name), mBody(body)
             {
 
+            }
+
+            ~FunctionDeclarationNode()
+            {
+                for (ASTNode* node : mBody)
+                {
+                    delete node;
+                }
+            }
+
+            virtual InstructionSequence compile(StringTable* stringTable) override
+            {
+                InstructionSequence out;
+
+                InstructionSequence functionBody;
+                for (ASTNode* node : mBody)
+                {
+                    InstructionSequence childInstructions = node->compile(stringTable);
+                    functionBody.insert(functionBody.end(), childInstructions.begin(), childInstructions.end());
+                }
+                functionBody.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(0))); // Add an empty return if we hit end of control but nothing returned
+
+                // Generate final declaration
+                std::vector<std::string> parameterNames;
+                out.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(PACKAGE_EMPTY, mNameSpace, mName, parameterNames, functionBody)));
+                return out;
             }
 
             std::string mNameSpace;
@@ -60,6 +81,14 @@ namespace TorqueScript
 
             }
 
+            ~PackageDeclarationNode()
+            {
+                for (FunctionDeclarationNode* function : mFunctions)
+                {
+                    delete function;
+                }
+            }
+
             std::string mName;
             std::vector<FunctionDeclarationNode*> mFunctions;
     };
@@ -73,10 +102,98 @@ namespace TorqueScript
 
             }
 
+            ~FunctionCallNode()
+            {
+                for (ASTNode* parameter : mParameters)
+                {
+                    delete parameter;
+                }
+            }
+
+            virtual InstructionSequence compile(StringTable* stringTable) override
+            {
+                InstructionSequence out;
+
+                // Ask all parameters to generate their code
+                for (ASTNode* node : mParameters)
+                {
+                    InstructionSequence childInstructions = node->compile(stringTable);
+                    out.insert(out.end(), childInstructions.begin(), childInstructions.end());
+                }
+
+                out.push_back(std::shared_ptr<Instruction>(new CallFunctionInstruction(mNameSpace, mName, mParameters.size())));
+                return out;
+            }
+
             std::string mNameSpace;
             std::string mName;
             std::vector<ASTNode*> mParameters;
     };
+
+    class SubFunctionCallNode : public ASTNode
+    {
+        public:
+            SubFunctionCallNode(ASTNode* target, const std::string& name, const std::vector<ASTNode*> parameters) :
+                                mTarget(target), mName(name), mParameters(parameters)
+            {
+
+            }
+
+            ~SubFunctionCallNode()
+            {
+                delete mTarget;
+
+                for (ASTNode* parameter : mParameters)
+                {
+                    delete parameter;
+                }
+            }
+
+            ASTNode* mTarget;
+            std::string mName;
+            std::vector<ASTNode*> mParameters;
+    };
+
+    class SubFieldNode : public ASTNode
+    {
+        public:
+            SubFieldNode(ASTNode* target, const std::string& name) : mTarget(target), mName(name)
+            {
+
+            }
+
+            ~SubFieldNode()
+            {
+                delete mTarget;
+            }
+
+            ASTNode* mTarget;
+            std::string mName;
+    };
+
+    class ArrayNode : public ASTNode
+    {
+        public:
+            ArrayNode(ASTNode* target, const std::vector<ASTNode*>& indices) :
+                     mTarget(target), mIndices(indices)
+            {
+
+            }
+
+            ~ArrayNode()
+            {
+                delete mTarget;
+
+                for (ASTNode* index : mIndices)
+                {
+                    delete index;
+                }
+            }
+
+            ASTNode* mTarget;
+            std::vector<ASTNode*> mIndices;
+    };
+
 
     class InfixExpressionNode : public ASTNode
     {
@@ -84,6 +201,12 @@ namespace TorqueScript
             InfixExpressionNode(ASTNode* left, ASTNode* right) : mLeft(left), mRight(right)
             {
 
+            }
+
+            ~InfixExpressionNode()
+            {
+                delete mLeft;
+                delete mRight;
             }
 
             ASTNode* mLeft;
@@ -96,6 +219,20 @@ namespace TorqueScript
             AddNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
             {
 
+            }
+
+            virtual InstructionSequence compile(StringTable* stringTable) override
+            {
+                InstructionSequence out;
+
+                InstructionSequence lhsCode = mLeft->compile(stringTable);
+                InstructionSequence rhsCode = mRight->compile(stringTable);
+
+                out.insert(out.end(), lhsCode.begin(), lhsCode.end());
+                out.insert(out.end(), rhsCode.begin(), rhsCode.end());
+                out.push_back(std::shared_ptr<Instruction>(new AddInstruction()));
+
+                return out;
             }
     };
 
@@ -114,6 +251,20 @@ namespace TorqueScript
             MultiplyNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
             {
 
+            }
+
+            virtual InstructionSequence compile(StringTable* stringTable) override
+            {
+                InstructionSequence out;
+
+                InstructionSequence lhsCode = mLeft->compile(stringTable);
+                InstructionSequence rhsCode = mRight->compile(stringTable);
+
+                out.insert(out.end(), lhsCode.begin(), lhsCode.end());
+                out.insert(out.end(), rhsCode.begin(), rhsCode.end());
+                out.push_back(std::shared_ptr<Instruction>(new MultiplyInstruction()));
+
+                return out;
             }
     };
 
@@ -135,12 +286,35 @@ namespace TorqueScript
             }
     };
 
+    class EqualsNode : public InfixExpressionNode
+    {
+        public:
+            EqualsNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
+            {
+
+            }
+    };
+
+    class LessThanNode : public InfixExpressionNode
+    {
+        public:
+            LessThanNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
+            {
+
+            }
+    };
+
     class UnaryNode : public ASTNode
     {
         public:
             UnaryNode(ASTNode* inner) : mInner(inner)
             {
 
+            }
+
+            ~UnaryNode()
+            {
+                delete mInner;
             }
 
             ASTNode* mInner;
@@ -164,6 +338,24 @@ namespace TorqueScript
             }
     };
 
+    class IncrementNode : public UnaryNode
+    {
+        public:
+            IncrementNode(ASTNode* inner) : UnaryNode(inner)
+            {
+
+            }
+    };
+
+    class DecrementNode : public UnaryNode
+    {
+        public:
+            DecrementNode(ASTNode* inner) : UnaryNode(inner)
+            {
+
+            }
+    };
+
     class ValueNode : public ASTNode
     {
         public:
@@ -175,6 +367,13 @@ namespace TorqueScript
             IntegerNode(const int value) : mValue(value)
             {
 
+            }
+
+            virtual InstructionSequence compile(StringTable* stringTable) override
+            {
+                InstructionSequence out;
+                out.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(mValue)));
+                return out;
             }
 
             int mValue;
@@ -243,6 +442,14 @@ namespace TorqueScript
 
             }
 
+            ~WhileNode()
+            {
+                for (ASTNode* node : mBody)
+                {
+                    delete node;
+                }
+            }
+
             ASTNode* mExpression;
             std::vector<ASTNode*> mBody;
     };
@@ -256,9 +463,168 @@ namespace TorqueScript
 
             }
 
+            ~ForNode()
+            {
+                delete mInitializer;
+                delete mExpression;
+                delete mAdvance;
+
+                for (ASTNode* node : mBody)
+                {
+                    delete node;
+                }
+            }
+
             ASTNode* mInitializer;
             ASTNode* mExpression;
             ASTNode* mAdvance;
             std::vector<ASTNode*> mBody;
+    };
+
+    class ReturnNode : public ASTNode
+    {
+        public:
+            ReturnNode(ASTNode* expression) : mExpression(expression)
+            {
+
+            }
+
+            ~ReturnNode()
+            {
+                if (mExpression)
+                {
+                    delete mExpression;
+                }
+            }
+
+            ASTNode* mExpression;
+    };
+
+    class BreakNode : public ASTNode
+    {
+        public:
+            BreakNode()
+            {
+
+            }
+    };
+
+    class TernaryNode : public ASTNode
+    {
+        public:
+            TernaryNode(ASTNode* expression, ASTNode* trueValue, ASTNode* falseValue) :
+                      mExpression(expression), mTrueValue(trueValue), mFalseValue(falseValue)
+            {
+
+            }
+
+            ~TernaryNode()
+            {
+                delete mExpression;
+                delete mTrueValue;
+                delete mFalseValue;
+            }
+
+            ASTNode* mExpression;
+            ASTNode* mTrueValue;
+            ASTNode* mFalseValue;
+    };
+
+    class SwitchCaseNode : public ASTNode
+    {
+        public:
+            SwitchCaseNode(const std::vector<ASTNode*> cases, const std::vector<ASTNode*> body) : mCases(cases), mBody(body)
+            {
+
+            }
+
+            std::vector<ASTNode*> mCases;
+            std::vector<ASTNode*> mBody;
+    };
+
+    class SwitchNode : public ASTNode
+    {
+        public:
+            SwitchNode(ASTNode* expression, const std::vector<SwitchCaseNode*> cases, const std::vector<ASTNode*> defaultBody) :
+                      mExpression(expression), mCases(cases), mDefaultBody(defaultBody)
+            {
+
+            }
+
+            ~SwitchNode()
+            {
+                delete mExpression;
+
+                for (SwitchCaseNode* switchCase : mCases)
+                {
+                    delete switchCase;
+                }
+
+                for (ASTNode* node : mDefaultBody)
+                {
+                    delete node;
+                }
+            }
+
+            ASTNode* mExpression;
+            std::vector<SwitchCaseNode*> mCases;
+            std::vector<ASTNode*> mDefaultBody;
+    };
+
+    class ElseIfNode : public ASTNode
+    {
+        public:
+            ElseIfNode(ASTNode* expression, std::vector<ASTNode*> body) : mExpression(expression), mBody(body)
+            {
+
+            }
+
+            ~ElseIfNode()
+            {
+                delete mExpression;
+
+                for (ASTNode* node : mBody)
+                {
+                    delete node;
+                }
+            }
+
+            ASTNode* mExpression;
+            std::vector<ASTNode*> mBody;
+    };
+
+    class IfNode : public ASTNode
+    {
+        public:
+            IfNode(ASTNode* expression, const std::vector<ASTNode*>& body, const std::vector<ElseIfNode*>& elseIfs, const std::vector<ASTNode*>& elseBody) :
+                  mExpression(expression), mBody(body), mElseIfs(elseIfs), mElseBody(elseBody)
+            {
+
+            }
+
+            ~IfNode()
+            {
+                delete mExpression;
+
+                for (ASTNode* node : mBody)
+                {
+                    delete node;
+                }
+
+                for (ElseIfNode* elseIf : mElseIfs)
+                {
+                    delete elseIf;
+                }
+
+                for (ASTNode* node : mElseBody)
+                {
+                    delete node;
+                }
+            }
+
+            ASTNode* mExpression;
+            std::vector<ASTNode*> mBody;
+            std::vector<ElseIfNode*> mElseIfs;
+            std::vector<ASTNode*> mElseBody;
     };
 }

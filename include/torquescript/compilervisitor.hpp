@@ -41,13 +41,24 @@ namespace TorqueScript
             virtual antlrcpp::Any visitPackage_declaration(TorqueParser::Package_declarationContext* context) override;
             virtual antlrcpp::Any visitFunction_declaration(TorqueParser::Function_declarationContext* context) override;
             virtual antlrcpp::Any visitCall(TorqueParser::CallContext* context) override;
+            virtual antlrcpp::Any visitSubcall(TorqueParser::SubcallContext* context) override;
             virtual antlrcpp::Any visitValue(TorqueParser::ValueContext* context) override;
             virtual antlrcpp::Any visitArithmetic(TorqueParser::ArithmeticContext* context) override;
             virtual antlrcpp::Any visitUnary(TorqueParser::UnaryContext* context) override;
             virtual antlrcpp::Any visitWhile_control(TorqueParser::While_controlContext* context) override;
+            virtual antlrcpp::Any visitIf_control(TorqueParser::If_controlContext* context) override;
             virtual antlrcpp::Any visitFor_control(TorqueParser::For_controlContext* context) override;
             virtual antlrcpp::Any visitLocalvariable(TorqueParser::LocalvariableContext* context) override;
             virtual antlrcpp::Any visitGlobalvariable(TorqueParser::GlobalvariableContext* context) override;
+            virtual antlrcpp::Any visitIncrement(TorqueParser::IncrementContext* context) override;
+            virtual antlrcpp::Any visitReturn_control(TorqueParser::Return_controlContext* context) override;
+            virtual antlrcpp::Any visitEquality(TorqueParser::EqualityContext* context) override;
+            virtual antlrcpp::Any visitConcat(TorqueParser::ConcatContext* context) override;
+            virtual antlrcpp::Any visitTernary(TorqueParser::TernaryContext* context) override;
+            virtual antlrcpp::Any visitSubfield(TorqueParser::SubfieldContext* context) override;
+            virtual antlrcpp::Any visitArray(TorqueParser::ArrayContext* context) override;
+            virtual antlrcpp::Any visitRelational(TorqueParser::RelationalContext* context) override;
+            virtual antlrcpp::Any visitSwitch_control(TorqueParser::Switch_controlContext* context) override;
 
             InstructionSequence collapseInstructions(GeneratedInstructions instructions);
 
