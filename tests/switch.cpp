@@ -21,7 +21,7 @@
 #include <torquescript/builtins.hpp>
 #include <torquescript/executionstate.hpp>
 
-TEST(InterpreterTest, ForLoop)
+TEST(InterpreterTest, Switch)
 {
     TorqueScript::Interpreter interpreter;
     TorqueScript::registerBuiltIns(&interpreter);

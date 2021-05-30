@@ -279,6 +279,28 @@ namespace TorqueScript
         return result;
     }
 
+    antlrcpp::Any CompilerVisitor::visitAssign(TorqueParser::AssignContext* context)
+    {
+        std::vector<ASTNode*> result = this->visitChildren(context).as<std::vector<ASTNode*>>();
+        assert(result.size() == 2);
+
+        ASTNode* right = result.back();
+        result.pop_back();
+        ASTNode* left = result.back();
+        result.pop_back();
+
+        if (context->ASSIGN())
+        {
+            result.push_back(new AssignmentNode(left, right));
+        }
+        else
+        {
+            throw std::runtime_error("Unhandled assignment type!");
+        }
+
+        return result;
+    }
+
     antlrcpp::Any CompilerVisitor::visitRelational(TorqueParser::RelationalContext* context)
     {
         std::vector<ASTNode*> result = this->visitChildren(context).as<std::vector<ASTNode*>>();
@@ -538,7 +560,7 @@ namespace TorqueScript
         ASTNode* initializer = forContent[0];
         ASTNode* expression =  forContent[1];
         ASTNode* advance = forContent[2];
-        forContent.erase(forContent.begin(), forContent.begin() + 2);
+        forContent.erase(forContent.begin(), forContent.begin() + 3);
 
         // Remaining content is for body
         result.push_back(new ForNode(initializer, expression, advance, forContent));
