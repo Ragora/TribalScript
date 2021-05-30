@@ -40,14 +40,15 @@ namespace TorqueScript
         // Instantiate the program and go
         CompilerVisitor visitor(stringTable);
 
-        InstructionSequence instructions = visitor.collapseInstructions(visitor.visitProgram(parser.program()).as<GeneratedInstructions>());
+        std::vector<ASTNode*> tree = visitor.visitProgram(parser.program()).as<std::vector<ASTNode*>>();
 
         // Did we receive any errors?
         if (parserErrorListener.getErrors().empty())
         {
-            CodeBlock* result = new CodeBlock(instructions);
+            //CodeBlock* result = new CodeBlock(instructions);
 
-            return result;
+            //return result;
+            return nullptr;
         }
 
         for (const std::string& message : parserErrorListener.getErrors())
