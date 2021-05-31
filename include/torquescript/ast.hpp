@@ -808,6 +808,30 @@ namespace TorqueScript
                 delete mFalseValue;
             }
 
+            virtual InstructionSequence compile(StringTable* stringTable) override
+            {
+                InstructionSequence out;
+
+                InstructionSequence expressionCode = mExpression->compile(stringTable);
+                InstructionSequence trueValueCode = mTrueValue->compile(stringTable);
+                InstructionSequence falseValueCode = mFalseValue->compile(stringTable);
+
+                // We add a NOP to the false expressions for a target to jump to
+                falseValueCode.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
+
+                // In the true expression we need to jump over the false expression
+                trueValueCode.push_back(std::shared_ptr<Instruction>(new JumpInstruction(falseValueCode.size())));
+
+                // Jump to the false expression if our expression is false
+                expressionCode.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(falseValueCode.size() + 1)));
+
+                out.insert(out.end(), expressionCode.begin(), expressionCode.end());
+                out.insert(out.end(), trueValueCode.begin(), trueValueCode.end());
+                out.insert(out.end(), falseValueCode.begin(), falseValueCode.end());
+
+                return out;
+            }
+
             ASTNode* mExpression;
             ASTNode* mTrueValue;
             ASTNode* mFalseValue;
@@ -963,6 +987,64 @@ namespace TorqueScript
                 {
                     delete node;
                 }
+            }
+
+            virtual InstructionSequence compile(StringTable* stringTable) override
+            {
+                InstructionSequence out;
+
+                // Generate else code
+                InstructionSequence elseCode;
+                for (ASTNode* node : mElseBody)
+                {
+                    InstructionSequence childInstructions = node->compile(stringTable);
+                    elseCode.insert(elseCode.end(), childInstructions.begin(), childInstructions.end());
+                }
+                elseCode.push_back(std::shared_ptr<Instruction>(new NOPInstruction())); // Add a NOP for jump targets
+                out.insert(out.end(), elseCode.begin(), elseCode.end());
+
+                // Generate all else if's
+                for (ElseIfNode* elseIf : mElseIfs)
+                {
+                    InstructionSequence elseIfBody;
+
+                    for (ASTNode* node : elseIf->mBody)
+                    {
+                        InstructionSequence childInstructions = node->compile(stringTable);
+                        elseIfBody.insert(elseIfBody.end(), childInstructions.begin(), childInstructions.end());
+                    }
+
+                    InstructionSequence elseIfExpression = elseIf->mExpression->compile(stringTable);
+
+                    // The expression must jump over our body if false
+                    elseIfExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(elseIfBody.size() + 2)));
+
+                    // The body, when done, must jump over the remaining code
+                    elseIfBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(out.size())));
+
+                    out.insert(out.begin(), elseIfBody.begin(), elseIfBody.end());
+                    out.insert(out.begin(), elseIfExpression.begin(), elseIfExpression.end());
+                }
+
+                // Generate primary if condition
+                InstructionSequence ifExpression = mExpression->compile(stringTable);
+
+                InstructionSequence ifBody;
+                for (ASTNode* node : mBody)
+                {
+                    InstructionSequence childInstructions = node->compile(stringTable);
+                    ifBody.insert(ifBody.end(), childInstructions.begin(), childInstructions.end());
+                }
+
+                // The expression must jump over our body if false
+                ifExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(ifBody.size() + 2)));
+
+                // The body, when done, must jump over the remaining code
+                ifBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(out.size())));
+
+                out.insert(out.begin(), ifBody.begin(), ifBody.end());
+                out.insert(out.begin(), ifExpression.begin(), ifExpression.end());
+                return out;
             }
 
             ASTNode* mExpression;
