@@ -23,6 +23,7 @@
 #include <torquescript/function.hpp>
 #include <torquescript/stringtable.hpp>
 #include <torquescript/codeblock.hpp>
+#include <torquescript/storedvaluestack.hpp>
 
 namespace TorqueScript
 {
@@ -46,6 +47,9 @@ namespace TorqueScript
 
         Function* mCurrentFunction;
 
+        //! The stack used for execution in this state.
+        StoredValueStack mStack;
+
         std::vector<LoopDescriptor> mLoopDescriptors;
         std::unordered_map<std::string, StoredValue> mLocalVariables;
     };
@@ -57,6 +61,8 @@ namespace TorqueScript
     class ExecutionScope
     {
         public:
+            ExecutionScope();
+
             void pushFrame(Function* function);
             void popFrame();
 
@@ -67,6 +73,8 @@ namespace TorqueScript
             unsigned int getFrameDepth();
 
             Function* getCurrentFunction();
+            StoredValueStack& getStack();
+            StoredValueStack& getReturnStack();
 
             StoredValue* getVariable(const std::string& name);
             void setVariable(const std::string& name, StoredValue variable);

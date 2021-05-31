@@ -125,7 +125,7 @@ namespace TorqueScript
 
         // Load body expressions
         std::vector<ASTNode*> bodyStatements = this->visitChildren(context).as<std::vector<ASTNode*>>();
-        FunctionDeclarationNode* function = new FunctionDeclarationNode(functionNameSpace, functionName, bodyStatements);
+        FunctionDeclarationNode* function = new FunctionDeclarationNode(functionNameSpace, functionName, parameterNames, bodyStatements);
 
         result.push_back(function);
         return result;

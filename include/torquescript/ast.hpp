@@ -36,8 +36,8 @@ namespace TorqueScript
     class FunctionDeclarationNode : public ASTNode
     {
         public:
-            FunctionDeclarationNode(const std::string space, const std::string& name, const std::vector<ASTNode*> body) :
-                                    mNameSpace(space), mName(name), mBody(body)
+            FunctionDeclarationNode(const std::string space, const std::string& name, const std::vector<std::string>& parameterNames, const std::vector<ASTNode*> body) :
+                                    mNameSpace(space), mName(name), mParameterNames(parameterNames), mBody(body)
             {
 
             }
@@ -63,13 +63,13 @@ namespace TorqueScript
                 functionBody.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(0))); // Add an empty return if we hit end of control but nothing returned
 
                 // Generate final declaration
-                std::vector<std::string> parameterNames;
-                out.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(PACKAGE_EMPTY, mNameSpace, mName, parameterNames, functionBody)));
+                out.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(PACKAGE_EMPTY, mNameSpace, mName, mParameterNames, functionBody)));
                 return out;
             }
 
             std::string mNameSpace;
             std::string mName;
+            std::vector<std::string> mParameterNames;
             std::vector<ASTNode*> mBody;
     };
 
@@ -149,6 +149,21 @@ namespace TorqueScript
                 }
             }
 
+            virtual InstructionSequence compile(StringTable* stringTable) override
+            {
+                InstructionSequence out = mTarget->compile(stringTable);
+
+                // Ask all parameters to generate their code
+                for (ASTNode* node : mParameters)
+                {
+                    InstructionSequence childInstructions = node->compile(stringTable);
+                    out.insert(out.end(), childInstructions.begin(), childInstructions.end());
+                }
+
+                out.push_back(std::shared_ptr<Instruction>(new CallBoundFunctionInstruction(mName, mParameters.size())));
+                return out;
+            }
+
             ASTNode* mTarget;
             std::string mName;
             std::vector<ASTNode*> mParameters;
@@ -170,30 +185,6 @@ namespace TorqueScript
             ASTNode* mTarget;
             std::string mName;
     };
-
-    class ArrayNode : public ASTNode
-    {
-        public:
-            ArrayNode(ASTNode* target, const std::vector<ASTNode*>& indices) :
-                     mTarget(target), mIndices(indices)
-            {
-
-            }
-
-            ~ArrayNode()
-            {
-                delete mTarget;
-
-                for (ASTNode* index : mIndices)
-                {
-                    delete index;
-                }
-            }
-
-            ASTNode* mTarget;
-            std::vector<ASTNode*> mIndices;
-    };
-
 
     class InfixExpressionNode : public ASTNode
     {
@@ -534,23 +525,29 @@ namespace TorqueScript
 
             }
 
+            std::string getName()
+            {
+                std::string result = "";
+                for (const std::string& component : mName)
+                {
+                    if (result.size() == 0)
+                    {
+                        result = component;
+                    }
+                    else
+                    {
+                        result += "::" + component;
+                    }
+                }
+                return result;
+            }
+
             virtual InstructionSequence compile(StringTable* stringTable) override
             {
                 InstructionSequence out;
 
                 // NOTE: For now we collapse the name into a single string for lookup
-                std::string lookupName = "";
-                for (const std::string& component : mName)
-                {
-                    if (lookupName.size() == 0)
-                    {
-                        lookupName = component;
-                    }
-                    else
-                    {
-                        lookupName += "::" + component;
-                    }
-                }
+                std::string lookupName = this->getName();
 
                 const std::size_t stringID = stringTable->getOrAssign(lookupName);
                 out.push_back(std::shared_ptr<Instruction>(new PushLocalReferenceInstruction(stringID)));
@@ -568,23 +565,29 @@ namespace TorqueScript
 
             }
 
+            std::string getName()
+            {
+                std::string result = "";
+                for (const std::string& component : mName)
+                {
+                    if (result.size() == 0)
+                    {
+                        result = component;
+                    }
+                    else
+                    {
+                        result += "::" + component;
+                    }
+                }
+                return result;
+            }
+
             virtual InstructionSequence compile(StringTable* stringTable) override
             {
                 InstructionSequence out;
 
                 // NOTE: For now we collapse the name into a single string for lookup
-                std::string lookupName = "";
-                for (const std::string& component : mName)
-                {
-                    if (lookupName.size() == 0)
-                    {
-                        lookupName = component;
-                    }
-                    else
-                    {
-                        lookupName += "::" + component;
-                    }
-                }
+                std::string lookupName = this->getName();
 
                 const std::size_t stringID = stringTable->getOrAssign(lookupName);
                 out.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(stringID)));
@@ -592,6 +595,50 @@ namespace TorqueScript
             }
 
             std::vector<std::string> mName;
+    };
+
+    class ArrayNode : public ASTNode
+    {
+        public:
+            ArrayNode(ASTNode* target, const std::vector<ASTNode*>& indices) :
+                     mTarget(target), mIndices(indices)
+            {
+
+            }
+
+            ~ArrayNode()
+            {
+                delete mTarget;
+
+                for (ASTNode* index : mIndices)
+                {
+                    delete index;
+                }
+            }
+
+            virtual InstructionSequence compile(StringTable* stringTable) override
+            {
+                InstructionSequence out;
+
+                LocalVariableNode* localVariable = dynamic_cast<LocalVariableNode*>(mTarget);
+                GlobalVariableNode* globalVariable = dynamic_cast<GlobalVariableNode*>(mTarget);
+
+                assert(localVariable || globalVariable);
+                std::string variableName = localVariable ? localVariable->getName() : globalVariable->getName();
+
+                // Ask all indices to generate their code
+                for (ASTNode* node : mIndices)
+                {
+                    InstructionSequence childInstructions = node->compile(stringTable);
+                    out.insert(out.end(), childInstructions.begin(), childInstructions.end());
+                }
+
+                out.push_back(std::shared_ptr<Instruction>(new AccessArrayInstruction(variableName, mIndices.size(), globalVariable != nullptr)));
+                return out;
+            }
+
+            ASTNode* mTarget;
+            std::vector<ASTNode*> mIndices;
     };
 
     class WhileNode : public ASTNode
@@ -843,16 +890,16 @@ namespace TorqueScript
                         caseExpressionCode.insert(caseExpressionCode.end(), expressionCode.begin(), expressionCode.end());
                         caseExpressionCode.push_back(std::shared_ptr<Instruction>(new EqualsInstruction()));
 
-                        if (iterator != caseNode->mCases.end() - 1)
+                        if (iterator != caseNode->mCases.begin())
                         {
-                            caseExpressionCode.push_back(std::shared_ptr<Instruction>(new JumpTrueInstruction(caseExpressionCode.size() + 2)));
+                            caseExpressionCode.push_back(std::shared_ptr<Instruction>(new JumpTrueInstruction(caseExpressions.size() + 1)));
                         }
                         else
                         {
                             caseExpressionCode.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(caseBody.size() + 1)));
                         }
 
-                        caseExpressions.insert(caseExpressions.end(), caseExpressionCode.begin(), caseExpressionCode.end());
+                        caseExpressions.insert(caseExpressions.begin(), caseExpressionCode.begin(), caseExpressionCode.end());
                     }
 
                     out.insert(out.begin(), caseBody.begin(), caseBody.end());

@@ -39,6 +39,8 @@ namespace TorqueScript
 
     void Function::execute(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
+
         // Calculate expected versus provided to determine what parameters should be left empty
         const unsigned int expectedParameterCount = mParameterNames.size();
         const unsigned int emptyParameters = expectedParameterCount > argumentCount ? expectedParameterCount - argumentCount : 0;
@@ -51,7 +53,7 @@ namespace TorqueScript
 
             for (unsigned int iteration = 0; iteration < removedParameters; ++iteration)
             {
-                state->mStack.pop_back();
+                stack.pop_back();
             }
             adjustedArgumentCount -= removedParameters;
         }
@@ -62,15 +64,15 @@ namespace TorqueScript
         {
             const std::string nextParameterName = mParameterNames[mParameterNames.size() - (iteration + emptyParameters + 1)];
 
-            newLocals[nextParameterName] = state->mStack.back().getReferencedValueCopy(state);
-            state->mStack.pop_back();
+            newLocals[nextParameterName] = stack.back().getReferencedValueCopy(state);
+            stack.pop_back();
         }
 
         // Once we've cleared the stack, check if we're at max recursion depth
         if (state->mInterpreter->mMaxRecursionDepth > 0 && state->mExecutionScope.getFrameDepth() >= state->mInterpreter->mMaxRecursionDepth)
         {
             state->mInterpreter->logError("Reached maximum recursion depth! Pushing 0 and returning.");
-            state->mStack.push_back(StoredValue(0));
+            stack.push_back(StoredValue(0));
             return;
         }
 

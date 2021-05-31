@@ -16,6 +16,11 @@
 
 namespace TorqueScript
 {
+    ExecutionScope::ExecutionScope()
+    {
+        this->pushFrame(nullptr);
+    }
+
     StoredValue* ExecutionScope::getVariable(const std::string& name)
     {
         std::string lookup = toLowerCase(name);
@@ -117,5 +122,17 @@ namespace TorqueScript
 
         ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
         return currentScope.mCurrentFunction;
+    }
+
+    StoredValueStack& ExecutionScope::getStack()
+    {
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+        return currentScope.mStack;
+    }
+
+    StoredValueStack& ExecutionScope::getReturnStack()
+    {
+        ExecutionScopeData& currentScope = *(mExecutionScopeData.rbegin() + 1);
+        return currentScope.mStack;
     }
 }

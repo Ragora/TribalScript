@@ -29,58 +29,70 @@ namespace TorqueScript
 {
     static void EchoBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
+
         std::string outputString = "";
 
         for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
         {
             // Parameters will flow right to left so we build the string considering this
-            std::string printedPayload = state->mStack.popString(state);
+            std::string printedPayload = stack.popString(state);
             outputString = printedPayload + outputString;
         }
 
         state->mInterpreter->logEcho(outputString);
-        state->mStack.push_back(StoredValue(0));
+        stack.push_back(StoredValue(0));
     }
 
     static void ActivatePackageBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
+
         for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
         {
-            std::string activatedPackage = state->mStack.popString(state);
+            std::string activatedPackage = stack.popString(state);
             state->mInterpreter->activateFunctionRegistry(activatedPackage);
         }
 
-        state->mStack.push_back(StoredValue(0));
+        stack.push_back(StoredValue(0));
     }
 
     static void DeactivatePackageBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
+
         for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
         {
-            std::string deactivatedPackage = state->mStack.popString(state);
+            std::string deactivatedPackage = stack.popString(state);
             state->mInterpreter->deactivateFunctionRegistry(deactivatedPackage);
         }
 
-        state->mStack.push_back(StoredValue(0));
+        stack.push_back(StoredValue(0));
     }
 
     static void DeleteBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
+
         state->mInterpreter->mConsoleObjectRegistry.removeConsoleObject(thisObject);
-        state->mStack.push_back(StoredValue(0));
+        stack.push_back(StoredValue(0));
     }
 
     static void GetNameBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
+
         const std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(state->mInterpreter->mConsoleObjectRegistry.getConsoleObjectName(thisObject));
-        state->mStack.push_back(StoredValue(stringID, StoredValueType::String));
+        stack.push_back(StoredValue(stringID, StoredValueType::String));
     }
 
     static void GetRandomBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
     {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
+
         // FIXME: If argC == 1, generate int between 0 and value, if argC == 2, generate int between min and max
         const float result = (float)std::rand() / RAND_MAX;
-        state->mStack.push_back(StoredValue(result));
+        stack.push_back(StoredValue(result));
     }
 
     void registerBuiltIns(Interpreter* interpreter)

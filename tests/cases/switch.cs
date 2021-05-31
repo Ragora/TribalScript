@@ -13,6 +13,10 @@ function switchCaseTest(%index)
 }
 
 $global::one = switchCaseTest(1);
+echo($global::one);
 $global::two = switchCaseTest(2);
+echo($global::two);
 $global::three = switchCaseTest(500);
+echo($global::Three);
 $global::four = switchCaseTest(600);
+echo($global::four);
