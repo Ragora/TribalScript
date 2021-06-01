@@ -17,23 +17,23 @@
 #include <TorqueLexer.h>
 #include <TorqueParser.h>
 
-#include <torquescript/compilervisitor.hpp>
+#include <torquescript/astbuilder.hpp>
 #include <torquescript/instructionsequence.hpp>
 #include <torquescript/parsererrorlistener.hpp>
 
 namespace TorqueScript
 {
-    CompilerVisitor::CompilerVisitor(StringTable* stringTable) : mStringTable(stringTable), TorqueBaseVisitor()
+    ASTBuilder::ASTBuilder(StringTable* stringTable) : mStringTable(stringTable), TorqueBaseVisitor()
     {
 
     }
 
-    antlrcpp::Any CompilerVisitor::defaultResult()
+    antlrcpp::Any ASTBuilder::defaultResult()
     {
         return std::vector<ASTNode*>();
     }
 
-    antlrcpp::Any CompilerVisitor::visitChildren(antlr4::tree::ParseTree *node)
+    antlrcpp::Any ASTBuilder::visitChildren(antlr4::tree::ParseTree *node)
     {
         std::vector<ASTNode*> result;
 
@@ -46,28 +46,24 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitPackage_declaration(TorqueParser::Package_declarationContext* context)
+    antlrcpp::Any ASTBuilder::visitProgram(TorqueParser::ProgramContext* context)
+    {
+        std::vector<ASTNode*> children = this->visitChildren(context).as<std::vector<ASTNode*>>();
+        return new ProgramNode(children);
+    }
+
+    antlrcpp::Any ASTBuilder::visitPackage_declaration(TorqueParser::Package_declarationContext* context)
     {
         std::vector<ASTNode*> result;
 
         std::vector<ASTNode*> children = this->visitChildren(context).as<std::vector<ASTNode*>>();
-
-        std::vector<FunctionDeclarationNode*> functions;
-        for (ASTNode* child : children)
-        {
-            FunctionDeclarationNode* function = dynamic_cast<FunctionDeclarationNode*>(child);
-            assert(function);
-
-            functions.push_back(function);
-        }
-
-        PackageDeclarationNode* package = new PackageDeclarationNode(context->LABEL()->getText(), functions);
+        PackageDeclarationNode* package = new PackageDeclarationNode(context->LABEL()->getText(), children);
 
         result.push_back(package);
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitFunction_declaration(TorqueParser::Function_declarationContext* context)
+    antlrcpp::Any ASTBuilder::visitFunction_declaration(TorqueParser::Function_declarationContext* context)
     {
         std::vector<ASTNode*> result;
 
@@ -131,7 +127,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitCall(TorqueParser::CallContext* context)
+    antlrcpp::Any ASTBuilder::visitCall(TorqueParser::CallContext* context)
     {
         std::vector<ASTNode*> result;
 
@@ -159,7 +155,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitSubfield(TorqueParser::SubfieldContext* context)
+    antlrcpp::Any ASTBuilder::visitSubfield(TorqueParser::SubfieldContext* context)
     {
         std::vector<ASTNode*> parent = this->visitChildren(context).as<std::vector<ASTNode*>>();
         assert(parent.size() == 1);
@@ -169,7 +165,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitArray(TorqueParser::ArrayContext* context)
+    antlrcpp::Any ASTBuilder::visitArray(TorqueParser::ArrayContext* context)
     {
         std::vector<ASTNode*> parameters = this->visitChildren(context).as<std::vector<ASTNode*>>();
         assert(parameters.size() >= 2);
@@ -182,7 +178,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitSubcall(TorqueParser::SubcallContext* context)
+    antlrcpp::Any ASTBuilder::visitSubcall(TorqueParser::SubcallContext* context)
     {
         const std::string calledFunctionName = context->LABEL()->getText();
 
@@ -197,7 +193,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitValue(TorqueParser::ValueContext* context)
+    antlrcpp::Any ASTBuilder::visitValue(TorqueParser::ValueContext* context)
     {
         std::vector<ASTNode*> result;
 
@@ -249,7 +245,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitArithmetic(TorqueParser::ArithmeticContext* context)
+    antlrcpp::Any ASTBuilder::visitArithmetic(TorqueParser::ArithmeticContext* context)
     {
         std::vector<ASTNode*> result = this->visitChildren(context).as<std::vector<ASTNode*>>();
         assert(result.size() == 2);
@@ -279,7 +275,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitAssign(TorqueParser::AssignContext* context)
+    antlrcpp::Any ASTBuilder::visitAssign(TorqueParser::AssignContext* context)
     {
         std::vector<ASTNode*> result = this->visitChildren(context).as<std::vector<ASTNode*>>();
         assert(result.size() == 2);
@@ -301,7 +297,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitRelational(TorqueParser::RelationalContext* context)
+    antlrcpp::Any ASTBuilder::visitRelational(TorqueParser::RelationalContext* context)
     {
         std::vector<ASTNode*> result = this->visitChildren(context).as<std::vector<ASTNode*>>();
         assert(result.size() == 2);
@@ -323,7 +319,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitEquality(TorqueParser::EqualityContext* context)
+    antlrcpp::Any ASTBuilder::visitEquality(TorqueParser::EqualityContext* context)
     {
         std::vector<ASTNode*> result = this->visitChildren(context).as<std::vector<ASTNode*>>();
         assert(result.size() == 2);
@@ -345,7 +341,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitConcat(TorqueParser::ConcatContext* context)
+    antlrcpp::Any ASTBuilder::visitConcat(TorqueParser::ConcatContext* context)
     {
         std::vector<ASTNode*> result = this->visitChildren(context).as<std::vector<ASTNode*>>();
         assert(result.size() == 2);
@@ -367,7 +363,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitUnary(TorqueParser::UnaryContext* context)
+    antlrcpp::Any ASTBuilder::visitUnary(TorqueParser::UnaryContext* context)
     {
         std::vector<ASTNode*> result = this->visitChildren(context).as<std::vector<ASTNode*>>();
         assert(result.size() == 1);
@@ -387,7 +383,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitIncrement(TorqueParser::IncrementContext* context)
+    antlrcpp::Any ASTBuilder::visitIncrement(TorqueParser::IncrementContext* context)
     {
         std::vector<ASTNode*> result = this->visitChildren(context).as<std::vector<ASTNode*>>();
         assert(result.size() == 1);
@@ -399,7 +395,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitWhile_control(TorqueParser::While_controlContext* context)
+    antlrcpp::Any ASTBuilder::visitWhile_control(TorqueParser::While_controlContext* context)
     {
         std::vector<ASTNode*> result;
         std::vector<ASTNode*> whileContent = this->visitChildren(context).as<std::vector<ASTNode*>>();
@@ -411,7 +407,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitIf_control(TorqueParser::If_controlContext* context)
+    antlrcpp::Any ASTBuilder::visitIf_control(TorqueParser::If_controlContext* context)
     {
         std::vector<ASTNode*> ifContent = this->visitChildren(context).as<std::vector<ASTNode*>>();
 
@@ -486,7 +482,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitSwitch_control(TorqueParser::Switch_controlContext* context)
+    antlrcpp::Any ASTBuilder::visitSwitch_control(TorqueParser::Switch_controlContext* context)
     {
         std::vector<ASTNode*> switchContent = this->visitChildren(context).as<std::vector<ASTNode*>>();
 
@@ -549,7 +545,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitFor_control(TorqueParser::For_controlContext* context)
+    antlrcpp::Any ASTBuilder::visitFor_control(TorqueParser::For_controlContext* context)
     {
         std::vector<ASTNode*> forContent = this->visitChildren(context).as<std::vector<ASTNode*>>();
         assert(forContent.size() >= 3);
@@ -567,7 +563,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitTernary(TorqueParser::TernaryContext* context)
+    antlrcpp::Any ASTBuilder::visitTernary(TorqueParser::TernaryContext* context)
     {
         std::vector<ASTNode*> ternaryContent = this->visitChildren(context).as<std::vector<ASTNode*>>();
         assert(ternaryContent.size() == 3);
@@ -577,7 +573,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitLocalvariable(TorqueParser::LocalvariableContext* context)
+    antlrcpp::Any ASTBuilder::visitLocalvariable(TorqueParser::LocalvariableContext* context)
     {
         std::vector<std::string> variableName;
         std::vector<ASTNode*> result;
@@ -592,7 +588,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitGlobalvariable(TorqueParser::GlobalvariableContext* context)
+    antlrcpp::Any ASTBuilder::visitGlobalvariable(TorqueParser::GlobalvariableContext* context)
     {
         std::vector<std::string> variableName;
         std::vector<ASTNode*> result;
@@ -607,7 +603,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any CompilerVisitor::visitReturn_control(TorqueParser::Return_controlContext* context)
+    antlrcpp::Any ASTBuilder::visitReturn_control(TorqueParser::Return_controlContext* context)
     {
         std::vector<ASTNode*> result = this->visitChildren(context).as<std::vector<ASTNode*>>();
         assert(result.size() <= 1);
@@ -623,7 +619,7 @@ namespace TorqueScript
         return result;
     }
 
-    InstructionSequence CompilerVisitor::collapseInstructions(GeneratedInstructions instructions)
+    InstructionSequence ASTBuilder::collapseInstructions(GeneratedInstructions instructions)
     {
         InstructionSequence result;
 

@@ -19,6 +19,7 @@
 #include <string>
 #include <memory>
 
+#include <torquescript/astvisitor.hpp>
 #include <torquescript/stringtable.hpp>
 #include <torquescript/instructionsequence.hpp>
 
@@ -27,10 +28,31 @@ namespace TorqueScript
     class ASTNode
     {
         public:
-            virtual InstructionSequence compile(StringTable* stringTable)
+            virtual antlrcpp::Any accept(ASTVisitor* visitor) = 0;
+    };
+
+    class ProgramNode
+    {
+        public:
+            ProgramNode(const std::vector<ASTNode*>& nodes) : mNodes(nodes)
             {
-                throw std::runtime_error("Not Implemented");
+
             }
+
+            ~ProgramNode()
+            {
+                for (ASTNode* node : mNodes)
+                {
+                    delete node;
+                }
+            }
+
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
+            {
+                return visitor->visitProgramNode(this);
+            }
+
+            std::vector<ASTNode*> mNodes;
     };
 
     class FunctionDeclarationNode : public ASTNode
@@ -50,21 +72,9 @@ namespace TorqueScript
                 }
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                InstructionSequence functionBody;
-                for (ASTNode* node : mBody)
-                {
-                    InstructionSequence childInstructions = node->compile(stringTable);
-                    functionBody.insert(functionBody.end(), childInstructions.begin(), childInstructions.end());
-                }
-                functionBody.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(0))); // Add an empty return if we hit end of control but nothing returned
-
-                // Generate final declaration
-                out.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(PACKAGE_EMPTY, mNameSpace, mName, mParameterNames, functionBody)));
-                return out;
+                return visitor->visitFunctionDeclarationNode(this);
             }
 
             std::string mNameSpace;
@@ -76,21 +86,26 @@ namespace TorqueScript
     class PackageDeclarationNode : public ASTNode
     {
         public:
-            PackageDeclarationNode(const std::string& name, const std::vector<FunctionDeclarationNode*>& functions) : mName(name), mFunctions(functions)
+            PackageDeclarationNode(const std::string& name, const std::vector<ASTNode*>& functions) : mName(name), mFunctions(functions)
             {
 
             }
 
             ~PackageDeclarationNode()
             {
-                for (FunctionDeclarationNode* function : mFunctions)
+                for (ASTNode* function : mFunctions)
                 {
                     delete function;
                 }
             }
 
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
+            {
+                return visitor->visitPackageDeclarationNode(this);
+            }
+
             std::string mName;
-            std::vector<FunctionDeclarationNode*> mFunctions;
+            std::vector<ASTNode*> mFunctions;
     };
 
     class FunctionCallNode : public ASTNode
@@ -110,19 +125,9 @@ namespace TorqueScript
                 }
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                // Ask all parameters to generate their code
-                for (ASTNode* node : mParameters)
-                {
-                    InstructionSequence childInstructions = node->compile(stringTable);
-                    out.insert(out.end(), childInstructions.begin(), childInstructions.end());
-                }
-
-                out.push_back(std::shared_ptr<Instruction>(new CallFunctionInstruction(mNameSpace, mName, mParameters.size())));
-                return out;
+                return visitor->visitFunctionCallNode(this);
             }
 
             std::string mNameSpace;
@@ -149,19 +154,9 @@ namespace TorqueScript
                 }
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out = mTarget->compile(stringTable);
-
-                // Ask all parameters to generate their code
-                for (ASTNode* node : mParameters)
-                {
-                    InstructionSequence childInstructions = node->compile(stringTable);
-                    out.insert(out.end(), childInstructions.begin(), childInstructions.end());
-                }
-
-                out.push_back(std::shared_ptr<Instruction>(new CallBoundFunctionInstruction(mName, mParameters.size())));
-                return out;
+                return visitor->visitSubFunctionCallNode(this);
             }
 
             ASTNode* mTarget;
@@ -182,6 +177,11 @@ namespace TorqueScript
                 delete mTarget;
             }
 
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
+            {
+                return visitor->visitSubFieldNode(this);
+            }
+
             ASTNode* mTarget;
             std::string mName;
     };
@@ -200,6 +200,7 @@ namespace TorqueScript
                 delete mRight;
             }
 
+
             ASTNode* mLeft;
             ASTNode* mRight;
     };
@@ -212,18 +213,9 @@ namespace TorqueScript
 
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                InstructionSequence lhsCode = mLeft->compile(stringTable);
-                InstructionSequence rhsCode = mRight->compile(stringTable);
-
-                out.insert(out.end(), lhsCode.begin(), lhsCode.end());
-                out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-                out.push_back(std::shared_ptr<Instruction>(new AddInstruction()));
-
-                return out;
+                return visitor->visitAddNode(this);
             }
     };
 
@@ -233,6 +225,11 @@ namespace TorqueScript
             SubtractNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
             {
 
+            }
+
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
+            {
+                return visitor->visitSubtractNode(this);
             }
     };
 
@@ -244,18 +241,9 @@ namespace TorqueScript
 
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                InstructionSequence lhsCode = mLeft->compile(stringTable);
-                InstructionSequence rhsCode = mRight->compile(stringTable);
-
-                out.insert(out.end(), lhsCode.begin(), lhsCode.end());
-                out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-                out.push_back(std::shared_ptr<Instruction>(new MultiplyInstruction()));
-
-                return out;
+                return visitor->visitMultiplyNode(this);
             }
     };
 
@@ -265,6 +253,11 @@ namespace TorqueScript
             DivideNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
             {
 
+            }
+
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
+            {
+                return visitor->visitDivideNode(this);
             }
     };
 
@@ -276,18 +269,9 @@ namespace TorqueScript
 
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                InstructionSequence lhsCode = mLeft->compile(stringTable);
-                InstructionSequence rhsCode = mRight->compile(stringTable);
-
-                out.insert(out.end(), lhsCode.begin(), lhsCode.end());
-                out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-                out.push_back(std::shared_ptr<Instruction>(new ConcatInstruction()));
-
-                return out;
+                return visitor->visitConcatNode(this);
             }
     };
 
@@ -299,18 +283,9 @@ namespace TorqueScript
 
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                InstructionSequence lhsCode = mLeft->compile(stringTable);
-                InstructionSequence rhsCode = mRight->compile(stringTable);
-
-                out.insert(out.end(), lhsCode.begin(), lhsCode.end());
-                out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-                out.push_back(std::shared_ptr<Instruction>(new EqualsInstruction()));
-
-                return out;
+                return visitor->visitEqualsNode(this);
             }
     };
 
@@ -322,18 +297,9 @@ namespace TorqueScript
 
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                InstructionSequence lhsCode = mLeft->compile(stringTable);
-                InstructionSequence rhsCode = mRight->compile(stringTable);
-
-                out.insert(out.end(), lhsCode.begin(), lhsCode.end());
-                out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-                out.push_back(std::shared_ptr<Instruction>(new AssignmentInstruction()));
-
-                return out;
+                return visitor->visitAssignmentNode(this);
             }
     };
 
@@ -345,18 +311,9 @@ namespace TorqueScript
 
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                InstructionSequence lhsCode = mLeft->compile(stringTable);
-                InstructionSequence rhsCode = mRight->compile(stringTable);
-
-                out.insert(out.end(), lhsCode.begin(), lhsCode.end());
-                out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-                out.push_back(std::shared_ptr<Instruction>(new LessThanInstruction()));
-
-                return out;
+                return visitor->visitLessThanNode(this);
             }
     };
 
@@ -384,16 +341,9 @@ namespace TorqueScript
 
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                InstructionSequence innerCode = mInner->compile(stringTable);
-
-                out.insert(out.end(), innerCode.begin(), innerCode.end());
-                out.push_back(std::shared_ptr<Instruction>(new NegateInstruction()));
-
-                return out;
+                return visitor->visitNegateNode(this);
             }
     };
 
@@ -403,6 +353,11 @@ namespace TorqueScript
             NotNode(ASTNode* inner) : UnaryNode(inner)
             {
 
+            }
+
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
+            {
+                return visitor->visitNotNode(this);
             }
     };
 
@@ -414,16 +369,9 @@ namespace TorqueScript
 
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-                InstructionSequence innerCode = mInner->compile(stringTable);
-
-                out.insert(out.end(), innerCode.begin(), innerCode.end());
-                out.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(1)));
-                out.push_back(std::shared_ptr<Instruction>(new AddAssignmentInstruction()));
-
-                return out;
+                return visitor->visitIncrementNode(this);
             }
     };
 
@@ -433,6 +381,11 @@ namespace TorqueScript
             DecrementNode(ASTNode* inner) : UnaryNode(inner)
             {
 
+            }
+
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
+            {
+                return visitor->visitDecrementNode(this);
             }
     };
 
@@ -449,11 +402,9 @@ namespace TorqueScript
 
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-                out.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(mValue)));
-                return out;
+                return visitor->visitIntegerNode(this);
             }
 
             int mValue;
@@ -467,11 +418,9 @@ namespace TorqueScript
 
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-                out.push_back(std::shared_ptr<Instruction>(new PushFloatInstruction(mValue)));
-                return out;
+                return visitor->visitFloatNode(this);
             }
 
             float mValue;
@@ -485,13 +434,9 @@ namespace TorqueScript
 
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                const std::size_t stringID = stringTable->getOrAssign(mValue);
-                out.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(stringID)));
-                return out;
+                return visitor->visitStringNode(this);
             }
 
             std::string mValue;
@@ -505,13 +450,9 @@ namespace TorqueScript
 
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                const std::size_t stringID = stringTable->getOrAssign(mValue);
-                out.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(stringID)));
-                return out;
+                return visitor->visitTaggedStringNode(this);
             }
 
             std::string mValue;
@@ -542,16 +483,9 @@ namespace TorqueScript
                 return result;
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                // NOTE: For now we collapse the name into a single string for lookup
-                std::string lookupName = this->getName();
-
-                const std::size_t stringID = stringTable->getOrAssign(lookupName);
-                out.push_back(std::shared_ptr<Instruction>(new PushLocalReferenceInstruction(stringID)));
-                return out;
+                return visitor->visitLocalVariableNode(this);
             }
 
             std::vector<std::string> mName;
@@ -582,16 +516,9 @@ namespace TorqueScript
                 return result;
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                // NOTE: For now we collapse the name into a single string for lookup
-                std::string lookupName = this->getName();
-
-                const std::size_t stringID = stringTable->getOrAssign(lookupName);
-                out.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(stringID)));
-                return out;
+                return visitor->visitGlobalVariableNode(this);
             }
 
             std::vector<std::string> mName;
@@ -616,25 +543,9 @@ namespace TorqueScript
                 }
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                LocalVariableNode* localVariable = dynamic_cast<LocalVariableNode*>(mTarget);
-                GlobalVariableNode* globalVariable = dynamic_cast<GlobalVariableNode*>(mTarget);
-
-                assert(localVariable || globalVariable);
-                std::string variableName = localVariable ? localVariable->getName() : globalVariable->getName();
-
-                // Ask all indices to generate their code
-                for (ASTNode* node : mIndices)
-                {
-                    InstructionSequence childInstructions = node->compile(stringTable);
-                    out.insert(out.end(), childInstructions.begin(), childInstructions.end());
-                }
-
-                out.push_back(std::shared_ptr<Instruction>(new AccessArrayInstruction(variableName, mIndices.size(), globalVariable != nullptr)));
-                return out;
+                return visitor->visitArrayNode(this);
             }
 
             ASTNode* mTarget;
@@ -659,31 +570,9 @@ namespace TorqueScript
                 }
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                InstructionSequence bodyCode;
-                InstructionSequence expressionCode = mExpression->compile(stringTable);
-                for (ASTNode* node : mBody)
-                {
-                    InstructionSequence childCode = node->compile(stringTable);
-                    bodyCode.insert(bodyCode.end(), childCode.begin(), childCode.end());
-                }
-
-                // Expression should jump over body if false (+2 added for the NOP and jump below)
-                expressionCode.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(bodyCode.size() + 2)));
-
-                // Body should jump back to the expression to reevaluate
-                const int jumpTarget = -(bodyCode.size() + expressionCode.size());
-                bodyCode.push_back(std::shared_ptr<Instruction>(new JumpInstruction(jumpTarget)));
-
-                // Add a NOP for a jump target
-                bodyCode.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
-
-                out.insert(out.end(), expressionCode.begin(), expressionCode.end());
-                out.insert(out.end(), bodyCode.begin(), bodyCode.end());
-                return out;
+                return visitor->visitWhileNode(this);
             }
 
             ASTNode* mExpression;
@@ -711,40 +600,9 @@ namespace TorqueScript
                 }
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-                InstructionSequence initializerCode = mInitializer->compile(stringTable);
-                InstructionSequence expressionCode = mExpression->compile(stringTable);
-                InstructionSequence advanceCode = mAdvance->compile(stringTable);
-
-                InstructionSequence forBody;
-                for (ASTNode* node : mBody)
-                {
-                    InstructionSequence childInstructions = node->compile(stringTable);
-                    forBody.insert(forBody.end(), childInstructions.begin(), childInstructions.end());
-                }
-
-                // At the end of the loop, run advance
-                forBody.insert(forBody.end(), advanceCode.begin(), advanceCode.end());
-
-                // Pop the result of our initializer so it doesn't corrupt the stack
-                initializerCode.push_back(std::shared_ptr<Instruction>(new PopInstruction()));
-
-                // Our body should return to the expression
-                const unsigned int jumpTarget = expressionCode.size() + forBody.size();
-                forBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(-jumpTarget)));
-                forBody.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
-
-                // Check if our expression is false
-                expressionCode.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(forBody.size())));
-
-                // Output final code
-                out.insert(out.end(), initializerCode.begin(), initializerCode.end());
-                out.insert(out.end(), expressionCode.begin(), expressionCode.end());
-                out.insert(out.end(), forBody.begin(), forBody.end());
-
-                return out;
+                return visitor->visitForNode(this);
             }
 
             ASTNode* mInitializer;
@@ -769,15 +627,9 @@ namespace TorqueScript
                 }
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-                if (mExpression)
-                {
-                    out = mExpression->compile(stringTable);
-                }
-                out.push_back(std::shared_ptr<Instruction>(new ReturnInstruction()));
-                return out;
+                return visitor->visitReturnNode(this);
             }
 
             ASTNode* mExpression;
@@ -789,6 +641,11 @@ namespace TorqueScript
             BreakNode()
             {
 
+            }
+
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
+            {
+                return visitor->visitBreakNode(this);
             }
     };
 
@@ -808,28 +665,9 @@ namespace TorqueScript
                 delete mFalseValue;
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                InstructionSequence expressionCode = mExpression->compile(stringTable);
-                InstructionSequence trueValueCode = mTrueValue->compile(stringTable);
-                InstructionSequence falseValueCode = mFalseValue->compile(stringTable);
-
-                // We add a NOP to the false expressions for a target to jump to
-                falseValueCode.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
-
-                // In the true expression we need to jump over the false expression
-                trueValueCode.push_back(std::shared_ptr<Instruction>(new JumpInstruction(falseValueCode.size())));
-
-                // Jump to the false expression if our expression is false
-                expressionCode.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(falseValueCode.size() + 1)));
-
-                out.insert(out.end(), expressionCode.begin(), expressionCode.end());
-                out.insert(out.end(), trueValueCode.begin(), trueValueCode.end());
-                out.insert(out.end(), falseValueCode.begin(), falseValueCode.end());
-
-                return out;
+                return visitor->visitTernaryNode(this);
             }
 
             ASTNode* mExpression;
@@ -843,6 +681,11 @@ namespace TorqueScript
             SwitchCaseNode(const std::vector<ASTNode*> cases, const std::vector<ASTNode*> body) : mCases(cases), mBody(body)
             {
 
+            }
+
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
+            {
+                return visitor->visitSwitchCaseNode(this);
             }
 
             std::vector<ASTNode*> mCases;
@@ -873,64 +716,9 @@ namespace TorqueScript
                 }
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                InstructionSequence expressionCode = mExpression->compile(stringTable);
-
-                // NOTE: We intentionally process in reverse order due to needing to know how long existing code is to jump over
-                // Add a NOP to jump to
-                out.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
-
-                InstructionSequence defaultInstructions;
-                for (ASTNode* node : mDefaultBody)
-                {
-                    InstructionSequence childInstructions = node->compile(stringTable);
-                    defaultInstructions.insert(defaultInstructions.end(), childInstructions.begin(), childInstructions.end());
-                }
-                out.insert(out.begin(), defaultInstructions.begin(), defaultInstructions.end());
-
-                // Process all cases
-                for (SwitchCaseNode* caseNode : mCases)
-                {
-                    InstructionSequence caseBody;
-                    for (ASTNode* node : caseNode->mBody)
-                    {
-                        InstructionSequence childInstructions = node->compile(stringTable);
-                        caseBody.insert(caseBody.end(), childInstructions.begin(), childInstructions.end());
-                    }
-                    // If we enter this body we should skip over the rest of the instructions
-                    caseBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(out.size())));
-
-                    // Generate a sequence of checks until something comes out to be true
-                    InstructionSequence caseExpressions;
-                    for (auto iterator = caseNode->mCases.begin(); iterator != caseNode->mCases.end(); ++iterator)
-                    {
-                        ASTNode* currentCaseExpression = *iterator;
-                        InstructionSequence caseExpressionCode = currentCaseExpression->compile(stringTable);
-
-                        // Place our expression to check against and then check if equal
-                        caseExpressionCode.insert(caseExpressionCode.end(), expressionCode.begin(), expressionCode.end());
-                        caseExpressionCode.push_back(std::shared_ptr<Instruction>(new EqualsInstruction()));
-
-                        if (iterator != caseNode->mCases.begin())
-                        {
-                            caseExpressionCode.push_back(std::shared_ptr<Instruction>(new JumpTrueInstruction(caseExpressions.size() + 1)));
-                        }
-                        else
-                        {
-                            caseExpressionCode.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(caseBody.size() + 1)));
-                        }
-
-                        caseExpressions.insert(caseExpressions.begin(), caseExpressionCode.begin(), caseExpressionCode.end());
-                    }
-
-                    out.insert(out.begin(), caseBody.begin(), caseBody.end());
-                    out.insert(out.begin(), caseExpressions.begin(), caseExpressions.end());
-                }
-
-                return out;
+                return visitor->visitSwitchNode(this);
             }
 
             ASTNode* mExpression;
@@ -954,6 +742,11 @@ namespace TorqueScript
                 {
                     delete node;
                 }
+            }
+
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
+            {
+                return visitor->visitElseIfNode(this);
             }
 
             ASTNode* mExpression;
@@ -989,62 +782,9 @@ namespace TorqueScript
                 }
             }
 
-            virtual InstructionSequence compile(StringTable* stringTable) override
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
             {
-                InstructionSequence out;
-
-                // Generate else code
-                InstructionSequence elseCode;
-                for (ASTNode* node : mElseBody)
-                {
-                    InstructionSequence childInstructions = node->compile(stringTable);
-                    elseCode.insert(elseCode.end(), childInstructions.begin(), childInstructions.end());
-                }
-                elseCode.push_back(std::shared_ptr<Instruction>(new NOPInstruction())); // Add a NOP for jump targets
-                out.insert(out.end(), elseCode.begin(), elseCode.end());
-
-                // Generate all else if's
-                for (ElseIfNode* elseIf : mElseIfs)
-                {
-                    InstructionSequence elseIfBody;
-
-                    for (ASTNode* node : elseIf->mBody)
-                    {
-                        InstructionSequence childInstructions = node->compile(stringTable);
-                        elseIfBody.insert(elseIfBody.end(), childInstructions.begin(), childInstructions.end());
-                    }
-
-                    InstructionSequence elseIfExpression = elseIf->mExpression->compile(stringTable);
-
-                    // The expression must jump over our body if false
-                    elseIfExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(elseIfBody.size() + 2)));
-
-                    // The body, when done, must jump over the remaining code
-                    elseIfBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(out.size())));
-
-                    out.insert(out.begin(), elseIfBody.begin(), elseIfBody.end());
-                    out.insert(out.begin(), elseIfExpression.begin(), elseIfExpression.end());
-                }
-
-                // Generate primary if condition
-                InstructionSequence ifExpression = mExpression->compile(stringTable);
-
-                InstructionSequence ifBody;
-                for (ASTNode* node : mBody)
-                {
-                    InstructionSequence childInstructions = node->compile(stringTable);
-                    ifBody.insert(ifBody.end(), childInstructions.begin(), childInstructions.end());
-                }
-
-                // The expression must jump over our body if false
-                ifExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(ifBody.size() + 2)));
-
-                // The body, when done, must jump over the remaining code
-                ifBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(out.size())));
-
-                out.insert(out.begin(), ifBody.begin(), ifBody.end());
-                out.insert(out.begin(), ifExpression.begin(), ifExpression.end());
-                return out;
+                return visitor->visitIfNode(this);
             }
 
             ASTNode* mExpression;

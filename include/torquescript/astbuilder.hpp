@@ -29,15 +29,16 @@ namespace TorqueScript
 {
     typedef std::vector<InstructionSequence> GeneratedInstructions;
 
-    class CompilerVisitor : public TorqueBaseVisitor
+    class ASTBuilder : public TorqueBaseVisitor
     {
         public:
-            CompilerVisitor(StringTable* stringTable);
+            ASTBuilder(StringTable* stringTable);
 
             virtual antlrcpp::Any defaultResult() override;
 
             virtual antlrcpp::Any visitChildren(antlr4::tree::ParseTree *node) override;
 
+            virtual antlrcpp::Any visitProgram(TorqueParser::ProgramContext* context) override;
             virtual antlrcpp::Any visitPackage_declaration(TorqueParser::Package_declarationContext* context) override;
             virtual antlrcpp::Any visitFunction_declaration(TorqueParser::Function_declarationContext* context) override;
             virtual antlrcpp::Any visitCall(TorqueParser::CallContext* context) override;

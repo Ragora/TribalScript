@@ -18,7 +18,7 @@
 #include <TorqueParser.h>
 
 #include <torquescript/compiler.hpp>
-#include <torquescript/compilervisitor.hpp>
+#include <torquescript/astbuilder.hpp>
 #include <torquescript/instructionsequence.hpp>
 #include <torquescript/parsererrorlistener.hpp>
 
@@ -38,13 +38,17 @@ namespace TorqueScript
         parser.addErrorListener(&parserErrorListener);
 
         // Instantiate the program and go
-        CompilerVisitor visitor(stringTable);
-
-        std::vector<ASTNode*> tree = visitor.visitProgram(parser.program()).as<std::vector<ASTNode*>>();
+        ASTBuilder visitor(stringTable);
+        ProgramNode* tree = visitor.visitProgram(parser.program()).as<ProgramNode*>();
 
         // Did we receive any errors?
         if (parserErrorListener.getErrors().empty())
         {
+
+            // At this point, we should have a valid tree to generate code from
+            delete tree;
+            return nullptr;
+            /*
             InstructionSequence instructions;
             for (ASTNode* node : tree)
             {
@@ -53,15 +57,12 @@ namespace TorqueScript
 
                 delete node;
             }
-
-            CodeBlock* result = new CodeBlock(instructions);
-            return result;
+            */
+            //CodeBlock* result = new CodeBlock(instructions);
+            //return result;
         }
 
-        for (ASTNode* node : tree)
-        {
-            delete node;
-        }
+        delete tree;
 
         for (const std::string& message : parserErrorListener.getErrors())
         {
