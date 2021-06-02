@@ -19,7 +19,6 @@
 
 #include <torquescript/interpreter.hpp>
 #include <torquescript/executionscope.hpp>
-#include <torquescript/storedvaluestack.hpp>
 
 namespace TorqueScript
 {
@@ -42,8 +41,5 @@ namespace TorqueScript
 
         //! The execution scope used for managing local variables & for loop structures.
         ExecutionScope mExecutionScope;
-
-        //! The stack used for execution in this state.
-        StoredValueStack mStack;
     };
 }

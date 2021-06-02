@@ -25,15 +25,15 @@ function_declaration_parameters : localvariable (',' localvariable)* ;
 
 package_declaration : PACKAGE LABEL '{' function_declaration+ '}' ';' ;
 
-datablock_declaration : DATABLOCK LABEL '(' LABEL ')' (':' LABEL)? '{' field_assign+ '}' ';' ;
+datablock_declaration : DATABLOCK LABEL '(' LABEL ')' (':' LABEL)? '{' field_assign+ '}' ;
 
 field_assign : labelwithkeywords '=' expression ';'
              | labelwithkeywords '[' expression_list ']' '=' expression ';' ;
 object_initialization : '{' field_assign* (object_declaration ';')* '}' ;
 
-// NOTE: In T2 it's possible to pass multiple values, what do they do exactly?
-object_declaration : NEW LABEL '(' expression_list? ')' object_initialization?
-                   | NEW '(' expression ')' '(' expression_list? ')' object_initialization? ;
+// NOTE: In T2 it's possible to pass multiple values in the type & name, what do they do exactly?
+object_declaration : NEW LABEL '(' (name=expression)? ')' object_initialization?
+                   | NEW '(' expression ')' '(' (name=expression)? ')' object_initialization? ;
 
 /*
     Control blocks
@@ -72,7 +72,6 @@ expression_statement : primary_expression ';'
 
 statement : function_declaration
           | package_declaration
-          | datablock_declaration
           | expression_statement  ;
 
 expression_list : expression (',' expression)* ;
@@ -94,7 +93,8 @@ primary_expression : functioncall_expression                                    
                             |op=ANDASSIGN) expression                               # assign
                    | lvalue '++'                                                    # increment
                    | lvalue '--'                                                    # decrement
-                   | object_declaration                                             # objectDeclarationExpression ;
+                   | object_declaration                                             # objectDeclarationExpression
+                   | datablock_declaration                                          # datablockDeclarationExpression ;
 
 // Only valid on the right side of an assignment, however still valid on the left side of a '.'
 rvalue : INT                                                                # value
@@ -126,11 +126,9 @@ expression : (op=MINUS
            | expression '^' expression                                          # bitwise
            | expression '&' expression                                          # bitwise
            | expression '|' expression                                          # bitwise
-           | expression (op=MODULUS
-                        |op=PLUS
-                        |op=MINUS
-                        |op=MULTIPLY
-                        |op=DIVIDE) expression                                  # arithmetic
+           | expression (op=MODULUS|op=MULTIPLY|op=DIVIDE) expression           # arithmetic
+           | expression (op=PLUS
+                        |op=MINUS) expression                                   # arithmetic
            | expression '?' expression ':' expression                           # ternary
            | expression (op=LESSTHAN
                         |op=GREATERTHAN
