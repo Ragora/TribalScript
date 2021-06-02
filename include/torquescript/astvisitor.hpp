@@ -55,12 +55,15 @@ namespace TorqueScript
     class SwitchNode;
     class ElseIfNode;
     class IfNode;
+    class DatablockDeclarationNode;
+    class FieldAssignNode;
+    class ObjectDeclarationNode;
 
     class ASTVisitor
     {
         public:
             virtual antlrcpp::Any defaultResult();
-            virtual antlrcpp::Any aggregateResult(antlrcpp::Any aggregate, antlrcpp::Any nextResult);
+            virtual antlrcpp::Any aggregateResult(antlrcpp::Any& aggregate, antlrcpp::Any& nextResult);
 
             /*
                 Visitor Routines =========================
@@ -69,6 +72,9 @@ namespace TorqueScript
             virtual antlrcpp::Any visitProgramNode(ProgramNode* program);
             virtual antlrcpp::Any visitFunctionDeclarationNode(FunctionDeclarationNode* function);
             virtual antlrcpp::Any visitPackageDeclarationNode(PackageDeclarationNode* package);
+            virtual antlrcpp::Any visitObjectDeclarationNode(ObjectDeclarationNode* object);
+            virtual antlrcpp::Any visitDatablockDeclarationNode(DatablockDeclarationNode* datablock);
+            virtual antlrcpp::Any visitFieldAssignNode(FieldAssignNode* node);
             virtual antlrcpp::Any visitFunctionCallNode(FunctionCallNode* call);
             virtual antlrcpp::Any visitSubFunctionCallNode(SubFunctionCallNode* call);
             virtual antlrcpp::Any visitSubFieldNode(SubFieldNode* subfield);

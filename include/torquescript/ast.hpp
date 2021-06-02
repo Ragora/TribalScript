@@ -18,6 +18,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <map>
 
 #include <torquescript/astvisitor.hpp>
 #include <torquescript/stringtable.hpp>
@@ -106,6 +107,62 @@ namespace TorqueScript
 
             std::string mName;
             std::vector<ASTNode*> mFunctions;
+    };
+
+    class FieldAssignNode : public ASTNode
+    {
+        public:
+            FieldAssignNode(const std::string& fieldBaseName, const std::vector<ASTNode*>& fieldExpressions, ASTNode* right) : mFieldBaseName(fieldBaseName), mFieldExpressions(fieldExpressions), mRight(right)
+            {
+
+            }
+
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
+            {
+                return visitor->visitFieldAssignNode(this);
+            }
+
+            std::string mFieldBaseName;
+            std::vector<ASTNode*> mFieldExpressions;
+            ASTNode* mRight;
+    };
+
+    class ObjectDeclarationNode : public ASTNode
+    {
+        public:
+            ObjectDeclarationNode(ASTNode* name, ASTNode* type, const std::vector<ObjectDeclarationNode*>& children, const std::vector<ASTNode*>& fields) : mName(name), mType(type), mChildren(children), mFields(fields)
+            {
+            }
+
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
+            {
+                return visitor->visitObjectDeclarationNode(this);
+            }
+
+            ASTNode* mName;
+            ASTNode* mType;
+
+            std::vector<ObjectDeclarationNode*> mChildren;
+            std::vector<ASTNode*> mFields;
+    };
+
+    class DatablockDeclarationNode : public ASTNode
+    {
+        public:
+            DatablockDeclarationNode(const std::string& name, const std::string& type, const std::string& parentName, const std::vector<ASTNode*>& fields) : mName(name), mType(type), mParentName(parentName), mFields(fields)
+            {
+            }
+
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
+            {
+                return visitor->visitDatablockDeclarationNode(this);
+            }
+
+            std::string mName;
+            std::string mType;
+            std::string mParentName;
+
+            std::vector<ASTNode*> mFields;
     };
 
     class FunctionCallNode : public ASTNode

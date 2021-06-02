@@ -22,7 +22,16 @@ namespace TorqueScript
     void ParserErrorListener::syntaxError(antlr4::Recognizer* recognizer, antlr4::Token* offendingSymbol, size_t line, size_t charPositionInLine, const std::string& msg, std::exception_ptr e)
     {
         std::ostringstream out;
-        out << "Syntax Error on Line " << line << " Character " << charPositionInLine << " : '" << offendingSymbol->getText() << "'" << std::endl;
+
+        if (offendingSymbol)
+        {
+            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << " : '" << offendingSymbol->getText() << "'" << std::endl;
+        }
+        else
+        {
+            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << std::endl;
+        }
+       
         out << msg << std::endl;
         mErrors.push_back(out.str());
     }

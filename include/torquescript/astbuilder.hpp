@@ -62,7 +62,9 @@ namespace TorqueScript
             virtual antlrcpp::Any visitRelational(TorqueParser::RelationalContext* context) override;
             virtual antlrcpp::Any visitSwitch_control(TorqueParser::Switch_controlContext* context) override;
 
-            InstructionSequence collapseInstructions(GeneratedInstructions instructions);
+            virtual antlrcpp::Any visitField_assign(TorqueParser::Field_assignContext* context) override;
+            virtual antlrcpp::Any visitDatablock_declaration(TorqueParser::Datablock_declarationContext* context) override;
+            virtual antlrcpp::Any visitObject_declaration(TorqueParser::Object_declarationContext* context) override;
 
         private:
             StringTable* mStringTable;

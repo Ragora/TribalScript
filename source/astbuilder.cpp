@@ -619,14 +619,88 @@ namespace TorqueScript
         return result;
     }
 
-    InstructionSequence ASTBuilder::collapseInstructions(GeneratedInstructions instructions)
+    antlrcpp::Any ASTBuilder::visitField_assign(TorqueParser::Field_assignContext* context)
     {
-        InstructionSequence result;
+        std::vector<ASTNode*> fieldExpressions = this->visitChildren(context).as<std::vector<ASTNode*>>();
+        assert(fieldExpressions.size() >= 1);
 
-        for (InstructionSequence sequence : instructions)
+        // Back is rhs of expression
+        ASTNode* fieldValue = fieldExpressions.back();
+        fieldExpressions.pop_back();
+
+        std::string fieldBaseName = context->labelwithkeywords()->getText();
+
+        std::vector<ASTNode*> result;
+        result.push_back(new FieldAssignNode(fieldBaseName, fieldExpressions, fieldValue));
+        return result;
+    }
+
+    antlrcpp::Any ASTBuilder::visitDatablock_declaration(TorqueParser::Datablock_declarationContext* context) 
+    {
+        std::vector<ASTNode*> result;
+        std::vector<ASTNode*> fields = this->visitChildren(context).as<std::vector<ASTNode*>>();
+
+        std::string name = "";
+        std::string typeName = "";
+        std::string parentName = "";
+        std::vector<antlr4::tree::TerminalNode*> labels = context->LABEL();
+
+        // If there's a third element, we have our parent 
+        if (labels.size() == 3)
         {
-            result.insert(result.end(), sequence.begin(), sequence.end());
+            parentName = labels[2]->getText();
         }
+        typeName = labels[0]->getText();
+        name = labels[1]->getText();
+
+        result.push_back(new DatablockDeclarationNode(name, typeName, parentName, fields));
+        return result;
+    }
+
+    antlrcpp::Any ASTBuilder::visitObject_declaration(TorqueParser::Object_declarationContext* context)
+    {
+        std::vector<ASTNode*> result;
+        std::vector<ASTNode*> objectContent = this->visitChildren(context).as<std::vector<ASTNode*>>();
+        assert(objectContent.size() >= 1);
+          
+        ASTNode* name = nullptr;
+        ASTNode* typeName = nullptr;
+        if (context->LABEL())
+        {
+            typeName = new StringNode(context->LABEL()->getText());
+        }
+        else
+        {
+            typeName = objectContent.front();
+            objectContent.erase(objectContent.begin());
+        }
+
+        // Object name is always present at top at this point unless none was provided
+        if (context->name)
+        {
+            name = objectContent.front();
+            objectContent.erase(objectContent.begin());
+        }
+
+        // Sort out children and fields
+        std::vector<ObjectDeclarationNode*> children;
+        std::vector<ASTNode*> fields;
+
+        for (ASTNode* component : objectContent)
+        {
+            ObjectDeclarationNode* child = dynamic_cast<ObjectDeclarationNode*>(component);
+
+            if (child)
+            {
+                children.push_back(child);
+            }
+            else
+            {
+                fields.push_back(component);
+            }
+        }
+ 
+        result.push_back(new ObjectDeclarationNode(name, typeName, children, fields));
         return result;
     }
 }

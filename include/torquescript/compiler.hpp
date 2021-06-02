@@ -51,5 +51,41 @@ namespace TorqueScript
              *  @param path The path to load from.
              */
             CodeBlock* compileFile(const std::string& path, StringTable* stringTable);
+
+            virtual antlrcpp::Any defaultResult() override;
+            virtual antlrcpp::Any aggregateResult(antlrcpp::Any& aggregate, antlrcpp::Any& nextResult) override;
+
+        private:
+            StringTable* mStringTable;
+                
+            /*
+                Compiler Routines ==============================
+            */
+            virtual antlrcpp::Any visitFunctionDeclarationNode(FunctionDeclarationNode* function) override;
+            virtual antlrcpp::Any visitFunctionCallNode(FunctionCallNode* call) override;
+            virtual antlrcpp::Any visitSubFunctionCallNode(SubFunctionCallNode* call) override;
+            virtual antlrcpp::Any visitAddNode(AddNode* expression) override;
+            virtual antlrcpp::Any visitIntegerNode(IntegerNode* value) override;
+            virtual antlrcpp::Any visitFloatNode(FloatNode* value) override;
+            virtual antlrcpp::Any visitStringNode(StringNode* value) override;
+            virtual antlrcpp::Any visitTaggedStringNode(TaggedStringNode* value) override;
+            virtual antlrcpp::Any visitLocalVariableNode(LocalVariableNode* value) override;
+            virtual antlrcpp::Any visitGlobalVariableNode(GlobalVariableNode* value) override;
+            virtual antlrcpp::Any visitAssignmentNode(AssignmentNode* expression) override;
+            virtual antlrcpp::Any visitLessThanNode(LessThanNode* expression) override;
+            virtual antlrcpp::Any visitNegateNode(NegateNode* expression) override;
+            virtual antlrcpp::Any visitIncrementNode(IncrementNode* expression) override;
+            virtual antlrcpp::Any visitWhileNode(WhileNode* node) override;
+            virtual antlrcpp::Any visitForNode(ForNode* node) override;
+            virtual antlrcpp::Any visitReturnNode(ReturnNode* node) override;
+            virtual antlrcpp::Any visitTernaryNode(TernaryNode* node) override;
+            virtual antlrcpp::Any visitSwitchNode(SwitchNode* node) override;
+            virtual antlrcpp::Any visitIfNode(IfNode* node) override;
+            virtual antlrcpp::Any visitArrayNode(ArrayNode* array) override;
+            virtual antlrcpp::Any visitEqualsNode(EqualsNode* expression) override;
+            virtual antlrcpp::Any visitConcatNode(ConcatNode* expression) override;
+            virtual antlrcpp::Any visitMultiplyNode(MultiplyNode* expression) override;
+            virtual antlrcpp::Any visitDatablockDeclarationNode(DatablockDeclarationNode* datablock) override;
+            virtual antlrcpp::Any visitObjectDeclarationNode(ObjectDeclarationNode* object);
     };
 }

@@ -24,7 +24,7 @@ namespace TorqueScript
         return nullptr;
     }
 
-    antlrcpp::Any ASTVisitor::aggregateResult(antlrcpp::Any aggregate, antlrcpp::Any nextResult)
+    antlrcpp::Any ASTVisitor::aggregateResult(antlrcpp::Any& aggregate, antlrcpp::Any& nextResult)
     {
         return nextResult;
     }
@@ -319,6 +319,46 @@ namespace TorqueScript
         for (ASTNode* childNode : node->mElseBody)
         {
             result = this->aggregateResult(result, childNode->accept(this));
+        }
+        return result;
+    }
+
+    antlrcpp::Any ASTVisitor::visitDatablockDeclarationNode(DatablockDeclarationNode* datablock)
+    {
+        antlrcpp::Any result = this->defaultResult();
+
+        for (ASTNode* field : datablock->mFields)
+        {
+            result = this->aggregateResult(result, field->accept(this));
+        }
+        return result;
+    }
+
+    antlrcpp::Any ASTVisitor::visitFieldAssignNode(FieldAssignNode* node)
+    {
+        antlrcpp::Any result = this->defaultResult();
+        for (ASTNode* childNode : node->mFieldExpressions)
+        {
+            result = this->aggregateResult(result, childNode->accept(this));
+        }
+        result = this->aggregateResult(result, node->mRight->accept(this));
+        return result;
+    }
+
+    antlrcpp::Any ASTVisitor::visitObjectDeclarationNode(ObjectDeclarationNode* object)
+    {
+        antlrcpp::Any result = this->defaultResult();
+        result = this->aggregateResult(result, object->mName->accept(this));
+        result = this->aggregateResult(result, object->mType->accept(this));
+
+        for (ASTNode* field : object->mFields)
+        {
+            result = this->aggregateResult(result, field->accept(this));
+        }
+
+        for (ObjectDeclarationNode* child : object->mChildren)
+        {
+            result = this->aggregateResult(result, child->accept(this));
         }
         return result;
     }

@@ -31,9 +31,9 @@ TEST(InterpreterTest, OpOrder)
 
     // After execution, the result of $global should be 50
     TorqueScript::StoredValue* noParen = interpreter.getGlobal("noParen");
-    EXPECT_TRUE(noParen);
+    ASSERT_TRUE(noParen);
     TorqueScript::StoredValue* paren = interpreter.getGlobal("paren");
-    EXPECT_TRUE(paren);
+    ASSERT_TRUE(paren);
 
     ASSERT_EQ(noParen->toInteger(state), 3);
     ASSERT_EQ(paren->toInteger(state), 4);
