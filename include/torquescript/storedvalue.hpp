@@ -17,7 +17,6 @@
 #include <iostream>
 #include <assert.h>
 #include <memory>
-#include <variant>
 #include <string>
 
 namespace TorqueScript
