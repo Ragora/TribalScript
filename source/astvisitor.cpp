@@ -38,7 +38,8 @@ namespace TorqueScript
         antlrcpp::Any result = this->defaultResult();
         for (ASTNode* node : program->mNodes)
         {
-            result = this->aggregateResult(result, node->accept(this));
+            antlrcpp::Any childResult = node->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
         return result;
     }
@@ -48,7 +49,8 @@ namespace TorqueScript
         antlrcpp::Any result = this->defaultResult();
         for (ASTNode* node : function->mBody)
         {
-            result = this->aggregateResult(result, node->accept(this));
+            antlrcpp::Any childResult = node->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
         return result;
     }
@@ -58,7 +60,8 @@ namespace TorqueScript
         antlrcpp::Any result = this->defaultResult();
         for (ASTNode* node : package->mFunctions)
         {
-            result = this->aggregateResult(result, node->accept(this));
+            antlrcpp::Any childResult = node->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
         return result;
     }
@@ -68,7 +71,8 @@ namespace TorqueScript
         antlrcpp::Any result = this->defaultResult();
         for (ASTNode* node : call->mParameters)
         {
-            result = this->aggregateResult(result, node->accept(this));
+            antlrcpp::Any childResult = node->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
         return result;
     }
@@ -78,7 +82,8 @@ namespace TorqueScript
         antlrcpp::Any result = this->defaultResult();
         for (ASTNode* node : call->mParameters)
         {
-            result = this->aggregateResult(result, node->accept(this));
+            antlrcpp::Any childResult = node->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
         return result;
     }
@@ -86,87 +91,116 @@ namespace TorqueScript
     antlrcpp::Any ASTVisitor::visitSubFieldNode(SubFieldNode* subfield)
     {
         antlrcpp::Any result = this->defaultResult();
-        return this->aggregateResult(result, subfield->mTarget->accept(this));
+        antlrcpp::Any childResult = subfield->mTarget->accept(this);
+        return this->aggregateResult(result, childResult);
     }
 
     antlrcpp::Any ASTVisitor::visitAddNode(AddNode* expression)
     {
         antlrcpp::Any result = this->defaultResult();
-        result = this->aggregateResult(result, expression->mLeft->accept(this));
-        return this->aggregateResult(result, expression->mRight->accept(this));
+
+        antlrcpp::Any childResult = expression->mLeft->accept(this);
+        result = this->aggregateResult(result, childResult);
+        childResult = expression->mRight->accept(this);
+        return this->aggregateResult(result, childResult);
     }
 
     antlrcpp::Any ASTVisitor::visitSubtractNode(SubtractNode* expression)
     {
         antlrcpp::Any result = this->defaultResult();
-        result = this->aggregateResult(result, expression->mLeft->accept(this));
-        return this->aggregateResult(result, expression->mRight->accept(this));
+
+        antlrcpp::Any childResult = expression->mLeft->accept(this);
+        result = this->aggregateResult(result, childResult);
+        childResult = expression->mRight->accept(this);
+        return this->aggregateResult(result, childResult);
     }
 
     antlrcpp::Any ASTVisitor::visitMultiplyNode(MultiplyNode* expression)
     {
         antlrcpp::Any result = this->defaultResult();
-        result = this->aggregateResult(result, expression->mLeft->accept(this));
-        return this->aggregateResult(result, expression->mRight->accept(this));
+
+        antlrcpp::Any childResult = expression->mLeft->accept(this);
+        result = this->aggregateResult(result, childResult);
+        childResult = expression->mRight->accept(this);
+        return this->aggregateResult(result, childResult);
     }
 
     antlrcpp::Any ASTVisitor::visitDivideNode(DivideNode* expression)
     {
         antlrcpp::Any result = this->defaultResult();
-        result = this->aggregateResult(result, expression->mLeft->accept(this));
-        return this->aggregateResult(result, expression->mRight->accept(this));
+
+        antlrcpp::Any childResult = expression->mLeft->accept(this);
+        result = this->aggregateResult(result, childResult);
+        childResult = expression->mRight->accept(this);
+        return this->aggregateResult(result, childResult);
     }
 
     antlrcpp::Any ASTVisitor::visitConcatNode(ConcatNode* expression)
     {
         antlrcpp::Any result = this->defaultResult();
-        result = this->aggregateResult(result, expression->mLeft->accept(this));
-        return this->aggregateResult(result, expression->mRight->accept(this));
+
+        antlrcpp::Any childResult = expression->mLeft->accept(this);
+        result = this->aggregateResult(result, childResult);
+        childResult = expression->mRight->accept(this);
+        return this->aggregateResult(result, childResult);
     }
 
     antlrcpp::Any ASTVisitor::visitEqualsNode(EqualsNode* expression)
     {
         antlrcpp::Any result = this->defaultResult();
-        result = this->aggregateResult(result, expression->mLeft->accept(this));
-        return this->aggregateResult(result, expression->mRight->accept(this));
+
+        antlrcpp::Any childResult = expression->mLeft->accept(this);
+        result = this->aggregateResult(result, childResult);
+        childResult = expression->mRight->accept(this);
+        return this->aggregateResult(result, childResult);
     }
 
     antlrcpp::Any ASTVisitor::visitAssignmentNode(AssignmentNode* expression)
     {
         antlrcpp::Any result = this->defaultResult();
-        result = this->aggregateResult(result, expression->mLeft->accept(this));
-        return this->aggregateResult(result, expression->mRight->accept(this));
+
+        antlrcpp::Any childResult = expression->mLeft->accept(this);
+        result = this->aggregateResult(result, childResult);
+        childResult = expression->mRight->accept(this);
+        return this->aggregateResult(result, childResult);
     }
 
     antlrcpp::Any ASTVisitor::visitLessThanNode(LessThanNode* expression)
     {
         antlrcpp::Any result = this->defaultResult();
-        result = this->aggregateResult(result, expression->mLeft->accept(this));
-        return this->aggregateResult(result, expression->mRight->accept(this));
+
+        antlrcpp::Any childResult = expression->mLeft->accept(this);
+        result = this->aggregateResult(result, childResult);
+        childResult = expression->mRight->accept(this);
+        return this->aggregateResult(result, childResult);
     }
 
     antlrcpp::Any ASTVisitor::visitNegateNode(NegateNode* expression)
     {
         antlrcpp::Any result = this->defaultResult();
-        return this->aggregateResult(result, expression->mInner->accept(this));
+        antlrcpp::Any childResult = expression->mInner->accept(this);
+        return this->aggregateResult(result, childResult);
     }
 
     antlrcpp::Any ASTVisitor::visitNotNode(NotNode* expression)
     {
         antlrcpp::Any result = this->defaultResult();
-        return this->aggregateResult(result, expression->mInner->accept(this));
+        antlrcpp::Any childResult = expression->mInner->accept(this);
+        return this->aggregateResult(result, childResult);
     }
 
     antlrcpp::Any ASTVisitor::visitIncrementNode(IncrementNode* expression)
     {
         antlrcpp::Any result = this->defaultResult();
-        return this->aggregateResult(result, expression->mInner->accept(this));
+        antlrcpp::Any childResult = expression->mInner->accept(this);
+        return this->aggregateResult(result, childResult);
     }
 
     antlrcpp::Any ASTVisitor::visitDecrementNode(DecrementNode* expression)
     {
         antlrcpp::Any result = this->defaultResult();
-        return this->aggregateResult(result, expression->mInner->accept(this));
+        antlrcpp::Any childResult = expression->mInner->accept(this);
+        return this->aggregateResult(result, childResult);
     }
 
     antlrcpp::Any ASTVisitor::visitIntegerNode(IntegerNode* value)
@@ -202,11 +236,14 @@ namespace TorqueScript
     antlrcpp::Any ASTVisitor::visitArrayNode(ArrayNode* array)
     {
         antlrcpp::Any result = this->defaultResult();
-        result = this->aggregateResult(result, array->mTarget->accept(this));
+
+        antlrcpp::Any childResult = array->mTarget->accept(this);
+        result = this->aggregateResult(result, childResult);
 
         for (ASTNode* index : array->mIndices)
         {
-            result = this->aggregateResult(result, index->accept(this));
+            childResult = index->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
         return result;
     }
@@ -214,11 +251,13 @@ namespace TorqueScript
     antlrcpp::Any ASTVisitor::visitWhileNode(WhileNode* node)
     {
         antlrcpp::Any result = this->defaultResult();
-        result = this->aggregateResult(result, node->mExpression->accept(this));
+        antlrcpp::Any childResult = node->mExpression->accept(this);
+        result = this->aggregateResult(result, childResult);
 
         for (ASTNode* childNode : node->mBody)
         {
-            result = this->aggregateResult(result, childNode->accept(this));
+            childResult = childNode->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
         return result;
     }
@@ -226,13 +265,20 @@ namespace TorqueScript
     antlrcpp::Any ASTVisitor::visitForNode(ForNode* node)
     {
         antlrcpp::Any result = this->defaultResult();
-        result = this->aggregateResult(result, node->mInitializer->accept(this));
-        result = this->aggregateResult(result, node->mExpression->accept(this));
-        result = this->aggregateResult(result, node->mAdvance->accept(this));
+
+        antlrcpp::Any childResult = node->mInitializer->accept(this);
+        result = this->aggregateResult(result, childResult);
+
+        childResult = node->mExpression->accept(this);
+        result = this->aggregateResult(result, childResult);
+
+        childResult = node->mAdvance->accept(this);
+        result = this->aggregateResult(result, childResult);
 
         for (ASTNode* childNode : node->mBody)
         {
-            result = this->aggregateResult(result, childNode->accept(this));
+            childResult = childNode->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
         return result;
     }
@@ -240,7 +286,9 @@ namespace TorqueScript
     antlrcpp::Any ASTVisitor::visitReturnNode(ReturnNode* node)
     {
         antlrcpp::Any result = this->defaultResult();
-        return this->aggregateResult(result, node->mExpression->accept(this));
+
+        antlrcpp::Any childResult = node->mExpression->accept(this);
+        return this->aggregateResult(result, childResult);
     }
 
     antlrcpp::Any ASTVisitor::visitBreakNode(BreakNode* node)
@@ -251,9 +299,15 @@ namespace TorqueScript
     antlrcpp::Any ASTVisitor::visitTernaryNode(TernaryNode* node)
     {
         antlrcpp::Any result = this->defaultResult();
-        result = this->aggregateResult(result, node->mExpression->accept(this));
-        result = this->aggregateResult(result, node->mTrueValue->accept(this));
-        return this->aggregateResult(result, node->mFalseValue->accept(this));
+
+        antlrcpp::Any childResult = node->mExpression->accept(this);
+        result = this->aggregateResult(result, childResult);
+
+        childResult = node->mTrueValue->accept(this);
+        result = this->aggregateResult(result, childResult);
+
+        childResult = node->mFalseValue->accept(this);
+        return this->aggregateResult(result, childResult);
     }
 
     antlrcpp::Any ASTVisitor::visitSwitchCaseNode(SwitchCaseNode* node)
@@ -261,12 +315,14 @@ namespace TorqueScript
         antlrcpp::Any result = this->defaultResult();
         for (ASTNode* node : node->mCases)
         {
-            result = this->aggregateResult(result, node->accept(this));
+            antlrcpp::Any childResult = node->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
 
         for (ASTNode* node : node->mBody)
         {
-            result = this->aggregateResult(result, node->accept(this));
+            antlrcpp::Any childResult = node->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
         return result;
     }
@@ -274,16 +330,20 @@ namespace TorqueScript
     antlrcpp::Any ASTVisitor::visitSwitchNode(SwitchNode* node)
     {
         antlrcpp::Any result = this->defaultResult();
-        result = this->aggregateResult(result, node->mExpression->accept(this));
+
+        antlrcpp::Any childResult = node->mExpression->accept(this);
+        result = this->aggregateResult(result, childResult);
 
         for (ASTNode* childNode : node->mCases)
         {
-            result = this->aggregateResult(result, childNode->accept(this));
+            childResult = childNode->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
 
         for (ASTNode* childNode : node->mDefaultBody)
         {
-            result = this->aggregateResult(result, childNode->accept(this));
+            childResult = childNode->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
         return result;
     }
@@ -291,11 +351,14 @@ namespace TorqueScript
     antlrcpp::Any ASTVisitor::visitElseIfNode(ElseIfNode* node)
     {
         antlrcpp::Any result = this->defaultResult();
-        result = this->aggregateResult(result, node->mExpression->accept(this));
+
+        antlrcpp::Any childResult = node->mExpression->accept(this);
+        result = this->aggregateResult(result, childResult);
 
         for (ASTNode* childNode : node->mBody)
         {
-            result = this->aggregateResult(result, childNode->accept(this));
+            childResult = childNode->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
 
         return result;
@@ -304,21 +367,26 @@ namespace TorqueScript
     antlrcpp::Any ASTVisitor::visitIfNode(IfNode* node)
     {
         antlrcpp::Any result = this->defaultResult();
-        result = this->aggregateResult(result, node->mExpression->accept(this));
+
+        antlrcpp::Any childResult = node->mExpression->accept(this);
+        result = this->aggregateResult(result, childResult);
 
         for (ASTNode* childNode : node->mBody)
         {
-            result = this->aggregateResult(result, childNode->accept(this));
+            childResult = childNode->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
 
         for (ASTNode* childNode : node->mElseIfs)
         {
-            result = this->aggregateResult(result, childNode->accept(this));
+            childResult = childNode->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
 
         for (ASTNode* childNode : node->mElseBody)
         {
-            result = this->aggregateResult(result, childNode->accept(this));
+            childResult = childNode->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
         return result;
     }
@@ -329,7 +397,8 @@ namespace TorqueScript
 
         for (ASTNode* field : datablock->mFields)
         {
-            result = this->aggregateResult(result, field->accept(this));
+            antlrcpp::Any childResult = field->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
         return result;
     }
@@ -339,26 +408,35 @@ namespace TorqueScript
         antlrcpp::Any result = this->defaultResult();
         for (ASTNode* childNode : node->mFieldExpressions)
         {
-            result = this->aggregateResult(result, childNode->accept(this));
+            antlrcpp::Any childResult = childNode->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
-        result = this->aggregateResult(result, node->mRight->accept(this));
+
+        antlrcpp::Any childResult = node->mRight->accept(this);
+        result = this->aggregateResult(result, childResult);
         return result;
     }
 
     antlrcpp::Any ASTVisitor::visitObjectDeclarationNode(ObjectDeclarationNode* object)
     {
         antlrcpp::Any result = this->defaultResult();
-        result = this->aggregateResult(result, object->mName->accept(this));
-        result = this->aggregateResult(result, object->mType->accept(this));
+
+        antlrcpp::Any childResult = object->mName->accept(this);
+        result = this->aggregateResult(result, childResult);
+
+        childResult = object->mType->accept(this);
+        result = this->aggregateResult(result, childResult);
 
         for (ASTNode* field : object->mFields)
         {
-            result = this->aggregateResult(result, field->accept(this));
+            childResult = field->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
 
         for (ObjectDeclarationNode* child : object->mChildren)
         {
-            result = this->aggregateResult(result, child->accept(this));
+            childResult = child->accept(this);
+            result = this->aggregateResult(result, childResult);
         }
         return result;
     }
