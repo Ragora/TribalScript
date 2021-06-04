@@ -16,7 +16,7 @@
 
 #include <vector>
 #include <memory>
-#include <unordered_map>
+#include <map>
 
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/stringhelpers.hpp>
@@ -51,7 +51,7 @@ namespace TorqueScript
         StoredValueStack mStack;
 
         std::vector<LoopDescriptor> mLoopDescriptors;
-        std::unordered_map<std::string, StoredValue> mLocalVariables;
+        std::map<std::size_t, StoredValue> mLocalVariables;
     };
 
     /**
@@ -77,6 +77,8 @@ namespace TorqueScript
             StoredValueStack& getReturnStack();
 
             StoredValue* getVariable(const std::string& name);
+            StoredValue* getVariable(const std::size_t name);
+            void setVariable(const std::size_t name, StoredValue variable);
             void setVariable(const std::string& name, StoredValue variable);
 
         private:
