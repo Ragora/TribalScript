@@ -17,13 +17,15 @@
 #include <cstddef>
 #include <unordered_map>
 #include <string>
+#include <vector>
 #include <functional>
 
 namespace TorqueScript
 {
-    class StringTable : public std::unordered_map<unsigned int, std::string>
+    class StringTable : public std::vector<std::string>
     {
         public:
+            StringTable();
             std::size_t getOrAssign(const std::string& string);
 
             const std::string& getString(const std::size_t id);
