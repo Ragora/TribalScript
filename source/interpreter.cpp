@@ -93,21 +93,24 @@ namespace TorqueScript
 
     void Interpreter::addFunction(std::shared_ptr<Function> function)
     {
+        std::hash<std::string> stringHasher;
+
         // Make sure the registry exists - if it already does this does nothing
         std::string package = function->getPackage();
         this->addFunctionRegistry(package);
         FunctionRegistry* registry = this->findFunctionRegistry(package);
 
-        const std::string storedName = toLowerCase(function->getName());
-        const std::string storedNameSpace = toLowerCase(function->getNameSpace());
+        const std::size_t storedName = stringHasher(toLowerCase(function->getName()));
+        const std::size_t storedNameSpace = stringHasher(toLowerCase(function->getNameSpace()));
         registry->mFunctions[storedNameSpace][storedName] = function;
     }
 
     std::shared_ptr<Function> Interpreter::getFunction(const std::string& space, const std::string& name)
     {
         // Search registries back to front
-        const std::string searchedName = toLowerCase(name);
-        const std::string searchedNameSpace = toLowerCase(space);
+        std::hash<std::string> stringHasher;
+        const std::size_t searchedName = stringHasher(toLowerCase(name));
+        const std::size_t searchedNameSpace = stringHasher(toLowerCase(space));
 
         for (auto iterator = mFunctionRegistries.rbegin(); iterator != mFunctionRegistries.rend(); ++iterator)
         {
@@ -132,9 +135,11 @@ namespace TorqueScript
 
     std::shared_ptr<Function> Interpreter::getFunctionParent(Function* function)
     {
+        std::hash<std::string> stringHasher;
+
         const std::string searchedPackage = toLowerCase(function->getPackage());
-        const std::string searchedNameSpace = toLowerCase(function->getNameSpace());
-        const std::string searchedFunction = toLowerCase(function->getName());
+        const std::size_t searchedNameSpace = stringHasher(toLowerCase(function->getNameSpace()));
+        const std::size_t searchedFunction = stringHasher(toLowerCase(function->getName()));
 
         // Search registries back to front
         bool shouldSearchFunction = false;

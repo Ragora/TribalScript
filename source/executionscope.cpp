@@ -23,7 +23,8 @@ namespace TorqueScript
 
     StoredValue* ExecutionScope::getVariable(const std::string& name)
     {
-        std::string lookup = toLowerCase(name);
+        std::hash<std::string> stringHasher;
+        std::size_t lookup = stringHasher(toLowerCase(name));
 
         if (mExecutionScopeData.empty())
         {
@@ -43,7 +44,8 @@ namespace TorqueScript
 
     void ExecutionScope::setVariable(const std::string& name, StoredValue variable)
     {
-        std::string key = toLowerCase(name);
+        std::hash<std::string> stringHasher;
+        std::size_t key = stringHasher(toLowerCase(name));
 
         // Initialize if necessary
         if (mExecutionScopeData.empty())
@@ -52,7 +54,51 @@ namespace TorqueScript
         }
 
         ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+
+        auto search = currentScope.mLocalVariables.find(key);
+        if (search != currentScope.mLocalVariables.end())
+        {
+            search->second = variable;
+            return;
+        }
         currentScope.mLocalVariables[key] = variable;
+    }
+
+    StoredValue* ExecutionScope::getVariable(const std::size_t name)
+    {
+        if (mExecutionScopeData.empty())
+        {
+            return nullptr;
+        }
+
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+
+        auto search = currentScope.mLocalVariables.find(name);
+        if (search != currentScope.mLocalVariables.end())
+        {
+            return &search->second;
+        }
+
+        return nullptr;
+    }
+
+    void ExecutionScope::setVariable(const std::size_t name, StoredValue variable)
+    {
+        // Initialize if necessary
+        if (mExecutionScopeData.empty())
+        {
+            this->pushFrame(nullptr);
+        }
+
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+
+        auto search = currentScope.mLocalVariables.find(name);
+        if (search != currentScope.mLocalVariables.end())
+        {
+            search->second = variable;
+            return;
+        }
+        currentScope.mLocalVariables[name] = variable;
     }
 
     void ExecutionScope::pushFrame(Function* function)
