@@ -22,9 +22,9 @@
 
 namespace TorqueScript
 {
-    Interpreter::Interpreter()
+    Interpreter::Interpreter(const bool caseSensitive) : mCaseSensitive(caseSensitive)
     {
-        mCompiler = new Compiler();
+        mCompiler = new Compiler(this);
         mMaxRecursionDepth = 1024;
 
         // "" is the default top-level
@@ -81,9 +81,7 @@ namespace TorqueScript
 
     StoredValue* Interpreter::getGlobal(const std::string& name)
     {
-        const std::string key = toLowerCase(name);
-
-        auto search = mGlobalVariables.find(key);
+        auto search = mGlobalVariables.find(mCaseSensitive ? name : toLowerCase(name));
         if (search != mGlobalVariables.end())
         {
             return &search->second;
@@ -100,8 +98,11 @@ namespace TorqueScript
         this->addFunctionRegistry(package);
         FunctionRegistry* registry = this->findFunctionRegistry(package);
 
-        const std::size_t storedName = stringHasher(toLowerCase(function->getName()));
-        const std::size_t storedNameSpace = stringHasher(toLowerCase(function->getNameSpace()));
+        const std::string name = function->getName();
+        const std::string namespaceName = function->getNameSpace();
+
+        const std::size_t storedName = stringHasher(toLowerCase(mCaseSensitive ? name : toLowerCase(name)));
+        const std::size_t storedNameSpace = stringHasher(toLowerCase(mCaseSensitive ? namespaceName : toLowerCase(namespaceName)));
         registry->mFunctions[storedNameSpace][storedName] = function;
     }
 
@@ -109,8 +110,9 @@ namespace TorqueScript
     {
         // Search registries back to front
         std::hash<std::string> stringHasher;
-        const std::size_t searchedName = stringHasher(toLowerCase(name));
-        const std::size_t searchedNameSpace = stringHasher(toLowerCase(space));
+
+        const std::size_t searchedName = stringHasher(mCaseSensitive ? name : toLowerCase(name));
+        const std::size_t searchedNameSpace = stringHasher(mCaseSensitive ? name : toLowerCase(space));
 
         for (auto iterator = mFunctionRegistries.rbegin(); iterator != mFunctionRegistries.rend(); ++iterator)
         {
@@ -137,9 +139,14 @@ namespace TorqueScript
     {
         std::hash<std::string> stringHasher;
 
-        const std::string searchedPackage = toLowerCase(function->getPackage());
-        const std::size_t searchedNameSpace = stringHasher(toLowerCase(function->getNameSpace()));
-        const std::size_t searchedFunction = stringHasher(toLowerCase(function->getName()));
+
+        const std::string packageName = function->getPackage();
+        const std::string namespaceName = function->getNameSpace();
+        const std::string name = function->getName();
+
+        const std::string searchedPackage = toLowerCase(mCaseSensitive ? packageName : toLowerCase(packageName));
+        const std::size_t searchedNameSpace = stringHasher(mCaseSensitive ? namespaceName : toLowerCase(namespaceName));
+        const std::size_t searchedFunction = stringHasher(mCaseSensitive ? name : toLowerCase(name));
 
         // Search registries back to front
         bool shouldSearchFunction = false;
@@ -176,8 +183,13 @@ namespace TorqueScript
 
     void Interpreter::setGlobal(const std::string& name, StoredValue value)
     {
-        const std::string key = toLowerCase(name);
-        mGlobalVariables[key] = value;
+        auto search = mGlobalVariables.find(name);
+        if (search != mGlobalVariables.end())
+        {
+            search->second = value;
+            return;
+        }
+        mGlobalVariables[name] = value;
     }
 
     void Interpreter::logEcho(const std::string& message)
@@ -195,9 +207,14 @@ namespace TorqueScript
         std::cout << "Warning > " << message << std::endl;
     }
 
+    void Interpreter::logDebug(const std::string& message)
+    {
+        std::cout << "Debug > " << message << std::endl;
+    }
+
     FunctionRegistry* Interpreter::findFunctionRegistry(const std::string packageName)
     {
-        std::string searchedName = toLowerCase(packageName);
+        std::string searchedName = mCaseSensitive ? packageName : toLowerCase(packageName);
         for (FunctionRegistry& registry : mFunctionRegistries)
         {
             if (registry.mPackageName == searchedName)
@@ -213,7 +230,7 @@ namespace TorqueScript
         // We cannot remove root level
         assert(packageName != "");
 
-        std::string removedName = toLowerCase(packageName);
+        std::string removedName = mCaseSensitive ? packageName : toLowerCase(packageName);
         for (auto iterator = mFunctionRegistries.begin(); iterator != mFunctionRegistries.end(); ++iterator)
         {
             FunctionRegistry& registry = *iterator;
@@ -228,7 +245,7 @@ namespace TorqueScript
 
     void Interpreter::addFunctionRegistry(const std::string& packageName)
     {
-        std::string addedName = toLowerCase(packageName);
+        std::string addedName = mCaseSensitive ? packageName : toLowerCase(packageName);
         if (this->findFunctionRegistry(packageName))
         {
             return;
@@ -239,7 +256,7 @@ namespace TorqueScript
 
     void Interpreter::activateFunctionRegistry(const std::string& packageName)
     {
-        std::string activatedName = toLowerCase(packageName);
+        std::string activatedName = mCaseSensitive ? packageName : toLowerCase(packageName);
 
         // When we activate a package, it gets moved to the back to take precedence in the stack
         for (auto iterator = mFunctionRegistries.begin(); iterator != mFunctionRegistries.end(); ++iterator)
@@ -261,7 +278,7 @@ namespace TorqueScript
 
     void Interpreter::deactivateFunctionRegistry(const std::string& packageName)
     {
-        std::string deactivatedName = toLowerCase(packageName);
+        std::string deactivatedName = mCaseSensitive ? packageName : toLowerCase(packageName);
 
         FunctionRegistry* deactivated = this->findFunctionRegistry(deactivatedName);
         if (!deactivated)

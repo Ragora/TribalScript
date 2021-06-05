@@ -44,7 +44,7 @@ namespace TorqueScript
     class Interpreter
     {
         public:
-            Interpreter();
+            Interpreter(const bool caseSensitive = false);
             ~Interpreter();
 
             void setGlobal(const std::string& name, StoredValue value);
@@ -93,6 +93,12 @@ namespace TorqueScript
              */
             virtual void logWarning(const std::string& message);
 
+            /**
+             *  @brief Asks the interpreter to handle a debug log message.
+             *  @param message The message to output as a debug message.
+             */
+            virtual void logDebug(const std::string& message);
+
             //! The maximum recursion depth allowed by this interpreter. If set to 0, no limit is enforced.
             unsigned int mMaxRecursionDepth;
 
@@ -102,7 +108,11 @@ namespace TorqueScript
             //! The string table associated with this interpreter.
             StringTable mStringTable;
 
+            //! Whether or not this interpreter is operating in case sensitive mode. That is, variable names & function call names will be case sensitive if this is true.
+            const bool mCaseSensitive;
+
         private:
+
             //! Keep a ready instance of the compiler on hand as it is reusable.
             Compiler* mCompiler;
 

@@ -19,11 +19,17 @@
 
 #include <torquescript/compiler.hpp>
 #include <torquescript/astbuilder.hpp>
+#include <torquescript/interpreter.hpp>
 #include <torquescript/instructionsequence.hpp>
 #include <torquescript/parsererrorlistener.hpp>
 
 namespace TorqueScript
 {
+    Compiler::Compiler(Interpreter* interpreter) : mInterpreter(interpreter)
+    {
+
+    }
+
     CodeBlock* Compiler::compileStream(std::istream& input, StringTable* stringTable)
     {
         ParserErrorListener parserErrorListener;
@@ -48,7 +54,6 @@ namespace TorqueScript
         if (parserErrorListener.getErrors().empty())
         {
             // Used for generation of instructions
-            mStringTable = stringTable;
             InstructionSequence instructions = this->visitProgramNode(tree).as<InstructionSequence>();
             delete tree;
 
@@ -172,7 +177,7 @@ namespace TorqueScript
     {
         InstructionSequence result;
 
-        const std::size_t stringID = mStringTable->getOrAssign(value->mValue);
+        const std::size_t stringID = mInterpreter->mStringTable.getOrAssign(value->mValue);
         result.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(stringID)));
         return result;
     }
@@ -181,7 +186,7 @@ namespace TorqueScript
     {
         InstructionSequence result;
 
-        const std::size_t stringID = mStringTable->getOrAssign(value->mValue);
+        const std::size_t stringID = mInterpreter->mStringTable.getOrAssign(value->mValue);
         result.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(stringID)));
         return result;
     }
@@ -193,7 +198,8 @@ namespace TorqueScript
         // NOTE: For now we collapse the name into a single string for lookup
         std::string lookupName = value->getName();
 
-        const std::size_t stringID = mStringTable->getOrAssign(lookupName);
+        const std::string variableName = mInterpreter->mCaseSensitive ? toLowerCase(lookupName) : lookupName;
+        const std::size_t stringID = mInterpreter->mStringTable.getOrAssign(variableName);
         out.push_back(std::shared_ptr<Instruction>(new PushLocalReferenceInstruction(stringID)));
         return out;
     }
@@ -205,7 +211,8 @@ namespace TorqueScript
         // NOTE: For now we collapse the name into a single string for lookup
         std::string lookupName = value->getName();
 
-        const std::size_t stringID = mStringTable->getOrAssign(lookupName);
+        const std::string variableName = mInterpreter->mCaseSensitive ? toLowerCase(lookupName) : lookupName;
+        const std::size_t stringID = mInterpreter->mStringTable.getOrAssign(variableName);
         out.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(stringID)));
         return out;
     }
