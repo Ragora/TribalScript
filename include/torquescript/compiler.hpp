@@ -56,11 +56,14 @@ namespace TorqueScript
             virtual antlrcpp::Any aggregateResult(antlrcpp::Any& aggregate, antlrcpp::Any& nextResult) override;
 
         private:
+            std::string mCurrentPackage;
             StringTable* mStringTable;
-                
+
             /*
                 Compiler Routines ==============================
             */
+
+            virtual antlrcpp::Any visitPackageDeclarationNode(PackageDeclarationNode* package) override;
             virtual antlrcpp::Any visitFunctionDeclarationNode(FunctionDeclarationNode* function) override;
             virtual antlrcpp::Any visitFunctionCallNode(FunctionCallNode* call) override;
             virtual antlrcpp::Any visitSubFunctionCallNode(SubFunctionCallNode* call) override;
@@ -77,6 +80,7 @@ namespace TorqueScript
             virtual antlrcpp::Any visitIncrementNode(IncrementNode* expression) override;
             virtual antlrcpp::Any visitWhileNode(WhileNode* node) override;
             virtual antlrcpp::Any visitForNode(ForNode* node) override;
+            virtual antlrcpp::Any visitBreakNode(BreakNode* node) override;
             virtual antlrcpp::Any visitReturnNode(ReturnNode* node) override;
             virtual antlrcpp::Any visitTernaryNode(TernaryNode* node) override;
             virtual antlrcpp::Any visitSwitchNode(SwitchNode* node) override;

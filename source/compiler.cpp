@@ -111,6 +111,16 @@ namespace TorqueScript
         return result;
     }
 
+    antlrcpp::Any Compiler::visitPackageDeclarationNode(PackageDeclarationNode* package)
+    {
+        mCurrentPackage = package->mName;
+
+        antlrcpp::Any result = ASTVisitor::visitPackageDeclarationNode(package);
+
+        mCurrentPackage = PACKAGE_EMPTY;
+        return result;
+    }
+
     antlrcpp::Any Compiler::visitFunctionDeclarationNode(FunctionDeclarationNode* function)
     {
         InstructionSequence functionBody;
@@ -122,7 +132,7 @@ namespace TorqueScript
         functionBody.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(0))); // Add an empty return if we hit end of control but nothing returned
 
         InstructionSequence result;
-        result.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(PACKAGE_EMPTY, function->mNameSpace, function->mName, function->mParameterNames, functionBody)));
+        result.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(mCurrentPackage, function->mNameSpace, function->mName, function->mParameterNames, functionBody)));
         return result;
     }
 
@@ -284,8 +294,14 @@ namespace TorqueScript
         // Add a NOP for a jump target
         bodyCode.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
 
+        // Add loop trackers
+        bodyCode.push_back(std::shared_ptr<Instruction>(new PopLoopInstruction()));
+        out.push_back(std::shared_ptr<Instruction>(new PushLoopInstruction(expressionCode.size() + bodyCode.size())));
+
         out.insert(out.end(), expressionCode.begin(), expressionCode.end());
         out.insert(out.end(), bodyCode.begin(), bodyCode.end());
+
+
         return out;
     }
 
@@ -317,11 +333,21 @@ namespace TorqueScript
         // Check if our expression is false
         expressionCode.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(forBody.size())));
 
+        forBody.push_back(std::shared_ptr<Instruction>(new PopLoopInstruction()));
+        initializerCode.push_back(std::shared_ptr<Instruction>(new PushLoopInstruction(expressionCode.size() + forBody.size())));
+
         // Output final code
         out.insert(out.end(), initializerCode.begin(), initializerCode.end());
         out.insert(out.end(), expressionCode.begin(), expressionCode.end());
         out.insert(out.end(), forBody.begin(), forBody.end());
 
+        return out;
+    }
+
+    antlrcpp::Any Compiler::visitBreakNode(BreakNode* node)
+    {
+        InstructionSequence out;
+        out.push_back(std::shared_ptr<Instruction>(new BreakInstruction()));
         return out;
     }
 
