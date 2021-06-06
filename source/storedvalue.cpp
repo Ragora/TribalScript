@@ -53,12 +53,10 @@ namespace TorqueScript
         switch (mType)
         {
             case StoredValueType::LocalReference:
-                variableName = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-                state->mExecutionScope.setVariable(variableName, newValue.getReferencedValueCopy(state));
+                state->mExecutionScope.setVariable(mStorage.mStringID, newValue.getReferencedValueCopy(state));
                 return true;
             case StoredValueType::GlobalReference:
-                variableName = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-                state->mInterpreter->setGlobal(variableName, newValue.getReferencedValueCopy(state));
+                state->mInterpreter->setGlobal(mStorage.mStringID, newValue.getReferencedValueCopy(state));
                 return true;
             case StoredValueType::SubfieldReference:
                 assert(mConsoleObject);
@@ -78,16 +76,14 @@ namespace TorqueScript
         switch (mType)
         {
             case StoredValueType::LocalReference:
-                stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-                referenced = state->mExecutionScope.getVariable(stringValue);
+                referenced = state->mExecutionScope.getVariable(mStorage.mStringID);
                 if (referenced)
                 {
                     return referenced->toInteger(state);
                 }
                 return 0;
             case StoredValueType::GlobalReference:
-                stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-                referenced = state->mInterpreter->getGlobal(stringValue);
+                referenced = state->mInterpreter->getGlobal(mStorage.mStringID);
                 if (referenced)
                 {
                     return referenced->toInteger(state);
@@ -130,16 +126,14 @@ namespace TorqueScript
         switch (mType)
         {
             case StoredValueType::LocalReference:
-                stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-                referenced = state->mExecutionScope.getVariable(stringValue);
+                referenced = state->mExecutionScope.getVariable(mStorage.mStringID);
                 if (referenced)
                 {
                     return referenced->toString(state);
                 }
                 return "";
             case StoredValueType::GlobalReference:
-                stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-                referenced = state->mInterpreter->getGlobal(stringValue);
+                referenced = state->mInterpreter->getGlobal(mStorage.mStringID);
                 if (referenced)
                 {
                     return referenced->toString(state);
@@ -174,17 +168,14 @@ namespace TorqueScript
         switch (mType)
         {
             case StoredValueType::LocalReference:
-                stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-
-                referenced = state->mExecutionScope.getVariable(stringValue);
+                referenced = state->mExecutionScope.getVariable(mStorage.mStringID);
                 if (referenced)
                 {
                     return referenced->getReferencedValueCopy(state);
                 }
 				break;
             case StoredValueType::GlobalReference:
-                stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-                referenced = state->mInterpreter->getGlobal(stringValue);
+                referenced = state->mInterpreter->getGlobal(mStorage.mStringID);
                 if (referenced)
                 {
                     return referenced->getReferencedValueCopy(state);
@@ -217,16 +208,14 @@ namespace TorqueScript
         switch (mType)
         {
             case StoredValueType::LocalReference:
-                stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-                referenced = state->mExecutionScope.getVariable(stringValue);
+                referenced = state->mExecutionScope.getVariable(mStorage.mStringID);
                 if (referenced)
                 {
                     return referenced->toFloat(state);
                 }
                 return 0;
             case StoredValueType::GlobalReference:
-                stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-                referenced = state->mInterpreter->getGlobal(stringValue);
+                referenced = state->mInterpreter->getGlobal(mStorage.mStringID);
                 if (referenced)
                 {
                     return referenced->toFloat(state);

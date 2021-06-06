@@ -24,6 +24,11 @@
 
 namespace TorqueScript
 {
+    Compiler::Compiler(const InterpreterConfiguration& config) : mConfig(config)
+    {
+
+    }
+
     CodeBlock* Compiler::compileStream(std::istream& input, StringTable* stringTable)
     {
         ParserErrorListener parserErrorListener;
@@ -131,8 +136,17 @@ namespace TorqueScript
         }
         functionBody.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(0))); // Add an empty return if we hit end of control but nothing returned
 
+        std::vector<std::string> parameterNames = function->mParameterNames;
+        if (!mConfig.mCaseSensitive)
+        {
+            for (unsigned int iteration = 0; iteration < parameterNames.size(); ++iteration)
+            {
+                parameterNames[iteration] = toLowerCase(parameterNames[iteration]);
+            }
+        }
+
         InstructionSequence result;
-        result.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(mCurrentPackage, function->mNameSpace, function->mName, function->mParameterNames, functionBody)));
+        result.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(mCurrentPackage, function->mNameSpace, function->mName, parameterNames, functionBody)));
         return result;
     }
 
@@ -203,7 +217,7 @@ namespace TorqueScript
         // NOTE: For now we collapse the name into a single string for lookup
         std::string lookupName = value->getName();
 
-        const std::size_t stringID = mStringTable->getOrAssign(lookupName);
+        const std::size_t stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? lookupName : toLowerCase(lookupName));
         out.push_back(std::shared_ptr<Instruction>(new PushLocalReferenceInstruction(stringID)));
         return out;
     }
@@ -215,7 +229,7 @@ namespace TorqueScript
         // NOTE: For now we collapse the name into a single string for lookup
         std::string lookupName = value->getName();
 
-        const std::size_t stringID = mStringTable->getOrAssign(lookupName);
+        const std::size_t stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? lookupName : toLowerCase(lookupName));
         out.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(stringID)));
         return out;
     }
@@ -549,6 +563,20 @@ namespace TorqueScript
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
         out.push_back(std::shared_ptr<Instruction>(new ConcatInstruction()));
+
+        return out;
+    }
+
+    antlrcpp::Any Compiler::visitDivideNode(DivideNode* expression)
+    {
+        InstructionSequence out;
+
+        InstructionSequence lhsCode = expression->mLeft->accept(this).as<InstructionSequence>();
+        InstructionSequence rhsCode = expression->mRight->accept(this).as<InstructionSequence>();
+
+        out.insert(out.end(), lhsCode.begin(), lhsCode.end());
+        out.insert(out.end(), rhsCode.begin(), rhsCode.end());
+        out.push_back(std::shared_ptr<Instruction>(new DivideInstruction()));
 
         return out;
     }

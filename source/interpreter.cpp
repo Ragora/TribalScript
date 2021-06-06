@@ -22,9 +22,14 @@
 
 namespace TorqueScript
 {
-    Interpreter::Interpreter()
+    Interpreter::Interpreter() : Interpreter(InterpreterConfiguration())
     {
-        mCompiler = new Compiler();
+
+    }
+
+    Interpreter::Interpreter(const InterpreterConfiguration& config) : mConfig(config)
+    {
+        mCompiler = new Compiler(mConfig);
         mMaxRecursionDepth = 1024;
 
         // "" is the default top-level
@@ -81,9 +86,18 @@ namespace TorqueScript
 
     StoredValue* Interpreter::getGlobal(const std::string& name)
     {
-        const std::string key = toLowerCase(name);
+        std::hash<std::string> stringHasher;
+        auto search = mGlobalVariables.find(mConfig.mCaseSensitive ? stringHasher(name) : stringHasher(toLowerCase(name)));
+        if (search != mGlobalVariables.end())
+        {
+            return &search->second;
+        }
+        return nullptr;
+    }
 
-        auto search = mGlobalVariables.find(key);
+    StoredValue* Interpreter::getGlobal(const std::size_t name)
+    {
+        auto search = mGlobalVariables.find(name);
         if (search != mGlobalVariables.end())
         {
             return &search->second;
@@ -171,8 +185,14 @@ namespace TorqueScript
 
     void Interpreter::setGlobal(const std::string& name, StoredValue value)
     {
-        const std::string key = toLowerCase(name);
+        std::hash<std::string> stringHasher;
+        const std::size_t key = stringHasher(mConfig.mCaseSensitive ? name : toLowerCase(name));
         mGlobalVariables[key] = value;
+    }
+
+    void Interpreter::setGlobal(const std::size_t name, StoredValue value)
+    {
+        mGlobalVariables[name] = value;
     }
 
     void Interpreter::logEcho(const std::string& message)

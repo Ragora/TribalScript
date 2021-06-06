@@ -23,6 +23,7 @@
 #include <torquescript/function.hpp>
 #include <torquescript/stringtable.hpp>
 #include <torquescript/codeblock.hpp>
+#include <torquescript/interpreterconfiguration.hpp>
 #include <torquescript/storedvaluestack.hpp>
 
 namespace TorqueScript
@@ -51,7 +52,7 @@ namespace TorqueScript
         StoredValueStack mStack;
 
         std::vector<LoopDescriptor> mLoopDescriptors;
-        std::unordered_map<std::string, StoredValue> mLocalVariables;
+        std::map<std::size_t, StoredValue> mLocalVariables;
     };
 
     /**
@@ -61,7 +62,7 @@ namespace TorqueScript
     class ExecutionScope
     {
         public:
-            ExecutionScope();
+            ExecutionScope(const InterpreterConfiguration& config);
 
             void pushFrame(Function* function);
             void popFrame();
@@ -77,7 +78,11 @@ namespace TorqueScript
             StoredValueStack& getReturnStack();
 
             StoredValue* getVariable(const std::string& name);
+            StoredValue* getVariable(const std::size_t name);
             void setVariable(const std::string& name, StoredValue variable);
+            void setVariable(const std::size_t name, StoredValue variable);
+
+            const InterpreterConfiguration mConfig;
 
         private:
             //! A stack of mappings of local variable names to their stored value instance.

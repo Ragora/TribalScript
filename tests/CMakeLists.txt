@@ -45,3 +45,7 @@ add_test(NAME SwitchTest COMMAND SwitchTest WORKING_DIRECTORY ${PROJECT_SOURCE_D
 add_executable(OpOrderTest opOrder.cpp)
 target_link_libraries(OpOrderTest TorqueCompiler gtest_main)
 add_test(NAME OpOrderTest COMMAND OpOrderTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+
+add_executable(CaseSensitivityTest caseSensitive.cpp)
+target_link_libraries(CaseSensitivityTest TorqueCompiler gtest_main)
+add_test(NAME CaseSensitivityTest COMMAND CaseSensitivityTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)

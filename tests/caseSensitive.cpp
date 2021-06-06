@@ -12,35 +12,38 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-
-#include <vector>
 #include <memory>
 
+#include "gtest/gtest.h"
+
 #include <torquescript/interpreter.hpp>
-#include <torquescript/executionscope.hpp>
+#include <torquescript/storedvalue.hpp>
+#include <torquescript/builtins.hpp>
+#include <torquescript/executionstate.hpp>
 
-namespace TorqueScript
+TEST(InterpreterTest, Array)
 {
-    /**
-     *  @brief Execution state structure - this is passed around internally in the virtual machine
-     *  for arbitrary access.
-     */
-    class ExecutionState
-    {
-        public:
-            ExecutionState(Interpreter* interpreter) : mInterpreter(interpreter), mExecutionScope(interpreter->mConfig)
-            {
-
-            }
-
-            //! Instruction pointer - used primarily for handling breaks.
-            unsigned int mInstructionPointer;
-
-            //! The interpreter instance this state is associated with.
-            Interpreter* mInterpreter;
-
-            //! The execution scope used for managing local variables & for loop structures.
-            ExecutionScope mExecutionScope;
+    TorqueScript::InterpreterConfiguration config = {
+        .mCaseSensitive = true
     };
+
+    TorqueScript::Interpreter interpreter(config);
+    TorqueScript::registerBuiltIns(&interpreter);
+
+    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    interpreter.execute("cases/caseSensitive.cs", state);
+
+    TorqueScript::StoredValue* resultLower = interpreter.getGlobal("result");
+    ASSERT_TRUE(resultLower);
+    TorqueScript::StoredValue* resultUpper = interpreter.getGlobal("RESULT");
+    ASSERT_TRUE(resultUpper);
+
+    ASSERT_EQ(resultLower->toFloat(state), 2.0f);
+    ASSERT_EQ(resultUpper->toFloat(state), 0.5f);
+}
+
+int main()
+{
+    testing::InitGoogleTest();
+    return RUN_ALL_TESTS();
 }

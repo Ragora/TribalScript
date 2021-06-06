@@ -18,6 +18,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include <torquescript/interpreterconfiguration.hpp>
 #include <torquescript/function.hpp>
 #include <torquescript/consoleobject.hpp>
 #include <torquescript/storedvalue.hpp>
@@ -45,11 +46,14 @@ namespace TorqueScript
     {
         public:
             Interpreter();
+            Interpreter(const InterpreterConfiguration& config);
             ~Interpreter();
 
+            void setGlobal(const std::size_t name, StoredValue value);
             void setGlobal(const std::string& name, StoredValue value);
 
             StoredValue* getGlobal(const std::string& name);
+            StoredValue* getGlobal(const std::size_t name);
 
             /**
              *  @brief Ask the interpreter to compile the input string and return the resulting
@@ -102,6 +106,8 @@ namespace TorqueScript
             //! The string table associated with this interpreter.
             StringTable mStringTable;
 
+            const InterpreterConfiguration mConfig;
+
         private:
             //! Keep a ready instance of the compiler on hand as it is reusable.
             Compiler* mCompiler;
@@ -110,6 +116,6 @@ namespace TorqueScript
             std::vector<FunctionRegistry> mFunctionRegistries;
 
             //! A mapping of global variable names to their stored value instance.
-            std::unordered_map<std::string, StoredValue> mGlobalVariables;
+            std::unordered_map<std::size_t, StoredValue> mGlobalVariables;
     };
 }

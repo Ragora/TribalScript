@@ -22,6 +22,7 @@
 #include <torquescript/codeblock.hpp>
 #include <torquescript/stringtable.hpp>
 #include <torquescript/instructions.hpp>
+#include <torquescript/interpreterconfiguration.hpp>
 #include <torquescript/instructionsequence.hpp>
 
 namespace TorqueScript
@@ -33,6 +34,8 @@ namespace TorqueScript
     class Compiler : public ASTVisitor
     {
         public:
+            Compiler(const InterpreterConfiguration& config);
+
             /**
              *  @brief Ask the compiler to generate a codeblock from the provided stream.
              *  @param input The input to generate from.
@@ -54,6 +57,8 @@ namespace TorqueScript
 
             virtual antlrcpp::Any defaultResult() override;
             virtual antlrcpp::Any aggregateResult(antlrcpp::Any& aggregate, antlrcpp::Any& nextResult) override;
+
+            const InterpreterConfiguration mConfig;
 
         private:
             std::string mCurrentPackage;
@@ -89,6 +94,7 @@ namespace TorqueScript
             virtual antlrcpp::Any visitEqualsNode(EqualsNode* expression) override;
             virtual antlrcpp::Any visitConcatNode(ConcatNode* expression) override;
             virtual antlrcpp::Any visitMultiplyNode(MultiplyNode* expression) override;
+            virtual antlrcpp::Any visitDivideNode(DivideNode* expression) override;
             virtual antlrcpp::Any visitDatablockDeclarationNode(DatablockDeclarationNode* datablock) override;
             virtual antlrcpp::Any visitObjectDeclarationNode(ObjectDeclarationNode* object);
     };

@@ -16,14 +16,33 @@
 
 namespace TorqueScript
 {
-    ExecutionScope::ExecutionScope()
+    ExecutionScope::ExecutionScope(const InterpreterConfiguration& config) : mConfig(config)
     {
         this->pushFrame(nullptr);
     }
 
+    StoredValue* ExecutionScope::getVariable(const std::size_t name)
+    {
+        if (mExecutionScopeData.empty())
+        {
+            return nullptr;
+        }
+
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+
+        auto search = currentScope.mLocalVariables.find(name);
+        if (search != currentScope.mLocalVariables.end())
+        {
+            return &search->second;
+        }
+
+        return nullptr;
+    }
+
     StoredValue* ExecutionScope::getVariable(const std::string& name)
     {
-        std::string lookup = toLowerCase(name);
+        std::hash<std::string> stringHasher;
+        std::size_t lookup = stringHasher(mConfig.mCaseSensitive ? name : toLowerCase(name));
 
         if (mExecutionScopeData.empty())
         {
@@ -41,9 +60,22 @@ namespace TorqueScript
         return nullptr;
     }
 
+    void ExecutionScope::setVariable(const std::size_t name, StoredValue variable)
+    {
+        // Initialize if necessary
+        if (mExecutionScopeData.empty())
+        {
+            this->pushFrame(nullptr);
+        }
+
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+        currentScope.mLocalVariables[name] = variable;
+    }
+
     void ExecutionScope::setVariable(const std::string& name, StoredValue variable)
     {
-        std::string key = toLowerCase(name);
+        std::hash<std::string> stringHasher;
+        std::size_t key = stringHasher(mConfig.mCaseSensitive ? name : toLowerCase(name));
 
         // Initialize if necessary
         if (mExecutionScopeData.empty())
