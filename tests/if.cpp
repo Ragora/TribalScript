@@ -31,13 +31,13 @@ TEST(InterpreterTest, If)
 
     // Here we have three values
     TorqueScript::StoredValue* resultOne = interpreter.getGlobal("one");
-    EXPECT_TRUE(resultOne);
+    ASSERT_TRUE(resultOne);
     TorqueScript::StoredValue* resultTwo = interpreter.getGlobal("two");
-    EXPECT_TRUE(resultTwo);
+    ASSERT_TRUE(resultTwo);
     TorqueScript::StoredValue* resultThree = interpreter.getGlobal("three");
-    EXPECT_TRUE(resultThree);
+    ASSERT_TRUE(resultThree);
     TorqueScript::StoredValue* resultFour = interpreter.getGlobal("four");
-    EXPECT_TRUE(resultFour);
+    ASSERT_TRUE(resultFour);
 
     ASSERT_EQ(resultOne->toInteger(state), 10);
     ASSERT_EQ(resultTwo->toInteger(state), -10);

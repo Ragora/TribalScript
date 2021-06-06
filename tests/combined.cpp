@@ -31,7 +31,7 @@ TEST(InterpreterTest, Combined)
 
     // We have several globals here
     TorqueScript::StoredValue* result = interpreter.getGlobal("result");
-    EXPECT_TRUE(result);
+    ASSERT_TRUE(result);
 
     ASSERT_EQ(result->toInteger(state), 120);
 }

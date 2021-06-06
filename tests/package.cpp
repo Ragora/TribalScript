@@ -31,18 +31,18 @@ TEST(InterpreterTest, Package)
 
     // We have several globals here
     TorqueScript::StoredValue* before = interpreter.getGlobal("before");
-    EXPECT_TRUE(before);
+    ASSERT_TRUE(before);
     TorqueScript::StoredValue* afterA = interpreter.getGlobal("afterA");
-    EXPECT_TRUE(afterA);
+    ASSERT_TRUE(afterA);
     TorqueScript::StoredValue* afterB = interpreter.getGlobal("afterB");
-    EXPECT_TRUE(afterB);
+    ASSERT_TRUE(afterB);
 
     TorqueScript::StoredValue* beforeNamespace = interpreter.getGlobal("beforenamespace");
-    EXPECT_TRUE(beforeNamespace);
+    ASSERT_TRUE(beforeNamespace);
     TorqueScript::StoredValue* afterANamespace = interpreter.getGlobal("afterAnamespace");
-    EXPECT_TRUE(afterANamespace);
+    ASSERT_TRUE(afterANamespace);
     TorqueScript::StoredValue* afterBNamespace = interpreter.getGlobal("afterBnamespace");
-    EXPECT_TRUE(afterBNamespace);
+    ASSERT_TRUE(afterBNamespace);
 
     ASSERT_EQ(before->toInteger(state), 1);
     ASSERT_EQ(afterA->toInteger(state), 2);

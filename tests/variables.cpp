@@ -31,9 +31,9 @@ TEST(InterpreterTest, Variables)
 
     // We have a global and a global value within a namespace
     TorqueScript::StoredValue* resultGlobal = interpreter.getGlobal("global");
-    EXPECT_TRUE(resultGlobal);
+    ASSERT_TRUE(resultGlobal);
     TorqueScript::StoredValue* resultGlobalNameSpace = interpreter.getGlobal("global::namespaced");
-    EXPECT_TRUE(resultGlobalNameSpace);
+    ASSERT_TRUE(resultGlobalNameSpace);
 
     ASSERT_EQ(resultGlobal->toInteger(state), 50);
     ASSERT_EQ(resultGlobalNameSpace->toInteger(state), 123);

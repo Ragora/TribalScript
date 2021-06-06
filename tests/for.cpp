@@ -31,7 +31,7 @@ TEST(InterpreterTest, ForLoop)
 
     // After execution, the result of $global should be 50
     TorqueScript::StoredValue* result = interpreter.getGlobal("global");
-    EXPECT_TRUE(result);
+    ASSERT_TRUE(result);
 
     ASSERT_EQ(result->toInteger(state), 50);
 }

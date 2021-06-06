@@ -30,13 +30,13 @@ TEST(InterpreterTest, Switch)
     interpreter.execute("cases/switch.cs", state);
 
     TorqueScript::StoredValue* resultOne = interpreter.getGlobal("global::one");
-    EXPECT_TRUE(resultOne);
+    ASSERT_TRUE(resultOne);
     TorqueScript::StoredValue* resultTwo = interpreter.getGlobal("global::two");
-    EXPECT_TRUE(resultTwo);
+    ASSERT_TRUE(resultTwo);
     TorqueScript::StoredValue* resultThree = interpreter.getGlobal("global::three");
-    EXPECT_TRUE(resultThree);
+    ASSERT_TRUE(resultThree);
     TorqueScript::StoredValue* resultFour = interpreter.getGlobal("global::four");
-    EXPECT_TRUE(resultFour);
+    ASSERT_TRUE(resultFour);
 
     ASSERT_EQ(resultOne->toInteger(state), 5);
     ASSERT_EQ(resultTwo->toInteger(state), 5);
