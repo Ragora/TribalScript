@@ -14,33 +14,16 @@
 
 #pragma once
 
-#include <vector>
-#include <memory>
-
-#include <torquescript/interpreter.hpp>
-#include <torquescript/executionscope.hpp>
-
 namespace TorqueScript
 {
-    /**
-     *  @brief Execution state structure - this is passed around internally in the virtual machine
-     *  for arbitrary access.
-     */
-    class ExecutionState
+    struct InterpreterConfiguration
     {
-        public:
-            ExecutionState(Interpreter* interpreter) : mInterpreter(interpreter), mExecutionScope(interpreter->mConfig, &interpreter->mStringTable)
-            {
+        InterpreterConfiguration(const bool caseSensitive = false) : mCaseSensitive(caseSensitive)
+        {
 
-            }
+        }
 
-            //! Instruction pointer - used primarily for handling breaks.
-            unsigned int mInstructionPointer;
-
-            //! The interpreter instance this state is associated with.
-            Interpreter* mInterpreter;
-
-            //! The execution scope used for managing local variables & for loop structures.
-            ExecutionScope mExecutionScope;
+        //! Whether or not the interpreter should be case sensitive.
+        const bool mCaseSensitive;
     };
 }

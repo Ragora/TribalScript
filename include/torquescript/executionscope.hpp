@@ -23,6 +23,7 @@
 #include <torquescript/function.hpp>
 #include <torquescript/stringtable.hpp>
 #include <torquescript/codeblock.hpp>
+#include <torquescript/stringtable.hpp>
 #include <torquescript/interpreterconfiguration.hpp>
 #include <torquescript/storedvaluestack.hpp>
 
@@ -62,7 +63,7 @@ namespace TorqueScript
     class ExecutionScope
     {
         public:
-            ExecutionScope(const InterpreterConfiguration& config);
+            ExecutionScope(const InterpreterConfiguration& config, StringTable* table);
 
             void pushFrame(Function* function);
             void popFrame();
@@ -85,6 +86,8 @@ namespace TorqueScript
             const InterpreterConfiguration mConfig;
 
         private:
+            StringTable* mStringTable;
+
             //! A stack of mappings of local variable names to their stored value instance.
             std::vector<ExecutionScopeData> mExecutionScopeData;
     };

@@ -86,8 +86,8 @@ namespace TorqueScript
 
     StoredValue* Interpreter::getGlobal(const std::string& name)
     {
-        std::hash<std::string> stringHasher;
-        auto search = mGlobalVariables.find(mConfig.mCaseSensitive ? stringHasher(name) : stringHasher(toLowerCase(name)));
+        const std::size_t stringID = mStringTable.getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
+        auto search = mGlobalVariables.find(stringID);
         if (search != mGlobalVariables.end())
         {
             return &search->second;
@@ -185,13 +185,25 @@ namespace TorqueScript
 
     void Interpreter::setGlobal(const std::string& name, StoredValue value)
     {
-        std::hash<std::string> stringHasher;
-        const std::size_t key = stringHasher(mConfig.mCaseSensitive ? name : toLowerCase(name));
+        const std::size_t key = mStringTable.getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
+
+        auto search = mGlobalVariables.find(key);
+        if (search != mGlobalVariables.end())
+        {
+            search->second = value;
+            return;
+        }
         mGlobalVariables[key] = value;
     }
 
     void Interpreter::setGlobal(const std::size_t name, StoredValue value)
     {
+        auto search = mGlobalVariables.find(name);
+        if (search != mGlobalVariables.end())
+        {
+            search->second = value;
+            return;
+        }
         mGlobalVariables[name] = value;
     }
 
