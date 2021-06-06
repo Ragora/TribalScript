@@ -37,10 +37,10 @@ namespace TorqueScript
     {
         std::vector<ASTNode*> result;
 
-        size_t n = node->children.size();
-        for (size_t i = 0; i < n; i++)
+        const size_t childCount = node->children.size();
+        for (size_t iteration = 0; iteration < childCount; iteration++)
         {
-            std::vector<ASTNode*> childResult = node->children[i]->accept(this).as<std::vector<ASTNode*>>();
+            std::vector<ASTNode*> childResult = node->children[iteration]->accept(this).as<std::vector<ASTNode*>>();
             result.insert(result.end(), childResult.begin(), childResult.end());
         }
         return result;
@@ -635,7 +635,7 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any ASTBuilder::visitDatablock_declaration(TorqueParser::Datablock_declarationContext* context) 
+    antlrcpp::Any ASTBuilder::visitDatablock_declaration(TorqueParser::Datablock_declarationContext* context)
     {
         std::vector<ASTNode*> result;
         std::vector<ASTNode*> fields = this->visitChildren(context).as<std::vector<ASTNode*>>();
@@ -645,7 +645,7 @@ namespace TorqueScript
         std::string parentName = "";
         std::vector<antlr4::tree::TerminalNode*> labels = context->LABEL();
 
-        // If there's a third element, we have our parent 
+        // If there's a third element, we have our parent
         if (labels.size() == 3)
         {
             parentName = labels[2]->getText();
@@ -662,7 +662,7 @@ namespace TorqueScript
         std::vector<ASTNode*> result;
         std::vector<ASTNode*> objectContent = this->visitChildren(context).as<std::vector<ASTNode*>>();
         assert(objectContent.size() >= 1);
-          
+
         ASTNode* name = nullptr;
         ASTNode* typeName = nullptr;
         if (context->LABEL())
@@ -699,7 +699,7 @@ namespace TorqueScript
                 fields.push_back(component);
             }
         }
- 
+
         result.push_back(new ObjectDeclarationNode(name, typeName, children, fields));
         return result;
     }

@@ -30,7 +30,6 @@ namespace TorqueScript
     Interpreter::Interpreter(const InterpreterConfiguration& config) : mConfig(config)
     {
         mCompiler = new Compiler(mConfig);
-        mMaxRecursionDepth = 1024;
 
         // "" is the default top-level
         this->addFunctionRegistry(PACKAGE_EMPTY);
@@ -205,21 +204,6 @@ namespace TorqueScript
             return;
         }
         mGlobalVariables[name] = value;
-    }
-
-    void Interpreter::logEcho(const std::string& message)
-    {
-        std::cout << "Echo > " << message << std::endl;
-    }
-
-    void Interpreter::logError(const std::string& message)
-    {
-        std::cerr << "Error > " << message << std::endl;
-    }
-
-    void Interpreter::logWarning(const std::string& message)
-    {
-        std::cout << "Warning > " << message << std::endl;
     }
 
     FunctionRegistry* Interpreter::findFunctionRegistry(const std::string packageName)

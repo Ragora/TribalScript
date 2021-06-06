@@ -80,10 +80,24 @@ namespace TorqueScript
 
     CodeBlock* Compiler::compileFile(const std::string& path, StringTable* stringTable)
     {
-        std::ifstream fileStream;
-        fileStream.open(path);
+        std::unique_ptr<FileHandleBase> handle = mConfig.mPlatform->getFileHandle(path);
+        handle->openForRead();
 
-        return this->compileStream(fileStream, stringTable);
+        if (handle->isOpen())
+        {
+            // Determine file size
+            handle->seek(0, std::ios_base::end);
+            const std::size_t fileSize = handle->tell();
+            handle->seek(0, std::ios_base::beg);
+
+            // Load file content
+            std::string fileContent(fileSize, ' ');
+            handle->read(&fileContent[0], fileSize);
+
+            return this->compileString(fileContent, stringTable);
+        }
+
+        return nullptr;
     }
 
     antlrcpp::Any Compiler::defaultResult()

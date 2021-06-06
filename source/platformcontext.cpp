@@ -12,31 +12,35 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <iostream>
 
 #include <torquescript/platformcontext.hpp>
+#include <torquescript/standardfilehandle.hpp>
 
 namespace TorqueScript
 {
-    /**
-     *  @brief A structure representing overall interpreter runtime configuration. Some settings can be
-     *  changed at runtime while others are static once initialized.
-     */
-    struct InterpreterConfiguration
+    void PlatformContext::logEcho(const std::string& message)
     {
-        InterpreterConfiguration(const bool caseSensitive = false, const unsigned int maxRecursionDepth = 1024, PlatformContext* platform = new PlatformContext()) :
-                                 mMaxRecursionDepth(maxRecursionDepth), mCaseSensitive(caseSensitive), mPlatform(platform)
-        {
+        std::cout << "Echo > " << message << std::endl;
+    }
 
-        }
+    void PlatformContext::logError(const std::string& message)
+    {
+        std::cerr << "Error > " << message << std::endl;
+    }
 
-        //! The platform context used for handling ie. logging, File I/O and so on.
-        PlatformContext* const mPlatform;
+    void PlatformContext::logWarning(const std::string& message)
+    {
+        std::cout << "Warning > " << message << std::endl;
+    }
 
-        //! Maximum call stack depth. If set to 0, no maximum call depth is enforced.
-        unsigned int mMaxRecursionDepth;
+    void PlatformContext::logDebug(const std::string& message)
+    {
+        std::cout << "Debug > " << message << std::endl;
+    }
 
-        //! Whether or not the interpreter should be case sensitive. While this can be reassigned at runtime forcefully (by reassigning the entire config object) it is not recommended.
-        const bool mCaseSensitive;
-    };
+    std::unique_ptr<FileHandleBase> PlatformContext::getFileHandle(const std::string& path)
+    {
+        return std::unique_ptr<FileHandleBase>(new StandardFileHandle(path));
+    }
 }

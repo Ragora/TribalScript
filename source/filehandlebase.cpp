@@ -12,31 +12,24 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <iostream>
 
-#include <torquescript/platformcontext.hpp>
+#include <torquescript/filehandlebase.hpp>
 
 namespace TorqueScript
 {
-    /**
-     *  @brief A structure representing overall interpreter runtime configuration. Some settings can be
-     *  changed at runtime while others are static once initialized.
-     */
-    struct InterpreterConfiguration
+    FileHandleBase::FileHandleBase(const std::string& path) : mPath(path)
     {
-        InterpreterConfiguration(const bool caseSensitive = false, const unsigned int maxRecursionDepth = 1024, PlatformContext* platform = new PlatformContext()) :
-                                 mMaxRecursionDepth(maxRecursionDepth), mCaseSensitive(caseSensitive), mPlatform(platform)
-        {
 
-        }
+    }
 
-        //! The platform context used for handling ie. logging, File I/O and so on.
-        PlatformContext* const mPlatform;
+    void FileHandleBase::close()
+    {
 
-        //! Maximum call stack depth. If set to 0, no maximum call depth is enforced.
-        unsigned int mMaxRecursionDepth;
+    }
 
-        //! Whether or not the interpreter should be case sensitive. While this can be reassigned at runtime forcefully (by reassigning the entire config object) it is not recommended.
-        const bool mCaseSensitive;
-    };
+    FileHandleBase::~FileHandleBase()
+    {
+        this->close();
+    }
 }

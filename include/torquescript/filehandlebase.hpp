@@ -14,29 +14,33 @@
 
 #pragma once
 
-#include <torquescript/platformcontext.hpp>
+#include <string>
+#include <iostream>
 
 namespace TorqueScript
 {
-    /**
-     *  @brief A structure representing overall interpreter runtime configuration. Some settings can be
-     *  changed at runtime while others are static once initialized.
-     */
-    struct InterpreterConfiguration
+    class FileHandleBase
     {
-        InterpreterConfiguration(const bool caseSensitive = false, const unsigned int maxRecursionDepth = 1024, PlatformContext* platform = new PlatformContext()) :
-                                 mMaxRecursionDepth(maxRecursionDepth), mCaseSensitive(caseSensitive), mPlatform(platform)
-        {
+        public:
+            FileHandleBase(const std::string& path);
+            ~FileHandleBase();
 
-        }
+            virtual bool isOpen() = 0;
 
-        //! The platform context used for handling ie. logging, File I/O and so on.
-        PlatformContext* const mPlatform;
+            virtual void seek(const std::streampos& position) = 0;
+            virtual void seek(const std::streampos& offset, std::ios_base::seekdir way) = 0;
 
-        //! Maximum call stack depth. If set to 0, no maximum call depth is enforced.
-        unsigned int mMaxRecursionDepth;
+            virtual void read(char* out, const std::size_t size) = 0;
+            virtual void close();
+            virtual bool isEOF() = 0;
+            virtual void write(const char* buffer, const std::size_t size) = 0;
+            virtual std::streampos tell() = 0;
 
-        //! Whether or not the interpreter should be case sensitive. While this can be reassigned at runtime forcefully (by reassigning the entire config object) it is not recommended.
-        const bool mCaseSensitive;
+            virtual void openForWrite() = 0;
+            virtual void openForRead() = 0;
+            virtual void openForReadAndWrite() = 0;
+
+            //! The file path this handle refers to.
+            const std::string mPath;
     };
 }

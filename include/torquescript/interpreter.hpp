@@ -79,27 +79,6 @@ namespace TorqueScript
 
             std::shared_ptr<ExecutionState> getExecutionState();
 
-            /**
-             *  @brief Asks the interpreter to handle a simple echo message.
-             *  @param message The message to echo.
-             */
-            virtual void logEcho(const std::string& message);
-
-            /**
-             *  @brief Asks the interpreter to handle an error log message.
-             *  @param message The message to output as an error.
-             */
-            virtual void logError(const std::string& message);
-
-            /**
-             *  @brief Asks the interpreter to handle a warning log message.
-             *  @param message The message to output as a warning.
-             */
-            virtual void logWarning(const std::string& message);
-
-            //! The maximum recursion depth allowed by this interpreter. If set to 0, no limit is enforced.
-            unsigned int mMaxRecursionDepth;
-
             //! The ConsoleObjectRegistry associated with this interpreter. It is used to store all ConsoleObject instances associated with the interpreter.
             ConsoleObjectRegistry mConsoleObjectRegistry;
 

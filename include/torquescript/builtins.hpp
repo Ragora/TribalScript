@@ -40,7 +40,7 @@ namespace TorqueScript
             outputString = printedPayload + outputString;
         }
 
-        state->mInterpreter->logEcho(outputString);
+        state->mInterpreter->mConfig.mPlatform->logEcho(outputString);
         stack.push_back(StoredValue(0));
     }
 

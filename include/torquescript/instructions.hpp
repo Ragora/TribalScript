@@ -232,7 +232,7 @@ namespace TorqueScript
                 StoredValue result = StoredValue(resultRaw);
                 if (!lhsStored.setValue(result, state))
                 {
-                    state->mInterpreter->logError("Attempted to perform no-op assignment!");
+                    state->mInterpreter->mConfig.mPlatform->logError("Attempted to perform no-op assignment!");
                 }
 
                 // In Torque, the result of the assignment is pushed to stack
@@ -266,7 +266,7 @@ namespace TorqueScript
 
                 if (!lhsStored.setValue(rhsStored, state))
                 {
-                    state->mInterpreter->logError("Attempted to perform no-op assignment!");
+                    state->mInterpreter->mConfig.mPlatform->logError("Attempted to perform no-op assignment!");
                 }
 
                 // In Torque, the result of the assignment is pushed to stack
@@ -362,7 +362,7 @@ namespace TorqueScript
                     Function* currentFunction = state->mExecutionScope.getCurrentFunction();
                     if (currentFunction == nullptr)
                     {
-                        state->mInterpreter->logError("Attempted to call parent:: function at root!");
+                        state->mInterpreter->mConfig.mPlatform->logError("Attempted to call parent:: function at root!");
                         stack.push_back(StoredValue(0));
                         return 1;
                     }
@@ -374,7 +374,7 @@ namespace TorqueScript
                         std::ostringstream stream;
 
                         stream << "Could not find parent function '" << mName << "' for calling! Placing 0 on the stack.";
-                        state->mInterpreter->logError(stream.str());
+                        state->mInterpreter->mConfig.mPlatform->logError(stream.str());
 
                         stack.push_back(StoredValue(0));
                         return 1;
@@ -396,7 +396,7 @@ namespace TorqueScript
                     std::ostringstream stream;
 
                     stream << "Could not find function '" << mName << "' for calling! Placing 0 on the stack.";
-                    state->mInterpreter->logError(stream.str());
+                    state->mInterpreter->mConfig.mPlatform->logError(stream.str());
 
                     stack.push_back(StoredValue(0));
                 }
@@ -937,7 +937,7 @@ namespace TorqueScript
             {
                 if (state->mExecutionScope.isLoopStackEmpty())
                 {
-                    state->mInterpreter->logWarning("Break outside of loop, ignoring ...");
+                    state->mInterpreter->mConfig.mPlatform->logWarning("Break outside of loop, ignoring ...");
                     return 1;
                 }
 
@@ -1040,7 +1040,7 @@ namespace TorqueScript
                 {
                     std::ostringstream output;
                     output << "Cannot find object '" << targetStored.toString(state) << "' to call function '" << mName << "'!";
-                    state->mInterpreter->logWarning(output.str());
+                    state->mInterpreter->mConfig.mPlatform->logWarning(output.str());
                 }
 
                 // FIXME: For now we assume 'ConsoleObject' is the classname

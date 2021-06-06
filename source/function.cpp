@@ -69,9 +69,9 @@ namespace TorqueScript
         }
 
         // Once we've cleared the stack, check if we're at max recursion depth
-        if (state->mInterpreter->mMaxRecursionDepth > 0 && state->mExecutionScope.getFrameDepth() >= state->mInterpreter->mMaxRecursionDepth)
+        if (state->mInterpreter->mConfig.mMaxRecursionDepth > 0 && state->mExecutionScope.getFrameDepth() >= state->mInterpreter->mConfig.mMaxRecursionDepth)
         {
-            state->mInterpreter->logError("Reached maximum recursion depth! Pushing 0 and returning.");
+            state->mInterpreter->mConfig.mPlatform->logError("Reached maximum recursion depth! Pushing 0 and returning.");
             stack.push_back(StoredValue(0));
             return;
         }
