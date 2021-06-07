@@ -24,19 +24,18 @@ namespace TorqueScript
      */
     struct InterpreterConfiguration
     {
-        InterpreterConfiguration(const bool caseSensitive = false, const unsigned int maxRecursionDepth = 1024, PlatformContext* platform = new PlatformContext()) :
-                                 mMaxRecursionDepth(maxRecursionDepth), mCaseSensitive(caseSensitive), mPlatform(platform)
+        InterpreterConfiguration(PlatformContext* platform = new PlatformContext()) :  mMaxRecursionDepth(1024), mCaseSensitive(false), mPlatform(platform)
         {
 
         }
 
-        //! The platform context used for handling ie. logging, File I/O and so on.
+        //! The platform context used for handling ie. logging, File I/O and so on. While this can be reassigned at runtime, it is not recommended.
         PlatformContext* const mPlatform;
 
         //! Maximum call stack depth. If set to 0, no maximum call depth is enforced.
         unsigned int mMaxRecursionDepth;
 
-        //! Whether or not the interpreter should be case sensitive. While this can be reassigned at runtime forcefully (by reassigning the entire config object) it is not recommended.
-        const bool mCaseSensitive;
+        //! Whether or not the interpreter should be case sensitive. While this can be reassigned at runtime, it is not recommended.
+        bool mCaseSensitive;
     };
 }

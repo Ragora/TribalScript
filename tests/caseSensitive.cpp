@@ -23,9 +23,8 @@
 
 TEST(InterpreterTest, Array)
 {
-    TorqueScript::InterpreterConfiguration config = {
-        .mCaseSensitive = true
-    };
+    TorqueScript::InterpreterConfiguration config;
+    config.mCaseSensitive = true;
 
     TorqueScript::Interpreter interpreter(config);
     TorqueScript::registerBuiltIns(&interpreter);
