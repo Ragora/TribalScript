@@ -45,7 +45,16 @@ namespace TorqueScript
     class Interpreter
     {
         public:
+            /**
+             *  @brief Constructs a new interpreter with the default configuration.
+             *  @see InterpreterConfiguration
+             */
             Interpreter();
+
+            /**
+             *  @brief Constructs a new interpreter with the specified configuration.
+             *  @param config The configuration to initialize a new interpreter with.
+             */
             Interpreter(const InterpreterConfiguration& config);
             ~Interpreter();
 
@@ -66,6 +75,7 @@ namespace TorqueScript
 
             /**
              *  @brief Registers a new function to the interpreter.
+             *  @param function The function object to register to the interpreter.
              */
             void addFunction(std::shared_ptr<Function> function);
             std::shared_ptr<Function> getFunction(const std::string& space, const std::string& name);
@@ -85,6 +95,7 @@ namespace TorqueScript
             //! The string table associated with this interpreter.
             StringTable mStringTable;
 
+            //! The interpreter configuration.
             const InterpreterConfiguration mConfig;
 
         private:

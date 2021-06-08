@@ -20,14 +20,18 @@
 
 namespace TorqueScript
 {
-    class Instruction;
+    namespace Instructions
+    {
+        class Instruction;
+    }
+
     class ExecutionState;
 
     /**
      *  @brief Storage class for a sequence of instructions to be executed. Also implements the
      *  primary execution code for running Torque Script virtual instructions.
      */
-    class InstructionSequence : public std::vector<std::shared_ptr<Instruction>>
+    class InstructionSequence : public std::vector<std::shared_ptr<Instructions::Instruction>>
     {
         public:
             void execute(std::shared_ptr<ExecutionState> state);

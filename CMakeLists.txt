@@ -14,7 +14,7 @@ if (POLICY CMP0042)
     cmake_policy(SET CMP0042 NEW)
 endif (POLICY CMP0042)
 
-project(TorqueScript VERSION 0.1 LANGUAGES CXX)
+project(TorqueScript VERSION 0.2 LANGUAGES CXX)
 
 cmake_minimum_required (VERSION 3.16.3)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)

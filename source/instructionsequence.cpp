@@ -24,7 +24,7 @@ namespace TorqueScript
 
         while (instructionIndex < this->size() && instructionIndex >= 0)
         {
-            std::shared_ptr<Instruction> nextInstruction = this->at(instructionIndex);
+            std::shared_ptr<Instructions::Instruction> nextInstruction = this->at(instructionIndex);
 
             state->mInstructionPointer = instructionIndex;
             const int advance = nextInstruction->execute(state);

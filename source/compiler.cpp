@@ -46,8 +46,8 @@ namespace TorqueScript
         parser.addErrorListener(&parserErrorListener);
 
         // Instantiate the program and go
-        ASTBuilder visitor(stringTable);
-        ProgramNode* tree = visitor.visitProgram(parser.program()).as<ProgramNode*>();
+        AST::ASTBuilder visitor(stringTable);
+        AST::ProgramNode* tree = visitor.visitProgram(parser.program()).as<AST::ProgramNode*>();
 
         // Did we receive any errors?
         if (parserErrorListener.getErrors().empty())
@@ -117,20 +117,20 @@ namespace TorqueScript
     /*
         Compiler Routines ====================
     */
-    antlrcpp::Any Compiler::visitFunctionCallNode(FunctionCallNode* call)
+    antlrcpp::Any Compiler::visitFunctionCallNode(AST::FunctionCallNode* call)
     {
         InstructionSequence result;
 
-        for (ASTNode* node : call->mParameters)
+        for (AST::ASTNode* node : call->mParameters)
         {
             InstructionSequence parameterCode = node->accept(this).as<InstructionSequence>();
             result.insert(result.end(), parameterCode.begin(), parameterCode.end());
         }
-        result.push_back(std::shared_ptr<Instruction>(new CallFunctionInstruction(call->mNameSpace, call->mName, call->mParameters.size())));
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::CallFunctionInstruction(call->mNameSpace, call->mName, call->mParameters.size())));
         return result;
     }
 
-    antlrcpp::Any Compiler::visitPackageDeclarationNode(PackageDeclarationNode* package)
+    antlrcpp::Any Compiler::visitPackageDeclarationNode(AST::PackageDeclarationNode* package)
     {
         mCurrentPackage = package->mName;
 
@@ -140,15 +140,15 @@ namespace TorqueScript
         return result;
     }
 
-    antlrcpp::Any Compiler::visitFunctionDeclarationNode(FunctionDeclarationNode* function)
+    antlrcpp::Any Compiler::visitFunctionDeclarationNode(AST::FunctionDeclarationNode* function)
     {
         InstructionSequence functionBody;
-        for (ASTNode* node : function->mBody)
+        for (AST::ASTNode* node : function->mBody)
         {
             InstructionSequence nodeInstructions = node->accept(this).as<InstructionSequence>();
             functionBody.insert(functionBody.end(), nodeInstructions.begin(), nodeInstructions.end());
         }
-        functionBody.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(0))); // Add an empty return if we hit end of control but nothing returned
+        functionBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushIntegerInstruction(0))); // Add an empty return if we hit end of control but nothing returned
 
         std::vector<std::string> parameterNames = function->mParameterNames;
         if (!mConfig.mCaseSensitive)
@@ -160,24 +160,24 @@ namespace TorqueScript
         }
 
         InstructionSequence result;
-        result.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(mCurrentPackage, function->mNameSpace, function->mName, parameterNames, functionBody)));
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::FunctionDeclarationInstruction(mCurrentPackage, function->mNameSpace, function->mName, parameterNames, functionBody)));
         return result;
     }
 
-    antlrcpp::Any Compiler::visitSubFunctionCallNode(SubFunctionCallNode* call)
+    antlrcpp::Any Compiler::visitSubFunctionCallNode(AST::SubFunctionCallNode* call)
     {
         InstructionSequence result;
-        for (ASTNode* node : call->mParameters)
+        for (AST::ASTNode* node : call->mParameters)
         {
             InstructionSequence parameterCode = node->accept(this).as<InstructionSequence>();
             result.insert(result.end(), parameterCode.begin(), parameterCode.end());
         }
 
-        result.push_back(std::shared_ptr<Instruction>(new CallBoundFunctionInstruction(call->mName, call->mParameters.size())));
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::CallBoundFunctionInstruction(call->mName, call->mParameters.size())));
         return result;
     }
 
-    antlrcpp::Any Compiler::visitAddNode(AddNode* expression)
+    antlrcpp::Any Compiler::visitAddNode(AST::AddNode* expression)
     {
         InstructionSequence result;
 
@@ -186,45 +186,45 @@ namespace TorqueScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instruction>(new AddInstruction()));
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::AddInstruction()));
 
         return result;
     }
 
-    antlrcpp::Any Compiler::visitIntegerNode(IntegerNode* value)
+    antlrcpp::Any Compiler::visitIntegerNode(AST::IntegerNode* value)
     {
         InstructionSequence result;
-        result.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(value->mValue)));
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushIntegerInstruction(value->mValue)));
         return result;
     }
 
-    antlrcpp::Any Compiler::visitFloatNode(FloatNode* value)
-    {
-        InstructionSequence result;
-
-        result.push_back(std::shared_ptr<Instruction>(new PushFloatInstruction(value->mValue)));
-        return result;
-    }
-
-    antlrcpp::Any Compiler::visitStringNode(StringNode* value)
+    antlrcpp::Any Compiler::visitFloatNode(AST::FloatNode* value)
     {
         InstructionSequence result;
 
-        const std::size_t stringID = mStringTable->getOrAssign(value->mValue);
-        result.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(stringID)));
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushFloatInstruction(value->mValue)));
         return result;
     }
 
-    antlrcpp::Any Compiler::visitTaggedStringNode(TaggedStringNode* value)
+    antlrcpp::Any Compiler::visitStringNode(AST::StringNode* value)
     {
         InstructionSequence result;
 
         const std::size_t stringID = mStringTable->getOrAssign(value->mValue);
-        result.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(stringID)));
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringID)));
         return result;
     }
 
-    antlrcpp::Any Compiler::visitLocalVariableNode(LocalVariableNode* value)
+    antlrcpp::Any Compiler::visitTaggedStringNode(AST::TaggedStringNode* value)
+    {
+        InstructionSequence result;
+
+        const std::size_t stringID = mStringTable->getOrAssign(value->mValue);
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushIntegerInstruction(stringID)));
+        return result;
+    }
+
+    antlrcpp::Any Compiler::visitLocalVariableNode(AST::LocalVariableNode* value)
     {
         InstructionSequence out;
 
@@ -232,11 +232,11 @@ namespace TorqueScript
         std::string lookupName = value->getName();
 
         const std::size_t stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? lookupName : toLowerCase(lookupName));
-        out.push_back(std::shared_ptr<Instruction>(new PushLocalReferenceInstruction(stringID)));
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLocalReferenceInstruction(stringID)));
         return out;
     }
 
-    antlrcpp::Any Compiler::visitGlobalVariableNode(GlobalVariableNode* value)
+    antlrcpp::Any Compiler::visitGlobalVariableNode(AST::GlobalVariableNode* value)
     {
         InstructionSequence out;
 
@@ -244,11 +244,11 @@ namespace TorqueScript
         std::string lookupName = value->getName();
 
         const std::size_t stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? lookupName : toLowerCase(lookupName));
-        out.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(stringID)));
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushGlobalReferenceInstruction(stringID)));
         return out;
     }
 
-    antlrcpp::Any Compiler::visitAssignmentNode(AssignmentNode* expression)
+    antlrcpp::Any Compiler::visitAssignmentNode(AST::AssignmentNode* expression)
     {
         InstructionSequence result;
 
@@ -257,12 +257,12 @@ namespace TorqueScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instruction>(new AssignmentInstruction()));
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::AssignmentInstruction()));
 
         return result;
     }
 
-    antlrcpp::Any Compiler::visitLessThanNode(LessThanNode* expression)
+    antlrcpp::Any Compiler::visitLessThanNode(AST::LessThanNode* expression)
     {
         InstructionSequence result;
 
@@ -271,60 +271,60 @@ namespace TorqueScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instruction>(new LessThanInstruction()));
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::LessThanInstruction()));
 
         return result;
     }
 
-    antlrcpp::Any Compiler::visitNegateNode(NegateNode* expression)
+    antlrcpp::Any Compiler::visitNegateNode(AST::NegateNode* expression)
     {
         InstructionSequence result;
 
         InstructionSequence innerCode = expression->mInner->accept(this).as<InstructionSequence>();
 
         result.insert(result.end(), innerCode.begin(), innerCode.end());
-        result.push_back(std::shared_ptr<Instruction>(new NegateInstruction()));
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NegateInstruction()));
 
         return result;
     }
 
-    antlrcpp::Any Compiler::visitIncrementNode(IncrementNode* expression)
+    antlrcpp::Any Compiler::visitIncrementNode(AST::IncrementNode* expression)
     {
         InstructionSequence result;
         InstructionSequence innerCode = expression->mInner->accept(this).as<InstructionSequence>();
 
         result.insert(result.end(), innerCode.begin(), innerCode.end());
-        result.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(1)));
-        result.push_back(std::shared_ptr<Instruction>(new AddAssignmentInstruction()));
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushIntegerInstruction(1)));
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::AddAssignmentInstruction()));
 
         return result;
     }
 
-    antlrcpp::Any Compiler::visitWhileNode(WhileNode* node)
+    antlrcpp::Any Compiler::visitWhileNode(AST::WhileNode* node)
     {
         InstructionSequence out;
 
         InstructionSequence bodyCode;
         InstructionSequence expressionCode = node->mExpression->accept(this).as<InstructionSequence>();
-        for (ASTNode* bodyNode : node->mBody)
+        for (AST::ASTNode* bodyNode : node->mBody)
         {
             InstructionSequence childCode = bodyNode->accept(this).as<InstructionSequence>();
             bodyCode.insert(bodyCode.end(), childCode.begin(), childCode.end());
         }
 
         // Expression should jump over body if false (+2 added for the NOP and jump below)
-        expressionCode.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(bodyCode.size() + 2)));
+        expressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(bodyCode.size() + 2)));
 
         // Body should jump back to the expression to reevaluate
         const int jumpTarget = -(bodyCode.size() + expressionCode.size());
-        bodyCode.push_back(std::shared_ptr<Instruction>(new JumpInstruction(jumpTarget)));
+        bodyCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(jumpTarget)));
 
         // Add a NOP for a jump target
-        bodyCode.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
+        bodyCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
 
         // Add loop trackers
-        bodyCode.push_back(std::shared_ptr<Instruction>(new PopLoopInstruction()));
-        out.push_back(std::shared_ptr<Instruction>(new PushLoopInstruction(expressionCode.size() + bodyCode.size())));
+        bodyCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopLoopInstruction()));
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLoopInstruction(expressionCode.size() + bodyCode.size())));
 
         out.insert(out.end(), expressionCode.begin(), expressionCode.end());
         out.insert(out.end(), bodyCode.begin(), bodyCode.end());
@@ -333,7 +333,7 @@ namespace TorqueScript
         return out;
     }
 
-    antlrcpp::Any Compiler::visitForNode(ForNode* node)
+    antlrcpp::Any Compiler::visitForNode(AST::ForNode* node)
     {
         InstructionSequence out;
         InstructionSequence initializerCode = node->mInitializer->accept(this).as<InstructionSequence>();
@@ -341,7 +341,7 @@ namespace TorqueScript
         InstructionSequence advanceCode = node->mAdvance->accept(this).as<InstructionSequence>();
 
         InstructionSequence forBody;
-        for (ASTNode* bodyNode : node->mBody)
+        for (AST::ASTNode* bodyNode : node->mBody)
         {
             InstructionSequence childInstructions = bodyNode->accept(this).as<InstructionSequence>();
             forBody.insert(forBody.end(), childInstructions.begin(), childInstructions.end());
@@ -351,18 +351,18 @@ namespace TorqueScript
         forBody.insert(forBody.end(), advanceCode.begin(), advanceCode.end());
 
         // Pop the result of our initializer so it doesn't corrupt the stack
-        initializerCode.push_back(std::shared_ptr<Instruction>(new PopInstruction()));
+        initializerCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
 
         // Our body should return to the expression
         const unsigned int jumpTarget = expressionCode.size() + forBody.size();
-        forBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(-jumpTarget)));
-        forBody.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
+        forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(-jumpTarget)));
+        forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
 
         // Check if our expression is false
-        expressionCode.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(forBody.size())));
+        expressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(forBody.size())));
 
-        forBody.push_back(std::shared_ptr<Instruction>(new PopLoopInstruction()));
-        initializerCode.push_back(std::shared_ptr<Instruction>(new PushLoopInstruction(expressionCode.size() + forBody.size())));
+        forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopLoopInstruction()));
+        initializerCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLoopInstruction(expressionCode.size() + forBody.size())));
 
         // Output final code
         out.insert(out.end(), initializerCode.begin(), initializerCode.end());
@@ -372,25 +372,25 @@ namespace TorqueScript
         return out;
     }
 
-    antlrcpp::Any Compiler::visitBreakNode(BreakNode* node)
+    antlrcpp::Any Compiler::visitBreakNode(AST::BreakNode* node)
     {
         InstructionSequence out;
-        out.push_back(std::shared_ptr<Instruction>(new BreakInstruction()));
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::BreakInstruction()));
         return out;
     }
 
-    antlrcpp::Any Compiler::visitReturnNode(ReturnNode* node)
+    antlrcpp::Any Compiler::visitReturnNode(AST::ReturnNode* node)
     {
         InstructionSequence out;
         if (node->mExpression)
         {
             out = node->mExpression->accept(this).as<InstructionSequence>();
         }
-        out.push_back(std::shared_ptr<Instruction>(new ReturnInstruction()));
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::ReturnInstruction()));
         return out;
     }
 
-    antlrcpp::Any Compiler::visitTernaryNode(TernaryNode* node)
+    antlrcpp::Any Compiler::visitTernaryNode(AST::TernaryNode* node)
     {
         InstructionSequence out;
 
@@ -399,13 +399,13 @@ namespace TorqueScript
         InstructionSequence falseValueCode = node->mFalseValue->accept(this).as<InstructionSequence>();
 
         // We add a NOP to the false expressions for a target to jump to
-        falseValueCode.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
+        falseValueCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
 
         // In the true expression we need to jump over the false expression
-        trueValueCode.push_back(std::shared_ptr<Instruction>(new JumpInstruction(falseValueCode.size())));
+        trueValueCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(falseValueCode.size())));
 
         // Jump to the false expression if our expression is false
-        expressionCode.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(falseValueCode.size() + 1)));
+        expressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(falseValueCode.size() + 1)));
 
         out.insert(out.end(), expressionCode.begin(), expressionCode.end());
         out.insert(out.end(), trueValueCode.begin(), trueValueCode.end());
@@ -414,7 +414,7 @@ namespace TorqueScript
         return out;
     }
 
-    antlrcpp::Any Compiler::visitSwitchNode(SwitchNode* node)
+    antlrcpp::Any Compiler::visitSwitchNode(AST::SwitchNode* node)
     {
         InstructionSequence out;
 
@@ -422,10 +422,10 @@ namespace TorqueScript
 
         // NOTE: We intentionally process in reverse order due to needing to know how long existing code is to jump over
         // Add a NOP to jump to
-        out.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
 
         InstructionSequence defaultInstructions;
-        for (ASTNode* defaultNode : node->mDefaultBody)
+        for (AST::ASTNode* defaultNode : node->mDefaultBody)
         {
             InstructionSequence childInstructions = defaultNode->accept(this).as<InstructionSequence>();
             defaultInstructions.insert(defaultInstructions.end(), childInstructions.begin(), childInstructions.end());
@@ -433,35 +433,35 @@ namespace TorqueScript
         out.insert(out.begin(), defaultInstructions.begin(), defaultInstructions.end());
 
         // Process all cases
-        for (SwitchCaseNode* caseNode : node->mCases)
+        for (AST::SwitchCaseNode* caseNode : node->mCases)
         {
             InstructionSequence caseBody;
-            for (ASTNode* node : caseNode->mBody)
+            for (AST::ASTNode* node : caseNode->mBody)
             {
                 InstructionSequence childInstructions = node->accept(this).as<InstructionSequence>();
                 caseBody.insert(caseBody.end(), childInstructions.begin(), childInstructions.end());
             }
             // If we enter this body we should skip over the rest of the instructions
-            caseBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(out.size())));
+            caseBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(out.size())));
 
             // Generate a sequence of checks until something comes out to be true
             InstructionSequence caseExpressions;
             for (auto iterator = caseNode->mCases.begin(); iterator != caseNode->mCases.end(); ++iterator)
             {
-                ASTNode* currentCaseExpression = *iterator;
+                AST::ASTNode* currentCaseExpression = *iterator;
                 InstructionSequence caseExpressionCode = currentCaseExpression->accept(this).as<InstructionSequence>();
 
                 // Place our expression to check against and then check if equal
                 caseExpressionCode.insert(caseExpressionCode.end(), expressionCode.begin(), expressionCode.end());
-                caseExpressionCode.push_back(std::shared_ptr<Instruction>(new EqualsInstruction()));
+                caseExpressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::EqualsInstruction()));
 
                 if (iterator != caseNode->mCases.begin())
                 {
-                    caseExpressionCode.push_back(std::shared_ptr<Instruction>(new JumpTrueInstruction(caseExpressions.size() + 1)));
+                    caseExpressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpTrueInstruction(caseExpressions.size() + 1)));
                 }
                 else
                 {
-                    caseExpressionCode.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(caseBody.size() + 1)));
+                    caseExpressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(caseBody.size() + 1)));
                 }
 
                 caseExpressions.insert(caseExpressions.begin(), caseExpressionCode.begin(), caseExpressionCode.end());
@@ -474,26 +474,26 @@ namespace TorqueScript
         return out;
     }
 
-    antlrcpp::Any Compiler::visitIfNode(IfNode* node)
+    antlrcpp::Any Compiler::visitIfNode(AST::IfNode* node)
     {
         InstructionSequence out;
 
         // Generate else code
         InstructionSequence elseCode;
-        for (ASTNode* bodyNode : node->mElseBody)
+        for (AST::ASTNode* bodyNode : node->mElseBody)
         {
             InstructionSequence childInstructions = bodyNode->accept(this).as<InstructionSequence>();
             elseCode.insert(elseCode.end(), childInstructions.begin(), childInstructions.end());
         }
-        elseCode.push_back(std::shared_ptr<Instruction>(new NOPInstruction())); // Add a NOP for jump targets
+        elseCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction())); // Add a NOP for jump targets
         out.insert(out.end(), elseCode.begin(), elseCode.end());
 
         // Generate all else if's
-        for (ElseIfNode* elseIf : node->mElseIfs)
+        for (AST::ElseIfNode* elseIf : node->mElseIfs)
         {
             InstructionSequence elseIfBody;
 
-            for (ASTNode* node : elseIf->mBody)
+            for (AST::ASTNode* node : elseIf->mBody)
             {
                 InstructionSequence childInstructions = node->accept(this).as<InstructionSequence>();
                 elseIfBody.insert(elseIfBody.end(), childInstructions.begin(), childInstructions.end());
@@ -502,10 +502,10 @@ namespace TorqueScript
             InstructionSequence elseIfExpression = elseIf->mExpression->accept(this).as<InstructionSequence>();
 
             // The expression must jump over our body if false
-            elseIfExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(elseIfBody.size() + 2)));
+            elseIfExpression.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(elseIfBody.size() + 2)));
 
             // The body, when done, must jump over the remaining code
-            elseIfBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(out.size())));
+            elseIfBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(out.size())));
 
             out.insert(out.begin(), elseIfBody.begin(), elseIfBody.end());
             out.insert(out.begin(), elseIfExpression.begin(), elseIfExpression.end());
@@ -515,45 +515,45 @@ namespace TorqueScript
         InstructionSequence ifExpression = node->mExpression->accept(this).as<InstructionSequence>();
 
         InstructionSequence ifBody;
-        for (ASTNode* bodyNode : node->mBody)
+        for (AST::ASTNode* bodyNode : node->mBody)
         {
             InstructionSequence childInstructions = bodyNode->accept(this).as<InstructionSequence>();
             ifBody.insert(ifBody.end(), childInstructions.begin(), childInstructions.end());
         }
 
         // The expression must jump over our body if false
-        ifExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(ifBody.size() + 2)));
+        ifExpression.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(ifBody.size() + 2)));
 
         // The body, when done, must jump over the remaining code
-        ifBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(out.size())));
+        ifBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(out.size())));
 
         out.insert(out.begin(), ifBody.begin(), ifBody.end());
         out.insert(out.begin(), ifExpression.begin(), ifExpression.end());
         return out;
     }
 
-    antlrcpp::Any Compiler::visitArrayNode(ArrayNode* array)
+    antlrcpp::Any Compiler::visitArrayNode(AST::ArrayNode* array)
     {
         InstructionSequence out;
 
-        LocalVariableNode* localVariable = dynamic_cast<LocalVariableNode*>(array->mTarget);
-        GlobalVariableNode* globalVariable = dynamic_cast<GlobalVariableNode*>(array->mTarget);
+        AST::LocalVariableNode* localVariable = dynamic_cast<AST::LocalVariableNode*>(array->mTarget);
+        AST::GlobalVariableNode* globalVariable = dynamic_cast<AST::GlobalVariableNode*>(array->mTarget);
 
         assert(localVariable || globalVariable);
         std::string variableName = localVariable ? localVariable->getName() : globalVariable->getName();
 
         // Ask all indices to generate their code
-        for (ASTNode* node : array->mIndices)
+        for (AST::ASTNode* node : array->mIndices)
         {
             InstructionSequence childInstructions = node->accept(this).as<InstructionSequence>();
             out.insert(out.end(), childInstructions.begin(), childInstructions.end());
         }
 
-        out.push_back(std::shared_ptr<Instruction>(new AccessArrayInstruction(variableName, array->mIndices.size(), globalVariable != nullptr)));
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::AccessArrayInstruction(variableName, array->mIndices.size(), globalVariable != nullptr)));
         return out;
     }
 
-    antlrcpp::Any Compiler::visitEqualsNode(EqualsNode* expression)
+    antlrcpp::Any Compiler::visitEqualsNode(AST::EqualsNode* expression)
     {
         InstructionSequence out;
 
@@ -562,12 +562,12 @@ namespace TorqueScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instruction>(new EqualsInstruction()));
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::EqualsInstruction()));
 
         return out;
     }
 
-    antlrcpp::Any Compiler::visitConcatNode(ConcatNode* expression)
+    antlrcpp::Any Compiler::visitConcatNode(AST::ConcatNode* expression)
     {
         InstructionSequence out;
 
@@ -576,12 +576,12 @@ namespace TorqueScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instruction>(new ConcatInstruction()));
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::ConcatInstruction()));
 
         return out;
     }
 
-    antlrcpp::Any Compiler::visitDivideNode(DivideNode* expression)
+    antlrcpp::Any Compiler::visitDivideNode(AST::DivideNode* expression)
     {
         InstructionSequence out;
 
@@ -590,12 +590,12 @@ namespace TorqueScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instruction>(new DivideInstruction()));
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::DivideInstruction()));
 
         return out;
     }
 
-    antlrcpp::Any Compiler::visitMultiplyNode(MultiplyNode* expression)
+    antlrcpp::Any Compiler::visitMultiplyNode(AST::MultiplyNode* expression)
     {
         InstructionSequence out;
 
@@ -604,17 +604,17 @@ namespace TorqueScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instruction>(new MultiplyInstruction()));
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::MultiplyInstruction()));
 
         return out;
     }
 
-    antlrcpp::Any Compiler::visitDatablockDeclarationNode(DatablockDeclarationNode* datablock)
+    antlrcpp::Any Compiler::visitDatablockDeclarationNode(AST::DatablockDeclarationNode* datablock)
     {
         throw std::runtime_error("Datablocks not Implemented Yet");
     }
 
-    antlrcpp::Any Compiler::visitObjectDeclarationNode(ObjectDeclarationNode* object)
+    antlrcpp::Any Compiler::visitObjectDeclarationNode(AST::ObjectDeclarationNode* object)
     {
         throw std::runtime_error("Object Declarations not Implemented Yet");
     }
