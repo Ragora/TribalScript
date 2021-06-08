@@ -16,6 +16,7 @@
 
 #include <string>
 #include <memory>
+#include <vector>
 #include <unordered_map>
 
 #include <torquescript/storedvalue.hpp>
@@ -25,6 +26,87 @@ namespace TorqueScript
     class Interpreter;
     class ExecutionScope;
     class Interpreter;
+    class ConsoleObjectDescriptor;
+
+    static std::unordered_map<std::string, ConsoleObjectDescriptor*> sConsoleObjectDescriptors;
+
+    class ConsoleObjectDescriptor
+    {
+        public:
+            ConsoleObjectDescriptor(const std::string& name, const std::string& parentName) : mName(name), mParentName(parentName)
+            {
+                assert(sConsoleObjectDescriptors.find(name) == sConsoleObjectDescriptors.end());
+                sConsoleObjectDescriptors[name] = this;
+            }
+
+            std::string mName;
+            std::string mParentName;
+            std::vector<std::string> mHierarchy;
+    };
+
+    static std::vector<std::string> relinkNamespace(const std::string& space)
+    {
+        auto search = sConsoleObjectDescriptors.find(space);
+        if (search == sConsoleObjectDescriptors.end())
+        {
+            throw std::runtime_error("Fatal error in relink namespaces!");
+        }
+
+        ConsoleObjectDescriptor* currentDescriptor = search->second;
+
+        std::vector<std::string> result;
+        result.push_back(currentDescriptor->mParentName);
+
+        // ConsoleObject won't have an entry
+        if (currentDescriptor->mParentName == "ConsoleObject")
+        {
+            return result;
+        }
+
+        std::vector<std::string> children = relinkNamespace(currentDescriptor->mParentName);
+        result.insert(result.end(), children.begin(), children.end());
+        return result;
+    }
+
+    static void relinkNamespaces()
+    {
+        for (auto&& entry : sConsoleObjectDescriptors)
+        {
+            // Reset the hierarchy of this namespace
+            entry.second->mHierarchy = relinkNamespace(entry.second->mName);
+        }
+    }
+
+    template <typename classType>
+    struct TypeInformation
+    {
+
+    };
+
+    #define DECLARE_CONSOLE_OBJECT(type, super)             \
+        template<>                                          \
+        struct TypeInformation<type>                        \
+        {                                                   \
+            typedef TypeInformation<super> ParentInfo;      \
+            static std::string getName()                    \
+            {                                               \
+                return #type;                               \
+            }                                               \
+            static std::vector<std::string> getHierarchy()  \
+            {                                               \
+                const std::string current = #type;          \
+                std::vector<std::string> result;            \
+                result.push_back(current);                  \
+                const std::vector<std::string> upper = ParentInfo::getHierarchy();   \
+                result.insert(result.end(), upper.begin(), upper.end());  \
+                return result;                              \
+                                                            \
+            }                                               \
+            static ConsoleObjectDescriptor* Descriptor; \
+        };
+
+    #define IMPLEMENT_CONSOLE_OBJECT(type, super)                    \
+        ConsoleObjectDescriptor* TypeInformation<type>::Descriptor = new ConsoleObjectDescriptor(#type, #super);
 
     /**
      *  @brief Base class for object instances recognized by the interpreter. These object instances
@@ -52,5 +134,21 @@ namespace TorqueScript
         protected:
             //! A mapping of tagged field names to their stored values.
             std::unordered_map<std::string, StoredValue> mTaggedFields;
+    };
+
+    template<>
+    struct TypeInformation<ConsoleObject>
+    {
+        static std::string getName()
+        {
+            return "ConsoleObject";
+        }
+
+        static std::vector<std::string> getHierarchy()
+        {
+            std::vector<std::string> result;
+            result.push_back("ConsoleObject");
+            return result;
+        }
     };
 }

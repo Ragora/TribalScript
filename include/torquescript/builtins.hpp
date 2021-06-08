@@ -24,6 +24,7 @@
 #include <torquescript/executionstate.hpp>
 #include <torquescript/storedvaluestack.hpp>
 #include <torquescript/consoleobject.hpp>
+#include <torquescript/fileobject.hpp>
 
 namespace TorqueScript
 {
@@ -104,5 +105,7 @@ namespace TorqueScript
 
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetNameBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "getName")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(DeleteBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "delete")));
+
+        interpreter->registerConsoleObjectType<FileObject>();
     }
 }

@@ -64,6 +64,17 @@ namespace TorqueScript
                 variableName = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
                 mConsoleObject->setTaggedField(variableName, newValue.getReferencedValueCopy(state));
                 return true;
+            case StoredValueType::MemoryReference:
+                assert(mMemoryLocation);
+
+                switch (mMemoryReferenceType)
+                {
+                    case MemoryReferenceType::FloatMemory:
+                        *(float*)mMemoryLocation = newValue.toFloat(state);
+                        break;
+                    default:
+                        throw std::runtime_error("Unknown Memory Reference Type");
+                }
         }
         return false;
     }
@@ -233,6 +244,16 @@ namespace TorqueScript
                 return 0;
             case StoredValueType::Integer:
                 return (float)mStorage.mInteger;
+            case StoredValueType::MemoryReference:
+                assert(mMemoryLocation);
+
+                switch (mMemoryReferenceType)
+                {
+                    case MemoryReferenceType::FloatMemory:
+                        return *(float*)mMemoryLocation;
+                    default:
+                        throw std::runtime_error("Unknown Memory Reference Type in toFloat");
+                }
             case StoredValueType::Float:
                 return mStorage.mFloat;
             case StoredValueType::String:

@@ -24,7 +24,7 @@ namespace TorqueScript
 {
     Interpreter::Interpreter() : Interpreter(InterpreterConfiguration())
     {
-
+        relinkNamespaces();
     }
 
     Interpreter::Interpreter(const InterpreterConfiguration& config) : mConfig(config)
@@ -222,7 +222,7 @@ namespace TorqueScript
     void Interpreter::removeFunctionRegistry(const std::string& packageName)
     {
         // We cannot remove root level
-        assert(packageName != "");
+        assert(packageName != PACKAGE_EMPTY);
 
         std::string removedName = toLowerCase(packageName);
         for (auto iterator = mFunctionRegistries.begin(); iterator != mFunctionRegistries.end(); ++iterator)
