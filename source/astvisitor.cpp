@@ -12,8 +12,6 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-
 #include <torquescript/astvisitor.hpp>
 #include <torquescript/ast.hpp>
 

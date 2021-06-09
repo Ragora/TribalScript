@@ -19,7 +19,7 @@
 namespace TorqueScript
 {
     std::unordered_map<std::string, ConsoleObjectDescriptor*>* sConsoleObjectDescriptors = nullptr;
-    
+
     ConsoleObject::ConsoleObject(Interpreter* interpreter) : mInterpreter(interpreter)
     {
 
@@ -40,7 +40,16 @@ namespace TorqueScript
     void ConsoleObject::setTaggedField(const std::string& name, StoredValue value)
     {
         const std::string setName = toLowerCase(name);
-        mTaggedFields[setName] = value;
+
+        auto search = mTaggedFields.find(setName);
+        if (search != mTaggedFields.end())
+        {
+            search->second = value;
+        }
+        else
+        {
+            mTaggedFields.insert(std::make_pair(setName, value));
+        }
     }
 
     void ConsoleObject::addChild(std::shared_ptr<ConsoleObject> child)

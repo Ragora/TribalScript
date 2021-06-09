@@ -1224,7 +1224,17 @@ namespace TorqueScript
 
                     // Final field assignment
                     ObjectInstantiationDescriptor& descriptor = state->mExecutionScope.currentObjectInstantiation();
-                    descriptor.mFieldAssignments[out.str()] = rvalue;
+
+                    auto search = descriptor.mFieldAssignments.find(out.str());
+                    if (search != descriptor.mFieldAssignments.end())
+                    {
+                        search->second = rvalue;
+                    }
+                    else
+                    {
+                        descriptor.mFieldAssignments.insert(std::make_pair(out.str(), rvalue));
+                    }
+                    //descriptor.mFieldAssignments[out.str()] = rvalue;
 
                     return 1;
                 };
