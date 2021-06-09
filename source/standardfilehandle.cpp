@@ -14,6 +14,7 @@
 
 #include <assert.h>
 #include <iostream>
+#include <cstdio>
 
 #include <torquescript/standardfilehandle.hpp>
 
@@ -84,5 +85,21 @@ namespace TorqueScript
     void StandardFileHandle::openForReadAndWrite()
     {
         mFileHandle = std::fstream(mPath, std::fstream::in | std::fstream::out);
+    }
+
+    bool StandardFileHandle::exists()
+    {
+        FILE* handle = std::fopen(mPath.c_str(), "r");
+        if (handle)
+        {
+            std::fclose(handle);
+            return true;
+        }
+        return false;
+    }
+
+    bool StandardFileHandle::deleteFile()
+    {
+        return std::remove(mPath.c_str()) == 0;
     }
 }

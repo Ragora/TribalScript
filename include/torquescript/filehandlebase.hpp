@@ -40,6 +40,9 @@ namespace TorqueScript
             virtual void openForRead() = 0;
             virtual void openForReadAndWrite() = 0;
 
+            virtual bool exists() = 0;
+            virtual bool deleteFile() = 0;
+
             //! The file path this handle refers to.
             const std::string mPath;
     };

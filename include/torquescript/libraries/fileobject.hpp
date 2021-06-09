@@ -74,12 +74,32 @@ namespace TorqueScript
         stack.push_back(StoredValue(0));
     }
 
+    static void IsFileBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
+        std::string path = stack.popString(state);
+
+        std::unique_ptr<FileHandleBase> handle = state->mInterpreter->mConfig.mPlatform->getFileHandle(path);
+        stack.push_back(StoredValue(handle->exists() ? 1 : 0));
+    }
+
+    static void DeleteFileBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
+        std::string path = stack.popString(state);
+
+        std::unique_ptr<FileHandleBase> handle = state->mInterpreter->mConfig.mPlatform->getFileHandle(path);
+        stack.push_back(StoredValue(handle->deleteFile()));
+    }
 
     static void registerFileObjectLibrary(Interpreter* interpreter)
     {
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(OpenForWriteBuiltIn, PACKAGE_EMPTY, "FileObject", "openForWrite")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(WriteBuiltIn, PACKAGE_EMPTY, "FileObject", "write")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(CloseBuiltIn, PACKAGE_EMPTY, "FileObject", "close")));
+
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(IsFileBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "isFile")));
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(DeleteFileBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "deleteFile")));
 
         interpreter->registerConsoleObjectType<FileObject>();
     }
