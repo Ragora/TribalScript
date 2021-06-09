@@ -12,6 +12,7 @@
  *  <ul>
  *      <li>TorqueScript::Interpreter</li>
  *      <li>TorqueScript::Compiler</li>
+ *      <li>TorqueScript::StoredValue</li>
  *  </ul>
  *
  *

@@ -75,7 +75,8 @@ namespace TorqueScript
             search->second = variable;
             return;
         }
-        currentScope.mLocalVariables[name] = variable;
+
+        currentScope.mLocalVariables.insert(std::make_pair(name, variable));
     }
 
     void ExecutionScope::setVariable(const std::string& name, StoredValue variable)
@@ -95,7 +96,7 @@ namespace TorqueScript
             search->second = variable;
             return;
         }
-        currentScope.mLocalVariables[key] = variable;
+        currentScope.mLocalVariables.insert(std::make_pair(key, variable));
     }
 
     void ExecutionScope::pushFrame(Function* function)

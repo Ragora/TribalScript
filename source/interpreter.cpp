@@ -192,7 +192,8 @@ namespace TorqueScript
             search->second = value;
             return;
         }
-        mGlobalVariables[key] = value;
+
+        mGlobalVariables.insert(std::make_pair(key, value));
     }
 
     void Interpreter::setGlobal(const std::size_t name, StoredValue value)
@@ -203,7 +204,8 @@ namespace TorqueScript
             search->second = value;
             return;
         }
-        mGlobalVariables[name] = value;
+
+        mGlobalVariables.insert(std::make_pair(name, value));
     }
 
     FunctionRegistry* Interpreter::findFunctionRegistry(const std::string packageName)

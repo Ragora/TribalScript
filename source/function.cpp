@@ -64,7 +64,16 @@ namespace TorqueScript
         {
             const std::string nextParameterName = mParameterNames[mParameterNames.size() - (iteration + emptyParameters + 1)];
 
-            newLocals[nextParameterName] = stack.back().getReferencedValueCopy(state);
+            auto search = newLocals.find(nextParameterName);
+            if (search != newLocals.end())
+            {
+                search->second = stack.back().getReferencedValueCopy(state);
+            }
+            else
+            {
+                newLocals.insert(std::make_pair(nextParameterName, stack.back().getReferencedValueCopy(state)));
+            }
+
             stack.pop_back();
         }
 

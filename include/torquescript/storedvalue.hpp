@@ -73,16 +73,11 @@ namespace TorqueScript
 
     /**
      *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
-     *  This is the base class and should not be instantiated directly.
+     *  The data types supported as integers, floats and strings (via string ID table references).
      */
     class StoredValue
     {
         public:
-            StoredValue() : mType(StoredValueType::NullType), mStorage(), mConsoleObject(nullptr), mMemoryLocation(nullptr)
-            {
-
-            }
-
             StoredValue(void* memoryLocation, const MemoryReferenceType type) : mType(StoredValueType::MemoryReference), mStorage(), mConsoleObject(nullptr), mMemoryLocation(memoryLocation)
             {
 
@@ -141,7 +136,7 @@ namespace TorqueScript
             StoredValueType mType;
             StoredValueUnion mStorage;
             MemoryReferenceType mMemoryReferenceType;
-    
+
             void* mMemoryLocation;
             std::shared_ptr<ConsoleObject> mConsoleObject;
     };
