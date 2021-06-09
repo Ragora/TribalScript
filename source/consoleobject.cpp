@@ -18,6 +18,13 @@
 
 namespace TorqueScript
 {
+    std::unordered_map<std::string, ConsoleObjectDescriptor*>* sConsoleObjectDescriptors = nullptr;
+    
+    ConsoleObject::ConsoleObject(Interpreter* interpreter) : mInterpreter(interpreter)
+    {
+
+    }
+
     StoredValue* ConsoleObject::getTaggedField(const std::string& name)
     {
         const std::string searchName = toLowerCase(name);

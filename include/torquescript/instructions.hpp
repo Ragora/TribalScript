@@ -1119,23 +1119,30 @@ namespace TorqueScript
                     stack.pop_back();
 
                     // Retrieve the referenced ConsoleObject
-                    std::shared_ptr<ConsoleObject> targetSim = targetStored.toConsoleObject(state);
-                    if (!targetSim)
+                    std::shared_ptr<ConsoleObject> targetObject = targetStored.toConsoleObject(state);
+                    if (!targetObject)
                     {
                         std::ostringstream output;
                         output << "Cannot find object '" << targetStored.toString(state) << "' to call function '" << mName << "'!";
                         state->mInterpreter->mConfig.mPlatform->logWarning(output.str());
+
+                        stack.push_back(StoredValue(0));
+                        return 1;
                     }
 
-                    // FIXME: For now we assume 'ConsoleObject' is the classname
-                    const std::string className = "ConsoleObject";
+                    // Walk the class hierarchy
+                    ConsoleObjectDescriptor* descriptor = sConsoleObjectDescriptors->at(targetObject->getClassName());
+                    assert(descriptor->mHierarchy.size() != 0);
 
-                    // Ask the interpreter to lookup the function
-                    std::shared_ptr<Function> calledFunction = state->mInterpreter->getFunction(className, mName);
-                    if (calledFunction)
+                    for (const std::string& className : descriptor->mHierarchy)
                     {
-                        calledFunction->execute(targetSim, state, mArgc);
-                        return 1;
+                        // Ask the interpreter to lookup the function
+                        std::shared_ptr<Function> calledFunction = state->mInterpreter->getFunction(className, mName);
+                        if (calledFunction)
+                        {
+                            calledFunction->execute(targetObject, state, mArgc);
+                            return 1;
+                        }
                     }
 
                     stack.push_back(StoredValue(0));

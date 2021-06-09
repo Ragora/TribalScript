@@ -13,10 +13,37 @@
  */
 
 #include <torquescript/fileobject.hpp>
+#include <torquescript/interpreter.hpp>
 
 namespace TorqueScript
 {
     IMPLEMENT_CONSOLE_OBJECT(FileObject, ConsoleObject)
+    
+    FileObject::FileObject(Interpreter* interpreter) : ConsoleObject(interpreter)
+    {
+
+    }
+
+    bool FileObject::openForWrite(const std::string& path)
+    {
+        if (mHandle)
+        {
+            return false;
+        }
+
+        mHandle = mInterpreter->mConfig.mPlatform->getFileHandle(path);
+        mHandle->openForWrite();
+
+        return true;
+    }
+
+    void FileObject::write(const std::string& written)
+    {
+        if (mHandle)
+        {
+            mHandle->write(written.c_str(), written.size());
+        }
+    }
 
     void FileObject::initializeMemberFields(ConsoleObjectDescriptor* descriptor)
     {

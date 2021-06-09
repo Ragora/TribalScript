@@ -12,32 +12,18 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <memory>
+#pragma once
 
-#include "gtest/gtest.h"
+#include <torquescript/libraries/math.hpp>
+#include <torquescript/libraries/core.hpp>
+#include <torquescript/libraries/fileobject.hpp>
 
-#include <torquescript/interpreter.hpp>
-#include <torquescript/storedvalue.hpp>
-#include <torquescript/libraries/libraries.hpp>
-#include <torquescript/executionstate.hpp>
-
-TEST(InterpreterTest, ForLoop)
+namespace TorqueScript
 {
-    TorqueScript::Interpreter interpreter;
-    TorqueScript::registerAllLibraries(&interpreter);
-
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
-    interpreter.execute("cases/for.cs", state);
-
-    // After execution, the result of $global should be 50
-    TorqueScript::StoredValue* result = interpreter.getGlobal("global");
-    ASSERT_TRUE(result);
-
-    ASSERT_EQ(result->toInteger(state), 50);
-}
-
-int main()
-{
-    testing::InitGoogleTest();
-    return RUN_ALL_TESTS();
+    static void registerAllLibraries(Interpreter* interpreter)
+    {
+        registerMathLibrary(interpreter);
+        registerCoreLibrary(interpreter);
+        registerFileObjectLibrary(interpreter);
+    }
 }

@@ -18,7 +18,7 @@
 
 #include <torquescript/interpreter.hpp>
 #include <torquescript/storedvalue.hpp>
-#include <torquescript/builtins.hpp>
+#include <torquescript/libraries/libraries.hpp>
 #include <torquescript/executionstate.hpp>
 
 static float aStaticFloat = 3.14f;
@@ -26,7 +26,7 @@ static float aStaticFloat = 3.14f;
 TEST(InterpreterTest, MemoryReference)
 {
     TorqueScript::Interpreter interpreter;
-    TorqueScript::registerBuiltIns(&interpreter);
+    TorqueScript::registerAllLibraries(&interpreter);
 
     // Set memory reference
     interpreter.setGlobal("pi", TorqueScript::StoredValue(&aStaticFloat, TorqueScript::MemoryReferenceType::FloatMemory));

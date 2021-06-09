@@ -19,13 +19,24 @@
 #include <unordered_map>
 
 #include <torquescript/consoleobject.hpp>
+#include <torquescript/filehandlebase.hpp>
 
 namespace TorqueScript
 {
     class FileObject : public ConsoleObject
     {
+        DECLARE_CONSOLE_OBJECT_BODY()
+
         public:
+            FileObject(Interpreter* interpreter);
+
+            bool openForWrite(const std::string& path);
+            void write(const std::string& written);
+
             static void initializeMemberFields(ConsoleObjectDescriptor* descriptor);
+        
+        private:
+            std::unique_ptr<FileHandleBase> mHandle;
     };
 
     DECLARE_CONSOLE_OBJECT(FileObject, ConsoleObject)
