@@ -96,6 +96,7 @@ namespace TorqueScript
             virtual antlrcpp::Any visitMultiplyNode(AST::MultiplyNode* expression) override;
             virtual antlrcpp::Any visitDivideNode(AST::DivideNode* expression) override;
             virtual antlrcpp::Any visitDatablockDeclarationNode(AST::DatablockDeclarationNode* datablock) override;
-            virtual antlrcpp::Any visitObjectDeclarationNode(AST::ObjectDeclarationNode* object);
+            virtual antlrcpp::Any visitObjectDeclarationNode(AST::ObjectDeclarationNode* object) override;
+            virtual antlrcpp::Any visitFieldAssignNode(AST::FieldAssignNode* node) override;
     };
 }

@@ -26,17 +26,19 @@ namespace TorqueScript
 
     std::shared_ptr<ConsoleObject> StoredValue::toConsoleObject(std::shared_ptr<ExecutionState> state)
     {
+        StoredValue rawValue = this->getReferencedValueCopy(state);
+
         // Search by ID first
-        if (this->isInteger(state))
+        if (rawValue.isInteger(state))
         {
-            std::shared_ptr<ConsoleObject> idLookup = state->mInterpreter->mConsoleObjectRegistry.getConsoleObject(this->toInteger(state));
+            std::shared_ptr<ConsoleObject> idLookup = state->mInterpreter->mConsoleObjectRegistry.getConsoleObject(rawValue.toInteger(state));
             if (idLookup)
             {
                 return idLookup;
             }
         }
 
-        const std::string lookupName = this->toString(state);
+        const std::string lookupName = rawValue.toString(state);
         return state->mInterpreter->mConsoleObjectRegistry.getConsoleObject(lookupName);
     }
 
@@ -64,6 +66,17 @@ namespace TorqueScript
                 variableName = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
                 mConsoleObject->setTaggedField(variableName, newValue.getReferencedValueCopy(state));
                 return true;
+            case StoredValueType::MemoryReference:
+                assert(mMemoryLocation);
+
+                switch (mMemoryReferenceType)
+                {
+                    case MemoryReferenceType::FloatMemory:
+                        *(float*)mMemoryLocation = newValue.toFloat(state);
+                        break;
+                    default:
+                        throw std::runtime_error("Unknown Memory Reference Type");
+                }
         }
         return false;
     }
@@ -233,6 +246,16 @@ namespace TorqueScript
                 return 0;
             case StoredValueType::Integer:
                 return (float)mStorage.mInteger;
+            case StoredValueType::MemoryReference:
+                assert(mMemoryLocation);
+
+                switch (mMemoryReferenceType)
+                {
+                    case MemoryReferenceType::FloatMemory:
+                        return *(float*)mMemoryLocation;
+                    default:
+                        throw std::runtime_error("Unknown Memory Reference Type in toFloat");
+                }
             case StoredValueType::Float:
                 return mStorage.mFloat;
             case StoredValueType::String:

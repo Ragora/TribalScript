@@ -1119,23 +1119,30 @@ namespace TorqueScript
                     stack.pop_back();
 
                     // Retrieve the referenced ConsoleObject
-                    std::shared_ptr<ConsoleObject> targetSim = targetStored.toConsoleObject(state);
-                    if (!targetSim)
+                    std::shared_ptr<ConsoleObject> targetObject = targetStored.toConsoleObject(state);
+                    if (!targetObject)
                     {
                         std::ostringstream output;
                         output << "Cannot find object '" << targetStored.toString(state) << "' to call function '" << mName << "'!";
                         state->mInterpreter->mConfig.mPlatform->logWarning(output.str());
+
+                        stack.push_back(StoredValue(0));
+                        return 1;
                     }
 
-                    // FIXME: For now we assume 'ConsoleObject' is the classname
-                    const std::string className = "ConsoleObject";
+                    // Walk the class hierarchy
+                    ConsoleObjectDescriptor* descriptor = sConsoleObjectDescriptors->at(targetObject->getClassName());
+                    assert(descriptor->mHierarchy.size() != 0);
 
-                    // Ask the interpreter to lookup the function
-                    std::shared_ptr<Function> calledFunction = state->mInterpreter->getFunction(className, mName);
-                    if (calledFunction)
+                    for (const std::string& className : descriptor->mHierarchy)
                     {
-                        calledFunction->execute(targetSim, state, mArgc);
-                        return 1;
+                        // Ask the interpreter to lookup the function
+                        std::shared_ptr<Function> calledFunction = state->mInterpreter->getFunction(className, mName);
+                        if (calledFunction)
+                        {
+                            calledFunction->execute(targetObject, state, mArgc);
+                            return 1;
+                        }
                     }
 
                     stack.push_back(StoredValue(0));
@@ -1152,6 +1159,124 @@ namespace TorqueScript
                 private:
                     std::string mName;
                     unsigned int mArgc;
+        };
+
+        class PushObjectInstantiationInstruction : public Instruction
+        {
+            public:
+                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                {
+                    StoredValueStack& stack = state->mExecutionScope.getStack();
+                    assert(stack.size() >= 2);
+
+                    StoredValue objectName = stack.back();
+                    stack.pop_back();
+                    StoredValue objectTypeName = stack.back();
+                    stack.pop_back();
+
+                    state->mExecutionScope.pushObjectInstantiation(objectTypeName.toString(state), objectName.toString(state));
+
+                    return 1;
+                };
+
+                virtual std::string disassemble() override
+                {
+                    return "PushObjectInstantiation";
+                }
+        };
+
+        class PushObjectFieldInstruction : public Instruction
+        {
+            public:
+                PushObjectFieldInstruction(const unsigned int fieldComponentCount) : mFieldComponentCount(fieldComponentCount)
+                {
+
+                }
+
+                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                {
+                    StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                    StoredValue rvalue = stack.back();
+                    stack.pop_back();
+
+                    // Load array components
+                    std::vector<std::string> arrayComponents;
+                    for (unsigned int iteration = 0; iteration < mFieldComponentCount; ++iteration)
+                    {
+                        arrayComponents.push_back(stack.popString(state));
+                    }
+
+                    // Load base name
+                    StoredValue fieldBaseName = stack.back();
+                    stack.pop_back();
+
+                    std::ostringstream out;
+                    out << fieldBaseName.toString(state);
+                    for (auto iterator = arrayComponents.rbegin(); iterator != arrayComponents.rend(); ++iterator)
+                    {
+                        if (iterator != arrayComponents.rbegin())
+                        {
+                            out << "_";
+                        }
+                        out << *iterator;
+                    }
+
+                    // Final field assignment
+                    ObjectInstantiationDescriptor& descriptor = state->mExecutionScope.currentObjectInstantiation();
+                    descriptor.mFieldAssignments[out.str()] = rvalue;
+
+                    return 1;
+                };
+
+                virtual std::string disassemble() override
+                {
+                    std::ostringstream out;
+                    out << "PushObjectField argc=" << mFieldComponentCount;
+                    return out.str();
+                }
+
+            private:
+                unsigned int mFieldComponentCount;
+        };
+
+        class PopObjectInstantiationInstruction : public Instruction
+        {
+            public:
+                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                {
+                    StoredValueStack& stack = state->mExecutionScope.getStack();
+                    ObjectInstantiationDescriptor descriptor = state->mExecutionScope.popObjectInstantiation();
+
+                    // Track parent/child relationships so we can walk the tree later
+                    if (state->mExecutionScope.isAwaitingParentInstantiation())
+                    {
+                        ObjectInstantiationDescriptor& parentDescriptor = state->mExecutionScope.currentObjectInstantiation();
+                        parentDescriptor.mAwaitingChildren.push_back(descriptor);
+                    }
+                    else
+                    {
+                        // Ask the interpreter to initialize the resulting tree
+                        std::shared_ptr<ConsoleObject> result = state->mInterpreter->initializeConsoleObjectTree(descriptor);
+
+                        if (result)
+                        {
+                            stack.push_back(StoredValue((int)state->mInterpreter->mConsoleObjectRegistry.getConsoleObjectID(result)));
+                        }
+                        else
+                        {
+                            stack.push_back(StoredValue(-1));
+                        }
+                    }
+
+
+                    return 1;
+                };
+
+                virtual std::string disassemble() override
+                {
+                    return "PopObjectInstantiation";
+                }
         };
     }
 }

@@ -33,7 +33,15 @@ namespace TorqueScript
         String,
         LocalReference,
         GlobalReference,
+        MemoryReference,
         SubfieldReference
+    };
+
+    enum MemoryReferenceType
+    {
+        FloatMemory,
+        IntegerMemory,
+        StringMemory
     };
 
     union StoredValueUnion
@@ -70,27 +78,32 @@ namespace TorqueScript
     class StoredValue
     {
         public:
-            StoredValue() : mType(StoredValueType::NullType), mStorage(), mConsoleObject(nullptr)
+            StoredValue() : mType(StoredValueType::NullType), mStorage(), mConsoleObject(nullptr), mMemoryLocation(nullptr)
             {
 
             }
 
-            StoredValue(const int value) : mType(StoredValueType::Integer), mStorage(value), mConsoleObject(nullptr)
+            StoredValue(void* memoryLocation, const MemoryReferenceType type) : mType(StoredValueType::MemoryReference), mStorage(), mConsoleObject(nullptr), mMemoryLocation(memoryLocation)
             {
 
             }
 
-            StoredValue(const float value) : mType(StoredValueType::Float), mStorage(value), mConsoleObject(nullptr)
+            StoredValue(const int value) : mType(StoredValueType::Integer), mStorage(value), mConsoleObject(nullptr), mMemoryLocation(nullptr)
             {
 
             }
 
-            StoredValue(const std::size_t value, const StoredValueType type) : mType(type), mStorage(value), mConsoleObject(nullptr)
+            StoredValue(const float value) : mType(StoredValueType::Float), mStorage(value), mConsoleObject(nullptr), mMemoryLocation(nullptr)
             {
 
             }
 
-            StoredValue(std::shared_ptr<ConsoleObject> object, const std::size_t field) : mType(StoredValueType::SubfieldReference), mStorage(field), mConsoleObject(object)
+            StoredValue(const std::size_t value, const StoredValueType type) : mType(type), mStorage(value), mConsoleObject(nullptr), mMemoryLocation(nullptr)
+            {
+
+            }
+
+            StoredValue(std::shared_ptr<ConsoleObject> object, const std::size_t field) : mType(StoredValueType::SubfieldReference), mStorage(field), mConsoleObject(object), mMemoryLocation(nullptr)
             {
 
             }
@@ -127,7 +140,9 @@ namespace TorqueScript
         private:
             StoredValueType mType;
             StoredValueUnion mStorage;
-
+            MemoryReferenceType mMemoryReferenceType;
+    
+            void* mMemoryLocation;
             std::shared_ptr<ConsoleObject> mConsoleObject;
     };
 }

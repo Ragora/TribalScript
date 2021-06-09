@@ -12,32 +12,36 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#pragma once
+
+#include <string>
 #include <memory>
+#include <unordered_map>
 
-#include "gtest/gtest.h"
+#include <torquescript/consoleobject.hpp>
+#include <torquescript/filehandlebase.hpp>
+#include <torquescript/executionscope.hpp>
 
-#include <torquescript/interpreter.hpp>
-#include <torquescript/storedvalue.hpp>
-#include <torquescript/libraries/libraries.hpp>
-#include <torquescript/executionstate.hpp>
-
-TEST(InterpreterTest, ForLoop)
+namespace TorqueScript
 {
-    TorqueScript::Interpreter interpreter;
-    TorqueScript::registerAllLibraries(&interpreter);
+    class FileObject : public ConsoleObject
+    {
+        DECLARE_CONSOLE_OBJECT_BODY()
 
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
-    interpreter.execute("cases/for.cs", state);
+        public:
+            FileObject(Interpreter* interpreter);
 
-    // After execution, the result of $global should be 50
-    TorqueScript::StoredValue* result = interpreter.getGlobal("global");
-    ASSERT_TRUE(result);
+            bool openForWrite(const std::string& path);
+            void write(const std::string& written);
+            void close();
 
-    ASSERT_EQ(result->toInteger(state), 50);
-}
+            static void initializeMemberFields(ConsoleObjectDescriptor* descriptor);
 
-int main()
-{
-    testing::InitGoogleTest();
-    return RUN_ALL_TESTS();
+            static ConsoleObject* instantiateFromDescriptor(Interpreter* interpreter, ObjectInstantiationDescriptor& descriptor);
+        
+        private:
+            std::unique_ptr<FileHandleBase> mHandle;
+    };
+
+    DECLARE_CONSOLE_OBJECT(FileObject, ConsoleObject)
 }

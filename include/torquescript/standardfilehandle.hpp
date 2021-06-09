@@ -40,6 +40,9 @@ namespace TorqueScript
             virtual void openForRead();
             virtual void openForReadAndWrite();
 
+            virtual bool exists();
+            virtual bool deleteFile();
+
         private:
             std::fstream mFileHandle;
     };

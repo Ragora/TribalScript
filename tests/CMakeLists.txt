@@ -49,3 +49,7 @@ add_test(NAME OpOrderTest COMMAND OpOrderTest WORKING_DIRECTORY ${PROJECT_SOURCE
 add_executable(CaseSensitivityTest caseSensitive.cpp)
 target_link_libraries(CaseSensitivityTest TorqueCompiler gtest_main)
 add_test(NAME CaseSensitivityTest COMMAND CaseSensitivityTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+
+add_executable(MemoryReferenceTest memoryReference.cpp)
+target_link_libraries(MemoryReferenceTest TorqueCompiler gtest_main)
+add_test(NAME MemoryReferenceTest COMMAND MemoryReferenceTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)

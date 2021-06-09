@@ -26,6 +26,7 @@
 #include <torquescript/stringtable.hpp>
 #include <torquescript/interpreterconfiguration.hpp>
 #include <torquescript/storedvaluestack.hpp>
+#include <torquescript/consoleobject.hpp>
 
 namespace TorqueScript
 {
@@ -40,6 +41,19 @@ namespace TorqueScript
         unsigned int mLoopSize;
     };
 
+    struct ObjectInstantiationDescriptor
+    {
+        ObjectInstantiationDescriptor(const std::string typeName, const std::string& name) : mName(name), mTypeName(typeName)
+        {
+
+        }
+
+        std::string mName;
+        std::string mTypeName;
+        std::vector<ObjectInstantiationDescriptor> mAwaitingChildren;
+        std::map<std::string, StoredValue> mFieldAssignments;
+    };
+
     struct ExecutionScopeData
     {
         ExecutionScopeData(Function* function) : mCurrentFunction(function)
@@ -51,6 +65,8 @@ namespace TorqueScript
 
         //! The stack used for execution in this state.
         StoredValueStack mStack;
+
+        std::vector<ObjectInstantiationDescriptor> mObjectInstantiations;
 
         std::vector<LoopDescriptor> mLoopDescriptors;
         std::map<std::size_t, StoredValue> mLocalVariables;
@@ -71,6 +87,12 @@ namespace TorqueScript
             void pushLoop(const unsigned int pointer, const unsigned int depth);
             LoopDescriptor popLoop();
             LoopDescriptor currentLoopDescriptor();
+
+            bool isAwaitingParentInstantiation();
+            void pushObjectInstantiation(const std::string& typeName, const std::string& name);
+            ObjectInstantiationDescriptor popObjectInstantiation();
+            ObjectInstantiationDescriptor& currentObjectInstantiation();
+
             bool isLoopStackEmpty();
             unsigned int getFrameDepth();
 

@@ -14,23 +14,19 @@
 
 #include <ctime>
 
-#include <torquescript/builtins.hpp>
+#include <torquescript/libraries/libraries.hpp>
 #include <torquescript/interpreter.hpp>
 #include <torquescript/executionscope.hpp>
 #include <torquescript/codeblock.hpp>
 #include <torquescript/executionstate.hpp>
-#include <torquescript/consoleobject.hpp>
+#include <torquescript/fileobject.hpp>
 
 int main(int argc, char* argv[])
 {
     std::srand(std::time(nullptr));
 
     TorqueScript::Interpreter interpreter;
-    TorqueScript::registerBuiltIns(&interpreter);
-
-    // Add a test ConsoleObject
-    std::shared_ptr<TorqueScript::ConsoleObject> testObject = std::shared_ptr<TorqueScript::ConsoleObject>(new TorqueScript::ConsoleObject());
-    interpreter.mConsoleObjectRegistry.setConsoleObject("abc", testObject);
+    TorqueScript::registerAllLibraries(&interpreter);
 
     std::cout << "Type TorqueScript Program, use EOF (CTRL+D on Unix, CTRL+Z on Windows) to End Input" << std::endl << std::endl;
 

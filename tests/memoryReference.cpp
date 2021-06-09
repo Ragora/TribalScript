@@ -21,19 +21,27 @@
 #include <torquescript/libraries/libraries.hpp>
 #include <torquescript/executionstate.hpp>
 
-TEST(InterpreterTest, ForLoop)
+static float aStaticFloat = 3.14f;
+
+TEST(InterpreterTest, MemoryReference)
 {
     TorqueScript::Interpreter interpreter;
     TorqueScript::registerAllLibraries(&interpreter);
 
+    // Set memory reference
+    interpreter.setGlobal("pi", TorqueScript::StoredValue(&aStaticFloat, TorqueScript::MemoryReferenceType::FloatMemory));
+
     std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
-    interpreter.execute("cases/for.cs", state);
+    interpreter.execute("cases/memoryReference.cs", state);
 
     // After execution, the result of $global should be 50
-    TorqueScript::StoredValue* result = interpreter.getGlobal("global");
+    TorqueScript::StoredValue* result = interpreter.getGlobal("result");
     ASSERT_TRUE(result);
 
-    ASSERT_EQ(result->toInteger(state), 50);
+    ASSERT_EQ(result->toFloat(state), 6.28f);
+
+    // Check if the memory has been written
+    ASSERT_EQ(aStaticFloat, 1337.0f);
 }
 
 int main()

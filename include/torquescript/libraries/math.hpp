@@ -12,32 +12,33 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#pragma once
+
 #include <memory>
+#include <iostream>
+#include <stdexcept>
 
-#include "gtest/gtest.h"
-
+#include <torquescript/nativefunction.hpp>
+#include <torquescript/executionscope.hpp>
 #include <torquescript/interpreter.hpp>
-#include <torquescript/storedvalue.hpp>
-#include <torquescript/libraries/libraries.hpp>
 #include <torquescript/executionstate.hpp>
+#include <torquescript/storedvaluestack.hpp>
+#include <torquescript/consoleobject.hpp>
+#include <torquescript/fileobject.hpp>
 
-TEST(InterpreterTest, ForLoop)
+namespace TorqueScript
 {
-    TorqueScript::Interpreter interpreter;
-    TorqueScript::registerAllLibraries(&interpreter);
+    static void GetRandomBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
 
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
-    interpreter.execute("cases/for.cs", state);
+        // FIXME: If argC == 1, generate int between 0 and value, if argC == 2, generate int between min and max
+        const float result = (float)std::rand() / RAND_MAX;
+        stack.push_back(StoredValue(result));
+    }
 
-    // After execution, the result of $global should be 50
-    TorqueScript::StoredValue* result = interpreter.getGlobal("global");
-    ASSERT_TRUE(result);
-
-    ASSERT_EQ(result->toInteger(state), 50);
-}
-
-int main()
-{
-    testing::InitGoogleTest();
-    return RUN_ALL_TESTS();
+    static void registerMathLibrary(Interpreter* interpreter)
+    {
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetRandomBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "getRandom")));
+    }
 }

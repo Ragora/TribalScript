@@ -18,13 +18,13 @@
 
 #include <torquescript/interpreter.hpp>
 #include <torquescript/storedvalue.hpp>
-#include <torquescript/builtins.hpp>
+#include <torquescript/libraries/libraries.hpp>
 #include <torquescript/executionstate.hpp>
 
 TEST(InterpreterTest, Variables)
 {
     TorqueScript::Interpreter interpreter;
-    TorqueScript::registerBuiltIns(&interpreter);
+    TorqueScript::registerAllLibraries(&interpreter);
 
     std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
     interpreter.execute("cases/variables.cs", state);

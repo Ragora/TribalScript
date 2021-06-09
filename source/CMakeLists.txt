@@ -2,7 +2,7 @@ antlr_target(Torque Torque.g4 VISITOR)
 include_directories(${ANTLR_Torque_OUTPUT_DIR})
 
 file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/source/*.cpp)
-file(GLOB INCLUDES ${PROJECT_SOURCE_DIR}/include/torquescript/*.hpp)
+file(GLOB INCLUDES ${PROJECT_SOURCE_DIR}/include/torquescript/*.hpp ${PROJECT_SOURCE_DIR}/include/torquescript/libraries/*.hpp)
 add_library(TorqueCompiler
     ${SOURCES}
     ${INCLUDES}

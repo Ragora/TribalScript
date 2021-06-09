@@ -12,32 +12,55 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <memory>
-
-#include "gtest/gtest.h"
-
+#include <torquescript/fileobject.hpp>
 #include <torquescript/interpreter.hpp>
-#include <torquescript/storedvalue.hpp>
-#include <torquescript/libraries/libraries.hpp>
-#include <torquescript/executionstate.hpp>
 
-TEST(InterpreterTest, ForLoop)
+namespace TorqueScript
 {
-    TorqueScript::Interpreter interpreter;
-    TorqueScript::registerAllLibraries(&interpreter);
+    IMPLEMENT_CONSOLE_OBJECT(FileObject, ConsoleObject)
+    
+    FileObject::FileObject(Interpreter* interpreter) : ConsoleObject(interpreter)
+    {
 
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
-    interpreter.execute("cases/for.cs", state);
+    }
 
-    // After execution, the result of $global should be 50
-    TorqueScript::StoredValue* result = interpreter.getGlobal("global");
-    ASSERT_TRUE(result);
+    bool FileObject::openForWrite(const std::string& path)
+    {
+        if (mHandle)
+        {
+            return false;
+        }
 
-    ASSERT_EQ(result->toInteger(state), 50);
-}
+        mHandle = mInterpreter->mConfig.mPlatform->getFileHandle(path);
+        mHandle->openForWrite();
 
-int main()
-{
-    testing::InitGoogleTest();
-    return RUN_ALL_TESTS();
+        return true;
+    }
+
+    void FileObject::write(const std::string& written)
+    {
+        if (mHandle)
+        {
+            mHandle->write(written.c_str(), written.size());
+        }
+    }
+
+    void FileObject::close()
+    {
+        if (mHandle)
+        {
+            mHandle->close();
+            mHandle = nullptr;
+        }
+    }
+
+    ConsoleObject* FileObject::instantiateFromDescriptor(Interpreter* interpreter, ObjectInstantiationDescriptor& descriptor)
+    {
+        return new FileObject(interpreter);
+    }
+
+    void FileObject::initializeMemberFields(ConsoleObjectDescriptor* descriptor)
+    {
+        std::cout << "INITIALIZE MEMBER FIELDS OF FILEOBJECT" << std::endl;
+    }
 }

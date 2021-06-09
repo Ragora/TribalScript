@@ -82,6 +82,9 @@ namespace TorqueScript
         antlrcpp::Any ASTVisitor::visitSubFunctionCallNode(AST::SubFunctionCallNode* call)
         {
             antlrcpp::Any result = this->defaultResult();
+            antlrcpp::Any childResult = call->mTarget->accept(this);
+
+            result = this->aggregateResult(result, childResult);
             for (AST::ASTNode* node : call->mParameters)
             {
                 antlrcpp::Any childResult = node->accept(this);
