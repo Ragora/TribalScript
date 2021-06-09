@@ -282,4 +282,41 @@ namespace TorqueScript
 
         deactivated->mActive = false;
     }
+
+    std::shared_ptr<ConsoleObject> Interpreter::initializeConsoleObjectTree(ObjectInstantiationDescriptor& descriptor)
+    {
+        // Lookup console object descriptor
+        auto search = sConsoleObjectDescriptors->find(descriptor.mTypeName);
+        if (search == sConsoleObjectDescriptors->end())
+        {
+            std::ostringstream errorStream;
+            errorStream << "Cannot instantiate non-console object type '" << descriptor.mTypeName << "'!";
+
+            mConfig.mPlatform->logError(errorStream.str());
+
+            // Forget about child initialization at this point
+            return nullptr;
+        }
+
+        ConsoleObjectDescriptor* objectDescriptor = search->second;
+        std::shared_ptr<ConsoleObject> initialized = std::shared_ptr<ConsoleObject>(objectDescriptor->mInitializePointer(this, descriptor));
+
+        // Register to interpreter
+        mConsoleObjectRegistry.addConsoleObject(initialized);
+        mConsoleObjectRegistry.setConsoleObject(descriptor.mName, initialized);
+
+        // Handle child init
+        for (ObjectInstantiationDescriptor& childDescriptor : descriptor.mAwaitingChildren)
+        {
+            std::shared_ptr<ConsoleObject> childObject = this->initializeConsoleObjectTree(childDescriptor);
+
+            // Add to parent
+            if (childObject)
+            {
+                initialized->addChild(childObject);
+            }
+        }
+
+        return initialized;
+    }
 }

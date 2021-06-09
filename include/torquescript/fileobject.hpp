@@ -20,6 +20,7 @@
 
 #include <torquescript/consoleobject.hpp>
 #include <torquescript/filehandlebase.hpp>
+#include <torquescript/executionscope.hpp>
 
 namespace TorqueScript
 {
@@ -32,8 +33,11 @@ namespace TorqueScript
 
             bool openForWrite(const std::string& path);
             void write(const std::string& written);
+            void close();
 
             static void initializeMemberFields(ConsoleObjectDescriptor* descriptor);
+
+            static ConsoleObject* instantiateFromDescriptor(Interpreter* interpreter, ObjectInstantiationDescriptor& descriptor);
         
         private:
             std::unique_ptr<FileHandleBase> mHandle;

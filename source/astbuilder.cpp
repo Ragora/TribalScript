@@ -662,7 +662,6 @@ namespace TorqueScript
         {
             std::vector<AST::ASTNode*> result;
             std::vector<AST::ASTNode*> objectContent = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
-            assert(objectContent.size() >= 1);
 
             AST::ASTNode* name = nullptr;
             AST::ASTNode* typeName = nullptr;

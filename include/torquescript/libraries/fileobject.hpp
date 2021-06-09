@@ -61,10 +61,25 @@ namespace TorqueScript
         stack.push_back(StoredValue(0));
     }
 
+    static void CloseBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
+
+        // Open the handle
+        assert(thisObject);
+        std::shared_ptr<FileObject> fileObject = std::dynamic_pointer_cast<FileObject>(thisObject);
+        assert(fileObject);
+
+        fileObject->close();
+        stack.push_back(StoredValue(0));
+    }
+
+
     static void registerFileObjectLibrary(Interpreter* interpreter)
     {
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(OpenForWriteBuiltIn, PACKAGE_EMPTY, "FileObject", "openForWrite")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(WriteBuiltIn, PACKAGE_EMPTY, "FileObject", "write")));
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(CloseBuiltIn, PACKAGE_EMPTY, "FileObject", "close")));
 
         interpreter->registerConsoleObjectType<FileObject>();
     }

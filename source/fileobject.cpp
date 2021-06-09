@@ -45,6 +45,20 @@ namespace TorqueScript
         }
     }
 
+    void FileObject::close()
+    {
+        if (mHandle)
+        {
+            mHandle->close();
+            mHandle = nullptr;
+        }
+    }
+
+    ConsoleObject* FileObject::instantiateFromDescriptor(Interpreter* interpreter, ObjectInstantiationDescriptor& descriptor)
+    {
+        return new FileObject(interpreter);
+    }
+
     void FileObject::initializeMemberFields(ConsoleObjectDescriptor* descriptor)
     {
         std::cout << "INITIALIZE MEMBER FIELDS OF FILEOBJECT" << std::endl;

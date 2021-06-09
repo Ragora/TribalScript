@@ -42,4 +42,9 @@ namespace TorqueScript
         const std::string setName = toLowerCase(name);
         mTaggedFields[setName] = value;
     }
+
+    void ConsoleObject::addChild(std::shared_ptr<ConsoleObject> child)
+    {
+
+    }
 }

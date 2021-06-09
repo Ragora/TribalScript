@@ -98,6 +98,8 @@ namespace TorqueScript
             //! The interpreter configuration.
             const InterpreterConfiguration mConfig;
 
+            std::shared_ptr<ConsoleObject> initializeConsoleObjectTree(ObjectInstantiationDescriptor& descriptor);
+
             template <typename classType>
             void registerConsoleObjectType()
             {

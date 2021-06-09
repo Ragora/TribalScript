@@ -178,4 +178,30 @@ namespace TorqueScript
         ExecutionScopeData& currentScope = *(mExecutionScopeData.rbegin() + 1);
         return currentScope.mStack;
     }
+
+    bool ExecutionScope::isAwaitingParentInstantiation()
+    {
+        ExecutionScopeData& currentScope = *(mExecutionScopeData.rbegin());
+        return currentScope.mObjectInstantiations.size() != 0;
+    }
+
+    void ExecutionScope::pushObjectInstantiation(const std::string& typeName, const std::string& name)
+    {
+        ExecutionScopeData& currentScope = *(mExecutionScopeData.rbegin());
+        currentScope.mObjectInstantiations.push_back(ObjectInstantiationDescriptor(typeName, name));
+    }
+
+    ObjectInstantiationDescriptor ExecutionScope::popObjectInstantiation()
+    {
+        ExecutionScopeData& currentScope = *(mExecutionScopeData.rbegin());
+        ObjectInstantiationDescriptor result = currentScope.mObjectInstantiations.back();
+        currentScope.mObjectInstantiations.pop_back();
+        return result;
+    }
+
+    ObjectInstantiationDescriptor& ExecutionScope::currentObjectInstantiation()
+    {
+        ExecutionScopeData& currentScope = *(mExecutionScopeData.rbegin());
+        return currentScope.mObjectInstantiations.back();
+    }
 }

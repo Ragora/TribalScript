@@ -1160,5 +1160,123 @@ namespace TorqueScript
                     std::string mName;
                     unsigned int mArgc;
         };
+
+        class PushObjectInstantiationInstruction : public Instruction
+        {
+            public:
+                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                {
+                    StoredValueStack& stack = state->mExecutionScope.getStack();
+                    assert(stack.size() >= 2);
+
+                    StoredValue objectName = stack.back();
+                    stack.pop_back();
+                    StoredValue objectTypeName = stack.back();
+                    stack.pop_back();
+
+                    state->mExecutionScope.pushObjectInstantiation(objectTypeName.toString(state), objectName.toString(state));
+
+                    return 1;
+                };
+
+                virtual std::string disassemble() override
+                {
+                    return "PushObjectInstantiation";
+                }
+        };
+
+        class PushObjectFieldInstruction : public Instruction
+        {
+            public:
+                PushObjectFieldInstruction(const unsigned int fieldComponentCount) : mFieldComponentCount(fieldComponentCount)
+                {
+
+                }
+
+                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                {
+                    StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                    StoredValue rvalue = stack.back();
+                    stack.pop_back();
+
+                    // Load array components
+                    std::vector<std::string> arrayComponents;
+                    for (unsigned int iteration = 0; iteration < mFieldComponentCount; ++iteration)
+                    {
+                        arrayComponents.push_back(stack.popString(state));
+                    }
+
+                    // Load base name
+                    StoredValue fieldBaseName = stack.back();
+                    stack.pop_back();
+
+                    std::ostringstream out;
+                    out << fieldBaseName.toString(state);
+                    for (auto iterator = arrayComponents.rbegin(); iterator != arrayComponents.rend(); ++iterator)
+                    {
+                        if (iterator != arrayComponents.rbegin())
+                        {
+                            out << "_";
+                        }
+                        out << *iterator;
+                    }
+
+                    // Final field assignment
+                    ObjectInstantiationDescriptor& descriptor = state->mExecutionScope.currentObjectInstantiation();
+                    descriptor.mFieldAssignments[out.str()] = rvalue;
+
+                    return 1;
+                };
+
+                virtual std::string disassemble() override
+                {
+                    std::ostringstream out;
+                    out << "PushObjectField argc=" << mFieldComponentCount;
+                    return out.str();
+                }
+
+            private:
+                unsigned int mFieldComponentCount;
+        };
+
+        class PopObjectInstantiationInstruction : public Instruction
+        {
+            public:
+                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                {
+                    StoredValueStack& stack = state->mExecutionScope.getStack();
+                    ObjectInstantiationDescriptor descriptor = state->mExecutionScope.popObjectInstantiation();
+
+                    // Track parent/child relationships so we can walk the tree later
+                    if (state->mExecutionScope.isAwaitingParentInstantiation())
+                    {
+                        ObjectInstantiationDescriptor& parentDescriptor = state->mExecutionScope.currentObjectInstantiation();
+                        parentDescriptor.mAwaitingChildren.push_back(descriptor);
+                    }
+                    else
+                    {
+                        // Ask the interpreter to initialize the resulting tree
+                        std::shared_ptr<ConsoleObject> result = state->mInterpreter->initializeConsoleObjectTree(descriptor);
+
+                        if (result)
+                        {
+                            stack.push_back(StoredValue((int)state->mInterpreter->mConsoleObjectRegistry.getConsoleObjectID(result)));
+                        }
+                        else
+                        {
+                            stack.push_back(StoredValue(-1));
+                        }
+                    }
+
+
+                    return 1;
+                };
+
+                virtual std::string disassemble() override
+                {
+                    return "PopObjectInstantiation";
+                }
+        };
     }
 }

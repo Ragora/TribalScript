@@ -618,8 +618,79 @@ namespace TorqueScript
         throw std::runtime_error("Datablocks not Implemented Yet");
     }
 
+    antlrcpp::Any Compiler::visitFieldAssignNode(AST::FieldAssignNode* node)
+    {
+        InstructionSequence out;
+
+        // Push base
+        const std::size_t stringID = mStringTable->getOrAssign(node->mFieldBaseName);
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringID)));
+
+        // Push all array components
+        for (AST::ASTNode* childNode : node->mFieldExpressions)
+        {
+            InstructionSequence childCode = childNode->accept(this).as<InstructionSequence>();
+            out.insert(out.end(), childCode.begin(), childCode.end());
+        }
+
+        // Push the rvalue
+        InstructionSequence rvalueCode = node->mRight->accept(this).as<InstructionSequence>();
+        out.insert(out.end(), rvalueCode.begin(), rvalueCode.end());
+
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushObjectFieldInstruction(node->mFieldExpressions.size())));
+        return out;
+    }
+
     antlrcpp::Any Compiler::visitObjectDeclarationNode(AST::ObjectDeclarationNode* object)
     {
-        throw std::runtime_error("Object Declarations not Implemented Yet");
+        InstructionSequence out;
+
+        // The stack should look something like:
+        // ...
+        // ObjectTypeName
+        // ObjectName
+        InstructionSequence typeNameCode = object->mType->accept(this).as<InstructionSequence>();
+        out.insert(out.begin(), typeNameCode.begin(), typeNameCode.end());
+
+        if (object->mName)
+        {
+            InstructionSequence nameCode = object->mName->accept(this).as<InstructionSequence>();
+            out.insert(out.end(), nameCode.begin(), nameCode.end());
+        }
+        else
+        {
+            const std::size_t stringID = mStringTable->getOrAssign("");
+            out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringID)));
+        }
+
+        // Push Object
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushObjectInstantiationInstruction()));
+
+        // ... gen fields
+        for (AST::ASTNode* field : object->mFields)
+        {
+            InstructionSequence fieldCode = field->accept(this).as<InstructionSequence>();
+            out.insert(out.end(), fieldCode.begin(), fieldCode.end());
+        }
+
+        // ... gen children
+        for (AST::ObjectDeclarationNode* child : object->mChildren)
+        {
+            InstructionSequence childCode = child->accept(this).as<InstructionSequence>();
+            out.insert(out.end(), childCode.begin(), childCode.end());
+        }
+
+        // Pop object
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopObjectInstantiationInstruction()));
+
+            /*
+            *                 ASTNode* mName;
+                ASTNode* mType;
+
+                std::vector<ObjectDeclarationNode*> mChildren;
+                std::vector<ASTNode*> mFields;
+            */
+
+        return out;
     }
 }

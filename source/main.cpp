@@ -28,10 +28,6 @@ int main(int argc, char* argv[])
     TorqueScript::Interpreter interpreter;
     TorqueScript::registerAllLibraries(&interpreter);
 
-    // Add a test ConsoleObject
-    std::shared_ptr<TorqueScript::ConsoleObject> testObject = std::shared_ptr<TorqueScript::ConsoleObject>(new TorqueScript::FileObject(&interpreter));
-    interpreter.mConsoleObjectRegistry.setConsoleObject("abc", testObject);
-
     std::cout << "Type TorqueScript Program, use EOF (CTRL+D on Unix, CTRL+Z on Windows) to End Input" << std::endl << std::endl;
 
     std::istreambuf_iterator<char> begin(std::cin), end;

@@ -27,6 +27,9 @@ namespace TorqueScript
     class ExecutionScope;
     class Interpreter;
     class ConsoleObjectDescriptor;
+    class ObjectInstantiationDescriptor;
+
+    typedef ConsoleObject* (*InitializeConsoleObjectFromDescriptorPointer)(Interpreter* interpreter, ObjectInstantiationDescriptor& descriptor);
 
     extern std::unordered_map<std::string, ConsoleObjectDescriptor*>* sConsoleObjectDescriptors;
     static std::unordered_map<std::string, ConsoleObjectDescriptor*>* getConsoleObjectDescriptors()
@@ -41,7 +44,7 @@ namespace TorqueScript
     class ConsoleObjectDescriptor
     {
         public:
-            ConsoleObjectDescriptor(const std::string& name, const std::string& parentName) : mName(name), mParentName(parentName)
+            ConsoleObjectDescriptor(const std::string& name, const std::string& parentName, InitializeConsoleObjectFromDescriptorPointer initializePointer) : mName(name), mParentName(parentName), mInitializePointer(initializePointer)
             {
                 std::unordered_map<std::string, ConsoleObjectDescriptor*>* descriptors = getConsoleObjectDescriptors();
 
@@ -52,6 +55,7 @@ namespace TorqueScript
             std::string mName;
             std::string mParentName;
             std::vector<std::string> mHierarchy;
+            InitializeConsoleObjectFromDescriptorPointer mInitializePointer;
     };
 
     static std::vector<std::string> relinkNamespace(const std::string& space)
@@ -124,7 +128,7 @@ namespace TorqueScript
             virtual std::string getClassName() override;                                \
 
     #define IMPLEMENT_CONSOLE_OBJECT(type, super)                                                                   \
-        ConsoleObjectDescriptor* TypeInformation<type>::Descriptor = new ConsoleObjectDescriptor(#type, #super);    \
+        ConsoleObjectDescriptor* TypeInformation<type>::Descriptor = new ConsoleObjectDescriptor(#type, #super, type::instantiateFromDescriptor);    \
         std::string type::getClassName()                                                                            \
         {                                                                                                           \
             return #type;                                                                                           \
@@ -156,6 +160,8 @@ namespace TorqueScript
             void setTaggedField(const std::string& name, StoredValue value);
 
             virtual std::string getClassName() = 0;
+
+            virtual void addChild(std::shared_ptr<ConsoleObject> child);
 
         protected:
             Interpreter* mInterpreter;

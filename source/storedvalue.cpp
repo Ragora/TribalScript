@@ -26,17 +26,19 @@ namespace TorqueScript
 
     std::shared_ptr<ConsoleObject> StoredValue::toConsoleObject(std::shared_ptr<ExecutionState> state)
     {
+        StoredValue rawValue = this->getReferencedValueCopy(state);
+
         // Search by ID first
-        if (this->isInteger(state))
+        if (rawValue.isInteger(state))
         {
-            std::shared_ptr<ConsoleObject> idLookup = state->mInterpreter->mConsoleObjectRegistry.getConsoleObject(this->toInteger(state));
+            std::shared_ptr<ConsoleObject> idLookup = state->mInterpreter->mConsoleObjectRegistry.getConsoleObject(rawValue.toInteger(state));
             if (idLookup)
             {
                 return idLookup;
             }
         }
 
-        const std::string lookupName = this->toString(state);
+        const std::string lookupName = rawValue.toString(state);
         return state->mInterpreter->mConsoleObjectRegistry.getConsoleObject(lookupName);
     }
 
