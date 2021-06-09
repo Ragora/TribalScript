@@ -50,9 +50,23 @@ namespace TorqueScript
              */
             virtual void execute(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount);
 
-            std::string getName();
-            std::string getNameSpace();
-            std::string getPackage();
+            /**
+             *  @brief Retrieves the declared name of this function.
+             *  @return The name that this function was declared with.
+             */
+            const std::string& getDeclaredName();
+
+            /**
+             *  @brief Retrieves the declared namespace of this function.
+             *  @return The namespace that this function was declared with.
+             */
+            const std::string& getDeclaredNameSpace();
+
+            /**
+             *  @brief Retrieves the declared package of this function.
+             *  @return The package that this function was declared in.
+             */
+            const std::string& getDeclaredPackage();
 
         private:
             //! The package of the function.

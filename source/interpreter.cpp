@@ -107,12 +107,12 @@ namespace TorqueScript
     void Interpreter::addFunction(std::shared_ptr<Function> function)
     {
         // Make sure the registry exists - if it already does this does nothing
-        std::string package = function->getPackage();
+        std::string package = function->getDeclaredPackage();
         this->addFunctionRegistry(package);
         FunctionRegistry* registry = this->findFunctionRegistry(package);
 
-        const std::string storedName = toLowerCase(function->getName());
-        const std::string storedNameSpace = toLowerCase(function->getNameSpace());
+        const std::string storedName = toLowerCase(function->getDeclaredName());
+        const std::string storedNameSpace = toLowerCase(function->getDeclaredNameSpace());
         registry->mFunctions[storedNameSpace][storedName] = function;
     }
 
@@ -145,9 +145,9 @@ namespace TorqueScript
 
     std::shared_ptr<Function> Interpreter::getFunctionParent(Function* function)
     {
-        const std::string searchedPackage = toLowerCase(function->getPackage());
-        const std::string searchedNameSpace = toLowerCase(function->getNameSpace());
-        const std::string searchedFunction = toLowerCase(function->getName());
+        const std::string searchedPackage = toLowerCase(function->getDeclaredPackage());
+        const std::string searchedNameSpace = toLowerCase(function->getDeclaredNameSpace());
+        const std::string searchedFunction = toLowerCase(function->getDeclaredName());
 
         // Search registries back to front
         bool shouldSearchFunction = false;

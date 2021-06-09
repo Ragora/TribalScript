@@ -159,6 +159,10 @@ namespace TorqueScript
              */
             void setTaggedField(const std::string& name, StoredValue value);
 
+            /**
+             *  @brief Retrieves the class name of this ConsoleObject instance.
+             *  @return A string representing the class name of this ConsoleObject.
+             */
             virtual std::string getClassName() = 0;
 
             virtual void addChild(std::shared_ptr<ConsoleObject> child);

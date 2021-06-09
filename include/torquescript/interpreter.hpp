@@ -58,11 +58,34 @@ namespace TorqueScript
             Interpreter(const InterpreterConfiguration& config);
             ~Interpreter();
 
+            /// @name Global Variables
+            ///
+            /// These functions handle getting and setting global variables within
+            /// the context of an interpreter.
+            /// @{
             void setGlobal(const std::size_t name, StoredValue value);
             void setGlobal(const std::string& name, StoredValue value);
 
+            /**
+             *  @brief Retrieves a global variable by string.
+             *  @param name A string containining the name of the variable
+             *  to retrieve, excluding the $ prefix.
+             *  @return The stored value at that global variable. If no such variable
+             *  exists, nullptr is returned.
+             */
             StoredValue* getGlobal(const std::string& name);
+
+            /**
+             *  @brief Retrieves a global variable by string ID.
+             *  @param name The string ID representing the global variable
+             *  name to lookup. This should be preferred over the lookup by name
+             *  as this version will be faster.
+             *  @return The stored value at that global variable. If no such variable
+             *  exists, nullptr is returned.
+             */
             StoredValue* getGlobal(const std::size_t name);
+
+            /// @}
 
             /**
              *  @brief Ask the interpreter to compile the input string and return the resulting
@@ -72,6 +95,11 @@ namespace TorqueScript
             CodeBlock* compile(const std::string& input);
             void evaluate(const std::string& input, std::shared_ptr<ExecutionState> state = nullptr);
             void execute(const std::string& path, std::shared_ptr<ExecutionState> state = nullptr);
+
+            /// @name Functions
+            ///
+            /// These functions handle management of functions registered in the interpreter.
+            /// @{
 
             /**
              *  @brief Registers a new function to the interpreter.
@@ -86,6 +114,7 @@ namespace TorqueScript
             void activateFunctionRegistry(const std::string& packageName);
             void deactivateFunctionRegistry(const std::string& packageName);
             void removeFunctionRegistry(const std::string& packageName);
+            /// @}
 
             std::shared_ptr<ExecutionState> getExecutionState();
 
@@ -98,6 +127,15 @@ namespace TorqueScript
             //! The interpreter configuration.
             const InterpreterConfiguration mConfig;
 
+            /**
+             *  @brief Initializes the tree of objects described by the provided descriptor.
+             *  @details The tree described is walked and all objects along the tree will be initialized,
+             *  unless any parent is invalid (Ie. bad typename, invalid parameters, etc) at which point
+             *  that entire branch of the tree is invalidated and *not* instantiated.
+             *  @param descriptor The descriptor describing the root of the tree to initialize.
+             *  @return The root level ConsoleObject that was instantiated if successful. Otherwise,
+             *  nullptr is returned.
+             */
             std::shared_ptr<ConsoleObject> initializeConsoleObjectTree(ObjectInstantiationDescriptor& descriptor);
 
             template <typename classType>

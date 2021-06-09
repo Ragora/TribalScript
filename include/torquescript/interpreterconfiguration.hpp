@@ -24,7 +24,8 @@ namespace TorqueScript
      */
     struct InterpreterConfiguration
     {
-        InterpreterConfiguration(PlatformContext* platform = new PlatformContext()) :  mMaxRecursionDepth(1024), mCaseSensitive(false), mPlatform(platform)
+        InterpreterConfiguration(PlatformContext* platform = new PlatformContext()) :
+                                 mPlatform(platform), mMaxRecursionDepth(1024), mCaseSensitive(false)
         {
 
         }

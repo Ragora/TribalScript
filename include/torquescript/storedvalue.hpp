@@ -103,6 +103,12 @@ namespace TorqueScript
 
             }
 
+            /// @name Value Retrieval
+            ///
+            /// These functions are used to retrieve the data stored in this object.
+            /// @{
+            ///
+
             int toInteger(std::shared_ptr<ExecutionState> state);
 
             /**
@@ -123,11 +129,19 @@ namespace TorqueScript
 
             std::shared_ptr<ConsoleObject> toConsoleObject(std::shared_ptr<ExecutionState> state);
 
+            /// @}
+
             StoredValue getReferencedValueCopy(std::shared_ptr<ExecutionState> state);
 
             bool isInteger(std::shared_ptr<ExecutionState> state);
 
-            // In Torque, if we end up trying to set a value of ie. a float it does nothing
+            /**
+             *  @brief Sets the value of this object. Only has an effect if this object
+             *  is a reference to a local or global variable.
+             *  @param newValue The new value to set.
+             *  @param state The execution state this assignment is taking place in.
+             *  @return True if an assignment has taken place. False otherwise.
+             */
             bool setValue(StoredValue newValue, std::shared_ptr<ExecutionState> state);
 
             std::string getRepresentation();

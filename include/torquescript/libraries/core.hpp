@@ -87,12 +87,21 @@ namespace TorqueScript
         stack.push_back(StoredValue(stringID, StoredValueType::String));
     }
 
+    static void GetClassNameBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
+
+        const std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(thisObject->getClassName());
+        stack.push_back(StoredValue(stringID, StoredValueType::String));
+    }
+
     static void registerCoreLibrary(Interpreter* interpreter)
     {
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(EchoBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "echo")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(ActivatePackageBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "activatePackage")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(DeactivatePackageBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "deactivatePackage")));
 
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetClassNameBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "getClassName")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetNameBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "getName")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(DeleteBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "delete")));
     }

@@ -24,6 +24,10 @@
 
 namespace TorqueScript
 {
+    /**
+     *  @brief A FileObject is a class that may be used to interact with the filesystem
+     *  provided by the PlatformContext configured with the interpreter.
+     */
     class FileObject : public ConsoleObject
     {
         DECLARE_CONSOLE_OBJECT_BODY()
@@ -31,14 +35,25 @@ namespace TorqueScript
         public:
             FileObject(Interpreter* interpreter);
 
+            /**
+             *  @brief Opens a file at the specified path in write-only mode.
+             *  @param path The file to open.
+             *  @return True if successful, false otherwise.
+             */
             bool openForWrite(const std::string& path);
+
+            /**
+             *  @brief Writes a string to the file, if the FileObject has been
+             *  opened with write mode enabled.
+             *  @param written The string data to write to the file.
+             */
             void write(const std::string& written);
             void close();
 
             static void initializeMemberFields(ConsoleObjectDescriptor* descriptor);
 
             static ConsoleObject* instantiateFromDescriptor(Interpreter* interpreter, ObjectInstantiationDescriptor& descriptor);
-        
+
         private:
             std::unique_ptr<FileHandleBase> mHandle;
     };

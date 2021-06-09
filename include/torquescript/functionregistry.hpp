@@ -22,8 +22,19 @@
 
 namespace TorqueScript
 {
+    /**
+     *  @brief A FunctionRegistry is used to keep track of registered functions in memory by
+     *  the packages they are associated with.
+     *  @details A FunctionRegistry effectively is a 'package' for registered functions to reside
+     *  in. The "" package is the root level package everything is registered to if no package is
+     *  otherwise set.
+     */
     struct FunctionRegistry
     {
+        /**
+         *  @brief Constructs a new FunctionRegistry instance.
+         *  @param package The name of the package this registry is associated with.
+         */
         FunctionRegistry(const std::string& package) : mPackageName(package), mActive(false)
         {
 

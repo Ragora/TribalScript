@@ -18,7 +18,7 @@
 namespace TorqueScript
 {
     IMPLEMENT_CONSOLE_OBJECT(FileObject, ConsoleObject)
-    
+
     FileObject::FileObject(Interpreter* interpreter) : ConsoleObject(interpreter)
     {
 
@@ -61,6 +61,6 @@ namespace TorqueScript
 
     void FileObject::initializeMemberFields(ConsoleObjectDescriptor* descriptor)
     {
-        std::cout << "INITIALIZE MEMBER FIELDS OF FILEOBJECT" << std::endl;
+
     }
 }

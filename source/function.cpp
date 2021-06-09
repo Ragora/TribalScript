@@ -98,17 +98,17 @@ namespace TorqueScript
         state->mExecutionScope.popFrame();
     }
 
-    std::string Function::getName()
+    const std::string& Function::getDeclaredName()
     {
         return mName;
     }
 
-    std::string Function::getNameSpace()
+    const std::string& Function::getDeclaredNameSpace()
     {
         return mNameSpace;
     }
 
-    std::string Function::getPackage()
+    const std::string& Function::getDeclaredPackage()
     {
         return mPackage;
     }
