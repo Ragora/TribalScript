@@ -16,6 +16,7 @@
 
 #include <memory>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 
 #include <torquescript/nativefunction.hpp>
@@ -42,6 +43,24 @@ namespace TorqueScript
         }
 
         state->mInterpreter->mConfig.mPlatform->logEcho(outputString);
+        stack.push_back(StoredValue(0));
+    }
+
+    static void ExecBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
+
+        for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
+        {
+            std::string executedFile = stack.popString(state);
+
+            std::ostringstream output;
+            output << "Executing " << executedFile << " ...";
+            state->mInterpreter->mConfig.mPlatform->logEcho(output.str());
+
+            state->mInterpreter->execute(executedFile, nullptr);
+        }
+
         stack.push_back(StoredValue(0));
     }
 
@@ -98,6 +117,7 @@ namespace TorqueScript
     static void registerCoreLibrary(Interpreter* interpreter)
     {
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(EchoBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "echo")));
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(ExecBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "exec")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(ActivatePackageBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "activatePackage")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(DeactivatePackageBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "deactivatePackage")));
 
