@@ -43,7 +43,7 @@ namespace TorqueScript
                  *  switching statement that determines how opcodes will behave.
                  *  @param state The current execution state to act upon.
                  */
-                virtual int execute(std::shared_ptr<ExecutionState> state) = 0;
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) = 0;
 
                 /**
                  *  @brief Helper routine to produce a disassembly for this instruction.
@@ -66,7 +66,7 @@ namespace TorqueScript
 
                 }
 
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
                     stack.push_back(StoredValue(mParameter));
@@ -97,7 +97,7 @@ namespace TorqueScript
 
                 }
 
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
                     stack.push_back(StoredValue(mParameter));
@@ -128,7 +128,7 @@ namespace TorqueScript
 
                 }
 
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
                     stack.push_back(StoredValue(mStringID, StoredValueType::String));
@@ -159,7 +159,7 @@ namespace TorqueScript
 
                 }
 
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
                     stack.push_back(StoredValue(mStringID, StoredValueType::LocalReference));
@@ -190,7 +190,7 @@ namespace TorqueScript
 
                 }
 
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
                     stack.push_back(StoredValue(mStringID, StoredValueType::GlobalReference));
@@ -215,7 +215,7 @@ namespace TorqueScript
         class AddAssignmentInstruction : public Instruction
         {
             public:
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -254,7 +254,7 @@ namespace TorqueScript
         class AssignmentInstruction : public Instruction
         {
             public:
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -289,7 +289,7 @@ namespace TorqueScript
         class ConcatInstruction : public Instruction
         {
             public:
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -322,7 +322,7 @@ namespace TorqueScript
         class NegateInstruction : public Instruction
         {
             public:
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -354,12 +354,12 @@ namespace TorqueScript
                  *  @param name The name of the function to call.
                  *  @param argc The total number of arguments to pull off the stack for use as parameters.
                  */
-                CallFunctionInstruction(const std::string& space, const std::string& name, const unsigned int argc) : mNameSpace(space), mName(name), mArgc(argc)
+                CallFunctionInstruction(const std::string& space, const std::string& name, const std::size_t argc) : mNameSpace(space), mName(name), mArgc(argc)
                 {
 
                 }
 
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     const std::string namespaceName = toLowerCase(mNameSpace);
                     StoredValueStack& stack = state->mExecutionScope.getStack();
@@ -434,7 +434,7 @@ namespace TorqueScript
                     std::string mName;
 
                     //! How many arguments are being passed to the function to call.
-                    unsigned int mArgc;
+                    std::size_t mArgc;
         };
 
         /**
@@ -443,7 +443,7 @@ namespace TorqueScript
         class AddInstruction : public Instruction
         {
             public:
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -475,7 +475,7 @@ namespace TorqueScript
         class LessThanInstruction : public Instruction
         {
             public:
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -507,7 +507,7 @@ namespace TorqueScript
         class EqualsInstruction : public Instruction
         {
             public:
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -539,7 +539,7 @@ namespace TorqueScript
         class BitwiseAndInstruction : public Instruction
         {
             public:
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -572,7 +572,7 @@ namespace TorqueScript
         class MultiplyInstruction : public Instruction
         {
             public:
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -606,7 +606,7 @@ namespace TorqueScript
         class DivideInstruction : public Instruction
         {
             public:
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -639,7 +639,7 @@ namespace TorqueScript
         class PopInstruction : public Instruction
         {
             public:
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -665,12 +665,12 @@ namespace TorqueScript
                  *  @brief Constructs a new JumpInstruction instance.
                  *  @param offset The instruction offset to unconditionally jump to.
                  */
-                JumpInstruction(const int offset) : mOffset(offset)
+                JumpInstruction(const AddressType offset) : mOffset(offset)
                 {
 
                 }
 
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     return mOffset;
                 };
@@ -684,7 +684,7 @@ namespace TorqueScript
 
             private:
                 //! The unconditional jump offset.
-                int mOffset;
+                AddressType mOffset;
         };
 
         /**
@@ -699,12 +699,12 @@ namespace TorqueScript
                  *  @brief Constructs a new instance of JumpTrueInstruction.
                  *  @param offset The instruction offset to jump to if the condition is true.
                  */
-                JumpTrueInstruction(const int offset) : mOffset(offset)
+                JumpTrueInstruction(const AddressType offset) : mOffset(offset)
                 {
 
                 }
 
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -729,7 +729,7 @@ namespace TorqueScript
 
             private:
                 //! The jump offset.
-                int mOffset;
+                AddressType mOffset;
         };
 
         /**
@@ -744,12 +744,12 @@ namespace TorqueScript
                  *  @brief Constructs a new instance of JumpFalseInstruction.
                  *  @param offset The instruction offset to jump to if the condition is false.
                  */
-                JumpFalseInstruction(const int offset) : mOffset(offset)
+                JumpFalseInstruction(const AddressType offset) : mOffset(offset)
                 {
 
                 }
 
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -774,7 +774,7 @@ namespace TorqueScript
 
             private:
                 //! The jump offset.
-                int mOffset;
+                AddressType mOffset;
         };
 
         /**
@@ -784,7 +784,7 @@ namespace TorqueScript
         class NOPInstruction : public Instruction
         {
             public:
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     return 1;
                 };
@@ -814,7 +814,7 @@ namespace TorqueScript
 
                 }
 
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     // Register the function
                     std::shared_ptr<Function> newFunction = std::shared_ptr<Function>(new Function(mPackageName, mNameSpace, mName, mParameterNames));
@@ -885,7 +885,7 @@ namespace TorqueScript
 
                 }
 
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -923,7 +923,7 @@ namespace TorqueScript
         class ReturnInstruction : public Instruction
         {
             public:
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -957,14 +957,14 @@ namespace TorqueScript
                  *  @brief Constructs a new instance of PushLoopInstruction.
                  *  @param loopSize The number of instructions contained in this loop.
                  */
-                PushLoopInstruction(const unsigned int loopSize) : mLoopSize(loopSize)
+                PushLoopInstruction(const std::size_t loopSize) : mLoopSize(loopSize)
                 {
 
                 }
 
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
-                    const unsigned int loopPosition = state->mInstructionPointer;
+                    const AddressType loopPosition = state->mInstructionPointer;
                     state->mExecutionScope.pushLoop(loopPosition, mLoopSize);
                     return 1;
                 };
@@ -977,7 +977,7 @@ namespace TorqueScript
                 }
 
             private:
-                unsigned int mLoopSize;
+                std::size_t mLoopSize;
         };
 
         /**
@@ -987,7 +987,7 @@ namespace TorqueScript
         class PopLoopInstruction : public Instruction
         {
             public:
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     state->mExecutionScope.popLoop();
                     return 1;
@@ -1005,7 +1005,7 @@ namespace TorqueScript
         class BreakInstruction : public Instruction
         {
             public:
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     if (state->mExecutionScope.isLoopStackEmpty())
                     {
@@ -1015,7 +1015,7 @@ namespace TorqueScript
 
                     LoopDescriptor descriptor = state->mExecutionScope.currentLoopDescriptor();
                     // This should lead to a PopLoop instruction so we don't pop here
-                    const unsigned int loopProgress = state->mInstructionPointer - descriptor.mInstructionPointer;
+                    const AddressType loopProgress = state->mInstructionPointer - descriptor.mInstructionPointer;
                     return descriptor.mLoopSize - loopProgress;
                 };
 
@@ -1038,12 +1038,12 @@ namespace TorqueScript
                  *  @param argc The number of array indices to load from the stack.
                  *  @param global Whether or not the array access is against a global or not.
                  */
-                AccessArrayInstruction(const std::string& name, const unsigned int argc, bool global) : mName(name), mArgc(argc), mGlobal(global)
+                AccessArrayInstruction(const std::string& name, const std::size_t argc, bool global) : mName(name), mArgc(argc), mGlobal(global)
                 {
 
                 }
 
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -1089,7 +1089,7 @@ namespace TorqueScript
 
                 private:
                     std::string mName;
-                    unsigned int mArgc;
+                    std::size_t mArgc;
                     bool mGlobal;
         };
 
@@ -1104,12 +1104,12 @@ namespace TorqueScript
                  *  @param name The name of the function to call.
                  *  @param argc The number of arguments to pull from the stack when resolving the call.
                  */
-                CallBoundFunctionInstruction(const std::string& name, const unsigned int argc) : mName(name), mArgc(argc)
+                CallBoundFunctionInstruction(const std::string& name, const std::size_t argc) : mName(name), mArgc(argc)
                 {
 
                 }
 
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -1158,13 +1158,13 @@ namespace TorqueScript
 
                 private:
                     std::string mName;
-                    unsigned int mArgc;
+                    std::size_t mArgc;
         };
 
         class PushObjectInstantiationInstruction : public Instruction
         {
             public:
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
                     assert(stack.size() >= 2);
@@ -1188,12 +1188,12 @@ namespace TorqueScript
         class PushObjectFieldInstruction : public Instruction
         {
             public:
-                PushObjectFieldInstruction(const unsigned int fieldComponentCount) : mFieldComponentCount(fieldComponentCount)
+                PushObjectFieldInstruction(const std::size_t fieldComponentCount) : mFieldComponentCount(fieldComponentCount)
                 {
 
                 }
 
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -1247,13 +1247,13 @@ namespace TorqueScript
                 }
 
             private:
-                unsigned int mFieldComponentCount;
+                std::size_t mFieldComponentCount;
         };
 
         class PopObjectInstantiationInstruction : public Instruction
         {
             public:
-                virtual int execute(std::shared_ptr<ExecutionState> state) override
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
                     ObjectInstantiationDescriptor descriptor = state->mExecutionScope.popObjectInstantiation();
@@ -1262,7 +1262,7 @@ namespace TorqueScript
                     if (state->mExecutionScope.isAwaitingParentInstantiation())
                     {
                         ObjectInstantiationDescriptor& parentDescriptor = state->mExecutionScope.currentObjectInstantiation();
-                        parentDescriptor.mAwaitingChildren.push_back(descriptor);
+                        parentDescriptor.mChildren.push_back(descriptor);
                     }
                     else
                     {

@@ -37,21 +37,21 @@ namespace TorqueScript
         }
     }
 
-    void Function::execute(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    void Function::execute(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
         // Calculate expected versus provided to determine what parameters should be left empty
-        const unsigned int expectedParameterCount = mParameterNames.size();
-        const unsigned int emptyParameters = expectedParameterCount > argumentCount ? expectedParameterCount - argumentCount : 0;
+        const std::size_t expectedParameterCount = mParameterNames.size();
+        const std::size_t emptyParameters = expectedParameterCount > argumentCount ? expectedParameterCount - argumentCount : 0;
 
         // If we have too many parameters, just lop them off
-        unsigned int adjustedArgumentCount = argumentCount;
+        std::size_t adjustedArgumentCount = argumentCount;
         if (argumentCount > expectedParameterCount)
         {
-            const unsigned int removedParameters = argumentCount - expectedParameterCount;
+            const std::size_t removedParameters = argumentCount - expectedParameterCount;
 
-            for (unsigned int iteration = 0; iteration < removedParameters; ++iteration)
+            for (std::size_t iteration = 0; iteration < removedParameters; ++iteration)
             {
                 stack.pop_back();
             }

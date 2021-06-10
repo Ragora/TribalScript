@@ -28,7 +28,7 @@
 
 namespace TorqueScript
 {
-    static void EchoBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    static void EchoBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -45,7 +45,7 @@ namespace TorqueScript
         stack.push_back(StoredValue(0));
     }
 
-    static void ActivatePackageBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    static void ActivatePackageBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -58,7 +58,7 @@ namespace TorqueScript
         stack.push_back(StoredValue(0));
     }
 
-    static void DeactivatePackageBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    static void DeactivatePackageBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -71,7 +71,7 @@ namespace TorqueScript
         stack.push_back(StoredValue(0));
     }
 
-    static void DeleteBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    static void DeleteBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -79,7 +79,7 @@ namespace TorqueScript
         stack.push_back(StoredValue(0));
     }
 
-    static void GetNameBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    static void GetNameBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -87,7 +87,7 @@ namespace TorqueScript
         stack.push_back(StoredValue(stringID, StoredValueType::String));
     }
 
-    static void GetClassNameBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    static void GetClassNameBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 

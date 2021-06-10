@@ -308,7 +308,7 @@ namespace TorqueScript
         mConsoleObjectRegistry.setConsoleObject(descriptor.mName, initialized);
 
         // Handle child init
-        for (ObjectInstantiationDescriptor& childDescriptor : descriptor.mAwaitingChildren)
+        for (ObjectInstantiationDescriptor& childDescriptor : descriptor.mChildren)
         {
             std::shared_ptr<ConsoleObject> childObject = this->initializeConsoleObjectTree(childDescriptor);
 

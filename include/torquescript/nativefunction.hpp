@@ -22,7 +22,7 @@
 
 namespace TorqueScript
 {
-    typedef void (*NativeFunctionPointer)(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount);
+    typedef void (*NativeFunctionPointer)(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
 
     /**
      *  @brief A NativeFunction is a specialization of Function that allows native C++ programming to be called from within the
@@ -36,7 +36,7 @@ namespace TorqueScript
             /**
              *  @brief Executes the native function provided to the interpreter.
              */
-            virtual void execute(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override;
+            virtual void execute(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount) override;
 
         private:
             //! The pointer to the native function to call.

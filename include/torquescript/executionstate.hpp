@@ -35,7 +35,7 @@ namespace TorqueScript
             }
 
             //! Instruction pointer - used primarily for handling breaks.
-            unsigned int mInstructionPointer;
+            AddressType mInstructionPointer;
 
             //! The interpreter instance this state is associated with.
             Interpreter* mInterpreter;

@@ -420,7 +420,7 @@ namespace TorqueScript
             std::vector<AST::ASTNode*> elseBody;
             if (context->else_control())
             {
-                const unsigned int elseStatementCount = context->else_control()->control_statements()->expression_statement().size();
+                const std::size_t elseStatementCount = context->else_control()->control_statements()->expression_statement().size();
 
                 if (elseStatementCount)
                 {
@@ -441,7 +441,7 @@ namespace TorqueScript
                 std::vector<AST::ASTNode*> elseIfBody;
                 if (elseIfControlStatements)
                 {
-                    const unsigned int elseIfStatementCount = elseIfControlStatements->expression_statement().size();
+                    const std::size_t elseIfStatementCount = elseIfControlStatements->expression_statement().size();
 
                     if (elseIfStatementCount)
                     {
@@ -463,7 +463,7 @@ namespace TorqueScript
             std::vector<AST::ASTNode*> ifBody;
             if (context->control_statements())
             {
-                const unsigned int ifStatementCount = context->control_statements()->expression_statement().size();
+                const std::size_t ifStatementCount = context->control_statements()->expression_statement().size();
 
                 if (ifStatementCount)
                 {
@@ -495,7 +495,7 @@ namespace TorqueScript
             std::vector<AST::ASTNode*> defaultBody;
             if (context->default_control())
             {
-                const unsigned int defaultStatementCount = context->default_control()->expression_statement().size();
+                const std::size_t defaultStatementCount = context->default_control()->expression_statement().size();
 
                 if (defaultStatementCount)
                 {
@@ -513,8 +513,8 @@ namespace TorqueScript
             {
                 TorqueParser::Case_controlContext* caseContext = *iterator;
 
-                const unsigned int caseStatementCount = caseContext->expression_statement().size();
-                const unsigned int caseExpressionCount = caseContext->expression().size();
+                const std::size_t caseStatementCount = caseContext->expression_statement().size();
+                const std::size_t caseExpressionCount = caseContext->expression().size();
 
                 std::vector<AST::ASTNode*> caseBody;
                 if (caseStatementCount)

@@ -32,15 +32,18 @@ namespace TorqueScript
 {
     struct LoopDescriptor
     {
-        LoopDescriptor(const unsigned int pointer, const unsigned int size) : mInstructionPointer(pointer), mLoopSize(size)
+        LoopDescriptor(const AddressType pointer, const std::size_t size) : mInstructionPointer(pointer), mLoopSize(size)
         {
 
         }
 
-        unsigned int mInstructionPointer;
-        unsigned int mLoopSize;
+        AddressType mInstructionPointer;
+        std::size_t mLoopSize;
     };
 
+    /**
+     *  @brief Struct describing a tree of console object initializations.
+     */
     struct ObjectInstantiationDescriptor
     {
         ObjectInstantiationDescriptor(const std::string typeName, const std::string& name) : mName(name), mTypeName(typeName)
@@ -48,9 +51,14 @@ namespace TorqueScript
 
         }
 
+        //! The name to assign the new console object.
         std::string mName;
+
+        //! The typename to instantiate the console object as.
         std::string mTypeName;
-        std::vector<ObjectInstantiationDescriptor> mAwaitingChildren;
+
+        //! All
+        std::vector<ObjectInstantiationDescriptor> mChildren;
         std::map<std::string, StoredValue> mFieldAssignments;
     };
 
@@ -84,7 +92,7 @@ namespace TorqueScript
             void pushFrame(Function* function);
             void popFrame();
 
-            void pushLoop(const unsigned int pointer, const unsigned int depth);
+            void pushLoop(const AddressType pointer, const std::size_t depth);
             LoopDescriptor popLoop();
             LoopDescriptor currentLoopDescriptor();
 
@@ -94,7 +102,7 @@ namespace TorqueScript
             ObjectInstantiationDescriptor& currentObjectInstantiation();
 
             bool isLoopStackEmpty();
-            unsigned int getFrameDepth();
+            std::size_t getFrameDepth();
 
             Function* getCurrentFunction();
             StoredValueStack& getStack();

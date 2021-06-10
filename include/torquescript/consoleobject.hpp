@@ -27,9 +27,9 @@ namespace TorqueScript
     class ExecutionScope;
     class Interpreter;
     class ConsoleObjectDescriptor;
-    class ObjectInstantiationDescriptor;
+    struct ObjectInstantiationDescriptor;
 
-    typedef ConsoleObject* (*InitializeConsoleObjectFromDescriptorPointer)(Interpreter* interpreter, ObjectInstantiationDescriptor& descriptor);
+    typedef ConsoleObject* (*InitializeConsoleObjectFromDescriptorPointer)(Interpreter* interpreter, struct ObjectInstantiationDescriptor& descriptor);
 
     extern std::unordered_map<std::string, ConsoleObjectDescriptor*>* sConsoleObjectDescriptors;
     static std::unordered_map<std::string, ConsoleObjectDescriptor*>* getConsoleObjectDescriptors()

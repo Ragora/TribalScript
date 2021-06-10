@@ -28,7 +28,7 @@
 
 namespace TorqueScript
 {
-    static void OpenForWriteBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    static void OpenForWriteBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string path = stack.popString(state);
@@ -47,7 +47,7 @@ namespace TorqueScript
         stack.push_back(StoredValue(-1));
     }
 
-    static void WriteBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    static void WriteBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string written = stack.popString(state);
@@ -61,7 +61,7 @@ namespace TorqueScript
         stack.push_back(StoredValue(0));
     }
 
-    static void CloseBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    static void CloseBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -74,7 +74,7 @@ namespace TorqueScript
         stack.push_back(StoredValue(0));
     }
 
-    static void IsFileBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    static void IsFileBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string path = stack.popString(state);
@@ -83,7 +83,7 @@ namespace TorqueScript
         stack.push_back(StoredValue(handle->exists() ? 1 : 0));
     }
 
-    static void DeleteFileBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    static void DeleteFileBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string path = stack.popString(state);

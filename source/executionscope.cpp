@@ -109,7 +109,7 @@ namespace TorqueScript
         mExecutionScopeData.pop_back();
     }
 
-    void ExecutionScope::pushLoop(const unsigned int pointer, const unsigned int depth)
+    void ExecutionScope::pushLoop(const AddressType pointer, const std::size_t depth)
     {
         // Initialize if necessary
         if (mExecutionScopeData.empty())
@@ -152,7 +152,7 @@ namespace TorqueScript
         return currentScope.mLoopDescriptors.empty();
     }
 
-    unsigned int ExecutionScope::getFrameDepth()
+    std::size_t ExecutionScope::getFrameDepth()
     {
         return mExecutionScopeData.size();
     }

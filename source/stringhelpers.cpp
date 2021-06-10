@@ -39,7 +39,7 @@ namespace TorqueScript
         std::smatch match;
         while (std::regex_search(result, match, hexRegex))
         {
-            const unsigned char hexValue = std::stoul(match[1], nullptr, 16);
+            const unsigned long hexValue = std::stoul(match[1], nullptr, 16);
             std::string hexString(1, hexValue);
 
             const std::string beginning = result.substr(0, match.position());
@@ -50,7 +50,7 @@ namespace TorqueScript
         // Handle color escapes - in T2 these are just aliases for an unprintable
         while (std::regex_search(result, match, colorRegex))
         {
-            const unsigned char integerValue = std::stoul(match[1], nullptr, 10);
+            const unsigned long integerValue = std::stoul(match[1], nullptr, 10);
             std::string colorString = "";
             switch (integerValue)
             {

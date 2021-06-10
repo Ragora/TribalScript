@@ -224,7 +224,7 @@ namespace TorqueScript
         InstructionSequence result;
 
         const std::size_t stringID = mStringTable->getOrAssign(value->mValue);
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushIntegerInstruction(stringID)));
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushIntegerInstruction((int)stringID)));
         return result;
     }
 
@@ -320,7 +320,7 @@ namespace TorqueScript
         expressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(bodyCode.size() + 2)));
 
         // Body should jump back to the expression to reevaluate
-        const int jumpTarget = -(bodyCode.size() + expressionCode.size());
+        const int jumpTarget = -((int)(bodyCode.size() + expressionCode.size()));
         bodyCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(jumpTarget)));
 
         // Add a NOP for a jump target
@@ -358,12 +358,12 @@ namespace TorqueScript
         initializerCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
 
         // Our body should return to the expression
-        const unsigned int jumpTarget = expressionCode.size() + forBody.size();
+        const AddressType jumpTarget = expressionCode.size() + forBody.size();
         forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(-jumpTarget)));
         forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
 
         // Check if our expression is false
-        expressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(forBody.size())));
+        expressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction((int)forBody.size())));
 
         forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopLoopInstruction()));
         initializerCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLoopInstruction(expressionCode.size() + forBody.size())));
