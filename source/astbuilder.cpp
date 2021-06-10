@@ -25,7 +25,7 @@ namespace TorqueScript
 {
     namespace AST
     {
-        ASTBuilder::ASTBuilder(StringTable* stringTable) : mStringTable(stringTable), TorqueBaseVisitor()
+        ASTBuilder::ASTBuilder(StringTable* stringTable) : TorqueBaseVisitor(), mStringTable(stringTable)
         {
 
         }

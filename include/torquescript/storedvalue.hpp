@@ -39,6 +39,7 @@ namespace TorqueScript
 
     enum MemoryReferenceType
     {
+        NullReferenceType,
         FloatMemory,
         IntegerMemory,
         StringMemory
@@ -78,27 +79,27 @@ namespace TorqueScript
     class StoredValue
     {
         public:
-            StoredValue(void* memoryLocation, const MemoryReferenceType type) : mType(StoredValueType::MemoryReference), mStorage(), mConsoleObject(nullptr), mMemoryLocation(memoryLocation)
+            StoredValue(void* memoryLocation, const MemoryReferenceType type) : mType(StoredValueType::MemoryReference), mStorage(), mMemoryReferenceType(type), mMemoryLocation(memoryLocation), mConsoleObject(nullptr)
             {
 
             }
 
-            StoredValue(const int value) : mType(StoredValueType::Integer), mStorage(value), mConsoleObject(nullptr), mMemoryLocation(nullptr)
+            StoredValue(const int value) : mType(StoredValueType::Integer), mStorage(value), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(nullptr)
             {
 
             }
 
-            StoredValue(const float value) : mType(StoredValueType::Float), mStorage(value), mConsoleObject(nullptr), mMemoryLocation(nullptr)
+            StoredValue(const float value) : mType(StoredValueType::Float), mStorage(value), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(nullptr)
             {
 
             }
 
-            StoredValue(const std::size_t value, const StoredValueType type) : mType(type), mStorage(value), mConsoleObject(nullptr), mMemoryLocation(nullptr)
+            StoredValue(const std::size_t value, const StoredValueType type) : mType(type), mStorage(value), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(nullptr)
             {
 
             }
 
-            StoredValue(std::shared_ptr<ConsoleObject> object, const std::size_t field) : mType(StoredValueType::SubfieldReference), mStorage(field), mConsoleObject(object), mMemoryLocation(nullptr)
+            StoredValue(std::shared_ptr<ConsoleObject> object, const std::size_t field) : mType(StoredValueType::SubfieldReference), mStorage(field), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(object)
             {
 
             }

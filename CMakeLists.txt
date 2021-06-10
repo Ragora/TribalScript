@@ -53,11 +53,11 @@ add_subdirectory(source)
 enable_testing ()
 add_subdirectory(tests)
 
-# Provide a Doxygen target if available 
+# Provide a Doxygen target if available
 if (${DOXYGEN_FOUND})
     set(DOXYGEN_GENERATE_HTML YES)
     set(DOXYGEN_GENERATE_MAN NO)
-	
+
     doxygen_add_docs(
         TorqueCompilerDocs
         ${PROJECT_SOURCE_DIR}/include
@@ -65,4 +65,3 @@ if (${DOXYGEN_FOUND})
         COMMENT "Generate Documentation for the Compiler"
     )
 endif (${DOXYGEN_FOUND})
-

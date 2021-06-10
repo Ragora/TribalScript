@@ -35,6 +35,11 @@ namespace TorqueScript
         class ASTNode
         {
             public:
+                virtual ~ASTNode()
+                {
+
+                }
+
                 virtual antlrcpp::Any accept(ASTVisitor* visitor) = 0;
         };
 
@@ -46,7 +51,7 @@ namespace TorqueScript
 
                 }
 
-                ~ProgramNode()
+                virtual ~ProgramNode()
                 {
                     for (ASTNode* node : mNodes)
                     {
@@ -71,7 +76,7 @@ namespace TorqueScript
 
                 }
 
-                ~FunctionDeclarationNode()
+                virtual ~FunctionDeclarationNode()
                 {
                     for (ASTNode* node : mBody)
                     {
@@ -98,7 +103,7 @@ namespace TorqueScript
 
                 }
 
-                ~PackageDeclarationNode()
+                virtual ~PackageDeclarationNode()
                 {
                     for (ASTNode* function : mFunctions)
                     {
@@ -180,7 +185,7 @@ namespace TorqueScript
 
                 }
 
-                ~FunctionCallNode()
+                virtual ~FunctionCallNode()
                 {
                     for (ASTNode* parameter : mParameters)
                     {
@@ -207,7 +212,7 @@ namespace TorqueScript
 
                 }
 
-                ~SubFunctionCallNode()
+                virtual ~SubFunctionCallNode()
                 {
                     delete mTarget;
 
@@ -235,7 +240,7 @@ namespace TorqueScript
 
                 }
 
-                ~SubFieldNode()
+                virtual ~SubFieldNode()
                 {
                     delete mTarget;
                 }
@@ -257,7 +262,7 @@ namespace TorqueScript
 
                 }
 
-                ~InfixExpressionNode()
+                virtual ~InfixExpressionNode()
                 {
                     delete mLeft;
                     delete mRight;
@@ -388,7 +393,7 @@ namespace TorqueScript
 
                 }
 
-                ~UnaryNode()
+                virtual ~UnaryNode()
                 {
                     delete mInner;
                 }
@@ -596,7 +601,7 @@ namespace TorqueScript
 
                 }
 
-                ~ArrayNode()
+                virtual ~ArrayNode()
                 {
                     delete mTarget;
 
@@ -623,7 +628,7 @@ namespace TorqueScript
 
                 }
 
-                ~WhileNode()
+                virtual ~WhileNode()
                 {
                     delete mExpression;
 
@@ -651,7 +656,7 @@ namespace TorqueScript
 
                 }
 
-                ~ForNode()
+                virtual ~ForNode()
                 {
                     delete mInitializer;
                     delete mExpression;
@@ -682,7 +687,7 @@ namespace TorqueScript
 
                 }
 
-                ~ReturnNode()
+                virtual ~ReturnNode()
                 {
                     if (mExpression)
                     {
@@ -721,7 +726,7 @@ namespace TorqueScript
 
                 }
 
-                ~TernaryNode()
+                virtual ~TernaryNode()
                 {
                     delete mExpression;
                     delete mTrueValue;
@@ -764,7 +769,7 @@ namespace TorqueScript
 
                 }
 
-                ~SwitchNode()
+                virtual ~SwitchNode()
                 {
                     delete mExpression;
 
@@ -797,7 +802,7 @@ namespace TorqueScript
 
                 }
 
-                ~ElseIfNode()
+                virtual ~ElseIfNode()
                 {
                     delete mExpression;
 
@@ -825,7 +830,7 @@ namespace TorqueScript
 
                 }
 
-                ~IfNode()
+                virtual ~IfNode() 
                 {
                     delete mExpression;
 
