@@ -164,6 +164,16 @@ namespace TorqueScript
         return result;
     }
 
+    antlrcpp::Any Compiler::visitSubFieldNode(AST::SubFieldNode* subfield)
+    {
+        InstructionSequence result = subfield->mTarget->accept(this).as<InstructionSequence>();
+
+        const std::size_t stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? subfield->mName : toLowerCase(subfield->mName));
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::SubReferenceInstruction(stringID)));
+
+        return result;
+    }
+
     antlrcpp::Any Compiler::visitSubFunctionCallNode(AST::SubFunctionCallNode* call)
     {
         InstructionSequence result;

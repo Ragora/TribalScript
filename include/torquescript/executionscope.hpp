@@ -46,6 +46,11 @@ namespace TorqueScript
      */
     struct ObjectInstantiationDescriptor
     {
+        /**
+         *  @brief Constructs a new ObjectInstantiationDescriptor.
+         *  @param typeName The console object type to inititalize.
+         *  @param name The name of the new object.
+         */
         ObjectInstantiationDescriptor(const std::string typeName, const std::string& name) : mName(name), mTypeName(typeName)
         {
 
@@ -57,8 +62,10 @@ namespace TorqueScript
         //! The typename to instantiate the console object as.
         std::string mTypeName;
 
-        //! All
+        //! All children of this object. These will not be initialized until the parent is initialized.
         std::vector<ObjectInstantiationDescriptor> mChildren;
+        
+        //! All resolved field names mapped to the values to set.
         std::map<std::string, StoredValue> mFieldAssignments;
     };
 
@@ -74,6 +81,7 @@ namespace TorqueScript
         //! The stack used for execution in this state.
         StoredValueStack mStack;
 
+        //! Awaiting root-level object instantiations.
         std::vector<ObjectInstantiationDescriptor> mObjectInstantiations;
 
         std::vector<LoopDescriptor> mLoopDescriptors;
@@ -113,6 +121,7 @@ namespace TorqueScript
             void setVariable(const std::string& name, StoredValue variable);
             void setVariable(const std::size_t name, StoredValue variable);
 
+            //! The InterpreterConfiguration associated with this ExecutionScope.+
             const InterpreterConfiguration mConfig;
 
         private:
