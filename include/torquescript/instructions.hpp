@@ -927,13 +927,14 @@ namespace TorqueScript
 
                     assert(stack.size() >= 1);
 
+                    const std::string arrayName = resolveArrayNameFromStack(stack, state, state->mInterpreter->mStringTable.getString(mStringID), mArrayIndices);
+
                     StoredValue targetStored = stack.back();
                     stack.pop_back();
                     std::shared_ptr<ConsoleObject> referenced = targetStored.toConsoleObject(state);
 
                     if (referenced)
                     {
-                        const std::string arrayName = resolveArrayNameFromStack(stack, state, state->mInterpreter->mStringTable.getString(mStringID), mArrayIndices);
                         const std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(arrayName);
 
                         stack.push_back(StoredValue(referenced, mStringID));
