@@ -37,6 +37,29 @@ namespace TorqueScript
         return true;
     }
 
+    bool FileObject::openForRead(const std::string& path)
+    {
+        if (mHandle)
+        {
+            return false;
+        }
+
+        mHandle = mInterpreter->mConfig.mPlatform->getFileHandle(path);
+        mHandle->openForRead();
+
+        return true;
+    }
+
+    bool FileObject::isEOF()
+    {
+        if (!mHandle)
+        {
+            return true;
+        }
+
+        return mHandle->isEOF();
+    }
+
     void FileObject::write(const std::string& written)
     {
         if (mHandle)
@@ -52,6 +75,16 @@ namespace TorqueScript
             mHandle->close();
             mHandle = nullptr;
         }
+    }
+
+    std::string FileObject::readLine()
+    {
+        if (!mHandle)
+        {
+            return "";
+        }
+
+        return mHandle->readLine();
     }
 
     ConsoleObject* FileObject::instantiateFromDescriptor(Interpreter* interpreter, ObjectInstantiationDescriptor& descriptor)

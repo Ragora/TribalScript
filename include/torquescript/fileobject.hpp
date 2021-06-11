@@ -42,6 +42,12 @@ namespace TorqueScript
              */
             bool openForWrite(const std::string& path);
 
+            bool openForRead(const std::string& path);
+
+            bool isEOF();
+
+            std::string readLine();
+
             /**
              *  @brief Writes a string to the file, if the FileObject has been
              *  opened with write mode enabled.

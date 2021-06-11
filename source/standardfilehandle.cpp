@@ -62,6 +62,13 @@ namespace TorqueScript
         return mFileHandle.eof();
     }
 
+    std::string StandardFileHandle::readLine()
+    {
+        std::string result;
+        std::getline(mFileHandle, result);
+        return result;
+    }
+
     std::streampos StandardFileHandle::tell()
     {
         std::streampos writePosition = mFileHandle.tellg();

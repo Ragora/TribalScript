@@ -289,6 +289,11 @@ namespace TorqueScript
         class ConcatInstruction : public Instruction
         {
             public:
+                ConcatInstruction(const std::string& seperator) : mSeperator(seperator)
+                {
+
+                }
+
                 virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
@@ -305,15 +310,20 @@ namespace TorqueScript
                     std::string rhs = rhsStored.toString(state);
 
                     // Generate a new string ID
-                    const std::size_t requestedStringID = state->mInterpreter->mStringTable.getOrAssign(lhs + rhs);
+                    const std::size_t requestedStringID = state->mInterpreter->mStringTable.getOrAssign(lhs + mSeperator + rhs);
                     stack.push_back(StoredValue(requestedStringID, StoredValueType::String));
                     return 1;
                 };
 
                 virtual std::string disassemble() override
                 {
-                    return "Concat";
+                    std::ostringstream result;
+                    result << "Concat " << mSeperator;
+                    return result.str();
                 }
+
+            private:
+                std::string mSeperator;
         };
 
         /**
@@ -340,6 +350,32 @@ namespace TorqueScript
                 {
                     return "Negate";
                 }
+        };
+
+        /**
+         *  @brief Invert the truthfulness of a value on the stack.
+         */
+        class NotInstruction : public Instruction
+        {
+        public:
+            virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 1);
+
+                // Pull two values off the stack
+                StoredValue storedTarget = stack.back();
+                stack.pop_back();
+
+                stack.push_back(StoredValue(!storedTarget.toBoolean(state) ? 1 : 0));
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                return "Not";
+            }
         };
 
         /**
@@ -880,7 +916,7 @@ namespace TorqueScript
         class SubReferenceInstruction : public Instruction
         {
             public:
-                SubReferenceInstruction(const std::size_t value) : mStringID(value)
+                SubReferenceInstruction(const std::size_t value, const std::size_t arrayIndices) : mStringID(value), mArrayIndices(arrayIndices)
                 {
 
                 }
@@ -891,12 +927,32 @@ namespace TorqueScript
 
                     assert(stack.size() >= 1);
 
+                    // Resolve array if necessary
+                    std::vector<std::string> variableComponents;
+                    for (unsigned int iteration = 0; iteration < mArrayIndices; ++iteration)
+                    {
+                        variableComponents.push_back(stack.popString(state));
+                    }
+
+                    std::ostringstream out;
+                    out << state->mInterpreter->mStringTable.getString(mStringID);
+                    for (auto iterator = variableComponents.rbegin(); iterator != variableComponents.rend(); ++iterator)
+                    {
+                        if (iterator != variableComponents.rbegin())
+                        {
+                            out << "_";
+                        }
+                        out << *iterator;
+                    }
+
                     StoredValue targetStored = stack.back();
                     stack.pop_back();
-
                     std::shared_ptr<ConsoleObject> referenced = targetStored.toConsoleObject(state);
+
                     if (referenced)
                     {
+                        const std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(out.str());
+
                         stack.push_back(StoredValue(referenced, mStringID));
                         return 1;
                     }
@@ -908,12 +964,13 @@ namespace TorqueScript
                 virtual std::string disassemble() override
                 {
                     std::ostringstream out;
-                    out << "SubReference " << mStringID;
+                    out << "SubReference " << mStringID << " argc=" << mArrayIndices;
                     return out.str();
                 }
 
             private:
                 std::size_t mStringID;
+                std::size_t mArrayIndices;
         };
 
         /**

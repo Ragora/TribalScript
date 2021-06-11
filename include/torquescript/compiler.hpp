@@ -83,6 +83,7 @@ namespace TorqueScript
             virtual antlrcpp::Any visitAssignmentNode(AST::AssignmentNode* expression) override;
             virtual antlrcpp::Any visitLessThanNode(AST::LessThanNode* expression) override;
             virtual antlrcpp::Any visitNegateNode(AST::NegateNode* expression) override;
+            virtual antlrcpp::Any visitNotNode(AST::NotNode* expression) override;
             virtual antlrcpp::Any visitIncrementNode(AST::IncrementNode* expression) override;
             virtual antlrcpp::Any visitWhileNode(AST::WhileNode* node) override;
             virtual antlrcpp::Any visitForNode(AST::ForNode* node) override;

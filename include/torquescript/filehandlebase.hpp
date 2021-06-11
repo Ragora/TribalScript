@@ -34,6 +34,8 @@ namespace TorqueScript
             virtual void close();
             virtual bool isEOF() = 0;
             virtual void write(const char* buffer, const std::size_t size) = 0;
+            virtual std::string readLine() = 0;
+
             virtual std::streampos tell() = 0;
 
             virtual void openForWrite() = 0;

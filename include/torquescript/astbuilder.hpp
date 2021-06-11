@@ -63,6 +63,7 @@ namespace TorqueScript
                 virtual antlrcpp::Any visitArray(TorqueParser::ArrayContext* context) override;
                 virtual antlrcpp::Any visitRelational(TorqueParser::RelationalContext* context) override;
                 virtual antlrcpp::Any visitSwitch_control(TorqueParser::Switch_controlContext* context) override;
+                virtual antlrcpp::Any visitSubarray(TorqueParser::SubarrayContext* context) override;
 
                 virtual antlrcpp::Any visitField_assign(TorqueParser::Field_assignContext* context) override;
                 virtual antlrcpp::Any visitDatablock_declaration(TorqueParser::Datablock_declarationContext* context) override;

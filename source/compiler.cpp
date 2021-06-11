@@ -169,8 +169,15 @@ namespace TorqueScript
         InstructionSequence result = subfield->mTarget->accept(this).as<InstructionSequence>();
 
         const std::size_t stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? subfield->mName : toLowerCase(subfield->mName));
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::SubReferenceInstruction(stringID)));
 
+        // Push array indices
+        for (AST::ASTNode* node : subfield->mIndices)
+        {
+            InstructionSequence childInstructions = node->accept(this).as<InstructionSequence>();
+            result.insert(result.end(), childInstructions.begin(), childInstructions.end());
+        }
+
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::SubReferenceInstruction(stringID, subfield->mIndices.size())));
         return result;
     }
 
@@ -298,6 +305,18 @@ namespace TorqueScript
 
         result.insert(result.end(), innerCode.begin(), innerCode.end());
         result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NegateInstruction()));
+
+        return result;
+    }
+
+    antlrcpp::Any Compiler::visitNotNode(AST::NotNode* expression)
+    {
+        InstructionSequence result;
+
+        InstructionSequence innerCode = expression->mInner->accept(this).as<InstructionSequence>();
+
+        result.insert(result.end(), innerCode.begin(), innerCode.end());
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NotInstruction()));
 
         return result;
     }
@@ -590,7 +609,7 @@ namespace TorqueScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::ConcatInstruction()));
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::ConcatInstruction(expression->mSeperator)));
 
         return out;
     }

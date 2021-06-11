@@ -43,6 +43,8 @@ namespace TorqueScript
             virtual bool exists();
             virtual bool deleteFile();
 
+            virtual std::string readLine();
+
         private:
             std::fstream mFileHandle;
     };

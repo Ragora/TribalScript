@@ -235,7 +235,7 @@ namespace TorqueScript
         class SubFieldNode : public ASTNode
         {
             public:
-                SubFieldNode(ASTNode* target, const std::string& name) : mTarget(target), mName(name)
+                SubFieldNode(ASTNode* target, const std::string& name, const std::vector<ASTNode*>& indices) : mTarget(target), mName(name), mIndices(indices)
                 {
 
                 }
@@ -252,6 +252,7 @@ namespace TorqueScript
 
                 ASTNode* mTarget;
                 std::string mName;
+                std::vector<ASTNode*> mIndices;
         };
 
         class InfixExpressionNode : public ASTNode
@@ -332,7 +333,7 @@ namespace TorqueScript
         class ConcatNode : public InfixExpressionNode
         {
             public:
-                ConcatNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
+                ConcatNode(ASTNode* left, ASTNode* right, const std::string& seperator) : InfixExpressionNode(left, right), mSeperator(seperator)
                 {
 
                 }
@@ -341,6 +342,8 @@ namespace TorqueScript
                 {
                     return visitor->visitConcatNode(this);
                 }
+
+                std::string mSeperator;
         };
 
         class EqualsNode : public InfixExpressionNode

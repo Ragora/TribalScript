@@ -163,7 +163,7 @@ namespace TorqueScript
             assert(parent.size() == 1);
 
             std::vector<AST::ASTNode*> result;
-            result.push_back(new AST::SubFieldNode(parent[0], context->LABEL()->getText()));
+            result.push_back(new AST::SubFieldNode(parent[0], context->LABEL()->getText(), std::vector<ASTNode*>()));
             return result;
         }
 
@@ -177,6 +177,19 @@ namespace TorqueScript
             parameters.erase(parameters.begin());
 
             result.push_back(new AST::ArrayNode(target, parameters));
+            return result;
+        }
+
+        antlrcpp::Any ASTBuilder::visitSubarray(TorqueParser::SubarrayContext* context)
+        {
+            std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
+            assert(parameters.size() >= 1);
+
+            std::vector<ASTNode*> result;
+            ASTNode* parent = parameters[0];
+            parameters.erase(parameters.begin());
+
+            result.push_back(new AST::SubFieldNode(parent, context->LABEL()->getText(), parameters));
             return result;
         }
 
@@ -355,7 +368,19 @@ namespace TorqueScript
 
             if (context->CONCAT())
             {
-                result.push_back(new AST::ConcatNode(left, right));
+                result.push_back(new AST::ConcatNode(left, right, ""));
+            }
+            else if (context->SPACECONCAT())
+            {
+                result.push_back(new AST::ConcatNode(left, right, " "));
+            }
+            else if (context->NEWLINECONCAT())
+            {
+                result.push_back(new AST::ConcatNode(left, right, "\n"));
+            }
+            else if (context->TABCONCAT())
+            {
+                result.push_back(new AST::ConcatNode(left, right, "\t"));
             }
             else
             {
@@ -376,6 +401,10 @@ namespace TorqueScript
             if (context->MINUS())
             {
                 result.push_back(new AST::NegateNode(inner));
+            }
+            else if (context->NOT())
+            {
+                result.push_back(new AST::NotNode(inner));
             }
             else
             {

@@ -41,8 +41,22 @@ namespace TorqueScript
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
+        // OPTIMIZATION: We incur a copy cost here
+        std::vector<std::string> parameterNames = mParameterNames;
+
+        std::map<std::string, StoredValue> newLocals;
+
+        // If thisObject is non-null, we always provide this as the first parameter
+        if (thisObject && parameterNames.size() >= 1)
+        {
+            const std::string thisParameterName = parameterNames[0];
+            parameterNames.erase(parameterNames.begin());
+
+            newLocals.emplace(std::make_pair(thisParameterName, StoredValue((int)state->mInterpreter->mConsoleObjectRegistry.getConsoleObjectID(thisObject))));
+        }
+
         // Calculate expected versus provided to determine what parameters should be left empty
-        const std::size_t expectedParameterCount = mParameterNames.size();
+        const std::size_t expectedParameterCount = parameterNames.size();
         const std::size_t emptyParameters = expectedParameterCount > argumentCount ? expectedParameterCount - argumentCount : 0;
 
         // If we have too many parameters, just lop them off
@@ -59,10 +73,9 @@ namespace TorqueScript
         }
 
         // Once we know what parameters we're providing for, set the values
-        std::map<std::string, StoredValue> newLocals;
         for (unsigned int iteration = 0; iteration < adjustedArgumentCount; ++iteration)
         {
-            const std::string nextParameterName = mParameterNames[mParameterNames.size() - (iteration + emptyParameters + 1)];
+            const std::string nextParameterName = parameterNames[parameterNames.size() - (iteration + emptyParameters + 1)];
 
             auto search = newLocals.find(nextParameterName);
             if (search != newLocals.end())

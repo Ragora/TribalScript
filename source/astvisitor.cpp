@@ -95,7 +95,14 @@ namespace TorqueScript
         {
             antlrcpp::Any result = this->defaultResult();
             antlrcpp::Any childResult = subfield->mTarget->accept(this);
-            return this->aggregateResult(result, childResult);
+
+            // Handle array indices if present
+            result = this->aggregateResult(result, childResult);
+            for (ASTNode* index : subfield->mIndices)
+            {
+                result = this->aggregateResult(result, index->accept(this));
+            }
+            return result;
         }
 
         antlrcpp::Any ASTVisitor::visitAddNode(AST::AddNode* expression)
