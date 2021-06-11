@@ -48,6 +48,7 @@ namespace TorqueScript
             /**
              *  @brief Constructs a new interpreter with the default configuration.
              *  @see InterpreterConfiguration
+             *  @example interpreterInit.cpp
              */
             Interpreter();
 

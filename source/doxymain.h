@@ -8,12 +8,17 @@
  *  TorqueScript in the Tribes 2 engine. This project utilizes <a href="https://www.antlr.org">ANTLR4</a> for parse tree
  *  generation and processing.
  *
- *  The following classes are the primary classes that make up the library:
+ *  If you wish to embed the interpreter, the following classes are the main classes you'd be working with:
  *  <ul>
  *      <li>TorqueScript::Interpreter</li>
- *      <li>TorqueScript::Compiler</li>
+ *      <li>TorqueScript::StoredValueStack</li>
  *      <li>TorqueScript::StoredValue</li>
  *  </ul>
  *
- *
+ *  Otherwise, developers would be interested in:
+ *  <ul>
+ *      <li>TorqueScript::AST::ASTNode</li>
+ *      <li>TorqueScript::Instructions::Instruction</li>
+ *      <li>TorqueScript::Compiler</li>
+ *  </ul>
  */

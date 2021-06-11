@@ -57,6 +57,7 @@ add_subdirectory(tests)
 if (${DOXYGEN_FOUND})
     set(DOXYGEN_GENERATE_HTML YES)
     set(DOXYGEN_GENERATE_MAN NO)
+    set(DOXYGEN_EXAMPLE_PATH ${PROJECT_SOURCE_DIR}/examples)
 
     doxygen_add_docs(
         TorqueCompilerDocs
