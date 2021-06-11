@@ -23,7 +23,7 @@ namespace TorqueScript
     {
         public:
             FileHandleBase(const std::string& path);
-            ~FileHandleBase();
+            virtual ~FileHandleBase();
 
             virtual bool isOpen() = 0;
 

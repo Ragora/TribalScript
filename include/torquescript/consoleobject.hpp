@@ -143,6 +143,7 @@ namespace TorqueScript
     {
         public:
             ConsoleObject(Interpreter* interpreter);
+            virtual ~ConsoleObject();
 
             /**
              *  @brief Retrieves a tagged field by name from the object.
@@ -165,7 +166,7 @@ namespace TorqueScript
              */
             virtual std::string getClassName() = 0;
 
-            virtual void addChild(std::shared_ptr<ConsoleObject> child);
+            virtual bool addChild(std::shared_ptr<ConsoleObject> child);
 
         protected:
             Interpreter* mInterpreter;

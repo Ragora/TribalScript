@@ -25,6 +25,11 @@ namespace TorqueScript
 
     }
 
+    ConsoleObject::~ConsoleObject()
+    {
+
+    }
+
     StoredValue* ConsoleObject::getTaggedField(const std::string& name)
     {
         const std::string searchName = toLowerCase(name);
@@ -52,8 +57,8 @@ namespace TorqueScript
         }
     }
 
-    void ConsoleObject::addChild(std::shared_ptr<ConsoleObject> child)
+    bool ConsoleObject::addChild(std::shared_ptr<ConsoleObject> child)
     {
-
+        return false;
     }
 }
