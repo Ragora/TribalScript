@@ -100,7 +100,8 @@ namespace TorqueScript
             result = this->aggregateResult(result, childResult);
             for (ASTNode* index : subfield->mIndices)
             {
-                result = this->aggregateResult(result, index->accept(this));
+                antlrcpp::Any indexResult = index->accept(this);
+                result = this->aggregateResult(result, indexResult);
             }
             return result;
         }
