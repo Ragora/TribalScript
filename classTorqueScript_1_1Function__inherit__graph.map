@@ -1,4 +1,4 @@
 <map id="TorqueScript::Function" name="TorqueScript::Function">
-<area shape="rect" id="node1" title="A function is callable subroutine from anywhere in the language." alt="" coords="5,5,171,32"/>
-<area shape="rect" id="node2" href="$classTorqueScript_1_1Echo.html" title=" " alt="" coords="17,80,159,107"/>
+<area shape="rect" id="node1" title="A function is callable subroutine from anywhere in the language, defined by a script...." alt="" coords="27,5,192,32"/>
+<area shape="rect" id="node2" href="$classTorqueScript_1_1NativeFunction.html" title="A NativeFunction is a specialization of Function that allows native C++ programming to be called from..." alt="" coords="5,80,213,107"/>
 </map>

@@ -1,0 +1,4 @@
+<map id="TorqueScript::Instructions::PushLocalReferenceInstruction" name="TorqueScript::Instructions::PushLocalReferenceInstruction">
+<area shape="rect" id="node1" title="Push a reference to a named local variable. The parameter provided here should be excluding the &#39;&#39; pr..." alt="" coords="5,95,236,136"/>
+<area shape="rect" id="node2" href="$classTorqueScript_1_1Instructions_1_1Instruction.html" title="Base instruction class. All instructions in the interpreter should dervive from this class and implem..." alt="" coords="27,5,214,47"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="TorqueScript::Instructions::PopObjectInstantiationInstruction" name="TorqueScript::Instructions::PopObjectInstantiationInstruction">
+<area shape="rect" id="node1" title=" " alt="" coords="5,95,252,136"/>
+<area shape="rect" id="node2" href="$classTorqueScript_1_1Instructions_1_1Instruction.html" title="Base instruction class. All instructions in the interpreter should dervive from this class and implem..." alt="" coords="35,5,222,47"/>
+</map>

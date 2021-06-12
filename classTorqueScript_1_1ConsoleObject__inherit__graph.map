@@ -1,0 +1,4 @@
+<map id="TorqueScript::ConsoleObject" name="TorqueScript::ConsoleObject">
+<area shape="rect" id="node1" title="Base class for object instances recognized by the interpreter. These object instances may contain mem..." alt="" coords="5,5,209,32"/>
+<area shape="rect" id="node2" href="$classTorqueScript_1_1FileObject.html" title="A FileObject is a class that may be used to interact with the filesystem provided by the PlatformCont..." alt="" coords="20,80,195,107"/>
+</map>

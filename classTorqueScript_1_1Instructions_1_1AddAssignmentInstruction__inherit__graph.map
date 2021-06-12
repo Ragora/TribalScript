@@ -1,0 +1,4 @@
+<map id="TorqueScript::Instructions::AddAssignmentInstruction" name="TorqueScript::Instructions::AddAssignmentInstruction">
+<area shape="rect" id="node1" title="Performs an addition of two values on the stack and assigns the result." alt="" coords="5,95,207,136"/>
+<area shape="rect" id="node2" href="$classTorqueScript_1_1Instructions_1_1Instruction.html" title="Base instruction class. All instructions in the interpreter should dervive from this class and implem..." alt="" coords="13,5,199,47"/>
+</map>

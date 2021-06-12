@@ -1,0 +1,5 @@
+<map id="TorqueScript::ExecutionScope" name="TorqueScript::ExecutionScope">
+<area shape="rect" id="node1" title="A specific scope of execution &#45; this is used to delineate local variables primarily." alt="" coords="8,199,220,225"/>
+<area shape="rect" id="node2" href="$structTorqueScript_1_1InterpreterConfiguration.html" title="A structure representing overall interpreter runtime configuration. Some settings can be changed at r..." alt="" coords="25,95,203,136"/>
+<area shape="rect" id="node3" href="$classTorqueScript_1_1PlatformContext.html" title=" " alt="" coords="5,5,223,32"/>
+</map>

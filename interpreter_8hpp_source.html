@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TorqueScript: /home/ragora/Documents/Projects/Personal/TorqueScript/include/torquescript/interpreter.hpp Source File</title>
+<title>TorqueScript: include/torquescript/interpreter.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,6 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">TorqueScript
+   &#160;<span id="projectnumber">0.2</span>
    </div>
   </td>
  </tr>
@@ -72,69 +73,106 @@ $(function() {
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160; </div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &lt;torquescript/function.hpp&gt;</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &lt;torquescript/simobject.hpp&gt;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &lt;torquescript/storedvalue.hpp&gt;</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &lt;torquescript/stringhelpers.hpp&gt;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &lt;torquescript/storedvaluestack.hpp&gt;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceTorqueScript.html">TorqueScript</a></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;{</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keyword">class </span>Compiler;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keyword">class </span>CodeBlock;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">class </span>ExecutionState;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &lt;torquescript/interpreterconfiguration.hpp&gt;</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &lt;torquescript/function.hpp&gt;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &lt;torquescript/consoleobject.hpp&gt;</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &lt;torquescript/storedvalue.hpp&gt;</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &lt;torquescript/stringhelpers.hpp&gt;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &lt;torquescript/stringtable.hpp&gt;</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &lt;torquescript/functionregistry.hpp&gt;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &lt;torquescript/storedvaluestack.hpp&gt;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &lt;torquescript/consoleobjectregistry.hpp&gt;</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#define NAMESPACE_EMPTY &quot;&quot;</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#define PACKAGE_EMPTY &quot;&quot;</span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1Interpreter.html">   38</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classTorqueScript_1_1Interpreter.html">Interpreter</a></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            <a class="code" href="classTorqueScript_1_1Interpreter.html">Interpreter</a>();</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            ~<a class="code" href="classTorqueScript_1_1Interpreter.html">Interpreter</a>();</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            <span class="keywordtype">void</span> setGlobal(<span class="keyword">const</span> std::string&amp; name, std::shared_ptr&lt;StoredValue&gt; value);</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            std::shared_ptr&lt;StoredValue&gt; getGlobal(<span class="keyword">const</span> std::string&amp; name);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="keywordtype">void</span> setSimObject(<span class="keyword">const</span> std::string&amp; name, std::shared_ptr&lt;SimObject&gt; value);</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            std::shared_ptr&lt;SimObject&gt; getSimObject(<span class="keyword">const</span> std::string&amp; name);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <a class="code" href="classTorqueScript_1_1CodeBlock.html">CodeBlock</a>* <a class="code" href="classTorqueScript_1_1Interpreter.html#a54ec83aa38654f7e1a72d584b34e57d1">compile</a>(<span class="keyword">const</span> std::string&amp; input);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            <span class="keywordtype">void</span> evaluate(<span class="keyword">const</span> std::string&amp; input, std::shared_ptr&lt;ExecutionState&gt; state = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            <span class="keywordtype">void</span> execute(<span class="keyword">const</span> std::string&amp; path, std::shared_ptr&lt;ExecutionState&gt; state = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classTorqueScript_1_1Interpreter.html#aadb64ca9e48e55f35e5473b83939a6d8">addFunction</a>(std::shared_ptr&lt;Function&gt; <span class="keyword">function</span>);</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;            std::shared_ptr&lt;Function&gt; getFunction(<span class="keyword">const</span> std::string&amp; name);</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;            std::shared_ptr&lt;ExecutionState&gt; getExecutionState();</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classTorqueScript_1_1Interpreter.html#ac95424971e00c5f5e5b7873ffc45f76e">logEcho</a>(<span class="keyword">const</span> std::string&amp; message);</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classTorqueScript_1_1Interpreter.html#ac85c83d327e6ebb9fb4e24de1deab09d">logError</a>(<span class="keyword">const</span> std::string&amp; message);</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classTorqueScript_1_1Interpreter.html#a1636a0b9540f29e5192e2ea038c34a5f">logWarning</a>(<span class="keyword">const</span> std::string&amp; message);</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;            <a class="code" href="classTorqueScript_1_1Compiler.html">Compiler</a>* mCompiler;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceTorqueScript.html">TorqueScript</a></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;{</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keyword">class </span>Compiler;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keyword">class </span>CodeBlock;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keyword">class </span>ExecutionState;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1Interpreter.html">   45</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classTorqueScript_1_1Interpreter.html">Interpreter</a></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    {</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            <a class="code" href="classTorqueScript_1_1Interpreter.html">Interpreter</a>();</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
+<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1Interpreter.html#ae6a7e545081e4d67a292fad02047fa79">   59</a></span>&#160;            <a class="code" href="classTorqueScript_1_1Interpreter.html#ae6a7e545081e4d67a292fad02047fa79">Interpreter</a>(<span class="keyword">const</span> <a class="code" href="structTorqueScript_1_1InterpreterConfiguration.html">InterpreterConfiguration</a>&amp; config);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;            ~<a class="code" href="classTorqueScript_1_1Interpreter.html">Interpreter</a>();</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;            <span class="keywordtype">void</span> setGlobal(<span class="keyword">const</span> std::size_t name, <a class="code" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> value);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;            <span class="keywordtype">void</span> setGlobal(<span class="keyword">const</span> std::string&amp; name, <a class="code" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> value);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
+<div class="line"><a name="l00077"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1Interpreter.html#a5c392ba6d02df01b01e7057fd1a969a0">   77</a></span>&#160;            <a class="code" href="classTorqueScript_1_1StoredValue.html">StoredValue</a>* <a class="code" href="classTorqueScript_1_1Interpreter.html#a5c392ba6d02df01b01e7057fd1a969a0">getGlobal</a>(<span class="keyword">const</span> std::string&amp; name);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
+<div class="line"><a name="l00087"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1Interpreter.html#a6b63bb07670d1a657d7592f288830795">   87</a></span>&#160;            <a class="code" href="classTorqueScript_1_1StoredValue.html">StoredValue</a>* <a class="code" href="classTorqueScript_1_1Interpreter.html#a6b63bb07670d1a657d7592f288830795">getGlobal</a>(<span class="keyword">const</span> std::size_t name);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160; </div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;            std::map&lt;std::string, std::shared_ptr&lt;Function&gt;&gt; mFunctions;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;            std::map&lt;std::string, std::shared_ptr&lt;StoredValue&gt;&gt; mGlobalVariables;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;            std::map&lt;std::string, std::shared_ptr&lt;SimObject&gt;&gt; mSimObjects;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    };</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;}</div>
-<div class="ttc" id="aclassTorqueScript_1_1CodeBlock_html"><div class="ttname"><a href="classTorqueScript_1_1CodeBlock.html">TorqueScript::CodeBlock</a></div><div class="ttdoc">A CodeBlock defines a piece of executable code generated from a single input (Ie. a file)....</div><div class="ttdef"><b>Definition:</b> codeblock.hpp:38</div></div>
-<div class="ttc" id="aclassTorqueScript_1_1Compiler_html"><div class="ttname"><a href="classTorqueScript_1_1Compiler.html">TorqueScript::Compiler</a></div><div class="ttdoc">Primary compiler class. Here we use a listener to walk the tree generated by ANTLR in order to genera...</div><div class="ttdef"><b>Definition:</b> compiler.hpp:32</div></div>
-<div class="ttc" id="aclassTorqueScript_1_1Interpreter_html"><div class="ttname"><a href="classTorqueScript_1_1Interpreter.html">TorqueScript::Interpreter</a></div><div class="ttdoc">The interpreter class represents a high level instance of the TorqueScript interpreter....</div><div class="ttdef"><b>Definition:</b> interpreter.hpp:39</div></div>
-<div class="ttc" id="aclassTorqueScript_1_1Interpreter_html_a1636a0b9540f29e5192e2ea038c34a5f"><div class="ttname"><a href="classTorqueScript_1_1Interpreter.html#a1636a0b9540f29e5192e2ea038c34a5f">TorqueScript::Interpreter::logWarning</a></div><div class="ttdeci">virtual void logWarning(const std::string &amp;message)</div><div class="ttdoc">Asks the interpreter to handle a warning log message.</div><div class="ttdef"><b>Definition:</b> interpreter.cpp:148</div></div>
-<div class="ttc" id="aclassTorqueScript_1_1Interpreter_html_a54ec83aa38654f7e1a72d584b34e57d1"><div class="ttname"><a href="classTorqueScript_1_1Interpreter.html#a54ec83aa38654f7e1a72d584b34e57d1">TorqueScript::Interpreter::compile</a></div><div class="ttdeci">CodeBlock * compile(const std::string &amp;input)</div><div class="ttdoc">Ask the interpreter to compile the input string and return the resulting CodeBlock.</div><div class="ttdef"><b>Definition:</b> interpreter.cpp:72</div></div>
-<div class="ttc" id="aclassTorqueScript_1_1Interpreter_html_aadb64ca9e48e55f35e5473b83939a6d8"><div class="ttname"><a href="classTorqueScript_1_1Interpreter.html#aadb64ca9e48e55f35e5473b83939a6d8">TorqueScript::Interpreter::addFunction</a></div><div class="ttdeci">void addFunction(std::shared_ptr&lt; Function &gt; function)</div><div class="ttdoc">Registers a new function to the interpreter. Ownership is transferred to the interpreter at this poin...</div><div class="ttdef"><b>Definition:</b> interpreter.cpp:89</div></div>
-<div class="ttc" id="aclassTorqueScript_1_1Interpreter_html_ac85c83d327e6ebb9fb4e24de1deab09d"><div class="ttname"><a href="classTorqueScript_1_1Interpreter.html#ac85c83d327e6ebb9fb4e24de1deab09d">TorqueScript::Interpreter::logError</a></div><div class="ttdeci">virtual void logError(const std::string &amp;message)</div><div class="ttdoc">Asks the interpreter to handle an error log message.</div><div class="ttdef"><b>Definition:</b> interpreter.cpp:143</div></div>
-<div class="ttc" id="aclassTorqueScript_1_1Interpreter_html_ac95424971e00c5f5e5b7873ffc45f76e"><div class="ttname"><a href="classTorqueScript_1_1Interpreter.html#ac95424971e00c5f5e5b7873ffc45f76e">TorqueScript::Interpreter::logEcho</a></div><div class="ttdeci">virtual void logEcho(const std::string &amp;message)</div><div class="ttdoc">Asks the interpreter to handle a simple echo message.</div><div class="ttdef"><b>Definition:</b> interpreter.cpp:138</div></div>
-<div class="ttc" id="anamespaceTorqueScript_html"><div class="ttname"><a href="namespaceTorqueScript.html">TorqueScript</a></div><div class="ttdef"><b>Definition:</b> builtins.hpp:29</div></div>
+<div class="line"><a name="l00096"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1Interpreter.html#a708afa46488ec9c0a64169bdac48599f">   96</a></span>&#160;            <a class="code" href="classTorqueScript_1_1CodeBlock.html">CodeBlock</a>* <a class="code" href="classTorqueScript_1_1Interpreter.html#a708afa46488ec9c0a64169bdac48599f">compile</a>(<span class="keyword">const</span> std::string&amp; input);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;            <span class="keywordtype">void</span> evaluate(<span class="keyword">const</span> std::string&amp; input, std::shared_ptr&lt;ExecutionState&gt; state = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;            <span class="keywordtype">void</span> execute(<span class="keyword">const</span> std::string&amp; path, std::shared_ptr&lt;ExecutionState&gt; state = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; </div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160; </div>
+<div class="line"><a name="l00109"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1Interpreter.html#aadb64ca9e48e55f35e5473b83939a6d8">  109</a></span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classTorqueScript_1_1Interpreter.html#aadb64ca9e48e55f35e5473b83939a6d8">addFunction</a>(std::shared_ptr&lt;Function&gt; <span class="keyword">function</span>);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;            std::shared_ptr&lt;Function&gt; getFunction(<span class="keyword">const</span> std::string&amp; space, <span class="keyword">const</span> std::string&amp; name);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;            std::shared_ptr&lt;Function&gt; getFunctionParent(<a class="code" href="classTorqueScript_1_1Function.html">Function</a>* <span class="keyword">function</span>);</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160; </div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;            <a class="code" href="structTorqueScript_1_1FunctionRegistry.html">FunctionRegistry</a>* findFunctionRegistry(<span class="keyword">const</span> std::string packageName);</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;            <span class="keywordtype">void</span> addFunctionRegistry(<span class="keyword">const</span> std::string&amp; packageName);</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;            <span class="keywordtype">void</span> activateFunctionRegistry(<span class="keyword">const</span> std::string&amp; packageName);</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;            <span class="keywordtype">void</span> deactivateFunctionRegistry(<span class="keyword">const</span> std::string&amp; packageName);</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;            <span class="keywordtype">void</span> removeFunctionRegistry(<span class="keyword">const</span> std::string&amp; packageName);</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160; </div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;            std::shared_ptr&lt;ExecutionState&gt; getExecutionState();</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160; </div>
+<div class="line"><a name="l00123"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1Interpreter.html#a45573b33139d4687354ff5e9592e8e29">  123</a></span>&#160;            <a class="code" href="classTorqueScript_1_1ConsoleObjectRegistry.html">ConsoleObjectRegistry</a> <a class="code" href="classTorqueScript_1_1Interpreter.html#a45573b33139d4687354ff5e9592e8e29">mConsoleObjectRegistry</a>;</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160; </div>
+<div class="line"><a name="l00126"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1Interpreter.html#a8300acdfda4905f0b96a307a26be2ba8">  126</a></span>&#160;            <a class="code" href="classTorqueScript_1_1StringTable.html">StringTable</a> <a class="code" href="classTorqueScript_1_1Interpreter.html#a8300acdfda4905f0b96a307a26be2ba8">mStringTable</a>;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160; </div>
+<div class="line"><a name="l00129"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1Interpreter.html#a3acc2e2532d3ec09aa793fb1fe5c87a1">  129</a></span>&#160;            <span class="keyword">const</span> <a class="code" href="structTorqueScript_1_1InterpreterConfiguration.html">InterpreterConfiguration</a> <a class="code" href="classTorqueScript_1_1Interpreter.html#a3acc2e2532d3ec09aa793fb1fe5c87a1">mConfig</a>;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160; </div>
+<div class="line"><a name="l00140"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1Interpreter.html#a0470fd842924531117a0260292757fbb">  140</a></span>&#160;            std::shared_ptr&lt;ConsoleObject&gt; <a class="code" href="classTorqueScript_1_1Interpreter.html#a0470fd842924531117a0260292757fbb">initializeConsoleObjectTree</a>(<a class="code" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html">ObjectInstantiationDescriptor</a>&amp; descriptor);</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160; </div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;            <span class="keyword">template</span> &lt;<span class="keyword">typename</span> <span class="keyword">class</span>Type&gt;</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;            <span class="keywordtype">void</span> registerConsoleObjectType()</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;            {</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;                <span class="comment">// Ensure descriptors are initialized</span></div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;                classType::initializeMemberFields(<a class="code" href="structTorqueScript_1_1TypeInformation.html">TypeInformation&lt;classType&gt;::Descriptor</a>);</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;            }</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160; </div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;            <a class="code" href="classTorqueScript_1_1Compiler.html">Compiler</a>* mCompiler;</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160; </div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;            std::vector&lt;FunctionRegistry&gt; mFunctionRegistries;</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160; </div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;            std::unordered_map&lt;std::size_t, StoredValue&gt; mGlobalVariables;</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    };</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;}</div>
+<div class="ttc" id="aclassTorqueScript_1_1CodeBlock_html"><div class="ttname"><a href="classTorqueScript_1_1CodeBlock.html">TorqueScript::CodeBlock</a></div><div class="ttdoc">A CodeBlock defines a piece of executable code generated from a single input (Ie. a file)....</div><div class="ttdef"><b>Definition:</b> codeblock.hpp:37</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1Compiler_html"><div class="ttname"><a href="classTorqueScript_1_1Compiler.html">TorqueScript::Compiler</a></div><div class="ttdoc">Primary compiler class. This class is an AST visitor that walks the AST tree generated by a AST::ASTB...</div><div class="ttdef"><b>Definition:</b> compiler.hpp:35</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1ConsoleObjectRegistry_html"><div class="ttname"><a href="classTorqueScript_1_1ConsoleObjectRegistry.html">TorqueScript::ConsoleObjectRegistry</a></div><div class="ttdef"><b>Definition:</b> consoleobjectregistry.hpp:38</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1Function_html"><div class="ttname"><a href="classTorqueScript_1_1Function.html">TorqueScript::Function</a></div><div class="ttdoc">A function is callable subroutine from anywhere in the language, defined by a script....</div><div class="ttdef"><b>Definition:</b> function.hpp:40</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1Interpreter_html"><div class="ttname"><a href="classTorqueScript_1_1Interpreter.html">TorqueScript::Interpreter</a></div><div class="ttdoc">The interpreter class represents a high level instance of the TorqueScript interpreter....</div><div class="ttdef"><b>Definition:</b> interpreter.hpp:46</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1Interpreter_html_a0470fd842924531117a0260292757fbb"><div class="ttname"><a href="classTorqueScript_1_1Interpreter.html#a0470fd842924531117a0260292757fbb">TorqueScript::Interpreter::initializeConsoleObjectTree</a></div><div class="ttdeci">std::shared_ptr&lt; ConsoleObject &gt; initializeConsoleObjectTree(ObjectInstantiationDescriptor &amp;descriptor)</div><div class="ttdoc">Initializes the tree of objects described by the provided descriptor.</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1Interpreter_html_a3acc2e2532d3ec09aa793fb1fe5c87a1"><div class="ttname"><a href="classTorqueScript_1_1Interpreter.html#a3acc2e2532d3ec09aa793fb1fe5c87a1">TorqueScript::Interpreter::mConfig</a></div><div class="ttdeci">const InterpreterConfiguration mConfig</div><div class="ttdoc">The interpreter configuration.</div><div class="ttdef"><b>Definition:</b> interpreter.hpp:129</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1Interpreter_html_a45573b33139d4687354ff5e9592e8e29"><div class="ttname"><a href="classTorqueScript_1_1Interpreter.html#a45573b33139d4687354ff5e9592e8e29">TorqueScript::Interpreter::mConsoleObjectRegistry</a></div><div class="ttdeci">ConsoleObjectRegistry mConsoleObjectRegistry</div><div class="ttdoc">The ConsoleObjectRegistry associated with this interpreter. It is used to store all ConsoleObject ins...</div><div class="ttdef"><b>Definition:</b> interpreter.hpp:123</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1Interpreter_html_a5c392ba6d02df01b01e7057fd1a969a0"><div class="ttname"><a href="classTorqueScript_1_1Interpreter.html#a5c392ba6d02df01b01e7057fd1a969a0">TorqueScript::Interpreter::getGlobal</a></div><div class="ttdeci">StoredValue * getGlobal(const std::string &amp;name)</div><div class="ttdoc">Retrieves a global variable by string.</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1Interpreter_html_a6b63bb07670d1a657d7592f288830795"><div class="ttname"><a href="classTorqueScript_1_1Interpreter.html#a6b63bb07670d1a657d7592f288830795">TorqueScript::Interpreter::getGlobal</a></div><div class="ttdeci">StoredValue * getGlobal(const std::size_t name)</div><div class="ttdoc">Retrieves a global variable by string ID.</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1Interpreter_html_a708afa46488ec9c0a64169bdac48599f"><div class="ttname"><a href="classTorqueScript_1_1Interpreter.html#a708afa46488ec9c0a64169bdac48599f">TorqueScript::Interpreter::compile</a></div><div class="ttdeci">CodeBlock * compile(const std::string &amp;input)</div><div class="ttdoc">Ask the interpreter to compile the input string and return the resulting CodeBlock.</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1Interpreter_html_a8300acdfda4905f0b96a307a26be2ba8"><div class="ttname"><a href="classTorqueScript_1_1Interpreter.html#a8300acdfda4905f0b96a307a26be2ba8">TorqueScript::Interpreter::mStringTable</a></div><div class="ttdeci">StringTable mStringTable</div><div class="ttdoc">The string table associated with this interpreter.</div><div class="ttdef"><b>Definition:</b> interpreter.hpp:126</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1Interpreter_html_aadb64ca9e48e55f35e5473b83939a6d8"><div class="ttname"><a href="classTorqueScript_1_1Interpreter.html#aadb64ca9e48e55f35e5473b83939a6d8">TorqueScript::Interpreter::addFunction</a></div><div class="ttdeci">void addFunction(std::shared_ptr&lt; Function &gt; function)</div><div class="ttdoc">Registers a new function to the interpreter.</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1Interpreter_html_ae6a7e545081e4d67a292fad02047fa79"><div class="ttname"><a href="classTorqueScript_1_1Interpreter.html#ae6a7e545081e4d67a292fad02047fa79">TorqueScript::Interpreter::Interpreter</a></div><div class="ttdeci">Interpreter(const InterpreterConfiguration &amp;config)</div><div class="ttdoc">Constructs a new interpreter with the specified configuration.</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1StoredValue_html"><div class="ttname"><a href="classTorqueScript_1_1StoredValue.html">TorqueScript::StoredValue</a></div><div class="ttdoc">Storage class used to keep variable values in-memory of arbitrary data types. The data types supporte...</div><div class="ttdef"><b>Definition:</b> storedvalue.hpp:80</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1StringTable_html"><div class="ttname"><a href="classTorqueScript_1_1StringTable.html">TorqueScript::StringTable</a></div><div class="ttdoc">A string table maintains a mapping of numeric identifiers to their raw string values....</div><div class="ttdef"><b>Definition:</b> stringtable.hpp:32</div></div>
+<div class="ttc" id="anamespaceTorqueScript_html"><div class="ttname"><a href="namespaceTorqueScript.html">TorqueScript</a></div><div class="ttdef"><b>Definition:</b> ast.hpp:28</div></div>
+<div class="ttc" id="astructTorqueScript_1_1FunctionRegistry_html"><div class="ttname"><a href="structTorqueScript_1_1FunctionRegistry.html">TorqueScript::FunctionRegistry</a></div><div class="ttdoc">A FunctionRegistry is used to keep track of registered functions in memory by the packages they are a...</div><div class="ttdef"><b>Definition:</b> functionregistry.hpp:33</div></div>
+<div class="ttc" id="astructTorqueScript_1_1InterpreterConfiguration_html"><div class="ttname"><a href="structTorqueScript_1_1InterpreterConfiguration.html">TorqueScript::InterpreterConfiguration</a></div><div class="ttdoc">A structure representing overall interpreter runtime configuration. Some settings can be changed at r...</div><div class="ttdef"><b>Definition:</b> interpreterconfiguration.hpp:26</div></div>
+<div class="ttc" id="astructTorqueScript_1_1ObjectInstantiationDescriptor_html"><div class="ttname"><a href="structTorqueScript_1_1ObjectInstantiationDescriptor.html">TorqueScript::ObjectInstantiationDescriptor</a></div><div class="ttdoc">Struct describing a tree of console object initializations.</div><div class="ttdef"><b>Definition:</b> executionscope.hpp:48</div></div>
+<div class="ttc" id="astructTorqueScript_1_1TypeInformation_html"><div class="ttname"><a href="structTorqueScript_1_1TypeInformation.html">TorqueScript::TypeInformation</a></div><div class="ttdef"><b>Definition:</b> consoleobject.hpp:101</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

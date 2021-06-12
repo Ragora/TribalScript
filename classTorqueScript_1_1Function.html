@@ -22,6 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">TorqueScript
+   &#160;<span id="projectnumber">0.2</span>
    </div>
   </td>
  </tr>
@@ -73,58 +74,110 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>A function is callable subroutine from anywhere in the language.  
+<p>A function is callable subroutine from anywhere in the language, defined by a script. A <a class="el" href="classTorqueScript_1_1NativeFunction.html" title="A NativeFunction is a specialization of Function that allows native C++ programming to be called from...">NativeFunction</a> is a specialization of this that allows native C++ programming to be called from within the interpreter.  
  <a href="classTorqueScript_1_1Function.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="codecontainer_8hpp_source.html">codecontainer.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="function_8hpp_source.html">function.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for TorqueScript::Function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classTorqueScript_1_1Function__inherit__graph.png" border="0" usemap="#aTorqueScript_1_1Function_inherit__map" alt="Inheritance graph"/></div>
 <map name="aTorqueScript_1_1Function_inherit__map" id="aTorqueScript_1_1Function_inherit__map">
-<area shape="rect" title="A function is callable subroutine from anywhere in the language." alt="" coords="5,5,171,32"/>
-<area shape="rect" href="classTorqueScript_1_1Echo.html" title=" " alt="" coords="17,80,159,107"/>
+<area shape="rect" title="A function is callable subroutine from anywhere in the language, defined by a script...." alt="" coords="27,5,192,32"/>
+<area shape="rect" href="classTorqueScript_1_1NativeFunction.html" title="A NativeFunction is a specialization of Function that allows native C++ programming to be called from..." alt="" coords="5,80,213,107"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a578e2b2c9c4d18524303543dfc0f795d"><td class="memItemLeft" align="right" valign="top"><a id="a578e2b2c9c4d18524303543dfc0f795d"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Function</b> (const std::string &amp;name)</td></tr>
-<tr class="separator:a578e2b2c9c4d18524303543dfc0f795d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f54a90c1fc3f4042c9862758e875ba5"><td class="memItemLeft" align="right" valign="top"><a id="a6f54a90c1fc3f4042c9862758e875ba5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addInstructions</b> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1Instruction.html">Instruction</a> &gt;&gt; &amp;instructions)</td></tr>
-<tr class="separator:a6f54a90c1fc3f4042c9862758e875ba5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a666075a26d8f6d2a3c9ab6b76d7ff6ff"><td class="memItemLeft" align="right" valign="top"><a id="a666075a26d8f6d2a3c9ab6b76d7ff6ff"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Function.html#a666075a26d8f6d2a3c9ab6b76d7ff6ff">execute</a> (<a class="el" href="classTorqueScript_1_1Interpreter.html">Interpreter</a> *interpreter, <a class="el" href="classTorqueScript_1_1ExecutionScope.html">ExecutionScope</a> *scope, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> &gt;&gt; &amp;stack)</td></tr>
-<tr class="memdesc:a666075a26d8f6d2a3c9ab6b76d7ff6ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default implementation will execute virtual instructions but can be overriden to implement native functions. <br /></td></tr>
-<tr class="separator:a666075a26d8f6d2a3c9ab6b76d7ff6ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee9e9d0fa21c893b6d470635edaf99b7"><td class="memItemLeft" align="right" valign="top"><a id="aee9e9d0fa21c893b6d470635edaf99b7"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getName</b> ()</td></tr>
-<tr class="separator:aee9e9d0fa21c893b6d470635edaf99b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a578e2b2c9c4d18524303543dfc0f795d"><td class="memItemLeft" align="right" valign="top"><a id="a578e2b2c9c4d18524303543dfc0f795d"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Function</b> (const std::string &amp;name)</td></tr>
-<tr class="separator:a578e2b2c9c4d18524303543dfc0f795d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8200d35c8e703f9bba15bc37267a47a2"><td class="memItemLeft" align="right" valign="top"><a id="a8200d35c8e703f9bba15bc37267a47a2"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Function</b> (const std::string &amp;name, const std::vector&lt; std::string &gt; &amp;parameterNames)</td></tr>
-<tr class="separator:a8200d35c8e703f9bba15bc37267a47a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba536930ff88c0c1b2b16afa69d69975"><td class="memItemLeft" align="right" valign="top"><a id="aba536930ff88c0c1b2b16afa69d69975"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Function</b> (const std::string &amp;package, const std::string &amp;space, const std::string &amp;name)</td></tr>
+<tr class="separator:aba536930ff88c0c1b2b16afa69d69975"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cbca220f61fbca8b994ae2bb02a861f"><td class="memItemLeft" align="right" valign="top"><a id="a0cbca220f61fbca8b994ae2bb02a861f"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Function</b> (const std::string &amp;package, const std::string &amp;space, const std::string &amp;name, const std::vector&lt; std::string &gt; &amp;parameterNames)</td></tr>
+<tr class="separator:a0cbca220f61fbca8b994ae2bb02a861f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45e05eca2ec64cbb3e525104a4bc296f"><td class="memItemLeft" align="right" valign="top"><a id="a45e05eca2ec64cbb3e525104a4bc296f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addInstructions</b> (const <a class="el" href="classTorqueScript_1_1InstructionSequence.html">InstructionSequence</a> &amp;instructions)</td></tr>
 <tr class="separator:a45e05eca2ec64cbb3e525104a4bc296f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae2031edd58b742437b1dca1dbbccaeb7"><td class="memItemLeft" align="right" valign="top"><a id="ae2031edd58b742437b1dca1dbbccaeb7"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Function.html#ae2031edd58b742437b1dca1dbbccaeb7">execute</a> (std::shared_ptr&lt; <a class="el" href="structTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state, const unsigned int argumentCount)</td></tr>
-<tr class="memdesc:ae2031edd58b742437b1dca1dbbccaeb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default implementation will execute virtual instructions but can be overriden to implement native functions. <br /></td></tr>
-<tr class="separator:ae2031edd58b742437b1dca1dbbccaeb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee9e9d0fa21c893b6d470635edaf99b7"><td class="memItemLeft" align="right" valign="top"><a id="aee9e9d0fa21c893b6d470635edaf99b7"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getName</b> ()</td></tr>
-<tr class="separator:aee9e9d0fa21c893b6d470635edaf99b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cebc6d889c2c85b819d8f0b66fdf79f"><td class="memItemLeft" align="right" valign="top"><a id="a2cebc6d889c2c85b819d8f0b66fdf79f"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Function.html#a2cebc6d889c2c85b819d8f0b66fdf79f">execute</a> (std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ConsoleObject.html">ConsoleObject</a> &gt; thisObject, std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state, const std::size_t argumentCount)</td></tr>
+<tr class="memdesc:a2cebc6d889c2c85b819d8f0b66fdf79f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default implementation will execute virtual instructions but can be overriden to implement native functions. <br /></td></tr>
+<tr class="separator:a2cebc6d889c2c85b819d8f0b66fdf79f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1afedd20da7180566e3867e930ae0c6"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Function.html#af1afedd20da7180566e3867e930ae0c6">getDeclaredName</a> ()</td></tr>
+<tr class="memdesc:af1afedd20da7180566e3867e930ae0c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the declared name of this function.  <a href="classTorqueScript_1_1Function.html#af1afedd20da7180566e3867e930ae0c6">More...</a><br /></td></tr>
+<tr class="separator:af1afedd20da7180566e3867e930ae0c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a478f0cc6dccda6e6998ce7c003982708"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Function.html#a478f0cc6dccda6e6998ce7c003982708">getDeclaredNameSpace</a> ()</td></tr>
+<tr class="memdesc:a478f0cc6dccda6e6998ce7c003982708"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the declared namespace of this function.  <a href="classTorqueScript_1_1Function.html#a478f0cc6dccda6e6998ce7c003982708">More...</a><br /></td></tr>
+<tr class="separator:a478f0cc6dccda6e6998ce7c003982708"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0a67af77b0be17a6a7680ed65311702"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Function.html#ad0a67af77b0be17a6a7680ed65311702">getDeclaredPackage</a> ()</td></tr>
+<tr class="memdesc:ad0a67af77b0be17a6a7680ed65311702"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the declared package of this function.  <a href="classTorqueScript_1_1Function.html#ad0a67af77b0be17a6a7680ed65311702">More...</a><br /></td></tr>
+<tr class="separator:ad0a67af77b0be17a6a7680ed65311702"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A function is callable subroutine from anywhere in the language. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>/home/ragora/Documents/Projects/Personal/TorqueScript/include/torquescript/<a class="el" href="codecontainer_8hpp_source.html">codecontainer.hpp</a></li>
-<li>/home/ragora/Documents/Projects/Personal/TorqueScript/include/torquescript/<a class="el" href="function_8hpp_source.html">function.hpp</a></li>
-<li>function.cpp</li>
+<div class="textblock"><p>A function is callable subroutine from anywhere in the language, defined by a script. A <a class="el" href="classTorqueScript_1_1NativeFunction.html" title="A NativeFunction is a specialization of Function that allows native C++ programming to be called from...">NativeFunction</a> is a specialization of this that allows native C++ programming to be called from within the interpreter. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="af1afedd20da7180566e3867e930ae0c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1afedd20da7180566e3867e930ae0c6">&#9670;&nbsp;</a></span>getDeclaredName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string&amp; TorqueScript::Function::getDeclaredName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieves the declared name of this function. </p>
+<dl class="section return"><dt>Returns</dt><dd>The name that this function was declared with. </dd></dl>
+
+</div>
+</div>
+<a id="a478f0cc6dccda6e6998ce7c003982708"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a478f0cc6dccda6e6998ce7c003982708">&#9670;&nbsp;</a></span>getDeclaredNameSpace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string&amp; TorqueScript::Function::getDeclaredNameSpace </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieves the declared namespace of this function. </p>
+<dl class="section return"><dt>Returns</dt><dd>The namespace that this function was declared with. </dd></dl>
+
+</div>
+</div>
+<a id="ad0a67af77b0be17a6a7680ed65311702"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0a67af77b0be17a6a7680ed65311702">&#9670;&nbsp;</a></span>getDeclaredPackage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string&amp; TorqueScript::Function::getDeclaredPackage </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieves the declared package of this function. </p>
+<dl class="section return"><dt>Returns</dt><dd>The package that this function was declared in. </dd></dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>include/torquescript/<a class="el" href="function_8hpp_source.html">function.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

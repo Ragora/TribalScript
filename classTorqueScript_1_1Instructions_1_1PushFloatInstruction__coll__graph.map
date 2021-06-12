@@ -1,0 +1,4 @@
+<map id="TorqueScript::Instructions::PushFloatInstruction" name="TorqueScript::Instructions::PushFloatInstruction">
+<area shape="rect" id="node1" title="Push float instruction. This will push a floating point value to the system stack for later use in ex..." alt="" coords="5,95,192,136"/>
+<area shape="rect" id="node2" href="$classTorqueScript_1_1Instructions_1_1Instruction.html" title="Base instruction class. All instructions in the interpreter should dervive from this class and implem..." alt="" coords="5,5,192,47"/>
+</map>

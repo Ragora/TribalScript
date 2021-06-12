@@ -1,0 +1,9 @@
+<map id="TorqueScript::ConsoleObject" name="TorqueScript::ConsoleObject">
+<area shape="rect" id="node1" title="Base class for object instances recognized by the interpreter. These object instances may contain mem..." alt="" coords="1075,84,1279,111"/>
+<area shape="rect" id="node2" href="$classTorqueScript_1_1Interpreter.html" title="The interpreter class represents a high level instance of the TorqueScript interpreter...." alt="" coords="761,84,940,111"/>
+<area shape="rect" id="node3" href="$classTorqueScript_1_1StringTable.html" title="A string table maintains a mapping of numeric identifiers to their raw string values...." alt="" coords="355,23,537,49"/>
+<area shape="rect" id="node4" title=" " alt="" coords="38,5,190,61"/>
+<area shape="rect" id="node5" href="$structTorqueScript_1_1InterpreterConfiguration.html" title="A structure representing overall interpreter runtime configuration. Some settings can be changed at r..." alt="" coords="357,77,535,118"/>
+<area shape="rect" id="node6" href="$classTorqueScript_1_1PlatformContext.html" title=" " alt="" coords="5,85,223,112"/>
+<area shape="rect" id="node7" href="$classTorqueScript_1_1ConsoleObjectRegistry.html" title=" " alt="" coords="344,142,548,183"/>
+</map>

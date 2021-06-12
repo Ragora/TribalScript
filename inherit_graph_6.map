@@ -1,30 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classTorqueScript_1_1Instruction.html" title="Base instruction class. All instructions in the interpreter should dervive from this class and implem..." alt="" coords="5,757,184,783"/>
-<area shape="rect" id="node2" href="$classTorqueScript_1_1AccessArrayInstruction.html" title="Calls a function registered in memory somewhere." alt="" coords="259,5,450,47"/>
-<area shape="rect" id="node3" href="$classTorqueScript_1_1AddAssignmentInstruction.html" title="Performs an addition of two values on the stack and assigns the result." alt="" coords="249,71,461,112"/>
-<area shape="rect" id="node4" href="$classTorqueScript_1_1AddInstruction.html" title="Adds together two values on the stack and pushes the sum." alt="" coords="253,137,457,163"/>
-<area shape="rect" id="node5" href="$classTorqueScript_1_1AssignmentInstruction.html" title="Assign to lhs with whatever is on rhs." alt="" coords="261,188,448,229"/>
-<area shape="rect" id="node6" href="$classTorqueScript_1_1BitwiseAndInstruction.html" title="Performs a bitwise AND against two values." alt="" coords="263,253,446,295"/>
-<area shape="rect" id="node7" href="$classTorqueScript_1_1BreakInstruction.html" title=" " alt="" coords="246,319,463,346"/>
-<area shape="rect" id="node8" href="$classTorqueScript_1_1CallFunctionInstruction.html" title="Calls a function registered in memory somewhere." alt="" coords="259,371,450,412"/>
-<area shape="rect" id="node9" href="$classTorqueScript_1_1ConcatInstruction.html" title="Push string instruction. This will push a string value to the system stack for later use in execution..." alt="" coords="243,437,467,463"/>
-<area shape="rect" id="node10" href="$classTorqueScript_1_1EqualsInstruction.html" title="Compares two values on the stack using an equality." alt="" coords="243,487,466,514"/>
-<area shape="rect" id="node11" href="$classTorqueScript_1_1FunctionDeclarationInstruction.html" title=" " alt="" coords="235,539,475,580"/>
-<area shape="rect" id="node12" href="$classTorqueScript_1_1JumpFalseInstruction.html" title=" " alt="" coords="232,605,477,631"/>
-<area shape="rect" id="node13" href="$classTorqueScript_1_1JumpInstruction.html" title=" " alt="" coords="249,655,461,682"/>
-<area shape="rect" id="node14" href="$classTorqueScript_1_1JumpTrueInstruction.html" title=" " alt="" coords="235,706,474,733"/>
-<area shape="rect" id="node15" href="$classTorqueScript_1_1LessThanInstruction.html" title="Compares two values on the stack using a less than relation." alt="" coords="235,757,475,783"/>
-<area shape="rect" id="node16" href="$classTorqueScript_1_1MultiplyInstruction.html" title="Adds together two values on the stack and pushes the sum." alt="" coords="239,807,471,834"/>
-<area shape="rect" id="node17" href="$classTorqueScript_1_1NOPInstruction.html" title=" " alt="" coords="251,858,458,885"/>
-<area shape="rect" id="node18" href="$classTorqueScript_1_1NegateInstruction.html" title="Negate a value on the stack." alt="" coords="241,909,468,935"/>
-<area shape="rect" id="node19" href="$classTorqueScript_1_1PopInstruction.html" title="Pops a value from the stack, discarding it." alt="" coords="253,959,456,986"/>
-<area shape="rect" id="node20" href="$classTorqueScript_1_1PopLoopInstruction.html" title=" " alt="" coords="237,1010,472,1037"/>
-<area shape="rect" id="node21" href="$classTorqueScript_1_1PushFloatInstruction.html" title="Push float instruction. This will push a floating point value to the system stack for later use in ex..." alt="" coords="233,1061,476,1087"/>
-<area shape="rect" id="node22" href="$classTorqueScript_1_1PushGlobalReferenceInstruction.html" title="Push a reference to a named global variable. The parameter provided here should be excluding the &#39;$&#39; ..." alt="" coords="263,1112,446,1153"/>
-<area shape="rect" id="node23" href="$classTorqueScript_1_1PushIntegerInstruction.html" title="Push integer instruction. This will push an integer value to the system stack for later use in execut..." alt="" coords="261,1177,448,1219"/>
-<area shape="rect" id="node24" href="$classTorqueScript_1_1PushLocalReferenceInstruction.html" title="Push a reference to a named local variable. The parameter provided here should be excluding the &#39;&#39; pr..." alt="" coords="234,1243,475,1284"/>
-<area shape="rect" id="node25" href="$classTorqueScript_1_1PushLoopInstruction.html" title=" " alt="" coords="234,1309,475,1335"/>
-<area shape="rect" id="node26" href="$classTorqueScript_1_1PushStringInstruction.html" title="Push string instruction. This will push a string value to the system stack for later use in execution..." alt="" coords="265,1360,444,1401"/>
-<area shape="rect" id="node27" href="$classTorqueScript_1_1ReturnInstruction.html" title=" " alt="" coords="243,1426,466,1453"/>
-<area shape="rect" id="node28" href="$classTorqueScript_1_1SubReferenceInstruction.html" title=" " alt="" coords="255,1477,455,1519"/>
+<area shape="rect" id="node1" href="$classTorqueScript_1_1ConsoleObjectDescriptor.html" title=" " alt="" coords="5,5,209,47"/>
 </map>

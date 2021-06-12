@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TorqueScript: /home/ragora/Documents/Projects/Personal/TorqueScript/include/torquescript/executionscope.hpp Source File</title>
+<title>TorqueScript: include/torquescript/executionscope.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,6 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">TorqueScript
+   &#160;<span id="projectnumber">0.2</span>
    </div>
   </td>
  </tr>
@@ -72,54 +73,122 @@ $(function() {
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160; </div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &lt;torquescript/storedvalue.hpp&gt;</span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &lt;torquescript/stringhelpers.hpp&gt;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceTorqueScript.html">TorqueScript</a></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;{</div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="structTorqueScript_1_1LoopDescriptor.html">   26</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="structTorqueScript_1_1LoopDescriptor.html">LoopDescriptor</a></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    {</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        <a class="code" href="structTorqueScript_1_1LoopDescriptor.html">LoopDescriptor</a>(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> pointer, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> size) : mInstructionPointer(pointer), mLoopSize(size)</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &lt;torquescript/function.hpp&gt;</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &lt;torquescript/stringtable.hpp&gt;</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &lt;torquescript/codeblock.hpp&gt;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &lt;torquescript/stringtable.hpp&gt;</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &lt;torquescript/interpreterconfiguration.hpp&gt;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &lt;torquescript/storedvaluestack.hpp&gt;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &lt;torquescript/consoleobject.hpp&gt;</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        }</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mInstructionPointer;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mLoopSize;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    };</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="structTorqueScript_1_1ExecutionScopeData.html">   37</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="structTorqueScript_1_1ExecutionScopeData.html">ExecutionScopeData</a></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        std::vector&lt;LoopDescriptor&gt; mLoopDescriptors;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        std::map&lt;std::string, std::shared_ptr&lt;StoredValue&gt;&gt; mLocalVariables;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    };</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1ExecutionScope.html">   47</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classTorqueScript_1_1ExecutionScope.html">ExecutionScope</a></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceTorqueScript.html">TorqueScript</a></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;{</div>
+<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="structTorqueScript_1_1LoopDescriptor.html">   33</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="structTorqueScript_1_1LoopDescriptor.html">LoopDescriptor</a></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    {</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        <a class="code" href="structTorqueScript_1_1LoopDescriptor.html">LoopDescriptor</a>(<span class="keyword">const</span> <a class="code" href="namespaceTorqueScript.html#ae321c9dd7791325c09037d8109333dfe">AddressType</a> pointer, <span class="keyword">const</span> std::size_t size) : mInstructionPointer(pointer), mLoopSize(size)</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        }</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <a class="code" href="namespaceTorqueScript.html#ae321c9dd7791325c09037d8109333dfe">AddressType</a> mInstructionPointer;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        std::size_t mLoopSize;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    };</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html">   47</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html">ObjectInstantiationDescriptor</a></div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    {</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            <span class="keywordtype">void</span> pushFrame();</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            <span class="keywordtype">void</span> popFrame();</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            <span class="keywordtype">void</span> pushLoop(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> pointer, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> depth);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            <a class="code" href="structTorqueScript_1_1LoopDescriptor.html">LoopDescriptor</a> popLoop();</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <a class="code" href="structTorqueScript_1_1LoopDescriptor.html">LoopDescriptor</a> currentLoopDescriptor();</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            <span class="keywordtype">bool</span> isLoopStackEmpty();</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            std::shared_ptr&lt;StoredValue&gt; getVariable(<span class="keyword">const</span> std::string&amp; name);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            <span class="keywordtype">void</span> setVariable(<span class="keyword">const</span> std::string&amp; name, std::shared_ptr&lt;StoredValue&gt; variable);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;            std::vector&lt;ExecutionScopeData&gt; mExecutionScopeData;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    };</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;}</div>
-<div class="ttc" id="aclassTorqueScript_1_1ExecutionScope_html"><div class="ttname"><a href="classTorqueScript_1_1ExecutionScope.html">TorqueScript::ExecutionScope</a></div><div class="ttdoc">A specific scope of execution - this is used to delineate local variables primarily.</div><div class="ttdef"><b>Definition:</b> executionscope.hpp:48</div></div>
-<div class="ttc" id="anamespaceTorqueScript_html"><div class="ttname"><a href="namespaceTorqueScript.html">TorqueScript</a></div><div class="ttdef"><b>Definition:</b> builtins.hpp:29</div></div>
-<div class="ttc" id="astructTorqueScript_1_1ExecutionScopeData_html"><div class="ttname"><a href="structTorqueScript_1_1ExecutionScopeData.html">TorqueScript::ExecutionScopeData</a></div><div class="ttdef"><b>Definition:</b> executionscope.hpp:38</div></div>
-<div class="ttc" id="astructTorqueScript_1_1LoopDescriptor_html"><div class="ttname"><a href="structTorqueScript_1_1LoopDescriptor.html">TorqueScript::LoopDescriptor</a></div><div class="ttdef"><b>Definition:</b> executionscope.hpp:27</div></div>
+<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html#a5cb700d7c3c990aecbc2298f324aab11">   54</a></span>&#160;        <a class="code" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html#a5cb700d7c3c990aecbc2298f324aab11">ObjectInstantiationDescriptor</a>(<span class="keyword">const</span> std::string typeName, <span class="keyword">const</span> std::string&amp; name) : <a class="code" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html#a70c08dade1126859f80214704b8cee0f">mName</a>(name), <a class="code" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html#aa0e09a50a6b260224e49667ac73b0545">mTypeName</a>(typeName)</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        }</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html#a70c08dade1126859f80214704b8cee0f">   60</a></span>&#160;        std::string <a class="code" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html#a70c08dade1126859f80214704b8cee0f">mName</a>;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html#aa0e09a50a6b260224e49667ac73b0545">   63</a></span>&#160;        std::string <a class="code" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html#aa0e09a50a6b260224e49667ac73b0545">mTypeName</a>;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
+<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html#a46481d1da7fa83fbc2dfede66bd4c8b5">   66</a></span>&#160;        std::vector&lt;ObjectInstantiationDescriptor&gt; <a class="code" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html#a46481d1da7fa83fbc2dfede66bd4c8b5">mChildren</a>;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        </div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html#a651b7bd74577c612cedcd453dd33f82e">   69</a></span>&#160;        std::map&lt;std::string, StoredValue&gt; <a class="code" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html#a651b7bd74577c612cedcd453dd33f82e">mFieldAssignments</a>;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    };</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
+<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="structTorqueScript_1_1ExecutionScopeData.html">   72</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="structTorqueScript_1_1ExecutionScopeData.html">ExecutionScopeData</a></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    {</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <a class="code" href="structTorqueScript_1_1ExecutionScopeData.html">ExecutionScopeData</a>(<a class="code" href="classTorqueScript_1_1Function.html">Function</a>* <span class="keyword">function</span>) : mCurrentFunction(<span class="keyword">function</span>)</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        {</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        }</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        <a class="code" href="classTorqueScript_1_1Function.html">Function</a>* mCurrentFunction;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="structTorqueScript_1_1ExecutionScopeData.html#abb366f88eff672075ab07aed52da6dd9">   82</a></span>&#160;        <a class="code" href="classTorqueScript_1_1StoredValueStack.html">StoredValueStack</a> <a class="code" href="structTorqueScript_1_1ExecutionScopeData.html#abb366f88eff672075ab07aed52da6dd9">mStack</a>;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
+<div class="line"><a name="l00085"></a><span class="lineno"><a class="line" href="structTorqueScript_1_1ExecutionScopeData.html#a0f8669ff8417a785cb95d8caba66e3b7">   85</a></span>&#160;        std::vector&lt;ObjectInstantiationDescriptor&gt; <a class="code" href="structTorqueScript_1_1ExecutionScopeData.html#a0f8669ff8417a785cb95d8caba66e3b7">mObjectInstantiations</a>;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        std::vector&lt;LoopDescriptor&gt; mLoopDescriptors;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        std::map&lt;std::size_t, StoredValue&gt; mLocalVariables;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    };</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
+<div class="line"><a name="l00095"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1ExecutionScope.html">   95</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classTorqueScript_1_1ExecutionScope.html">ExecutionScope</a></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    {</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;            <a class="code" href="classTorqueScript_1_1ExecutionScope.html">ExecutionScope</a>(<span class="keyword">const</span> <a class="code" href="structTorqueScript_1_1InterpreterConfiguration.html">InterpreterConfiguration</a>&amp; config, <a class="code" href="classTorqueScript_1_1StringTable.html">StringTable</a>* table);</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; </div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;            <span class="keywordtype">void</span> pushFrame(<a class="code" href="classTorqueScript_1_1Function.html">Function</a>* <span class="keyword">function</span>);</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;            <span class="keywordtype">void</span> popFrame();</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;            <span class="keywordtype">void</span> pushLoop(<span class="keyword">const</span> <a class="code" href="namespaceTorqueScript.html#ae321c9dd7791325c09037d8109333dfe">AddressType</a> pointer, <span class="keyword">const</span> std::size_t depth);</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;            <a class="code" href="structTorqueScript_1_1LoopDescriptor.html">LoopDescriptor</a> popLoop();</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;            <a class="code" href="structTorqueScript_1_1LoopDescriptor.html">LoopDescriptor</a> currentLoopDescriptor();</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160; </div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;            <span class="keywordtype">bool</span> isAwaitingParentInstantiation();</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;            <span class="keywordtype">void</span> pushObjectInstantiation(<span class="keyword">const</span> std::string&amp; typeName, <span class="keyword">const</span> std::string&amp; name);</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;            <a class="code" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html">ObjectInstantiationDescriptor</a> popObjectInstantiation();</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;            <a class="code" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html">ObjectInstantiationDescriptor</a>&amp; currentObjectInstantiation();</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160; </div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;            <span class="keywordtype">bool</span> isLoopStackEmpty();</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;            std::size_t getFrameDepth();</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160; </div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;            <a class="code" href="classTorqueScript_1_1Function.html">Function</a>* getCurrentFunction();</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;            <a class="code" href="classTorqueScript_1_1StoredValueStack.html">StoredValueStack</a>&amp; getStack();</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;            <a class="code" href="classTorqueScript_1_1StoredValueStack.html">StoredValueStack</a>&amp; getReturnStack();</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; </div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;            <a class="code" href="classTorqueScript_1_1StoredValue.html">StoredValue</a>* getVariable(<span class="keyword">const</span> std::string&amp; name);</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;            <a class="code" href="classTorqueScript_1_1StoredValue.html">StoredValue</a>* getVariable(<span class="keyword">const</span> std::size_t name);</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;            <span class="keywordtype">void</span> setVariable(<span class="keyword">const</span> std::string&amp; name, <a class="code" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> variable);</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;            <span class="keywordtype">void</span> setVariable(<span class="keyword">const</span> std::size_t name, <a class="code" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> variable);</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160; </div>
+<div class="line"><a name="l00125"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1ExecutionScope.html#a0141a3cda4cd74afbefe54efda8e6829">  125</a></span>&#160;            <span class="keyword">const</span> <a class="code" href="structTorqueScript_1_1InterpreterConfiguration.html">InterpreterConfiguration</a> <a class="code" href="classTorqueScript_1_1ExecutionScope.html#a0141a3cda4cd74afbefe54efda8e6829">mConfig</a>;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160; </div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;            <a class="code" href="classTorqueScript_1_1StringTable.html">StringTable</a>* mStringTable;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160; </div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;            std::vector&lt;ExecutionScopeData&gt; mExecutionScopeData;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    };</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;}</div>
+<div class="ttc" id="aclassTorqueScript_1_1ExecutionScope_html"><div class="ttname"><a href="classTorqueScript_1_1ExecutionScope.html">TorqueScript::ExecutionScope</a></div><div class="ttdoc">A specific scope of execution - this is used to delineate local variables primarily.</div><div class="ttdef"><b>Definition:</b> executionscope.hpp:96</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1ExecutionScope_html_a0141a3cda4cd74afbefe54efda8e6829"><div class="ttname"><a href="classTorqueScript_1_1ExecutionScope.html#a0141a3cda4cd74afbefe54efda8e6829">TorqueScript::ExecutionScope::mConfig</a></div><div class="ttdeci">const InterpreterConfiguration mConfig</div><div class="ttdoc">The InterpreterConfiguration associated with this ExecutionScope.+.</div><div class="ttdef"><b>Definition:</b> executionscope.hpp:125</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1Function_html"><div class="ttname"><a href="classTorqueScript_1_1Function.html">TorqueScript::Function</a></div><div class="ttdoc">A function is callable subroutine from anywhere in the language, defined by a script....</div><div class="ttdef"><b>Definition:</b> function.hpp:40</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1StoredValueStack_html"><div class="ttname"><a href="classTorqueScript_1_1StoredValueStack.html">TorqueScript::StoredValueStack</a></div><div class="ttdoc">Storage class used to keep variable values in-memory of arbitrary data types. This is the base class ...</div><div class="ttdef"><b>Definition:</b> storedvaluestack.hpp:32</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1StoredValue_html"><div class="ttname"><a href="classTorqueScript_1_1StoredValue.html">TorqueScript::StoredValue</a></div><div class="ttdoc">Storage class used to keep variable values in-memory of arbitrary data types. The data types supporte...</div><div class="ttdef"><b>Definition:</b> storedvalue.hpp:80</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1StringTable_html"><div class="ttname"><a href="classTorqueScript_1_1StringTable.html">TorqueScript::StringTable</a></div><div class="ttdoc">A string table maintains a mapping of numeric identifiers to their raw string values....</div><div class="ttdef"><b>Definition:</b> stringtable.hpp:32</div></div>
+<div class="ttc" id="anamespaceTorqueScript_html"><div class="ttname"><a href="namespaceTorqueScript.html">TorqueScript</a></div><div class="ttdef"><b>Definition:</b> ast.hpp:28</div></div>
+<div class="ttc" id="anamespaceTorqueScript_html_ae321c9dd7791325c09037d8109333dfe"><div class="ttname"><a href="namespaceTorqueScript.html#ae321c9dd7791325c09037d8109333dfe">TorqueScript::AddressType</a></div><div class="ttdeci">long long int AddressType</div><div class="ttdoc">Typedef for the signed integer type to be used when calculating addresses.</div><div class="ttdef"><b>Definition:</b> instructionsequence.hpp:28</div></div>
+<div class="ttc" id="astructTorqueScript_1_1ExecutionScopeData_html"><div class="ttname"><a href="structTorqueScript_1_1ExecutionScopeData.html">TorqueScript::ExecutionScopeData</a></div><div class="ttdef"><b>Definition:</b> executionscope.hpp:73</div></div>
+<div class="ttc" id="astructTorqueScript_1_1ExecutionScopeData_html_a0f8669ff8417a785cb95d8caba66e3b7"><div class="ttname"><a href="structTorqueScript_1_1ExecutionScopeData.html#a0f8669ff8417a785cb95d8caba66e3b7">TorqueScript::ExecutionScopeData::mObjectInstantiations</a></div><div class="ttdeci">std::vector&lt; ObjectInstantiationDescriptor &gt; mObjectInstantiations</div><div class="ttdoc">Awaiting root-level object instantiations.</div><div class="ttdef"><b>Definition:</b> executionscope.hpp:85</div></div>
+<div class="ttc" id="astructTorqueScript_1_1ExecutionScopeData_html_abb366f88eff672075ab07aed52da6dd9"><div class="ttname"><a href="structTorqueScript_1_1ExecutionScopeData.html#abb366f88eff672075ab07aed52da6dd9">TorqueScript::ExecutionScopeData::mStack</a></div><div class="ttdeci">StoredValueStack mStack</div><div class="ttdoc">The stack used for execution in this state.</div><div class="ttdef"><b>Definition:</b> executionscope.hpp:82</div></div>
+<div class="ttc" id="astructTorqueScript_1_1InterpreterConfiguration_html"><div class="ttname"><a href="structTorqueScript_1_1InterpreterConfiguration.html">TorqueScript::InterpreterConfiguration</a></div><div class="ttdoc">A structure representing overall interpreter runtime configuration. Some settings can be changed at r...</div><div class="ttdef"><b>Definition:</b> interpreterconfiguration.hpp:26</div></div>
+<div class="ttc" id="astructTorqueScript_1_1LoopDescriptor_html"><div class="ttname"><a href="structTorqueScript_1_1LoopDescriptor.html">TorqueScript::LoopDescriptor</a></div><div class="ttdef"><b>Definition:</b> executionscope.hpp:34</div></div>
+<div class="ttc" id="astructTorqueScript_1_1ObjectInstantiationDescriptor_html"><div class="ttname"><a href="structTorqueScript_1_1ObjectInstantiationDescriptor.html">TorqueScript::ObjectInstantiationDescriptor</a></div><div class="ttdoc">Struct describing a tree of console object initializations.</div><div class="ttdef"><b>Definition:</b> executionscope.hpp:48</div></div>
+<div class="ttc" id="astructTorqueScript_1_1ObjectInstantiationDescriptor_html_a46481d1da7fa83fbc2dfede66bd4c8b5"><div class="ttname"><a href="structTorqueScript_1_1ObjectInstantiationDescriptor.html#a46481d1da7fa83fbc2dfede66bd4c8b5">TorqueScript::ObjectInstantiationDescriptor::mChildren</a></div><div class="ttdeci">std::vector&lt; ObjectInstantiationDescriptor &gt; mChildren</div><div class="ttdoc">All children of this object. These will not be initialized until the parent is initialized.</div><div class="ttdef"><b>Definition:</b> executionscope.hpp:66</div></div>
+<div class="ttc" id="astructTorqueScript_1_1ObjectInstantiationDescriptor_html_a5cb700d7c3c990aecbc2298f324aab11"><div class="ttname"><a href="structTorqueScript_1_1ObjectInstantiationDescriptor.html#a5cb700d7c3c990aecbc2298f324aab11">TorqueScript::ObjectInstantiationDescriptor::ObjectInstantiationDescriptor</a></div><div class="ttdeci">ObjectInstantiationDescriptor(const std::string typeName, const std::string &amp;name)</div><div class="ttdoc">Constructs a new ObjectInstantiationDescriptor.</div><div class="ttdef"><b>Definition:</b> executionscope.hpp:54</div></div>
+<div class="ttc" id="astructTorqueScript_1_1ObjectInstantiationDescriptor_html_a651b7bd74577c612cedcd453dd33f82e"><div class="ttname"><a href="structTorqueScript_1_1ObjectInstantiationDescriptor.html#a651b7bd74577c612cedcd453dd33f82e">TorqueScript::ObjectInstantiationDescriptor::mFieldAssignments</a></div><div class="ttdeci">std::map&lt; std::string, StoredValue &gt; mFieldAssignments</div><div class="ttdoc">All resolved field names mapped to the values to set.</div><div class="ttdef"><b>Definition:</b> executionscope.hpp:69</div></div>
+<div class="ttc" id="astructTorqueScript_1_1ObjectInstantiationDescriptor_html_a70c08dade1126859f80214704b8cee0f"><div class="ttname"><a href="structTorqueScript_1_1ObjectInstantiationDescriptor.html#a70c08dade1126859f80214704b8cee0f">TorqueScript::ObjectInstantiationDescriptor::mName</a></div><div class="ttdeci">std::string mName</div><div class="ttdoc">The name to assign the new console object.</div><div class="ttdef"><b>Definition:</b> executionscope.hpp:60</div></div>
+<div class="ttc" id="astructTorqueScript_1_1ObjectInstantiationDescriptor_html_aa0e09a50a6b260224e49667ac73b0545"><div class="ttname"><a href="structTorqueScript_1_1ObjectInstantiationDescriptor.html#aa0e09a50a6b260224e49667ac73b0545">TorqueScript::ObjectInstantiationDescriptor::mTypeName</a></div><div class="ttdeci">std::string mTypeName</div><div class="ttdoc">The typename to instantiate the console object as.</div><div class="ttdef"><b>Definition:</b> executionscope.hpp:63</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

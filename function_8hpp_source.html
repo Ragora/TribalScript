@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TorqueScript: /home/ragora/Documents/Projects/Personal/TorqueScript/include/torquescript/function.hpp Source File</title>
+<title>TorqueScript: include/torquescript/function.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,6 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">TorqueScript
+   &#160;<span id="projectnumber">0.2</span>
    </div>
   </td>
  </tr>
@@ -82,33 +83,48 @@ $(function() {
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;{</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">class </span>Interpreter;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keyword">class </span>Instruction;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keyword">class </span>ExecutionScope;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keyword">class </span>StoredValue;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keyword">class </span>StoredValueStack;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keyword">class </span>ExecutionState;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keyword">class </span>Function</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    {</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            Function(<span class="keyword">const</span> std::string&amp; name);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            Function(<span class="keyword">const</span> std::string&amp; name, <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; parameterNames);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            <span class="keywordtype">void</span> addInstructions(<span class="keyword">const</span> InstructionSequence&amp; instructions);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classTorqueScript_1_1Function.html#a666075a26d8f6d2a3c9ab6b76d7ff6ff">execute</a>(std::shared_ptr&lt;ExecutionState&gt; state, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> argumentCount);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            std::string getName();</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            std::string mName;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            InstructionSequence mInstructions;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keyword">class </span>CodeBlock;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keyword">class </span>ExecutionScope;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keyword">class </span>StoredValue;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keyword">class </span>StoredValueStack;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">class </span>ExecutionState;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">class </span>ConsoleObject;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1Function.html">   39</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classTorqueScript_1_1Function.html">Function</a></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    {</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            <a class="code" href="classTorqueScript_1_1Function.html">Function</a>(<span class="keyword">const</span> std::string&amp; package, <span class="keyword">const</span> std::string&amp; space, <span class="keyword">const</span> std::string&amp; name);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <a class="code" href="classTorqueScript_1_1Function.html">Function</a>(<span class="keyword">const</span> std::string&amp; package, <span class="keyword">const</span> std::string&amp; space, <span class="keyword">const</span> std::string&amp; name, <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; parameterNames);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            <span class="keywordtype">void</span> addInstructions(<span class="keyword">const</span> <a class="code" href="classTorqueScript_1_1InstructionSequence.html">InstructionSequence</a>&amp; instructions);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
+<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1Function.html#a2cebc6d889c2c85b819d8f0b66fdf79f">   51</a></span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classTorqueScript_1_1Function.html#a2cebc6d889c2c85b819d8f0b66fdf79f">execute</a>(std::shared_ptr&lt;ConsoleObject&gt; thisObject, std::shared_ptr&lt;ExecutionState&gt; state, <span class="keyword">const</span> std::size_t argumentCount);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1Function.html#af1afedd20da7180566e3867e930ae0c6">   57</a></span>&#160;            <span class="keyword">const</span> std::string&amp; <a class="code" href="classTorqueScript_1_1Function.html#af1afedd20da7180566e3867e930ae0c6">getDeclaredName</a>();</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            std::vector&lt;std::string&gt; mParameterNames;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    };</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}</div>
-<div class="ttc" id="aclassTorqueScript_1_1Function_html_a666075a26d8f6d2a3c9ab6b76d7ff6ff"><div class="ttname"><a href="classTorqueScript_1_1Function.html#a666075a26d8f6d2a3c9ab6b76d7ff6ff">TorqueScript::Function::execute</a></div><div class="ttdeci">virtual void execute(Interpreter *interpreter, ExecutionScope *scope, std::vector&lt; std::shared_ptr&lt; StoredValue &gt;&gt; &amp;stack)</div><div class="ttdoc">Default implementation will execute virtual instructions but can be overriden to implement native fun...</div></div>
-<div class="ttc" id="anamespaceTorqueScript_html"><div class="ttname"><a href="namespaceTorqueScript.html">TorqueScript</a></div><div class="ttdef"><b>Definition:</b> builtins.hpp:29</div></div>
+<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1Function.html#a478f0cc6dccda6e6998ce7c003982708">   63</a></span>&#160;            <span class="keyword">const</span> std::string&amp; <a class="code" href="classTorqueScript_1_1Function.html#a478f0cc6dccda6e6998ce7c003982708">getDeclaredNameSpace</a>();</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1Function.html#ad0a67af77b0be17a6a7680ed65311702">   69</a></span>&#160;            <span class="keyword">const</span> std::string&amp; <a class="code" href="classTorqueScript_1_1Function.html#ad0a67af77b0be17a6a7680ed65311702">getDeclaredPackage</a>();</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;            std::string mPackage;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            std::string mNameSpace;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;            std::string mName;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;            <a class="code" href="classTorqueScript_1_1InstructionSequence.html">InstructionSequence</a> mInstructions;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;            std::vector&lt;std::string&gt; mParameterNames;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    };</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}</div>
+<div class="ttc" id="aclassTorqueScript_1_1Function_html"><div class="ttname"><a href="classTorqueScript_1_1Function.html">TorqueScript::Function</a></div><div class="ttdoc">A function is callable subroutine from anywhere in the language, defined by a script....</div><div class="ttdef"><b>Definition:</b> function.hpp:40</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1Function_html_a2cebc6d889c2c85b819d8f0b66fdf79f"><div class="ttname"><a href="classTorqueScript_1_1Function.html#a2cebc6d889c2c85b819d8f0b66fdf79f">TorqueScript::Function::execute</a></div><div class="ttdeci">virtual void execute(std::shared_ptr&lt; ConsoleObject &gt; thisObject, std::shared_ptr&lt; ExecutionState &gt; state, const std::size_t argumentCount)</div><div class="ttdoc">Default implementation will execute virtual instructions but can be overriden to implement native fun...</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1Function_html_a478f0cc6dccda6e6998ce7c003982708"><div class="ttname"><a href="classTorqueScript_1_1Function.html#a478f0cc6dccda6e6998ce7c003982708">TorqueScript::Function::getDeclaredNameSpace</a></div><div class="ttdeci">const std::string &amp; getDeclaredNameSpace()</div><div class="ttdoc">Retrieves the declared namespace of this function.</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1Function_html_ad0a67af77b0be17a6a7680ed65311702"><div class="ttname"><a href="classTorqueScript_1_1Function.html#ad0a67af77b0be17a6a7680ed65311702">TorqueScript::Function::getDeclaredPackage</a></div><div class="ttdeci">const std::string &amp; getDeclaredPackage()</div><div class="ttdoc">Retrieves the declared package of this function.</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1Function_html_af1afedd20da7180566e3867e930ae0c6"><div class="ttname"><a href="classTorqueScript_1_1Function.html#af1afedd20da7180566e3867e930ae0c6">TorqueScript::Function::getDeclaredName</a></div><div class="ttdeci">const std::string &amp; getDeclaredName()</div><div class="ttdoc">Retrieves the declared name of this function.</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1InstructionSequence_html"><div class="ttname"><a href="classTorqueScript_1_1InstructionSequence.html">TorqueScript::InstructionSequence</a></div><div class="ttdoc">Storage class for a sequence of instructions to be executed. Also implements the primary execution co...</div><div class="ttdef"><b>Definition:</b> instructionsequence.hpp:39</div></div>
+<div class="ttc" id="anamespaceTorqueScript_html"><div class="ttname"><a href="namespaceTorqueScript.html">TorqueScript</a></div><div class="ttdef"><b>Definition:</b> ast.hpp:28</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

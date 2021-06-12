@@ -22,6 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">TorqueScript
+   &#160;<span id="projectnumber">0.2</span>
    </div>
   </td>
  </tr>
@@ -67,6 +68,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classTorqueScript_1_1ExecutionScope-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">TorqueScript::ExecutionScope Class Reference</div>  </div>
@@ -77,39 +79,88 @@ $(function() {
  <a href="classTorqueScript_1_1ExecutionScope.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="executionscope_8hpp_source.html">executionscope.hpp</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for TorqueScript::ExecutionScope:</div>
+<div class="dyncontent">
+<div class="center"><img src="classTorqueScript_1_1ExecutionScope__coll__graph.png" border="0" usemap="#aTorqueScript_1_1ExecutionScope_coll__map" alt="Collaboration graph"/></div>
+<map name="aTorqueScript_1_1ExecutionScope_coll__map" id="aTorqueScript_1_1ExecutionScope_coll__map">
+<area shape="rect" title="A specific scope of execution &#45; this is used to delineate local variables primarily." alt="" coords="8,199,220,225"/>
+<area shape="rect" href="structTorqueScript_1_1InterpreterConfiguration.html" title="A structure representing overall interpreter runtime configuration. Some settings can be changed at r..." alt="" coords="25,95,203,136"/>
+<area shape="rect" href="classTorqueScript_1_1PlatformContext.html" title=" " alt="" coords="5,5,223,32"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a410f2bfc9658968425cf21b45e5bf46c"><td class="memItemLeft" align="right" valign="top"><a id="a410f2bfc9658968425cf21b45e5bf46c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>pushFrame</b> ()</td></tr>
-<tr class="separator:a410f2bfc9658968425cf21b45e5bf46c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fe1aa1c3d9b0c6ad25d18e4938b46a8"><td class="memItemLeft" align="right" valign="top"><a id="a1fe1aa1c3d9b0c6ad25d18e4938b46a8"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ExecutionScope</b> (const <a class="el" href="structTorqueScript_1_1InterpreterConfiguration.html">InterpreterConfiguration</a> &amp;config, <a class="el" href="classTorqueScript_1_1StringTable.html">StringTable</a> *table)</td></tr>
+<tr class="separator:a1fe1aa1c3d9b0c6ad25d18e4938b46a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12fba5659583f58c0dd2894f21d98d58"><td class="memItemLeft" align="right" valign="top"><a id="a12fba5659583f58c0dd2894f21d98d58"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>pushFrame</b> (<a class="el" href="classTorqueScript_1_1Function.html">Function</a> *function)</td></tr>
+<tr class="separator:a12fba5659583f58c0dd2894f21d98d58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa46e000670be9f67c90e0807b5d5ead6"><td class="memItemLeft" align="right" valign="top"><a id="aa46e000670be9f67c90e0807b5d5ead6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>popFrame</b> ()</td></tr>
 <tr class="separator:aa46e000670be9f67c90e0807b5d5ead6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab9d4056a571f47d09107b1f413c5864"><td class="memItemLeft" align="right" valign="top"><a id="aab9d4056a571f47d09107b1f413c5864"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>pushLoop</b> (const unsigned int pointer, const unsigned int depth)</td></tr>
-<tr class="separator:aab9d4056a571f47d09107b1f413c5864"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc4a940e17af2c3065dbbdf735cd017a"><td class="memItemLeft" align="right" valign="top"><a id="acc4a940e17af2c3065dbbdf735cd017a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>pushLoop</b> (const <a class="el" href="namespaceTorqueScript.html#ae321c9dd7791325c09037d8109333dfe">AddressType</a> pointer, const std::size_t depth)</td></tr>
+<tr class="separator:acc4a940e17af2c3065dbbdf735cd017a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac079ccec5f2f8e86bdbd0d99406d46d4"><td class="memItemLeft" align="right" valign="top"><a id="ac079ccec5f2f8e86bdbd0d99406d46d4"></a>
 <a class="el" href="structTorqueScript_1_1LoopDescriptor.html">LoopDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><b>popLoop</b> ()</td></tr>
 <tr class="separator:ac079ccec5f2f8e86bdbd0d99406d46d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6075aa2ac3c6a63291e882b2446bb7a3"><td class="memItemLeft" align="right" valign="top"><a id="a6075aa2ac3c6a63291e882b2446bb7a3"></a>
 <a class="el" href="structTorqueScript_1_1LoopDescriptor.html">LoopDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><b>currentLoopDescriptor</b> ()</td></tr>
 <tr class="separator:a6075aa2ac3c6a63291e882b2446bb7a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a547168aad2a8dbde4525ccc2acd5acd8"><td class="memItemLeft" align="right" valign="top"><a id="a547168aad2a8dbde4525ccc2acd5acd8"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isAwaitingParentInstantiation</b> ()</td></tr>
+<tr class="separator:a547168aad2a8dbde4525ccc2acd5acd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3abe93334aec19c84022532ef03a9ed"><td class="memItemLeft" align="right" valign="top"><a id="ac3abe93334aec19c84022532ef03a9ed"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>pushObjectInstantiation</b> (const std::string &amp;typeName, const std::string &amp;name)</td></tr>
+<tr class="separator:ac3abe93334aec19c84022532ef03a9ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe77808dd9d4f40241c4b458e042ec35"><td class="memItemLeft" align="right" valign="top"><a id="afe77808dd9d4f40241c4b458e042ec35"></a>
+<a class="el" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html">ObjectInstantiationDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><b>popObjectInstantiation</b> ()</td></tr>
+<tr class="separator:afe77808dd9d4f40241c4b458e042ec35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dab5bedc203d1f8824b2ea6c7c34c56"><td class="memItemLeft" align="right" valign="top"><a id="a6dab5bedc203d1f8824b2ea6c7c34c56"></a>
+<a class="el" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html">ObjectInstantiationDescriptor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>currentObjectInstantiation</b> ()</td></tr>
+<tr class="separator:a6dab5bedc203d1f8824b2ea6c7c34c56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e6888e035819fe49fed20e78dd5ac79"><td class="memItemLeft" align="right" valign="top"><a id="a3e6888e035819fe49fed20e78dd5ac79"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isLoopStackEmpty</b> ()</td></tr>
 <tr class="separator:a3e6888e035819fe49fed20e78dd5ac79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ac45ca97577024398b189c37f03e95b"><td class="memItemLeft" align="right" valign="top"><a id="a6ac45ca97577024398b189c37f03e95b"></a>
-std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getVariable</b> (const std::string &amp;name)</td></tr>
-<tr class="separator:a6ac45ca97577024398b189c37f03e95b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e00951dcd0c049110b0bda93b8ff801"><td class="memItemLeft" align="right" valign="top"><a id="a0e00951dcd0c049110b0bda93b8ff801"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setVariable</b> (const std::string &amp;name, std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> &gt; variable)</td></tr>
-<tr class="separator:a0e00951dcd0c049110b0bda93b8ff801"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6f51263baa9dbb8b71285eaa12e1f17"><td class="memItemLeft" align="right" valign="top"><a id="ab6f51263baa9dbb8b71285eaa12e1f17"></a>
+std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getFrameDepth</b> ()</td></tr>
+<tr class="separator:ab6f51263baa9dbb8b71285eaa12e1f17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa08916e030ef71ecdf27e99674a28e48"><td class="memItemLeft" align="right" valign="top"><a id="aa08916e030ef71ecdf27e99674a28e48"></a>
+<a class="el" href="classTorqueScript_1_1Function.html">Function</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getCurrentFunction</b> ()</td></tr>
+<tr class="separator:aa08916e030ef71ecdf27e99674a28e48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7909ca8b883c48ef7ffce403165964b"><td class="memItemLeft" align="right" valign="top"><a id="ab7909ca8b883c48ef7ffce403165964b"></a>
+<a class="el" href="classTorqueScript_1_1StoredValueStack.html">StoredValueStack</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getStack</b> ()</td></tr>
+<tr class="separator:ab7909ca8b883c48ef7ffce403165964b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acee0771d1803f268b14c86dad31d5986"><td class="memItemLeft" align="right" valign="top"><a id="acee0771d1803f268b14c86dad31d5986"></a>
+<a class="el" href="classTorqueScript_1_1StoredValueStack.html">StoredValueStack</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getReturnStack</b> ()</td></tr>
+<tr class="separator:acee0771d1803f268b14c86dad31d5986"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e58c043e8b3c8ed0b697382bd3b51bf"><td class="memItemLeft" align="right" valign="top"><a id="a1e58c043e8b3c8ed0b697382bd3b51bf"></a>
+<a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getVariable</b> (const std::string &amp;name)</td></tr>
+<tr class="separator:a1e58c043e8b3c8ed0b697382bd3b51bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29db2c3929d4fdabf409b95e59ca150d"><td class="memItemLeft" align="right" valign="top"><a id="a29db2c3929d4fdabf409b95e59ca150d"></a>
+<a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getVariable</b> (const std::size_t name)</td></tr>
+<tr class="separator:a29db2c3929d4fdabf409b95e59ca150d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a423da1c7c6b4cc606c5d50e0f13bc1ba"><td class="memItemLeft" align="right" valign="top"><a id="a423da1c7c6b4cc606c5d50e0f13bc1ba"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setVariable</b> (const std::string &amp;name, <a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> variable)</td></tr>
+<tr class="separator:a423da1c7c6b4cc606c5d50e0f13bc1ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4a3e4fff42ba352721bf89a71004327"><td class="memItemLeft" align="right" valign="top"><a id="ae4a3e4fff42ba352721bf89a71004327"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setVariable</b> (const std::size_t name, <a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> variable)</td></tr>
+<tr class="separator:ae4a3e4fff42ba352721bf89a71004327"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a0141a3cda4cd74afbefe54efda8e6829"><td class="memItemLeft" align="right" valign="top"><a id="a0141a3cda4cd74afbefe54efda8e6829"></a>
+const <a class="el" href="structTorqueScript_1_1InterpreterConfiguration.html">InterpreterConfiguration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1ExecutionScope.html#a0141a3cda4cd74afbefe54efda8e6829">mConfig</a></td></tr>
+<tr class="memdesc:a0141a3cda4cd74afbefe54efda8e6829"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="structTorqueScript_1_1InterpreterConfiguration.html" title="A structure representing overall interpreter runtime configuration. Some settings can be changed at r...">InterpreterConfiguration</a> associated with this <a class="el" href="classTorqueScript_1_1ExecutionScope.html" title="A specific scope of execution - this is used to delineate local variables primarily.">ExecutionScope</a>.+. <br /></td></tr>
+<tr class="separator:a0141a3cda4cd74afbefe54efda8e6829"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A specific scope of execution - this is used to delineate local variables primarily. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>/home/ragora/Documents/Projects/Personal/TorqueScript/include/torquescript/<a class="el" href="executionscope_8hpp_source.html">executionscope.hpp</a></li>
-<li>executionscope.cpp</li>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
+<li>include/torquescript/<a class="el" href="executionscope_8hpp_source.html">executionscope.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

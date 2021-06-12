@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TorqueScript: /home/ragora/Documents/Projects/Personal/TorqueScript/include/torquescript/codeblock.hpp Source File</title>
+<title>TorqueScript: include/torquescript/codeblock.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,6 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">TorqueScript
+   &#160;<span id="projectnumber">0.2</span>
    </div>
   </td>
  </tr>
@@ -77,39 +78,36 @@ $(function() {
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &lt;torquescript/instructions.hpp&gt;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &lt;torquescript/executionscope.hpp&gt;</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &lt;torquescript/interpreter.hpp&gt;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &lt;torquescript/function.hpp&gt;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &lt;torquescript/storedvalue.hpp&gt;</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &lt;torquescript/storedvaluestack.hpp&gt;</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &lt;torquescript/executionstate.hpp&gt;</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &lt;torquescript/instructionsequence.hpp&gt;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceTorqueScript.html">TorqueScript</a></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;{</div>
-<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1CodeBlock.html">   37</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classTorqueScript_1_1CodeBlock.html">CodeBlock</a></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &lt;torquescript/stringtable.hpp&gt;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &lt;torquescript/instructionsequence.hpp&gt;</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceTorqueScript.html">TorqueScript</a></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;{</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keyword">class </span>InstructionSequence;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keyword">class </span>StringTable;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keyword">class </span>ExecutionState;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keyword">class </span>Function;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1CodeBlock.html">   36</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classTorqueScript_1_1CodeBlock.html">CodeBlock</a></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    {</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            <a class="code" href="classTorqueScript_1_1CodeBlock.html">CodeBlock</a>(<span class="keyword">const</span> <a class="code" href="classTorqueScript_1_1InstructionSequence.html">InstructionSequence</a>&amp; instructions);</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classTorqueScript_1_1CodeBlock.html#afe4d7b910eeb72b4b27ad6baf170c1d9">addInstructions</a>(<span class="keyword">const</span> <a class="code" href="classTorqueScript_1_1InstructionSequence.html">InstructionSequence</a>&amp; instructions);</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classTorqueScript_1_1CodeBlock.html#a9c13ab8f63ea46330f5601bcd3b89f21">execute</a>(std::shared_ptr&lt;ExecutionState&gt; state);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            std::vector&lt;std::string&gt; <a class="code" href="classTorqueScript_1_1CodeBlock.html#a6970a86096aa4262673bf9ae79ac68ef">disassemble</a>();</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;            std::vector&lt;std::shared_ptr&lt;Function&gt;&gt; mFunctions;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;            <a class="code" href="classTorqueScript_1_1InstructionSequence.html">InstructionSequence</a> mInstructions;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    };</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;}</div>
-<div class="ttc" id="aclassTorqueScript_1_1CodeBlock_html"><div class="ttname"><a href="classTorqueScript_1_1CodeBlock.html">TorqueScript::CodeBlock</a></div><div class="ttdoc">A CodeBlock defines a piece of executable code generated from a single input (Ie. a file)....</div><div class="ttdef"><b>Definition:</b> codeblock.hpp:38</div></div>
-<div class="ttc" id="aclassTorqueScript_1_1CodeBlock_html_a6970a86096aa4262673bf9ae79ac68ef"><div class="ttname"><a href="classTorqueScript_1_1CodeBlock.html#a6970a86096aa4262673bf9ae79ac68ef">TorqueScript::CodeBlock::disassemble</a></div><div class="ttdeci">std::vector&lt; std::string &gt; disassemble()</div><div class="ttdoc">Produces a disassembly of the CodeBlock code.</div><div class="ttdef"><b>Definition:</b> codeblock.cpp:33</div></div>
-<div class="ttc" id="aclassTorqueScript_1_1CodeBlock_html_a9c13ab8f63ea46330f5601bcd3b89f21"><div class="ttname"><a href="classTorqueScript_1_1CodeBlock.html#a9c13ab8f63ea46330f5601bcd3b89f21">TorqueScript::CodeBlock::execute</a></div><div class="ttdeci">void execute(std::shared_ptr&lt; ExecutionState &gt; state)</div><div class="ttdoc">Executes all instructions contained in mInstructions within the provided context.</div><div class="ttdef"><b>Definition:</b> codeblock.cpp:26</div></div>
-<div class="ttc" id="aclassTorqueScript_1_1CodeBlock_html_afe4d7b910eeb72b4b27ad6baf170c1d9"><div class="ttname"><a href="classTorqueScript_1_1CodeBlock.html#afe4d7b910eeb72b4b27ad6baf170c1d9">TorqueScript::CodeBlock::addInstructions</a></div><div class="ttdeci">void addInstructions(const InstructionSequence &amp;instructions)</div><div class="ttdoc">Registers the instruction sequence to the codeblock to be executed immediately.</div><div class="ttdef"><b>Definition:</b> codeblock.cpp:21</div></div>
-<div class="ttc" id="aclassTorqueScript_1_1InstructionSequence_html"><div class="ttname"><a href="classTorqueScript_1_1InstructionSequence.html">TorqueScript::InstructionSequence</a></div><div class="ttdoc">Storage class used to keep variable values in-memory of arbitrary data types. This is the base class ...</div><div class="ttdef"><b>Definition:</b> instructionsequence.hpp:31</div></div>
-<div class="ttc" id="anamespaceTorqueScript_html"><div class="ttname"><a href="namespaceTorqueScript.html">TorqueScript</a></div><div class="ttdef"><b>Definition:</b> builtins.hpp:29</div></div>
+<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1CodeBlock.html#a9c13ab8f63ea46330f5601bcd3b89f21">   44</a></span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classTorqueScript_1_1CodeBlock.html#a9c13ab8f63ea46330f5601bcd3b89f21">execute</a>(std::shared_ptr&lt;ExecutionState&gt; state);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1CodeBlock.html#a760c3abb65e268fe49ea1fcfbcd7f0e1">   49</a></span>&#160;            std::vector&lt;std::string&gt; <a class="code" href="classTorqueScript_1_1CodeBlock.html#a760c3abb65e268fe49ea1fcfbcd7f0e1">disassemble</a>();</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            std::vector&lt;std::shared_ptr&lt;Function&gt;&gt; mFunctions;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            <a class="code" href="classTorqueScript_1_1InstructionSequence.html">InstructionSequence</a> mInstructions;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    };</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;}</div>
+<div class="ttc" id="aclassTorqueScript_1_1CodeBlock_html"><div class="ttname"><a href="classTorqueScript_1_1CodeBlock.html">TorqueScript::CodeBlock</a></div><div class="ttdoc">A CodeBlock defines a piece of executable code generated from a single input (Ie. a file)....</div><div class="ttdef"><b>Definition:</b> codeblock.hpp:37</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1CodeBlock_html_a760c3abb65e268fe49ea1fcfbcd7f0e1"><div class="ttname"><a href="classTorqueScript_1_1CodeBlock.html#a760c3abb65e268fe49ea1fcfbcd7f0e1">TorqueScript::CodeBlock::disassemble</a></div><div class="ttdeci">std::vector&lt; std::string &gt; disassemble()</div><div class="ttdoc">Produces a disassembly of the CodeBlock code.</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1CodeBlock_html_a9c13ab8f63ea46330f5601bcd3b89f21"><div class="ttname"><a href="classTorqueScript_1_1CodeBlock.html#a9c13ab8f63ea46330f5601bcd3b89f21">TorqueScript::CodeBlock::execute</a></div><div class="ttdeci">void execute(std::shared_ptr&lt; ExecutionState &gt; state)</div><div class="ttdoc">Executes all instructions contained in mInstructions within the provided context.</div></div>
+<div class="ttc" id="aclassTorqueScript_1_1InstructionSequence_html"><div class="ttname"><a href="classTorqueScript_1_1InstructionSequence.html">TorqueScript::InstructionSequence</a></div><div class="ttdoc">Storage class for a sequence of instructions to be executed. Also implements the primary execution co...</div><div class="ttdef"><b>Definition:</b> instructionsequence.hpp:39</div></div>
+<div class="ttc" id="anamespaceTorqueScript_html"><div class="ttname"><a href="namespaceTorqueScript.html">TorqueScript</a></div><div class="ttdef"><b>Definition:</b> ast.hpp:28</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -1,9 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classTorqueScript_1_1StoredValue.html" title="Storage class used to keep variable values in&#45;memory of arbitrary data types. This is the base class ..." alt="" coords="5,177,193,203"/>
-<area shape="rect" id="node2" href="$classTorqueScript_1_1StoredFieldReferenceValue.html" title="Storage class for a floating point value." alt="" coords="249,5,432,47"/>
-<area shape="rect" id="node3" href="$classTorqueScript_1_1StoredFloatValue.html" title="Storage class for a floating point value." alt="" coords="248,71,433,112"/>
-<area shape="rect" id="node4" href="$classTorqueScript_1_1StoredGlobalReferenceValue.html" title="Storage class for a reference to a global value." alt="" coords="243,136,438,177"/>
-<area shape="rect" id="node5" href="$classTorqueScript_1_1StoredIntegerValue.html" title="Storage class for an integer value." alt="" coords="241,201,440,243"/>
-<area shape="rect" id="node6" href="$classTorqueScript_1_1StoredLocalReferenceValue.html" title="Storage class for a floating point value." alt="" coords="247,267,434,308"/>
-<area shape="rect" id="node7" href="$classTorqueScript_1_1StoredStringValue.html" title="Storage class for a string value." alt="" coords="245,332,436,373"/>
+<area shape="rect" id="node1" href="$classTorqueScript_1_1Function.html" title="A function is callable subroutine from anywhere in the language, defined by a script...." alt="" coords="5,5,171,32"/>
+<area shape="rect" id="node2" href="$classTorqueScript_1_1NativeFunction.html" title="A NativeFunction is a specialization of Function that allows native C++ programming to be called from..." alt="" coords="219,5,427,32"/>
 </map>

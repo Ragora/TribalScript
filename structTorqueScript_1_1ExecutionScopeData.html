@@ -22,6 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">TorqueScript
+   &#160;<span id="projectnumber">0.2</span>
    </div>
   </td>
  </tr>
@@ -66,24 +67,53 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structTorqueScript_1_1ExecutionScopeData-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">TorqueScript::ExecutionScopeData Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+<div class="dynheader">
+Collaboration diagram for TorqueScript::ExecutionScopeData:</div>
+<div class="dyncontent">
+<div class="center"><img src="structTorqueScript_1_1ExecutionScopeData__coll__graph.png" border="0" usemap="#aTorqueScript_1_1ExecutionScopeData_coll__map" alt="Collaboration graph"/></div>
+<map name="aTorqueScript_1_1ExecutionScopeData_coll__map" id="aTorqueScript_1_1ExecutionScopeData_coll__map">
+<area shape="rect" title=" " alt="" coords="43,185,285,212"/>
+<area shape="rect" href="classTorqueScript_1_1Function.html" title="A function is callable subroutine from anywhere in the language, defined by a script...." alt="" coords="5,89,171,115"/>
+<area shape="rect" href="classTorqueScript_1_1StoredValueStack.html" title="Storage class used to keep variable values in&#45;memory of arbitrary data types. This is the base class ..." alt="" coords="195,81,383,123"/>
+<area shape="rect" title=" " alt="" coords="190,5,389,32"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ad42765883ef0512539cc4c4d2a5191dd"><td class="memItemLeft" align="right" valign="top"><a id="ad42765883ef0512539cc4c4d2a5191dd"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ExecutionScopeData</b> (<a class="el" href="classTorqueScript_1_1Function.html">Function</a> *function)</td></tr>
+<tr class="separator:ad42765883ef0512539cc4c4d2a5191dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
+<tr class="memitem:ae928bf37db83248d754a8dc1cdb74da3"><td class="memItemLeft" align="right" valign="top"><a id="ae928bf37db83248d754a8dc1cdb74da3"></a>
+<a class="el" href="classTorqueScript_1_1Function.html">Function</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>mCurrentFunction</b></td></tr>
+<tr class="separator:ae928bf37db83248d754a8dc1cdb74da3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb366f88eff672075ab07aed52da6dd9"><td class="memItemLeft" align="right" valign="top"><a id="abb366f88eff672075ab07aed52da6dd9"></a>
+<a class="el" href="classTorqueScript_1_1StoredValueStack.html">StoredValueStack</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTorqueScript_1_1ExecutionScopeData.html#abb366f88eff672075ab07aed52da6dd9">mStack</a></td></tr>
+<tr class="memdesc:abb366f88eff672075ab07aed52da6dd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">The stack used for execution in this state. <br /></td></tr>
+<tr class="separator:abb366f88eff672075ab07aed52da6dd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f8669ff8417a785cb95d8caba66e3b7"><td class="memItemLeft" align="right" valign="top"><a id="a0f8669ff8417a785cb95d8caba66e3b7"></a>
+std::vector&lt; <a class="el" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html">ObjectInstantiationDescriptor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTorqueScript_1_1ExecutionScopeData.html#a0f8669ff8417a785cb95d8caba66e3b7">mObjectInstantiations</a></td></tr>
+<tr class="memdesc:a0f8669ff8417a785cb95d8caba66e3b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Awaiting root-level object instantiations. <br /></td></tr>
+<tr class="separator:a0f8669ff8417a785cb95d8caba66e3b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09c7bb182e493ef91d34b332e8b9e2d8"><td class="memItemLeft" align="right" valign="top"><a id="a09c7bb182e493ef91d34b332e8b9e2d8"></a>
 std::vector&lt; <a class="el" href="structTorqueScript_1_1LoopDescriptor.html">LoopDescriptor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>mLoopDescriptors</b></td></tr>
 <tr class="separator:a09c7bb182e493ef91d34b332e8b9e2d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a721c99600d190e4e4d2d3da6707e6ce3"><td class="memItemLeft" align="right" valign="top"><a id="a721c99600d190e4e4d2d3da6707e6ce3"></a>
-std::map&lt; std::string, std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>mLocalVariables</b></td></tr>
-<tr class="separator:a721c99600d190e4e4d2d3da6707e6ce3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af59d3e8d996e6c67b424eb545e4f34db"><td class="memItemLeft" align="right" valign="top"><a id="af59d3e8d996e6c67b424eb545e4f34db"></a>
+std::map&lt; std::size_t, <a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>mLocalVariables</b></td></tr>
+<tr class="separator:af59d3e8d996e6c67b424eb545e4f34db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/ragora/Documents/Projects/Personal/TorqueScript/include/torquescript/<a class="el" href="executionscope_8hpp_source.html">executionscope.hpp</a></li>
+<li>include/torquescript/<a class="el" href="executionscope_8hpp_source.html">executionscope.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

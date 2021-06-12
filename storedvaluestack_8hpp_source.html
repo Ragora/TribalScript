@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TorqueScript: /home/ragora/Documents/Projects/Personal/TorqueScript/include/torquescript/storedvaluestack.hpp Source File</title>
+<title>TorqueScript: include/torquescript/storedvaluestack.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,6 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">TorqueScript
+   &#160;<span id="projectnumber">0.2</span>
    </div>
   </td>
  </tr>
@@ -82,16 +83,18 @@ $(function() {
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;{</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keyword">class </span>ExecutionState;</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1StoredValueStack.html">   31</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classTorqueScript_1_1StoredValueStack.html">StoredValueStack</a> : <span class="keyword">public</span> std::vector&lt;std::shared_ptr&lt;StoredValue&gt;&gt;</div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1StoredValueStack.html">   31</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classTorqueScript_1_1StoredValueStack.html">StoredValueStack</a> : <span class="keyword">public</span> std::vector&lt;StoredValue&gt;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    {</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            <span class="keywordtype">int</span> popInteger(std::shared_ptr&lt;ExecutionState&gt; state);</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            std::string popString(std::shared_ptr&lt;ExecutionState&gt; state);</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;            <span class="keywordtype">float</span> popFloat(std::shared_ptr&lt;ExecutionState&gt; state);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    };</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            std::vector&lt;std::string&gt; dump();</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    };</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;}</div>
 <div class="ttc" id="aclassTorqueScript_1_1StoredValueStack_html"><div class="ttname"><a href="classTorqueScript_1_1StoredValueStack.html">TorqueScript::StoredValueStack</a></div><div class="ttdoc">Storage class used to keep variable values in-memory of arbitrary data types. This is the base class ...</div><div class="ttdef"><b>Definition:</b> storedvaluestack.hpp:32</div></div>
-<div class="ttc" id="anamespaceTorqueScript_html"><div class="ttname"><a href="namespaceTorqueScript.html">TorqueScript</a></div><div class="ttdef"><b>Definition:</b> builtins.hpp:29</div></div>
+<div class="ttc" id="anamespaceTorqueScript_html"><div class="ttname"><a href="namespaceTorqueScript.html">TorqueScript</a></div><div class="ttdef"><b>Definition:</b> ast.hpp:28</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

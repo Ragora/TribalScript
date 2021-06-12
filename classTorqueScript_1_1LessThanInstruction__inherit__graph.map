@@ -1,4 +1,0 @@
-<map id="TorqueScript::LessThanInstruction" name="TorqueScript::LessThanInstruction">
-<area shape="rect" id="node1" title="Compares two values on the stack using a less than relation." alt="" coords="5,80,245,107"/>
-<area shape="rect" id="node2" href="$classTorqueScript_1_1Instruction.html" title="Base instruction class. All instructions in the interpreter should dervive from this class and implem..." alt="" coords="36,5,215,32"/>
-</map>

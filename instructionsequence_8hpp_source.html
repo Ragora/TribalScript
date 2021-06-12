@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TorqueScript: /home/ragora/Documents/Projects/Personal/TorqueScript/include/torquescript/instructionsequence.hpp Source File</title>
+<title>TorqueScript: include/torquescript/instructionsequence.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,6 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">TorqueScript
+   &#160;<span id="projectnumber">0.2</span>
    </div>
   </td>
  </tr>
@@ -78,17 +79,25 @@ $(function() {
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceTorqueScript.html">TorqueScript</a></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;{</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keyword">class </span>Instruction;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keyword">class </span>ExecutionState;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1InstructionSequence.html">   30</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classTorqueScript_1_1InstructionSequence.html">InstructionSequence</a> : <span class="keyword">public</span> std::vector&lt;std::shared_ptr&lt;Instruction&gt;&gt;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    {</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;            <span class="keywordtype">void</span> execute(std::shared_ptr&lt;ExecutionState&gt; state);</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    };</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}</div>
-<div class="ttc" id="aclassTorqueScript_1_1InstructionSequence_html"><div class="ttname"><a href="classTorqueScript_1_1InstructionSequence.html">TorqueScript::InstructionSequence</a></div><div class="ttdoc">Storage class used to keep variable values in-memory of arbitrary data types. This is the base class ...</div><div class="ttdef"><b>Definition:</b> instructionsequence.hpp:31</div></div>
-<div class="ttc" id="anamespaceTorqueScript_html"><div class="ttname"><a href="namespaceTorqueScript.html">TorqueScript</a></div><div class="ttdef"><b>Definition:</b> builtins.hpp:29</div></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keyword">namespace </span>Instructions</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        <span class="keyword">class </span>Instruction;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    }</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keyword">class </span>ExecutionState;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="namespaceTorqueScript.html#ae321c9dd7791325c09037d8109333dfe">   31</a></span>&#160;    <span class="keyword">typedef</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> <a class="code" href="namespaceTorqueScript.html#ae321c9dd7791325c09037d8109333dfe">AddressType</a>;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">typedef</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> AddressOffsetType;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classTorqueScript_1_1InstructionSequence.html">   38</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classTorqueScript_1_1InstructionSequence.html">InstructionSequence</a> : <span class="keyword">public</span> std::vector&lt;std::shared_ptr&lt;Instructions::Instruction&gt;&gt;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    {</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            <span class="keywordtype">void</span> execute(std::shared_ptr&lt;ExecutionState&gt; state);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    };</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;}</div>
+<div class="ttc" id="aclassTorqueScript_1_1InstructionSequence_html"><div class="ttname"><a href="classTorqueScript_1_1InstructionSequence.html">TorqueScript::InstructionSequence</a></div><div class="ttdoc">Storage class for a sequence of instructions to be executed. Also implements the primary execution co...</div><div class="ttdef"><b>Definition:</b> instructionsequence.hpp:39</div></div>
+<div class="ttc" id="anamespaceTorqueScript_html"><div class="ttname"><a href="namespaceTorqueScript.html">TorqueScript</a></div><div class="ttdef"><b>Definition:</b> ast.hpp:28</div></div>
+<div class="ttc" id="anamespaceTorqueScript_html_ae321c9dd7791325c09037d8109333dfe"><div class="ttname"><a href="namespaceTorqueScript.html#ae321c9dd7791325c09037d8109333dfe">TorqueScript::AddressType</a></div><div class="ttdeci">long long int AddressType</div><div class="ttdoc">Typedef for the signed integer type to be used when calculating addresses.</div><div class="ttdef"><b>Definition:</b> instructionsequence.hpp:28</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

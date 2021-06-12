@@ -22,6 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">TorqueScript
+   &#160;<span id="projectnumber">0.2</span>
    </div>
   </td>
  </tr>
@@ -80,50 +81,22 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:afe4d7b910eeb72b4b27ad6baf170c1d9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1CodeBlock.html#afe4d7b910eeb72b4b27ad6baf170c1d9">addInstructions</a> (const <a class="el" href="classTorqueScript_1_1InstructionSequence.html">InstructionSequence</a> &amp;instructions)</td></tr>
-<tr class="memdesc:afe4d7b910eeb72b4b27ad6baf170c1d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the instruction sequence to the codeblock to be executed immediately.  <a href="classTorqueScript_1_1CodeBlock.html#afe4d7b910eeb72b4b27ad6baf170c1d9">More...</a><br /></td></tr>
-<tr class="separator:afe4d7b910eeb72b4b27ad6baf170c1d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa439794ac1920a23610997f9984cfe30"><td class="memItemLeft" align="right" valign="top"><a id="aa439794ac1920a23610997f9984cfe30"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>CodeBlock</b> (const <a class="el" href="classTorqueScript_1_1InstructionSequence.html">InstructionSequence</a> &amp;instructions)</td></tr>
+<tr class="separator:aa439794ac1920a23610997f9984cfe30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c13ab8f63ea46330f5601bcd3b89f21"><td class="memItemLeft" align="right" valign="top"><a id="a9c13ab8f63ea46330f5601bcd3b89f21"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1CodeBlock.html#a9c13ab8f63ea46330f5601bcd3b89f21">execute</a> (std::shared_ptr&lt; <a class="el" href="structTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1CodeBlock.html#a9c13ab8f63ea46330f5601bcd3b89f21">execute</a> (std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state)</td></tr>
 <tr class="memdesc:a9c13ab8f63ea46330f5601bcd3b89f21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes all instructions contained in mInstructions within the provided context. <br /></td></tr>
 <tr class="separator:a9c13ab8f63ea46330f5601bcd3b89f21"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6970a86096aa4262673bf9ae79ac68ef"><td class="memItemLeft" align="right" valign="top"><a id="a6970a86096aa4262673bf9ae79ac68ef"></a>
-std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1CodeBlock.html#a6970a86096aa4262673bf9ae79ac68ef">disassemble</a> ()</td></tr>
-<tr class="memdesc:a6970a86096aa4262673bf9ae79ac68ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Produces a disassembly of the <a class="el" href="classTorqueScript_1_1CodeBlock.html" title="A CodeBlock defines a piece of executable code generated from a single input (Ie. a file)....">CodeBlock</a> code. <br /></td></tr>
-<tr class="separator:a6970a86096aa4262673bf9ae79ac68ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a760c3abb65e268fe49ea1fcfbcd7f0e1"><td class="memItemLeft" align="right" valign="top"><a id="a760c3abb65e268fe49ea1fcfbcd7f0e1"></a>
+std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1CodeBlock.html#a760c3abb65e268fe49ea1fcfbcd7f0e1">disassemble</a> ()</td></tr>
+<tr class="memdesc:a760c3abb65e268fe49ea1fcfbcd7f0e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Produces a disassembly of the <a class="el" href="classTorqueScript_1_1CodeBlock.html" title="A CodeBlock defines a piece of executable code generated from a single input (Ie. a file)....">CodeBlock</a> code. <br /></td></tr>
+<tr class="separator:a760c3abb65e268fe49ea1fcfbcd7f0e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A <a class="el" href="classTorqueScript_1_1CodeBlock.html" title="A CodeBlock defines a piece of executable code generated from a single input (Ie. a file)....">CodeBlock</a> defines a piece of executable code generated from a single input (Ie. a file). This includes global executable code and subroutines, datablocks, etc. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="afe4d7b910eeb72b4b27ad6baf170c1d9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afe4d7b910eeb72b4b27ad6baf170c1d9">&#9670;&nbsp;</a></span>addInstructions()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void TorqueScript::CodeBlock::addInstructions </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTorqueScript_1_1InstructionSequence.html">InstructionSequence</a> &amp;&#160;</td>
-          <td class="paramname"><em>instructions</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Registers the instruction sequence to the codeblock to be executed immediately. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">instructions</td><td>The instructions to execute immediately. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following files:<ul>
-<li>/home/ragora/Documents/Projects/Personal/TorqueScript/include/torquescript/<a class="el" href="codeblock_8hpp_source.html">codeblock.hpp</a></li>
-<li>codeblock.cpp</li>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
+<li>include/torquescript/<a class="el" href="codeblock_8hpp_source.html">codeblock.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

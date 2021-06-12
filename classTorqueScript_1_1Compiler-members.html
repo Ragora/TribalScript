@@ -22,6 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">TorqueScript
+   &#160;<span id="projectnumber">0.2</span>
    </div>
   </td>
  </tr>
@@ -72,9 +73,18 @@ $(function() {
 
 <p>This is the complete list of members for <a class="el" href="classTorqueScript_1_1Compiler.html">TorqueScript::Compiler</a>, including all inherited members.</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="classTorqueScript_1_1Compiler.html#a785ce7f9b5ed80b72f24f12f959e83dd">compileFile</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classTorqueScript_1_1Compiler.html">TorqueScript::Compiler</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classTorqueScript_1_1Compiler.html#ad66d23318e691fc54a3d7d91218f5313">compileStream</a>(std::istream &amp;input)</td><td class="entry"><a class="el" href="classTorqueScript_1_1Compiler.html">TorqueScript::Compiler</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classTorqueScript_1_1Compiler.html#ab6f799135e43073ba0a70db5fa54462d">compileString</a>(const std::string &amp;input)</td><td class="entry"><a class="el" href="classTorqueScript_1_1Compiler.html">TorqueScript::Compiler</a></td><td class="entry"></td></tr>
+  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>aggregateResult</b>(antlrcpp::Any &amp;aggregate, antlrcpp::Any &amp;nextResult) override (defined in <a class="el" href="classTorqueScript_1_1Compiler.html">TorqueScript::Compiler</a>)</td><td class="entry"><a class="el" href="classTorqueScript_1_1Compiler.html">TorqueScript::Compiler</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classTorqueScript_1_1Compiler.html#aaf2613cc1847883e6c368f407089fb6f">compileFile</a>(const std::string &amp;path, StringTable *stringTable)</td><td class="entry"><a class="el" href="classTorqueScript_1_1Compiler.html">TorqueScript::Compiler</a></td><td class="entry"></td></tr>
+  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>Compiler</b>(const InterpreterConfiguration &amp;config) (defined in <a class="el" href="classTorqueScript_1_1Compiler.html">TorqueScript::Compiler</a>)</td><td class="entry"><a class="el" href="classTorqueScript_1_1Compiler.html">TorqueScript::Compiler</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classTorqueScript_1_1Compiler.html#a2f61506429aa46bfe83d545729c861f9">compileStream</a>(std::istream &amp;input, StringTable *stringTable)</td><td class="entry"><a class="el" href="classTorqueScript_1_1Compiler.html">TorqueScript::Compiler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classTorqueScript_1_1Compiler.html#a4ff3abf9bb8e0a6de254d4cdb9740129">compileString</a>(const std::string &amp;input, StringTable *stringTable)</td><td class="entry"><a class="el" href="classTorqueScript_1_1Compiler.html">TorqueScript::Compiler</a></td><td class="entry"></td></tr>
+  <tr bgcolor="#f0f0f0"><td class="entry"><b>defaultResult</b>() override (defined in <a class="el" href="classTorqueScript_1_1Compiler.html">TorqueScript::Compiler</a>)</td><td class="entry"><a class="el" href="classTorqueScript_1_1Compiler.html">TorqueScript::Compiler</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>mConfig</b> (defined in <a class="el" href="classTorqueScript_1_1Compiler.html">TorqueScript::Compiler</a>)</td><td class="entry"><a class="el" href="classTorqueScript_1_1Compiler.html">TorqueScript::Compiler</a></td><td class="entry"></td></tr>
+  <tr bgcolor="#f0f0f0"><td class="entry"><b>visitDecrementNode</b>(AST::DecrementNode *expression) (defined in <a class="el" href="classTorqueScript_1_1AST_1_1ASTVisitor.html">TorqueScript::AST::ASTVisitor</a>)</td><td class="entry"><a class="el" href="classTorqueScript_1_1AST_1_1ASTVisitor.html">TorqueScript::AST::ASTVisitor</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>visitElseIfNode</b>(AST::ElseIfNode *node) (defined in <a class="el" href="classTorqueScript_1_1AST_1_1ASTVisitor.html">TorqueScript::AST::ASTVisitor</a>)</td><td class="entry"><a class="el" href="classTorqueScript_1_1AST_1_1ASTVisitor.html">TorqueScript::AST::ASTVisitor</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr bgcolor="#f0f0f0"><td class="entry"><b>visitProgramNode</b>(AST::ProgramNode *program) (defined in <a class="el" href="classTorqueScript_1_1AST_1_1ASTVisitor.html">TorqueScript::AST::ASTVisitor</a>)</td><td class="entry"><a class="el" href="classTorqueScript_1_1AST_1_1ASTVisitor.html">TorqueScript::AST::ASTVisitor</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>visitSubtractNode</b>(AST::SubtractNode *expression) (defined in <a class="el" href="classTorqueScript_1_1AST_1_1ASTVisitor.html">TorqueScript::AST::ASTVisitor</a>)</td><td class="entry"><a class="el" href="classTorqueScript_1_1AST_1_1ASTVisitor.html">TorqueScript::AST::ASTVisitor</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr bgcolor="#f0f0f0"><td class="entry"><b>visitSwitchCaseNode</b>(AST::SwitchCaseNode *node) (defined in <a class="el" href="classTorqueScript_1_1AST_1_1ASTVisitor.html">TorqueScript::AST::ASTVisitor</a>)</td><td class="entry"><a class="el" href="classTorqueScript_1_1AST_1_1ASTVisitor.html">TorqueScript::AST::ASTVisitor</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

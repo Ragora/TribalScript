@@ -1,0 +1,4 @@
+<map id="TorqueScript::InterpreterConfiguration" name="TorqueScript::InterpreterConfiguration">
+<area shape="rect" id="node1" title="A structure representing overall interpreter runtime configuration. Some settings can be changed at r..." alt="" coords="25,95,203,136"/>
+<area shape="rect" id="node2" href="$classTorqueScript_1_1PlatformContext.html" title=" " alt="" coords="5,5,223,32"/>
+</map>

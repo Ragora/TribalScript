@@ -1,4 +1,0 @@
-<map id="TorqueScript::ConcatInstruction" name="TorqueScript::ConcatInstruction">
-<area shape="rect" id="node1" title="Push string instruction. This will push a string value to the system stack for later use in execution..." alt="" coords="5,80,229,107"/>
-<area shape="rect" id="node2" href="$classTorqueScript_1_1Instruction.html" title="Base instruction class. All instructions in the interpreter should dervive from this class and implem..." alt="" coords="28,5,207,32"/>
-</map>

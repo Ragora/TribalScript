@@ -1,0 +1,10 @@
+<map id="TorqueScript::ExecutionState" name="TorqueScript::ExecutionState">
+<area shape="rect" id="node1" title="Execution state structure &#45; this is passed around internally in the virtual machine for arbitrary acc..." alt="" coords="1141,110,1348,137"/>
+<area shape="rect" id="node2" href="$classTorqueScript_1_1Interpreter.html" title="The interpreter class represents a high level instance of the TorqueScript interpreter...." alt="" coords="778,75,957,102"/>
+<area shape="rect" id="node3" href="$classTorqueScript_1_1StringTable.html" title="A string table maintains a mapping of numeric identifiers to their raw string values...." alt="" coords="355,71,537,98"/>
+<area shape="rect" id="node4" title=" " alt="" coords="38,57,190,113"/>
+<area shape="rect" id="node5" href="$structTorqueScript_1_1InterpreterConfiguration.html" title="A structure representing overall interpreter runtime configuration. Some settings can be changed at r..." alt="" coords="357,135,535,176"/>
+<area shape="rect" id="node8" href="$classTorqueScript_1_1ExecutionScope.html" title="A specific scope of execution &#45; this is used to delineate local variables primarily." alt="" coords="761,135,973,162"/>
+<area shape="rect" id="node6" href="$classTorqueScript_1_1PlatformContext.html" title=" " alt="" coords="5,142,223,169"/>
+<area shape="rect" id="node7" href="$classTorqueScript_1_1ConsoleObjectRegistry.html" title=" " alt="" coords="344,5,548,47"/>
+</map>

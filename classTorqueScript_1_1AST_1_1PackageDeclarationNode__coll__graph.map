@@ -1,0 +1,4 @@
+<map id="TorqueScript::AST::PackageDeclarationNode" name="TorqueScript::AST::PackageDeclarationNode">
+<area shape="rect" id="node1" title=" " alt="" coords="5,95,189,136"/>
+<area shape="rect" id="node2" href="$classTorqueScript_1_1AST_1_1ASTNode.html" title="Base AST node class. All AST nodes should derive from this class." alt="" coords="26,5,169,47"/>
+</map>

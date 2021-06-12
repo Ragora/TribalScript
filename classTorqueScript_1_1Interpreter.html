@@ -22,6 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">TorqueScript
+   &#160;<span id="projectnumber">0.2</span>
    </div>
   </td>
  </tr>
@@ -67,6 +68,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classTorqueScript_1_1Interpreter-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">TorqueScript::Interpreter Class Reference</div>  </div>
@@ -77,61 +79,168 @@ $(function() {
  <a href="classTorqueScript_1_1Interpreter.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="interpreter_8hpp_source.html">interpreter.hpp</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for TorqueScript::Interpreter:</div>
+<div class="dyncontent">
+<div class="center"><img src="classTorqueScript_1_1Interpreter__coll__graph.png" border="0" usemap="#aTorqueScript_1_1Interpreter_coll__map" alt="Collaboration graph"/></div>
+<map name="aTorqueScript_1_1Interpreter_coll__map" id="aTorqueScript_1_1Interpreter_coll__map">
+<area shape="rect" title="The interpreter class represents a high level instance of the TorqueScript interpreter...." alt="" coords="761,84,940,111"/>
+<area shape="rect" href="classTorqueScript_1_1StringTable.html" title="A string table maintains a mapping of numeric identifiers to their raw string values...." alt="" coords="355,23,537,49"/>
+<area shape="rect" title=" " alt="" coords="38,5,190,61"/>
+<area shape="rect" href="structTorqueScript_1_1InterpreterConfiguration.html" title="A structure representing overall interpreter runtime configuration. Some settings can be changed at r..." alt="" coords="357,77,535,118"/>
+<area shape="rect" href="classTorqueScript_1_1PlatformContext.html" title=" " alt="" coords="5,85,223,112"/>
+<area shape="rect" href="classTorqueScript_1_1ConsoleObjectRegistry.html" title=" " alt="" coords="344,142,548,183"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab082f87f3f9a42f6b0a6b4e3487b2a24"><td class="memItemLeft" align="right" valign="top"><a id="ab082f87f3f9a42f6b0a6b4e3487b2a24"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setGlobal</b> (const std::string &amp;name, std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> &gt; value)</td></tr>
-<tr class="separator:ab082f87f3f9a42f6b0a6b4e3487b2a24"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac92b62db318b47aed6a09b13ca9b5b72"><td class="memItemLeft" align="right" valign="top"><a id="ac92b62db318b47aed6a09b13ca9b5b72"></a>
-std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getGlobal</b> (const std::string &amp;name)</td></tr>
-<tr class="separator:ac92b62db318b47aed6a09b13ca9b5b72"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1168ba2d6ba8f29fca48169758cd2ea5"><td class="memItemLeft" align="right" valign="top"><a id="a1168ba2d6ba8f29fca48169758cd2ea5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setSimObject</b> (const std::string &amp;name, std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1SimObject.html">SimObject</a> &gt; value)</td></tr>
-<tr class="separator:a1168ba2d6ba8f29fca48169758cd2ea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa12bf197ccc4579063055885e4963c1e"><td class="memItemLeft" align="right" valign="top"><a id="aa12bf197ccc4579063055885e4963c1e"></a>
-std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1SimObject.html">SimObject</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSimObject</b> (const std::string &amp;name)</td></tr>
-<tr class="separator:aa12bf197ccc4579063055885e4963c1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54ec83aa38654f7e1a72d584b34e57d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTorqueScript_1_1CodeBlock.html">CodeBlock</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Interpreter.html#a54ec83aa38654f7e1a72d584b34e57d1">compile</a> (const std::string &amp;input)</td></tr>
-<tr class="memdesc:a54ec83aa38654f7e1a72d584b34e57d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ask the interpreter to compile the input string and return the resulting <a class="el" href="classTorqueScript_1_1CodeBlock.html" title="A CodeBlock defines a piece of executable code generated from a single input (Ie. a file)....">CodeBlock</a>.  <a href="classTorqueScript_1_1Interpreter.html#a54ec83aa38654f7e1a72d584b34e57d1">More...</a><br /></td></tr>
-<tr class="separator:a54ec83aa38654f7e1a72d584b34e57d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6a7e545081e4d67a292fad02047fa79"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Interpreter.html#ae6a7e545081e4d67a292fad02047fa79">Interpreter</a> (const <a class="el" href="structTorqueScript_1_1InterpreterConfiguration.html">InterpreterConfiguration</a> &amp;config)</td></tr>
+<tr class="memdesc:ae6a7e545081e4d67a292fad02047fa79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a new interpreter with the specified configuration.  <a href="classTorqueScript_1_1Interpreter.html#ae6a7e545081e4d67a292fad02047fa79">More...</a><br /></td></tr>
+<tr class="separator:ae6a7e545081e4d67a292fad02047fa79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a708afa46488ec9c0a64169bdac48599f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTorqueScript_1_1CodeBlock.html">CodeBlock</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Interpreter.html#a708afa46488ec9c0a64169bdac48599f">compile</a> (const std::string &amp;input)</td></tr>
+<tr class="memdesc:a708afa46488ec9c0a64169bdac48599f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ask the interpreter to compile the input string and return the resulting <a class="el" href="classTorqueScript_1_1CodeBlock.html" title="A CodeBlock defines a piece of executable code generated from a single input (Ie. a file)....">CodeBlock</a>.  <a href="classTorqueScript_1_1Interpreter.html#a708afa46488ec9c0a64169bdac48599f">More...</a><br /></td></tr>
+<tr class="separator:a708afa46488ec9c0a64169bdac48599f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34759b821c12a9a9b82e5e572d8d95dd"><td class="memItemLeft" align="right" valign="top"><a id="a34759b821c12a9a9b82e5e572d8d95dd"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>evaluate</b> (const std::string &amp;input, std::shared_ptr&lt; <a class="el" href="structTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state=nullptr)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>evaluate</b> (const std::string &amp;input, std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state=nullptr)</td></tr>
 <tr class="separator:a34759b821c12a9a9b82e5e572d8d95dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79b11a28434310b4685c7c6dd015d31e"><td class="memItemLeft" align="right" valign="top"><a id="a79b11a28434310b4685c7c6dd015d31e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>execute</b> (const std::string &amp;path, std::shared_ptr&lt; <a class="el" href="structTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state=nullptr)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>execute</b> (const std::string &amp;path, std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state=nullptr)</td></tr>
 <tr class="separator:a79b11a28434310b4685c7c6dd015d31e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aadb64ca9e48e55f35e5473b83939a6d8"><td class="memItemLeft" align="right" valign="top"><a id="aadb64ca9e48e55f35e5473b83939a6d8"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Interpreter.html#aadb64ca9e48e55f35e5473b83939a6d8">addFunction</a> (std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1Function.html">Function</a> &gt; function)</td></tr>
-<tr class="memdesc:aadb64ca9e48e55f35e5473b83939a6d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a new function to the interpreter. Ownership is transferred to the interpreter at this point. <br /></td></tr>
+<tr class="memitem:a5966016ea66e98a6fb2078c7b4a2bc56"><td class="memItemLeft" align="right" valign="top"><a id="a5966016ea66e98a6fb2078c7b4a2bc56"></a>
+std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getExecutionState</b> ()</td></tr>
+<tr class="separator:a5966016ea66e98a6fb2078c7b4a2bc56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0470fd842924531117a0260292757fbb"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ConsoleObject.html">ConsoleObject</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Interpreter.html#a0470fd842924531117a0260292757fbb">initializeConsoleObjectTree</a> (<a class="el" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html">ObjectInstantiationDescriptor</a> &amp;descriptor)</td></tr>
+<tr class="memdesc:a0470fd842924531117a0260292757fbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the tree of objects described by the provided descriptor.  <a href="classTorqueScript_1_1Interpreter.html#a0470fd842924531117a0260292757fbb">More...</a><br /></td></tr>
+<tr class="separator:a0470fd842924531117a0260292757fbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9e006c10f1ee8bc44f2b0235c1005e3"><td class="memTemplParams" colspan="2"><a id="ad9e006c10f1ee8bc44f2b0235c1005e3"></a>
+template&lt;typename classType &gt; </td></tr>
+<tr class="memitem:ad9e006c10f1ee8bc44f2b0235c1005e3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>registerConsoleObjectType</b> ()</td></tr>
+<tr class="separator:ad9e006c10f1ee8bc44f2b0235c1005e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">Global Variables</div></td></tr>
+<tr><td colspan="2"><div class="groupText"><p>These functions handle getting and setting global variables within the context of an interpreter. </p>
+</div></td></tr>
+<tr class="memitem:ab3fa5942090808f77c4bc0d5b7153a41"><td class="memItemLeft" align="right" valign="top"><a id="ab3fa5942090808f77c4bc0d5b7153a41"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setGlobal</b> (const std::size_t name, <a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> value)</td></tr>
+<tr class="separator:ab3fa5942090808f77c4bc0d5b7153a41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab735cf0d59aa06301ae725b0a7d843b5"><td class="memItemLeft" align="right" valign="top"><a id="ab735cf0d59aa06301ae725b0a7d843b5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setGlobal</b> (const std::string &amp;name, <a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> value)</td></tr>
+<tr class="separator:ab735cf0d59aa06301ae725b0a7d843b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c392ba6d02df01b01e7057fd1a969a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Interpreter.html#a5c392ba6d02df01b01e7057fd1a969a0">getGlobal</a> (const std::string &amp;name)</td></tr>
+<tr class="memdesc:a5c392ba6d02df01b01e7057fd1a969a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a global variable by string.  <a href="classTorqueScript_1_1Interpreter.html#a5c392ba6d02df01b01e7057fd1a969a0">More...</a><br /></td></tr>
+<tr class="separator:a5c392ba6d02df01b01e7057fd1a969a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b63bb07670d1a657d7592f288830795"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Interpreter.html#a6b63bb07670d1a657d7592f288830795">getGlobal</a> (const std::size_t name)</td></tr>
+<tr class="memdesc:a6b63bb07670d1a657d7592f288830795"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a global variable by string ID.  <a href="classTorqueScript_1_1Interpreter.html#a6b63bb07670d1a657d7592f288830795">More...</a><br /></td></tr>
+<tr class="separator:a6b63bb07670d1a657d7592f288830795"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">Functions</div></td></tr>
+<tr><td colspan="2"><div class="groupText"><p>These functions handle management of functions registered in the interpreter. </p>
+</div></td></tr>
+<tr class="memitem:aadb64ca9e48e55f35e5473b83939a6d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Interpreter.html#aadb64ca9e48e55f35e5473b83939a6d8">addFunction</a> (std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1Function.html">Function</a> &gt; function)</td></tr>
+<tr class="memdesc:aadb64ca9e48e55f35e5473b83939a6d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a new function to the interpreter.  <a href="classTorqueScript_1_1Interpreter.html#aadb64ca9e48e55f35e5473b83939a6d8">More...</a><br /></td></tr>
 <tr class="separator:aadb64ca9e48e55f35e5473b83939a6d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2cebdfd480a136bfa439ef24dd76f62d"><td class="memItemLeft" align="right" valign="top"><a id="a2cebdfd480a136bfa439ef24dd76f62d"></a>
-std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1Function.html">Function</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getFunction</b> (const std::string &amp;name)</td></tr>
-<tr class="separator:a2cebdfd480a136bfa439ef24dd76f62d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab93d5c138d419b7d32e16a335452bbda"><td class="memItemLeft" align="right" valign="top"><a id="ab93d5c138d419b7d32e16a335452bbda"></a>
-std::shared_ptr&lt; <a class="el" href="structTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getExecutionState</b> ()</td></tr>
-<tr class="separator:ab93d5c138d419b7d32e16a335452bbda"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac95424971e00c5f5e5b7873ffc45f76e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Interpreter.html#ac95424971e00c5f5e5b7873ffc45f76e">logEcho</a> (const std::string &amp;message)</td></tr>
-<tr class="memdesc:ac95424971e00c5f5e5b7873ffc45f76e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asks the interpreter to handle a simple echo message.  <a href="classTorqueScript_1_1Interpreter.html#ac95424971e00c5f5e5b7873ffc45f76e">More...</a><br /></td></tr>
-<tr class="separator:ac95424971e00c5f5e5b7873ffc45f76e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac85c83d327e6ebb9fb4e24de1deab09d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Interpreter.html#ac85c83d327e6ebb9fb4e24de1deab09d">logError</a> (const std::string &amp;message)</td></tr>
-<tr class="memdesc:ac85c83d327e6ebb9fb4e24de1deab09d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asks the interpreter to handle an error log message.  <a href="classTorqueScript_1_1Interpreter.html#ac85c83d327e6ebb9fb4e24de1deab09d">More...</a><br /></td></tr>
-<tr class="separator:ac85c83d327e6ebb9fb4e24de1deab09d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1636a0b9540f29e5192e2ea038c34a5f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Interpreter.html#a1636a0b9540f29e5192e2ea038c34a5f">logWarning</a> (const std::string &amp;message)</td></tr>
-<tr class="memdesc:a1636a0b9540f29e5192e2ea038c34a5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asks the interpreter to handle a warning log message.  <a href="classTorqueScript_1_1Interpreter.html#a1636a0b9540f29e5192e2ea038c34a5f">More...</a><br /></td></tr>
-<tr class="separator:a1636a0b9540f29e5192e2ea038c34a5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72ef829e1734ca3d278c6c60be980b7b"><td class="memItemLeft" align="right" valign="top"><a id="a72ef829e1734ca3d278c6c60be980b7b"></a>
+std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1Function.html">Function</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getFunction</b> (const std::string &amp;space, const std::string &amp;name)</td></tr>
+<tr class="separator:a72ef829e1734ca3d278c6c60be980b7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0ca5e203680d151c9cea19fa3dc7edc"><td class="memItemLeft" align="right" valign="top"><a id="ac0ca5e203680d151c9cea19fa3dc7edc"></a>
+std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1Function.html">Function</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getFunctionParent</b> (<a class="el" href="classTorqueScript_1_1Function.html">Function</a> *function)</td></tr>
+<tr class="separator:ac0ca5e203680d151c9cea19fa3dc7edc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2bd4d64c3292ba7f83077e7444f508d"><td class="memItemLeft" align="right" valign="top"><a id="aa2bd4d64c3292ba7f83077e7444f508d"></a>
+<a class="el" href="structTorqueScript_1_1FunctionRegistry.html">FunctionRegistry</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>findFunctionRegistry</b> (const std::string packageName)</td></tr>
+<tr class="separator:aa2bd4d64c3292ba7f83077e7444f508d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5064ca7664cce88c37406a6adaa5ca89"><td class="memItemLeft" align="right" valign="top"><a id="a5064ca7664cce88c37406a6adaa5ca89"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>addFunctionRegistry</b> (const std::string &amp;packageName)</td></tr>
+<tr class="separator:a5064ca7664cce88c37406a6adaa5ca89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac769f65475deb6bd54cca0a5b4ea8225"><td class="memItemLeft" align="right" valign="top"><a id="ac769f65475deb6bd54cca0a5b4ea8225"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>activateFunctionRegistry</b> (const std::string &amp;packageName)</td></tr>
+<tr class="separator:ac769f65475deb6bd54cca0a5b4ea8225"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b3a2899b37e541226ca82563a280c72"><td class="memItemLeft" align="right" valign="top"><a id="a9b3a2899b37e541226ca82563a280c72"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>deactivateFunctionRegistry</b> (const std::string &amp;packageName)</td></tr>
+<tr class="separator:a9b3a2899b37e541226ca82563a280c72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe2685e11364eb18788ea1da5aa4e34d"><td class="memItemLeft" align="right" valign="top"><a id="afe2685e11364eb18788ea1da5aa4e34d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>removeFunctionRegistry</b> (const std::string &amp;packageName)</td></tr>
+<tr class="separator:afe2685e11364eb18788ea1da5aa4e34d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a45573b33139d4687354ff5e9592e8e29"><td class="memItemLeft" align="right" valign="top"><a id="a45573b33139d4687354ff5e9592e8e29"></a>
+<a class="el" href="classTorqueScript_1_1ConsoleObjectRegistry.html">ConsoleObjectRegistry</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Interpreter.html#a45573b33139d4687354ff5e9592e8e29">mConsoleObjectRegistry</a></td></tr>
+<tr class="memdesc:a45573b33139d4687354ff5e9592e8e29"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classTorqueScript_1_1ConsoleObjectRegistry.html">ConsoleObjectRegistry</a> associated with this interpreter. It is used to store all <a class="el" href="classTorqueScript_1_1ConsoleObject.html" title="Base class for object instances recognized by the interpreter. These object instances may contain mem...">ConsoleObject</a> instances associated with the interpreter. <br /></td></tr>
+<tr class="separator:a45573b33139d4687354ff5e9592e8e29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8300acdfda4905f0b96a307a26be2ba8"><td class="memItemLeft" align="right" valign="top"><a id="a8300acdfda4905f0b96a307a26be2ba8"></a>
+<a class="el" href="classTorqueScript_1_1StringTable.html">StringTable</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Interpreter.html#a8300acdfda4905f0b96a307a26be2ba8">mStringTable</a></td></tr>
+<tr class="memdesc:a8300acdfda4905f0b96a307a26be2ba8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The string table associated with this interpreter. <br /></td></tr>
+<tr class="separator:a8300acdfda4905f0b96a307a26be2ba8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3acc2e2532d3ec09aa793fb1fe5c87a1"><td class="memItemLeft" align="right" valign="top"><a id="a3acc2e2532d3ec09aa793fb1fe5c87a1"></a>
+const <a class="el" href="structTorqueScript_1_1InterpreterConfiguration.html">InterpreterConfiguration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1Interpreter.html#a3acc2e2532d3ec09aa793fb1fe5c87a1">mConfig</a></td></tr>
+<tr class="memdesc:a3acc2e2532d3ec09aa793fb1fe5c87a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">The interpreter configuration. <br /></td></tr>
+<tr class="separator:a3acc2e2532d3ec09aa793fb1fe5c87a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The interpreter class represents a high level instance of the <a class="el" href="namespaceTorqueScript.html">TorqueScript</a> interpreter. It is where execution control flow begins. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a54ec83aa38654f7e1a72d584b34e57d1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a54ec83aa38654f7e1a72d584b34e57d1">&#9670;&nbsp;</a></span>compile()</h2>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="interpreterInit_8cpp-example.html#_a2">interpreterInit.cpp</a>.</dd>
+</dl>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ae6a7e545081e4d67a292fad02047fa79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6a7e545081e4d67a292fad02047fa79">&#9670;&nbsp;</a></span>Interpreter()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTorqueScript_1_1CodeBlock.html">CodeBlock</a> * TorqueScript::Interpreter::compile </td>
+          <td class="memname">TorqueScript::Interpreter::Interpreter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structTorqueScript_1_1InterpreterConfiguration.html">InterpreterConfiguration</a> &amp;&#160;</td>
+          <td class="paramname"><em>config</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructs a new interpreter with the specified configuration. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">config</td><td>The configuration to initialize a new interpreter with. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="aadb64ca9e48e55f35e5473b83939a6d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadb64ca9e48e55f35e5473b83939a6d8">&#9670;&nbsp;</a></span>addFunction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TorqueScript::Interpreter::addFunction </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1Function.html">Function</a> &gt;&#160;</td>
+          <td class="paramname"><em>function</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Registers a new function to the interpreter. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">function</td><td>The function object to register to the interpreter. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a708afa46488ec9c0a64169bdac48599f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a708afa46488ec9c0a64169bdac48599f">&#9670;&nbsp;</a></span>compile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classTorqueScript_1_1CodeBlock.html">CodeBlock</a>* TorqueScript::Interpreter::compile </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>input</em></td><td>)</td>
@@ -150,111 +259,89 @@ std::shared_ptr&lt; <a class="el" href="structTorqueScript_1_1ExecutionState.htm
 
 </div>
 </div>
-<a id="ac95424971e00c5f5e5b7873ffc45f76e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac95424971e00c5f5e5b7873ffc45f76e">&#9670;&nbsp;</a></span>logEcho()</h2>
+<a id="a6b63bb07670d1a657d7592f288830795"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b63bb07670d1a657d7592f288830795">&#9670;&nbsp;</a></span>getGlobal() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void TorqueScript::Interpreter::logEcho </td>
+          <td class="memname"><a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a>* TorqueScript::Interpreter::getGlobal </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>message</em></td><td>)</td>
+          <td class="paramtype">const std::size_t&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p>Asks the interpreter to handle a simple echo message. </p>
+<p>Retrieves a global variable by string ID. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">message</td><td>The message to echo. </td></tr>
+    <tr><td class="paramname">name</td><td>The string ID representing the global variable name to lookup. This should be preferred over the lookup by name as this version will be faster. </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>The stored value at that global variable. If no such variable exists, nullptr is returned. </dd></dl>
 
 </div>
 </div>
-<a id="ac85c83d327e6ebb9fb4e24de1deab09d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac85c83d327e6ebb9fb4e24de1deab09d">&#9670;&nbsp;</a></span>logError()</h2>
+<a id="a5c392ba6d02df01b01e7057fd1a969a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c392ba6d02df01b01e7057fd1a969a0">&#9670;&nbsp;</a></span>getGlobal() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void TorqueScript::Interpreter::logError </td>
+          <td class="memname"><a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a>* TorqueScript::Interpreter::getGlobal </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>message</em></td><td>)</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p>Asks the interpreter to handle an error log message. </p>
+<p>Retrieves a global variable by string. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">message</td><td>The message to output as an error. </td></tr>
+    <tr><td class="paramname">name</td><td>A string containining the name of the variable to retrieve, excluding the $ prefix. </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>The stored value at that global variable. If no such variable exists, nullptr is returned. </dd></dl>
 
 </div>
 </div>
-<a id="a1636a0b9540f29e5192e2ea038c34a5f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1636a0b9540f29e5192e2ea038c34a5f">&#9670;&nbsp;</a></span>logWarning()</h2>
+<a id="a0470fd842924531117a0260292757fbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0470fd842924531117a0260292757fbb">&#9670;&nbsp;</a></span>initializeConsoleObjectTree()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void TorqueScript::Interpreter::logWarning </td>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classTorqueScript_1_1ConsoleObject.html">ConsoleObject</a>&gt; TorqueScript::Interpreter::initializeConsoleObjectTree </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>message</em></td><td>)</td>
+          <td class="paramtype"><a class="el" href="structTorqueScript_1_1ObjectInstantiationDescriptor.html">ObjectInstantiationDescriptor</a> &amp;&#160;</td>
+          <td class="paramname"><em>descriptor</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p>Asks the interpreter to handle a warning log message. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Initializes the tree of objects described by the provided descriptor. </p>
+<p>The tree described is walked and all objects along the tree will be initialized, unless any parent is invalid (Ie. bad typename, invalid parameters, etc) at which point that entire branch of the tree is invalidated and <em>not</em> instantiated. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">message</td><td>The message to output as a warning. </td></tr>
+    <tr><td class="paramname">descriptor</td><td>The descriptor describing the root of the tree to initialize. </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>The root level <a class="el" href="classTorqueScript_1_1ConsoleObject.html" title="Base class for object instances recognized by the interpreter. These object instances may contain mem...">ConsoleObject</a> that was instantiated if successful. Otherwise, nullptr is returned. </dd></dl>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following files:<ul>
-<li>/home/ragora/Documents/Projects/Personal/TorqueScript/include/torquescript/<a class="el" href="interpreter_8hpp_source.html">interpreter.hpp</a></li>
-<li>interpreter.cpp</li>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>include/torquescript/<a class="el" href="interpreter_8hpp_source.html">interpreter.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

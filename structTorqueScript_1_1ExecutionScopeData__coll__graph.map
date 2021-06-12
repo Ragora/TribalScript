@@ -1,0 +1,6 @@
+<map id="TorqueScript::ExecutionScopeData" name="TorqueScript::ExecutionScopeData">
+<area shape="rect" id="node1" title=" " alt="" coords="43,185,285,212"/>
+<area shape="rect" id="node2" href="$classTorqueScript_1_1Function.html" title="A function is callable subroutine from anywhere in the language, defined by a script...." alt="" coords="5,89,171,115"/>
+<area shape="rect" id="node3" href="$classTorqueScript_1_1StoredValueStack.html" title="Storage class used to keep variable values in&#45;memory of arbitrary data types. This is the base class ..." alt="" coords="195,81,383,123"/>
+<area shape="rect" id="node4" title=" " alt="" coords="190,5,389,32"/>
+</map>

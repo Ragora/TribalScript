@@ -1,0 +1,4 @@
+<map id="TorqueScript::Instructions::PushGlobalReferenceInstruction" name="TorqueScript::Instructions::PushGlobalReferenceInstruction">
+<area shape="rect" id="node1" title="Push a reference to a named global variable. The parameter provided here should be excluding the &#39;$&#39; ..." alt="" coords="5,95,244,136"/>
+<area shape="rect" id="node2" href="$classTorqueScript_1_1Instructions_1_1Instruction.html" title="Base instruction class. All instructions in the interpreter should dervive from this class and implem..." alt="" coords="31,5,218,47"/>
+</map>

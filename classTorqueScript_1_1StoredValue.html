@@ -22,6 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">TorqueScript
+   &#160;<span id="projectnumber">0.2</span>
    </div>
   </td>
  </tr>
@@ -69,78 +70,118 @@ $(function() {
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classTorqueScript_1_1StoredValue-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">TorqueScript::StoredValue Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
+<div class="title">TorqueScript::StoredValue Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Storage class used to keep variable values in-memory of arbitrary data types. This is the base class and should not be instantiated directly.  
+<p>Storage class used to keep variable values in-memory of arbitrary data types. The data types supported as integers, floats and strings (via string ID table references).  
  <a href="classTorqueScript_1_1StoredValue.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="storedvalue_8hpp_source.html">storedvalue.hpp</a>&gt;</code></p>
-<div class="dynheader">
-Inheritance diagram for TorqueScript::StoredValue:</div>
-<div class="dyncontent">
-<div class="center"><img src="classTorqueScript_1_1StoredValue__inherit__graph.png" border="0" usemap="#aTorqueScript_1_1StoredValue_inherit__map" alt="Inheritance graph"/></div>
-<map name="aTorqueScript_1_1StoredValue_inherit__map" id="aTorqueScript_1_1StoredValue_inherit__map">
-<area shape="rect" title="Storage class used to keep variable values in&#45;memory of arbitrary data types. This is the base class ..." alt="" coords="5,177,193,203"/>
-<area shape="rect" href="classTorqueScript_1_1StoredFieldReferenceValue.html" title="Storage class for a floating point value." alt="" coords="249,5,432,47"/>
-<area shape="rect" href="classTorqueScript_1_1StoredFloatValue.html" title="Storage class for a floating point value." alt="" coords="248,71,433,112"/>
-<area shape="rect" href="classTorqueScript_1_1StoredGlobalReferenceValue.html" title="Storage class for a reference to a global value." alt="" coords="243,136,438,177"/>
-<area shape="rect" href="classTorqueScript_1_1StoredIntegerValue.html" title="Storage class for an integer value." alt="" coords="241,201,440,243"/>
-<area shape="rect" href="classTorqueScript_1_1StoredLocalReferenceValue.html" title="Storage class for a floating point value." alt="" coords="247,267,434,308"/>
-<area shape="rect" href="classTorqueScript_1_1StoredStringValue.html" title="Storage class for a string value." alt="" coords="245,332,436,373"/>
-</map>
-<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aaa4bb106fdf0a0d3c80ba3b4e982a3c5"><td class="memItemLeft" align="right" valign="top"><a id="aaa4bb106fdf0a0d3c80ba3b4e982a3c5"></a>
-virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>toInteger</b> (std::shared_ptr&lt; <a class="el" href="structTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state)=0</td></tr>
-<tr class="separator:aaa4bb106fdf0a0d3c80ba3b4e982a3c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c8a04ea7afc337d2e5e1d55465f8a5e"><td class="memItemLeft" align="right" valign="top">virtual float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1StoredValue.html#a2c8a04ea7afc337d2e5e1d55465f8a5e">toFloat</a> (std::shared_ptr&lt; <a class="el" href="structTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state)=0</td></tr>
-<tr class="memdesc:a2c8a04ea7afc337d2e5e1d55465f8a5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the value in question to a native floating point type.  <a href="classTorqueScript_1_1StoredValue.html#a2c8a04ea7afc337d2e5e1d55465f8a5e">More...</a><br /></td></tr>
-<tr class="separator:a2c8a04ea7afc337d2e5e1d55465f8a5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a605499d6a68580ee294a02fbbbb1485f"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1StoredValue.html#a605499d6a68580ee294a02fbbbb1485f">toString</a> (std::shared_ptr&lt; <a class="el" href="structTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state)=0</td></tr>
-<tr class="memdesc:a605499d6a68580ee294a02fbbbb1485f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the value in question to a native sting type.  <a href="classTorqueScript_1_1StoredValue.html#a605499d6a68580ee294a02fbbbb1485f">More...</a><br /></td></tr>
-<tr class="separator:a605499d6a68580ee294a02fbbbb1485f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9094d5c830fc4bcc75b58b6537a93520"><td class="memItemLeft" align="right" valign="top"><a id="a9094d5c830fc4bcc75b58b6537a93520"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>StoredValue</b> (void *memoryLocation, const MemoryReferenceType type)</td></tr>
+<tr class="separator:a9094d5c830fc4bcc75b58b6537a93520"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88ce786112de1188b94a3db83f8151f0"><td class="memItemLeft" align="right" valign="top"><a id="a88ce786112de1188b94a3db83f8151f0"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>StoredValue</b> (const int value)</td></tr>
+<tr class="separator:a88ce786112de1188b94a3db83f8151f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbff6eacd58ba79f3c334f84f5edb72f"><td class="memItemLeft" align="right" valign="top"><a id="acbff6eacd58ba79f3c334f84f5edb72f"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>StoredValue</b> (const float value)</td></tr>
+<tr class="separator:acbff6eacd58ba79f3c334f84f5edb72f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab42d77a1af6aee8343ba07e40031e161"><td class="memItemLeft" align="right" valign="top"><a id="ab42d77a1af6aee8343ba07e40031e161"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>StoredValue</b> (const std::size_t value, const StoredValueType type)</td></tr>
+<tr class="separator:ab42d77a1af6aee8343ba07e40031e161"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b08520fe80813b8ab74e750d1a08715"><td class="memItemLeft" align="right" valign="top"><a id="a6b08520fe80813b8ab74e750d1a08715"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>StoredValue</b> (std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ConsoleObject.html">ConsoleObject</a> &gt; object, const std::size_t field)</td></tr>
+<tr class="separator:a6b08520fe80813b8ab74e750d1a08715"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6db4bf90b5b4763aabf7556f192d2b2"><td class="memItemLeft" align="right" valign="top"><a id="af6db4bf90b5b4763aabf7556f192d2b2"></a>
+<a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getReferencedValueCopy</b> (std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state)</td></tr>
+<tr class="separator:af6db4bf90b5b4763aabf7556f192d2b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a9e631e12e00cbf5b3310d5de672200"><td class="memItemLeft" align="right" valign="top"><a id="a4a9e631e12e00cbf5b3310d5de672200"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInteger</b> (std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state)</td></tr>
+<tr class="separator:a4a9e631e12e00cbf5b3310d5de672200"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cfe2b1b6e5e2ffab322f6a474206894"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1StoredValue.html#a4cfe2b1b6e5e2ffab322f6a474206894">setValue</a> (<a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> newValue, std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state)</td></tr>
+<tr class="memdesc:a4cfe2b1b6e5e2ffab322f6a474206894"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the value of this object. Only has an effect if this object is a reference to a local or global variable.  <a href="classTorqueScript_1_1StoredValue.html#a4cfe2b1b6e5e2ffab322f6a474206894">More...</a><br /></td></tr>
+<tr class="separator:a4cfe2b1b6e5e2ffab322f6a474206894"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7581e41996f858f4bfc620cd77532e40"><td class="memItemLeft" align="right" valign="top"><a id="a7581e41996f858f4bfc620cd77532e40"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getRepresentation</b> ()</td></tr>
+<tr class="separator:a7581e41996f858f4bfc620cd77532e40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">Value Retrieval</div></td></tr>
+<tr><td colspan="2"><div class="groupText"><p>These functions are used to retrieve the data stored in this object. </p>
+</div></td></tr>
+<tr class="memitem:a19879bd73292aa2f9753e1ded75dc6a7"><td class="memItemLeft" align="right" valign="top"><a id="a19879bd73292aa2f9753e1ded75dc6a7"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>toInteger</b> (std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state)</td></tr>
+<tr class="separator:a19879bd73292aa2f9753e1ded75dc6a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18cb5c8d252cfe72408b0fffc0422ae1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1StoredValue.html#a18cb5c8d252cfe72408b0fffc0422ae1">toFloat</a> (std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state)</td></tr>
+<tr class="memdesc:a18cb5c8d252cfe72408b0fffc0422ae1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the value in question to a native floating point type.  <a href="classTorqueScript_1_1StoredValue.html#a18cb5c8d252cfe72408b0fffc0422ae1">More...</a><br /></td></tr>
+<tr class="separator:a18cb5c8d252cfe72408b0fffc0422ae1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeacf0a70939dc90bdd38913913ebc5ad"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTorqueScript_1_1StoredValue.html#aeacf0a70939dc90bdd38913913ebc5ad">toString</a> (std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state)</td></tr>
+<tr class="memdesc:aeacf0a70939dc90bdd38913913ebc5ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the value in question to a native sting type.  <a href="classTorqueScript_1_1StoredValue.html#aeacf0a70939dc90bdd38913913ebc5ad">More...</a><br /></td></tr>
+<tr class="separator:aeacf0a70939dc90bdd38913913ebc5ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48ad85294aae6bf556e8c9cd52d2f076"><td class="memItemLeft" align="right" valign="top"><a id="a48ad85294aae6bf556e8c9cd52d2f076"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>toBoolean</b> (std::shared_ptr&lt; <a class="el" href="structTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state)</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>toBoolean</b> (std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state)</td></tr>
 <tr class="separator:a48ad85294aae6bf556e8c9cd52d2f076"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac30f9d5d291e8268134b6387ac8e8f1b"><td class="memItemLeft" align="right" valign="top"><a id="ac30f9d5d291e8268134b6387ac8e8f1b"></a>
-virtual std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1SimObject.html">SimObject</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>toSimObject</b> (std::shared_ptr&lt; <a class="el" href="structTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state)</td></tr>
-<tr class="separator:ac30f9d5d291e8268134b6387ac8e8f1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3cd67f3ad32937609e9c650c0880abad"><td class="memItemLeft" align="right" valign="top"><a id="a3cd67f3ad32937609e9c650c0880abad"></a>
-virtual std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getReferencedValueCopy</b> (std::shared_ptr&lt; <a class="el" href="structTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state)=0</td></tr>
-<tr class="separator:a3cd67f3ad32937609e9c650c0880abad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7291cf74384acdb39a2ac4c76fc4ca69"><td class="memItemLeft" align="right" valign="top"><a id="a7291cf74384acdb39a2ac4c76fc4ca69"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>setValue</b> (std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a> &gt; newValue, std::shared_ptr&lt; <a class="el" href="structTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state)</td></tr>
-<tr class="separator:a7291cf74384acdb39a2ac4c76fc4ca69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacbe4e35a3a3ccbd49272634e5f9578b"><td class="memItemLeft" align="right" valign="top"><a id="aacbe4e35a3a3ccbd49272634e5f9578b"></a>
+std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ConsoleObject.html">ConsoleObject</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>toConsoleObject</b> (std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt; state)</td></tr>
+<tr class="separator:aacbe4e35a3a3ccbd49272634e5f9578b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Storage class used to keep variable values in-memory of arbitrary data types. This is the base class and should not be instantiated directly. </p>
+<div class="textblock"><p>Storage class used to keep variable values in-memory of arbitrary data types. The data types supported as integers, floats and strings (via string ID table references). </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a2c8a04ea7afc337d2e5e1d55465f8a5e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2c8a04ea7afc337d2e5e1d55465f8a5e">&#9670;&nbsp;</a></span>toFloat()</h2>
+<a id="a4cfe2b1b6e5e2ffab322f6a474206894"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cfe2b1b6e5e2ffab322f6a474206894">&#9670;&nbsp;</a></span>setValue()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual float TorqueScript::StoredValue::toFloat </td>
+          <td class="memname">bool TorqueScript::StoredValue::setValue </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="structTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="classTorqueScript_1_1StoredValue.html">StoredValue</a>&#160;</td>
+          <td class="paramname"><em>newValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt;&#160;</td>
+          <td class="paramname"><em>state</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the value of this object. Only has an effect if this object is a reference to a local or global variable. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">newValue</td><td>The new value to set. </td></tr>
+    <tr><td class="paramname">state</td><td>The execution state this assignment is taking place in. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if an assignment has taken place. False otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="a18cb5c8d252cfe72408b0fffc0422ae1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18cb5c8d252cfe72408b0fffc0422ae1">&#9670;&nbsp;</a></span>toFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float TorqueScript::StoredValue::toFloat </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt;&#160;</td>
           <td class="paramname"><em>state</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>Converts the value in question to a native floating point type. </p>
@@ -152,32 +193,22 @@ virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>setValue</b> 
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A floating point representation of this value. </dd></dl>
 
-<p>Implemented in <a class="el" href="classTorqueScript_1_1StoredStringValue.html#a8ba0d71ccd78e46dae414564ef5bfbf6">TorqueScript::StoredStringValue</a>, <a class="el" href="classTorqueScript_1_1StoredLocalReferenceValue.html#a765c10c1efe9fa659087a2195a23f5b0">TorqueScript::StoredLocalReferenceValue</a>, <a class="el" href="classTorqueScript_1_1StoredIntegerValue.html#ac8535654d947a822908ff0cbf7249adb">TorqueScript::StoredIntegerValue</a>, <a class="el" href="classTorqueScript_1_1StoredGlobalReferenceValue.html#ae372aa83f3685dce63d8404d2b7cc2ef">TorqueScript::StoredGlobalReferenceValue</a>, <a class="el" href="classTorqueScript_1_1StoredFloatValue.html#a202d745aebd2e5ac465cac961ff11582">TorqueScript::StoredFloatValue</a>, and <a class="el" href="classTorqueScript_1_1StoredFieldReferenceValue.html#a2667d04697e95e7c8b5fc239fea7c88c">TorqueScript::StoredFieldReferenceValue</a>.</p>
-
 </div>
 </div>
-<a id="a605499d6a68580ee294a02fbbbb1485f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a605499d6a68580ee294a02fbbbb1485f">&#9670;&nbsp;</a></span>toString()</h2>
+<a id="aeacf0a70939dc90bdd38913913ebc5ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeacf0a70939dc90bdd38913913ebc5ad">&#9670;&nbsp;</a></span>toString()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::string TorqueScript::StoredValue::toString </td>
+          <td class="memname">std::string TorqueScript::StoredValue::toString </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="structTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt;&#160;</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classTorqueScript_1_1ExecutionState.html">ExecutionState</a> &gt;&#160;</td>
           <td class="paramname"><em>state</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>Converts the value in question to a native sting type. </p>
@@ -189,13 +220,10 @@ virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>setValue</b> 
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A string representation of this value. </dd></dl>
 
-<p>Implemented in <a class="el" href="classTorqueScript_1_1StoredStringValue.html#a609a7037032f4e8432d3522580c1a8d1">TorqueScript::StoredStringValue</a>, <a class="el" href="classTorqueScript_1_1StoredLocalReferenceValue.html#aabbb090649e10e244b89e066e9a7ecdc">TorqueScript::StoredLocalReferenceValue</a>, <a class="el" href="classTorqueScript_1_1StoredIntegerValue.html#a4052b1575e66ddb4e82a52f808ec3325">TorqueScript::StoredIntegerValue</a>, <a class="el" href="classTorqueScript_1_1StoredGlobalReferenceValue.html#adaf8023059fbc6bdeeb934b110fb671b">TorqueScript::StoredGlobalReferenceValue</a>, <a class="el" href="classTorqueScript_1_1StoredFloatValue.html#ace184e76599c16d7bfafa29d33a3e3ca">TorqueScript::StoredFloatValue</a>, and <a class="el" href="classTorqueScript_1_1StoredFieldReferenceValue.html#a20b52817cdfd1ca067ab524f2bffbc8b">TorqueScript::StoredFieldReferenceValue</a>.</p>
-
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following files:<ul>
-<li>/home/ragora/Documents/Projects/Personal/TorqueScript/include/torquescript/<a class="el" href="storedvalue_8hpp_source.html">storedvalue.hpp</a></li>
-<li>storedvalue.cpp</li>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>include/torquescript/<a class="el" href="storedvalue_8hpp_source.html">storedvalue.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
