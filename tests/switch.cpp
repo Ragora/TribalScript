@@ -12,38 +12,40 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-
 #include <memory>
-#include <string>
 
+#include "gtest/gtest.h"
+
+#include <torquescript/interpreter.hpp>
 #include <torquescript/storedvalue.hpp>
+#include <torquescript/libraries/libraries.hpp>
+#include <torquescript/executionstate.hpp>
 
-namespace TorqueScript
+TEST(InterpreterTest, Switch)
 {
-    class Interpreter;
-    class ExecutionState;
-    class SimObject;
+    TorqueScript::Interpreter interpreter;
+    TorqueScript::registerAllLibraries(&interpreter);
 
-    /**
-     *  @brief Storage class for a floating point value.
-     */
-    class StoredFieldReferenceValue : public StoredValue
-    {
-        public:
-            StoredFieldReferenceValue(std::shared_ptr<SimObject> object, const std::string& name);
+    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    interpreter.execute("cases/switch.cs", state);
 
-            virtual int toInteger(std::shared_ptr<ExecutionState> state) override;
-            virtual float toFloat(std::shared_ptr<ExecutionState> state) override;
-            virtual std::string toString(std::shared_ptr<ExecutionState> state) override;
-            virtual bool setValue(std::shared_ptr<StoredValue> newValue, std::shared_ptr<ExecutionState> state) override ;
-            virtual std::shared_ptr<StoredValue> getReferencedValueCopy(std::shared_ptr<ExecutionState> state) override;
+    TorqueScript::StoredValue* resultOne = interpreter.getGlobal("global::one");
+    ASSERT_TRUE(resultOne);
+    TorqueScript::StoredValue* resultTwo = interpreter.getGlobal("global::two");
+    ASSERT_TRUE(resultTwo);
+    TorqueScript::StoredValue* resultThree = interpreter.getGlobal("global::three");
+    ASSERT_TRUE(resultThree);
+    TorqueScript::StoredValue* resultFour = interpreter.getGlobal("global::four");
+    ASSERT_TRUE(resultFour);
 
-        protected:
-            //! The Sim object reference.
-            std::shared_ptr<SimObject> mSimObject;
+    ASSERT_EQ(resultOne->toInteger(state), 5);
+    ASSERT_EQ(resultTwo->toInteger(state), 5);
+    ASSERT_EQ(resultThree->toInteger(state), 10);
+    ASSERT_EQ(resultFour->toInteger(state), -10);
+}
 
-            //! The stored field name.
-            std::string mName;
-    };
+int main()
+{
+    testing::InitGoogleTest();
+    return RUN_ALL_TESTS();
 }

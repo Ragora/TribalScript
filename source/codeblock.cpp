@@ -15,18 +15,17 @@
 #include <torquescript/codeblock.hpp>
 #include <torquescript/instructions.hpp>
 #include <torquescript/stringhelpers.hpp>
+#include <torquescript/instructionsequence.hpp>
 
 namespace TorqueScript
 {
-    void CodeBlock::addInstructions(const InstructionSequence& instructions)
+    CodeBlock::CodeBlock(const InstructionSequence& instructions)
     {
         mInstructions.insert(mInstructions.end(), instructions.begin(), instructions.end());
     }
 
     void CodeBlock::execute(std::shared_ptr<ExecutionState> state)
     {
-        int instructionIndex = 0;
-
         mInstructions.execute(state);
     }
 

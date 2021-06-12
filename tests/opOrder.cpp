@@ -12,32 +12,35 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <vector>
-#include <string>
+#include <memory>
 
-#include <torquescript/parsererrorlistener.hpp>
+#include "gtest/gtest.h"
 
-namespace TorqueScript
+#include <torquescript/interpreter.hpp>
+#include <torquescript/storedvalue.hpp>
+#include <torquescript/libraries/libraries.hpp>
+#include <torquescript/executionstate.hpp>
+
+TEST(InterpreterTest, OpOrder)
 {
-    void ParserErrorListener::syntaxError(antlr4::Recognizer* recognizer, antlr4::Token* offendingSymbol, size_t line, size_t charPositionInLine, const std::string& msg, std::exception_ptr e)
-    {
-        std::ostringstream out;
+    TorqueScript::Interpreter interpreter;
+    TorqueScript::registerAllLibraries(&interpreter);
 
-        if (offendingSymbol)
-        {
-            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << " : '" << offendingSymbol->getText() << "'" << std::endl;
-        }
-        else
-        {
-            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << std::endl;
-        }
-       
-        out << msg << std::endl;
-        mErrors.push_back(out.str());
-    }
+    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    interpreter.execute("cases/opOrder.cs", state);
 
-    const std::vector<std::string>& ParserErrorListener::getErrors()
-    {
-        return mErrors;
-    }
+    // After execution, the result of $global should be 50
+    TorqueScript::StoredValue* noParen = interpreter.getGlobal("noParen");
+    ASSERT_TRUE(noParen);
+    TorqueScript::StoredValue* paren = interpreter.getGlobal("paren");
+    ASSERT_TRUE(paren);
+
+    ASSERT_EQ(noParen->toInteger(state), 3);
+    ASSERT_EQ(paren->toInteger(state), 4);
+}
+
+int main()
+{
+    testing::InitGoogleTest();
+    return RUN_ALL_TESTS();
 }

@@ -20,14 +20,14 @@ namespace TorqueScript
 {
     void InstructionSequence::execute(std::shared_ptr<ExecutionState> state)
     {
-        int instructionIndex = 0;
+        AddressType instructionIndex = 0;
 
         while (instructionIndex < this->size() && instructionIndex >= 0)
         {
-            std::shared_ptr<Instruction> nextInstruction = this->at(instructionIndex);
+            std::shared_ptr<Instructions::Instruction> nextInstruction = this->at(instructionIndex);
 
             state->mInstructionPointer = instructionIndex;
-            const int advance = nextInstruction->execute(state);
+            const AddressOffsetType advance = nextInstruction->execute(state);
             if (advance == 0)
             {
                 break;

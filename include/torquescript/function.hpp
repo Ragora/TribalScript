@@ -25,19 +25,22 @@ namespace TorqueScript
     //! Forward declaration to avoid circular dependencies.
     class Interpreter;
     class Instruction;
+    class CodeBlock;
     class ExecutionScope;
     class StoredValue;
     class StoredValueStack;
     class ExecutionState;
+    class ConsoleObject;
 
     /**
-     *  @brief A function is callable subroutine from anywhere in the language.
+     *  @brief A function is callable subroutine from anywhere in the language, defined by a script. A NativeFunction is a specialization
+     *  of this that allows native C++ programming to be called from within the interpreter.
      */
     class Function
     {
         public:
-            Function(const std::string& name);
-            Function(const std::string& name, const std::vector<std::string>& parameterNames);
+            Function(const std::string& package, const std::string& space, const std::string& name);
+            Function(const std::string& package, const std::string& space, const std::string& name, const std::vector<std::string>& parameterNames);
 
             void addInstructions(const InstructionSequence& instructions);
 
@@ -45,11 +48,33 @@ namespace TorqueScript
              *  @brief Default implementation will execute virtual instructions but can be overriden to implement native
              *  functions.
              */
-            virtual void execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount);
+            virtual void execute(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
 
-            std::string getName();
+            /**
+             *  @brief Retrieves the declared name of this function.
+             *  @return The name that this function was declared with.
+             */
+            const std::string& getDeclaredName();
+
+            /**
+             *  @brief Retrieves the declared namespace of this function.
+             *  @return The namespace that this function was declared with.
+             */
+            const std::string& getDeclaredNameSpace();
+
+            /**
+             *  @brief Retrieves the declared package of this function.
+             *  @return The package that this function was declared in.
+             */
+            const std::string& getDeclaredPackage();
 
         private:
+            //! The package of the function.
+            std::string mPackage;
+
+            //! The namespace of the function.
+            std::string mNameSpace;
+
             //! The name of the function.
             std::string mName;
 

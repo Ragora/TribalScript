@@ -12,32 +12,41 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <vector>
-#include <string>
+#pragma once
 
-#include <torquescript/parsererrorlistener.hpp>
+#include <string>
+#include <memory>
+#include <unordered_map>
+
+#include <torquescript/function.hpp>
 
 namespace TorqueScript
 {
-    void ParserErrorListener::syntaxError(antlr4::Recognizer* recognizer, antlr4::Token* offendingSymbol, size_t line, size_t charPositionInLine, const std::string& msg, std::exception_ptr e)
+    /**
+     *  @brief A FunctionRegistry is used to keep track of registered functions in memory by
+     *  the packages they are associated with.
+     *  @details A FunctionRegistry effectively is a 'package' for registered functions to reside
+     *  in. The "" package is the root level package everything is registered to if no package is
+     *  otherwise set.
+     */
+    struct FunctionRegistry
     {
-        std::ostringstream out;
-
-        if (offendingSymbol)
+        /**
+         *  @brief Constructs a new FunctionRegistry instance.
+         *  @param package The name of the package this registry is associated with.
+         */
+        FunctionRegistry(const std::string& package) : mPackageName(package), mActive(false)
         {
-            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << " : '" << offendingSymbol->getText() << "'" << std::endl;
-        }
-        else
-        {
-            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << std::endl;
-        }
-       
-        out << msg << std::endl;
-        mErrors.push_back(out.str());
-    }
 
-    const std::vector<std::string>& ParserErrorListener::getErrors()
-    {
-        return mErrors;
-    }
+        }
+
+        //! The package this registry belongs to.
+        std::string mPackageName;
+
+        //! Whether or not the registry is currently active.
+        bool mActive;
+
+        //! A mapping of function namespaces to a mapping of function names to the function object.
+        std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<Function>>> mFunctions;
+    };
 }

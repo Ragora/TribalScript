@@ -12,30 +12,26 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-
-#include <map>
-#include <string>
-#include <memory>
-
-#include <torquescript/storedvalue.hpp>
+#include <torquescript/stringtable.hpp>
 
 namespace TorqueScript
 {
-    class Interpreter;
-    class ExecutionScope;
-
-    /**
-     *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
-     *  This is the base class and should not be instantiated directly.
-     */
-    class SimObject
+    std::size_t StringTable::getOrAssign(const std::string& string)
     {
-        public:
-            std::shared_ptr<StoredValue> getField(const std::string& name);
-            void setField(const std::string& name, std::shared_ptr<StoredValue> value);
+        std::hash<std::string> hasher;
 
-        protected:
-            std::map<std::string, std::shared_ptr<StoredValue>> mValueMap;
-    };
+        const std::size_t stringHash = hasher(string);
+        auto search = this->find(stringHash);
+
+        if (search == this->end())
+        {
+            this->emplace(std::make_pair(stringHash, string));
+        }
+        return stringHash;
+    }
+
+    const std::string& StringTable::getString(const std::size_t id)
+    {
+        return this->at(id);
+    }
 }

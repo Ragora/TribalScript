@@ -12,32 +12,24 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <vector>
-#include <string>
+#include <iostream>
 
-#include <torquescript/parsererrorlistener.hpp>
+#include <torquescript/filehandlebase.hpp>
 
 namespace TorqueScript
 {
-    void ParserErrorListener::syntaxError(antlr4::Recognizer* recognizer, antlr4::Token* offendingSymbol, size_t line, size_t charPositionInLine, const std::string& msg, std::exception_ptr e)
+    FileHandleBase::FileHandleBase(const std::string& path) : mPath(path)
     {
-        std::ostringstream out;
 
-        if (offendingSymbol)
-        {
-            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << " : '" << offendingSymbol->getText() << "'" << std::endl;
-        }
-        else
-        {
-            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << std::endl;
-        }
-       
-        out << msg << std::endl;
-        mErrors.push_back(out.str());
     }
 
-    const std::vector<std::string>& ParserErrorListener::getErrors()
+    void FileHandleBase::close()
     {
-        return mErrors;
+
+    }
+
+    FileHandleBase::~FileHandleBase()
+    {
+        this->close();
     }
 }

@@ -18,850 +18,708 @@
 #include <TorqueParser.h>
 
 #include <torquescript/compiler.hpp>
+#include <torquescript/astbuilder.hpp>
 #include <torquescript/instructionsequence.hpp>
 #include <torquescript/parsererrorlistener.hpp>
 
 namespace TorqueScript
 {
-    CodeBlock* Compiler::compileStream(std::istream& input)
+    Compiler::Compiler(const InterpreterConfiguration& config) : mConfig(config)
     {
-        mCurrentCodeBlock = new CodeBlock();
+
+    }
+
+    CodeBlock* Compiler::compileStream(std::istream& input, StringTable* stringTable)
+    {
+        ParserErrorListener parserErrorListener;
 
         antlr4::ANTLRInputStream antlrStream(input);
         TorqueLexer lexer(&antlrStream);
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(&parserErrorListener);
 
         // Setup our parser
         antlr4::CommonTokenStream stream(&lexer);
         TorqueParser parser(&stream);
         parser.removeErrorListeners();
 
-        ParserErrorListener parserErrorListener;
         parser.addErrorListener(&parserErrorListener);
 
         // Instantiate the program and go
-        antlr4::tree::ParseTree* tree = parser.program();
-        antlr4::tree::ParseTreeWalker::DEFAULT.walk(this, tree);
+        AST::ASTBuilder visitor(stringTable);
+        AST::ProgramNode* tree = visitor.visitProgram(parser.program()).as<AST::ProgramNode*>();
 
         // Did we receive any errors?
         if (parserErrorListener.getErrors().empty())
         {
-            return mCurrentCodeBlock;
+            // Used for generation of instructions
+            mStringTable = stringTable;
+            InstructionSequence instructions = this->visitProgramNode(tree).as<InstructionSequence>();
+            delete tree;
+
+            CodeBlock* result = new CodeBlock(instructions);
+            return result;
         }
+
+        delete tree;
 
         for (const std::string& message : parserErrorListener.getErrors())
         {
             std::cerr << message << std::endl;
         }
 
-        delete mCurrentCodeBlock;
         return nullptr;
     }
 
-    CodeBlock* Compiler::compileString(const std::string& input)
+    CodeBlock* Compiler::compileString(const std::string& input, StringTable* stringTable)
     {
         std::stringstream stream;
         stream << input;
-        return this->compileStream(stream);
+        return this->compileStream(stream, stringTable);
     }
 
-    CodeBlock* Compiler::compileFile(const std::string& path)
+    CodeBlock* Compiler::compileFile(const std::string& path, StringTable* stringTable)
     {
-        std::ifstream fileStream;
-        fileStream.open(path);
+        std::unique_ptr<FileHandleBase> handle = mConfig.mPlatform->getFileHandle(path);
+        handle->openForRead();
 
-        return this->compileStream(fileStream);
-    }
-
-    void Compiler::pushInstructionFrame()
-    {
-        mInstructionStack.push_back(std::vector<std::shared_ptr<Instruction>>());
-    }
-
-    void Compiler::popInstructionFrame()
-    {
-        std::vector<std::shared_ptr<Instruction>> oldFrame = this->getCurrentInstructionFrame();
-        mInstructionStack.pop_back();
-        //std::vector<std::shared_ptr<Instruction>>& newFrame = this->getCurrentInstructionFrame();
-
-        //newFrame.insert(newFrame.end(), oldFrame.begin(), oldFrame.end());
-    }
-
-    std::vector<std::shared_ptr<Instruction>>& Compiler::getCurrentInstructionFrame()
-    {
-        if (mInstructionStack.empty())
+        if (handle->isOpen())
         {
-            this->pushInstructionFrame();
+            // Determine file size
+            handle->seek(0, std::ios_base::end);
+            const std::size_t fileSize = handle->tell();
+            handle->seek(0, std::ios_base::beg);
+
+            // Load file content
+            std::string fileContent(fileSize, ' ');
+            handle->read(&fileContent[0], fileSize);
+
+            return this->compileString(fileContent, stringTable);
         }
-        return mInstructionStack.back();
+
+        return nullptr;
     }
 
-
-    // Compiler routines =====================================================
-
-    void Compiler::enterFunctiondeclaration(TorqueParser::FunctiondeclarationContext* context)
+    antlrcpp::Any Compiler::defaultResult()
     {
-        this->pushInstructionFrame();
+        return InstructionSequence();
     }
 
-    void Compiler::exitFunctiondeclaration(TorqueParser::FunctiondeclarationContext* context)
+    antlrcpp::Any Compiler::aggregateResult(antlrcpp::Any& aggregate, antlrcpp::Any& nextResult)
     {
-        std::vector<std::string> parameterNames;
-        if (context->paramlist())
+        InstructionSequence result = aggregate.as<InstructionSequence>();
+        InstructionSequence next = nextResult.as<InstructionSequence>();
+
+        result.insert(result.end(), next.begin(), next.end());
+        return result;
+    }
+
+    /*
+        Compiler Routines ====================
+    */
+    antlrcpp::Any Compiler::visitFunctionCallNode(AST::FunctionCallNode* call)
+    {
+        InstructionSequence result;
+
+        for (AST::ASTNode* node : call->mParameters)
         {
+            InstructionSequence parameterCode = node->accept(this).as<InstructionSequence>();
+            result.insert(result.end(), parameterCode.begin(), parameterCode.end());
+        }
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::CallFunctionInstruction(call->mNameSpace, call->mName, call->mParameters.size())));
+        return result;
+    }
 
-            for (auto parameter : context->paramlist()->localvariable())
+    antlrcpp::Any Compiler::visitPackageDeclarationNode(AST::PackageDeclarationNode* package)
+    {
+        mCurrentPackage = package->mName;
+
+        antlrcpp::Any result = ASTVisitor::visitPackageDeclarationNode(package);
+
+        mCurrentPackage = PACKAGE_EMPTY;
+        return result;
+    }
+
+    antlrcpp::Any Compiler::visitFunctionDeclarationNode(AST::FunctionDeclarationNode* function)
+    {
+        InstructionSequence functionBody;
+        for (AST::ASTNode* node : function->mBody)
+        {
+            InstructionSequence nodeInstructions = node->accept(this).as<InstructionSequence>();
+            functionBody.insert(functionBody.end(), nodeInstructions.begin(), nodeInstructions.end());
+        }
+        functionBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushIntegerInstruction(0))); // Add an empty return if we hit end of control but nothing returned
+
+        std::vector<std::string> parameterNames = function->mParameterNames;
+        if (!mConfig.mCaseSensitive)
+        {
+            for (unsigned int iteration = 0; iteration < parameterNames.size(); ++iteration)
             {
-                // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the % prefix
-                const std::string rawString = parameter->getText();
-                const std::string variableName = rawString.substr(1, rawString.size());
-
-                parameterNames.push_back(variableName);
+                parameterNames[iteration] = toLowerCase(parameterNames[iteration]);
             }
         }
 
-        const unsigned int statementCount = context->statement().size();
-
-        InstructionSequence functionBody;
-        for (unsigned int iteration = 0; iteration < statementCount; ++iteration)
-        {
-            std::vector<std::shared_ptr<Instruction>> bodyStatement = this->getCurrentInstructionFrame();
-            functionBody.insert(functionBody.begin(), bodyStatement.begin(), bodyStatement.end());
-            this->popInstructionFrame();
-        }
-        functionBody.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(0))); // Add an empty return if we hit end of control but nothing returned
-
-        const std::string functionName = context->labelsingle()->getText();
-
-        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
-
-        targetFrame.push_back(std::shared_ptr<Instruction>(new FunctionDeclarationInstruction(functionName, parameterNames, functionBody)));
+        InstructionSequence result;
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::FunctionDeclarationInstruction(mCurrentPackage, function->mNameSpace, function->mName, parameterNames, functionBody)));
+        return result;
     }
 
-    void Compiler::enterArithmetic(TorqueParser::ArithmeticContext* context)
+    antlrcpp::Any Compiler::visitSubFieldNode(AST::SubFieldNode* subfield)
     {
+        InstructionSequence result = subfield->mTarget->accept(this).as<InstructionSequence>();
 
+        const std::size_t stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? subfield->mName : toLowerCase(subfield->mName));
+
+        // Push array indices
+        for (AST::ASTNode* node : subfield->mIndices)
+        {
+            InstructionSequence childInstructions = node->accept(this).as<InstructionSequence>();
+            result.insert(result.end(), childInstructions.begin(), childInstructions.end());
+        }
+
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::SubReferenceInstruction(stringID, subfield->mIndices.size())));
+        return result;
     }
 
-    void Compiler::exitArithmetic(TorqueParser::ArithmeticContext* context)
+    antlrcpp::Any Compiler::visitSubFunctionCallNode(AST::SubFunctionCallNode* call)
     {
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+        InstructionSequence result;
 
-        if (context->PLUS())
+        InstructionSequence targetCode = call->mTarget->accept(this).as<InstructionSequence>();
+        result.insert(result.end(), targetCode.begin(), targetCode.end());
+
+        for (AST::ASTNode* node : call->mParameters)
         {
-            currentFrame.push_back(std::shared_ptr<Instruction>(new AddInstruction()));
+            InstructionSequence parameterCode = node->accept(this).as<InstructionSequence>();
+            result.insert(result.begin(), parameterCode.begin(), parameterCode.end());
         }
-        else if (context->MULT())
-        {
-            currentFrame.push_back(std::shared_ptr<Instruction>(new MultiplyInstruction()));
-        }
-        else
-        {
-            throw std::runtime_error("Encountered unhandled arithmetic type!");
-        }
+
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::CallBoundFunctionInstruction(call->mName, call->mParameters.size())));
+        return result;
     }
 
-    void Compiler::enterRelational(TorqueParser::RelationalContext* context)
+    antlrcpp::Any Compiler::visitAddNode(AST::AddNode* expression)
     {
+        InstructionSequence result;
 
+        InstructionSequence lhsCode = expression->mLeft->accept(this).as<InstructionSequence>();
+        InstructionSequence rhsCode = expression->mRight->accept(this).as<InstructionSequence>();
+
+        result.insert(result.end(), lhsCode.begin(), lhsCode.end());
+        result.insert(result.end(), rhsCode.begin(), rhsCode.end());
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::AddInstruction()));
+
+        return result;
     }
 
-    void Compiler::exitRelational(TorqueParser::RelationalContext* context)
+    antlrcpp::Any Compiler::visitIntegerNode(AST::IntegerNode* value)
     {
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-
-        if (context->LESS())
-        {
-            currentFrame.push_back(std::shared_ptr<Instruction>(new LessThanInstruction()));
-        }
-        else
-        {
-            throw std::runtime_error("Unknown relational operator!");
-        }
+        InstructionSequence result;
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushIntegerInstruction(value->mValue)));
+        return result;
     }
 
-    void Compiler::enterCall(TorqueParser::CallContext* context)
+    antlrcpp::Any Compiler::visitFloatNode(AST::FloatNode* value)
     {
+        InstructionSequence result;
 
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushFloatInstruction(value->mValue)));
+        return result;
     }
 
-    void Compiler::exitCall(TorqueParser::CallContext* context)
+    antlrcpp::Any Compiler::visitStringNode(AST::StringNode* value)
     {
-        const std::string calledFunctionName = context->labelsingle()->getText();
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-        currentFrame.push_back(std::shared_ptr<Instruction>(new CallFunctionInstruction(calledFunctionName, context->expression().size())));
+        InstructionSequence result;
+
+        const std::size_t stringID = mStringTable->getOrAssign(value->mValue);
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringID)));
+        return result;
     }
 
-    void Compiler::enterValue(TorqueParser::ValueContext* context)
+    antlrcpp::Any Compiler::visitTaggedStringNode(AST::TaggedStringNode* value)
     {
+        InstructionSequence result;
 
+        const std::size_t stringID = mStringTable->getOrAssign(value->mValue);
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushIntegerInstruction((int)stringID)));
+        return result;
     }
 
-    void Compiler::exitValue(TorqueParser::ValueContext* context)
+    antlrcpp::Any Compiler::visitLocalVariableNode(AST::LocalVariableNode* value)
     {
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+        InstructionSequence out;
 
-        if (context->FLOAT())
-        {
-            currentFrame.push_back(std::shared_ptr<Instruction>(new PushFloatInstruction(std::stof(context->FLOAT()->getText()))));
-        }
-        else if (context->STRING())
-        {
-            // FIXME: Is there a way to utilize the grammar to extract this instead? We don't want the enclosing quotations
-            const std::string rawString = context->getText();
-            const std::string stringContent = rawString.substr(1, rawString.size() - 2);
-            currentFrame.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(stringContent)));
-        }
-        else if (context->LABEL())
-        {
-            currentFrame.push_back(std::shared_ptr<Instruction>(new PushStringInstruction(context->getText())));
-        }
-        else if (context->INT())
-        {
-            currentFrame.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(std::stoi(context->INT()->getText()))));
-        }
-        else if (context->TRUE())
-        {
-            currentFrame.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(1)));
-        }
-        else if (context->FALSE())
-        {
-            currentFrame.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(0)));
-        }
-        else
-        {
-            throw std::runtime_error("Encountered unhandled value type!");
-        }
+        // NOTE: For now we collapse the name into a single string for lookup
+        std::string lookupName = value->getName();
+
+        const std::size_t stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? lookupName : toLowerCase(lookupName));
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLocalReferenceInstruction(stringID)));
+        return out;
     }
 
-    void Compiler::enterConcatenation(TorqueParser::ConcatenationContext* context)
+    antlrcpp::Any Compiler::visitGlobalVariableNode(AST::GlobalVariableNode* value)
     {
+        InstructionSequence out;
 
+        // NOTE: For now we collapse the name into a single string for lookup
+        std::string lookupName = value->getName();
+
+        const std::size_t stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? lookupName : toLowerCase(lookupName));
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushGlobalReferenceInstruction(stringID)));
+        return out;
     }
 
-    void Compiler::exitConcatenation(TorqueParser::ConcatenationContext* context)
+    antlrcpp::Any Compiler::visitAssignmentNode(AST::AssignmentNode* expression)
     {
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
+        InstructionSequence result;
 
-        if (context->CONCAT())
+        InstructionSequence lhsCode = expression->mLeft->accept(this).as<InstructionSequence>();
+        InstructionSequence rhsCode = expression->mRight->accept(this).as<InstructionSequence>();
+
+        result.insert(result.end(), lhsCode.begin(), lhsCode.end());
+        result.insert(result.end(), rhsCode.begin(), rhsCode.end());
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::AssignmentInstruction()));
+
+        return result;
+    }
+
+    antlrcpp::Any Compiler::visitLessThanNode(AST::LessThanNode* expression)
+    {
+        InstructionSequence result;
+
+        InstructionSequence lhsCode = expression->mLeft->accept(this).as<InstructionSequence>();
+        InstructionSequence rhsCode = expression->mRight->accept(this).as<InstructionSequence>();
+
+        result.insert(result.end(), lhsCode.begin(), lhsCode.end());
+        result.insert(result.end(), rhsCode.begin(), rhsCode.end());
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::LessThanInstruction()));
+
+        return result;
+    }
+
+    antlrcpp::Any Compiler::visitNegateNode(AST::NegateNode* expression)
+    {
+        InstructionSequence result;
+
+        InstructionSequence innerCode = expression->mInner->accept(this).as<InstructionSequence>();
+
+        result.insert(result.end(), innerCode.begin(), innerCode.end());
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NegateInstruction()));
+
+        return result;
+    }
+
+    antlrcpp::Any Compiler::visitNotNode(AST::NotNode* expression)
+    {
+        InstructionSequence result;
+
+        InstructionSequence innerCode = expression->mInner->accept(this).as<InstructionSequence>();
+
+        result.insert(result.end(), innerCode.begin(), innerCode.end());
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NotInstruction()));
+
+        return result;
+    }
+
+    antlrcpp::Any Compiler::visitIncrementNode(AST::IncrementNode* expression)
+    {
+        InstructionSequence result;
+        InstructionSequence innerCode = expression->mInner->accept(this).as<InstructionSequence>();
+
+        result.insert(result.end(), innerCode.begin(), innerCode.end());
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushIntegerInstruction(1)));
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::AddAssignmentInstruction()));
+
+        return result;
+    }
+
+    antlrcpp::Any Compiler::visitWhileNode(AST::WhileNode* node)
+    {
+        InstructionSequence out;
+
+        InstructionSequence bodyCode;
+        InstructionSequence expressionCode = node->mExpression->accept(this).as<InstructionSequence>();
+        for (AST::ASTNode* bodyNode : node->mBody)
         {
-            currentFrame.push_back(std::shared_ptr<Instruction>(new ConcatInstruction()));
-        }
-        else
-        {
-            throw std::runtime_error("Encountered unhandled concat op type!");
-        }
-    }
-
-
-    void Compiler::enterUnary(TorqueParser::UnaryContext* context)
-    {
-
-    }
-
-    void Compiler::exitUnary(TorqueParser::UnaryContext* context)
-    {
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-
-        if (context->MINUS())
-        {
-            currentFrame.push_back(std::shared_ptr<Instruction>(new NegateInstruction()));
-        }
-        else if (context->PLUSPLUS())
-        {
-            currentFrame.push_back(std::shared_ptr<Instruction>(new PushIntegerInstruction(1)));
-            currentFrame.push_back(std::shared_ptr<Instruction>(new AddAssignmentInstruction()));
-        }
-        else
-        {
-            throw std::runtime_error("Encountered unhandled unary op type!");
-        }
-    }
-
-    void Compiler::enterAssignment(TorqueParser::AssignmentContext* context)
-    {
-
-    }
-
-    void Compiler::exitAssignment(TorqueParser::AssignmentContext* context)
-    {
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-
-        if (context->ASSIGN())
-        {
-            currentFrame.push_back(std::shared_ptr<Instruction>(new AssignmentInstruction()));
-        }
-        else if (context->ADDASSIGN())
-        {
-            currentFrame.push_back(std::shared_ptr<Instruction>(new AddAssignmentInstruction()));
-        }
-        else
-        {
-            throw std::runtime_error("Encountered unhandled assignment op type!");
-        }
-    }
-
-    void Compiler::enterBitwise(TorqueParser::BitwiseContext* context)
-    {
-
-    }
-
-    void Compiler::exitBitwise(TorqueParser::BitwiseContext* context)
-    {
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-
-        if (context->BITWISEAND())
-        {
-            currentFrame.push_back(std::shared_ptr<Instruction>(new BitwiseAndInstruction()));
-        }
-        else
-        {
-            throw std::runtime_error("Encountered unknown bitwise type!");
-        }
-    }
-
-    void Compiler::enterProgram(TorqueParser::ProgramContext* context)
-    {
-        this->pushInstructionFrame();
-    }
-
-    void Compiler::exitProgram(TorqueParser::ProgramContext* context)
-    {
-        InstructionSequence generatedInstructions;
-        while (!this->mInstructionStack.empty())
-        {
-            std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-            generatedInstructions.insert(generatedInstructions.begin(), currentFrame.begin(), currentFrame.end());
-            this->popInstructionFrame();
-        }
-        mCurrentCodeBlock->addInstructions(generatedInstructions);
-    }
-
-    void Compiler::enterStatement(TorqueParser::StatementContext* context)
-    {
-        this->pushInstructionFrame();
-    }
-
-    void Compiler::exitStatement(TorqueParser::StatementContext* context)
-    {
-
-    }
-
-    void Compiler::enterActionstatement(TorqueParser::ActionstatementContext* context)
-    {
-
-    }
-
-    void Compiler::exitActionstatement(TorqueParser::ActionstatementContext* context)
-    {
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-        currentFrame.push_back(std::shared_ptr<Instruction>(new PopInstruction()));
-    }
-
-    void Compiler::enterWhilecontrol(TorqueParser::WhilecontrolContext* context)
-    {
-
-    }
-
-    void Compiler::exitWhilecontrol(TorqueParser::WhilecontrolContext* context)
-    {
-        const unsigned int statementCount = context->statement().size();
-
-        std::vector<std::shared_ptr<Instruction>> whileBody;
-        for (unsigned int iteration = 0; iteration < statementCount; ++iteration)
-        {
-            std::vector<std::shared_ptr<Instruction>> bodyStatement = this->getCurrentInstructionFrame();
-            whileBody.insert(whileBody.begin(), bodyStatement.begin(), bodyStatement.end());
-            this->popInstructionFrame();
+            InstructionSequence childCode = bodyNode->accept(this).as<InstructionSequence>();
+            bodyCode.insert(bodyCode.end(), childCode.begin(), childCode.end());
         }
 
-        // Next frame should be expression
-        std::vector<std::shared_ptr<Instruction>> whileExpression = this->getCurrentInstructionFrame();
-        this->popInstructionFrame();
+        // Expression should jump over body if false (+2 added for the NOP and jump below)
+        expressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(bodyCode.size() + 2)));
 
-        // Our expression should jump over our while body +2 (NOP and jump back) if false
-        whileExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(whileBody.size() + 2)));
+        // Body should jump back to the expression to reevaluate
+        const int jumpTarget = -((int)(bodyCode.size() + expressionCode.size()));
+        bodyCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(jumpTarget)));
+
+        // Add a NOP for a jump target
+        bodyCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
+
+        // Add loop trackers
+        bodyCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopLoopInstruction()));
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLoopInstruction(expressionCode.size() + bodyCode.size())));
+
+        out.insert(out.end(), expressionCode.begin(), expressionCode.end());
+        out.insert(out.end(), bodyCode.begin(), bodyCode.end());
+
+
+        return out;
+    }
+
+    antlrcpp::Any Compiler::visitForNode(AST::ForNode* node)
+    {
+        InstructionSequence out;
+        InstructionSequence initializerCode = node->mInitializer->accept(this).as<InstructionSequence>();
+        InstructionSequence expressionCode = node->mExpression->accept(this).as<InstructionSequence>();
+        InstructionSequence advanceCode = node->mAdvance->accept(this).as<InstructionSequence>();
+
+        InstructionSequence forBody;
+        for (AST::ASTNode* bodyNode : node->mBody)
+        {
+            InstructionSequence childInstructions = bodyNode->accept(this).as<InstructionSequence>();
+            forBody.insert(forBody.end(), childInstructions.begin(), childInstructions.end());
+        }
+
+        // At the end of the loop, run advance
+        forBody.insert(forBody.end(), advanceCode.begin(), advanceCode.end());
+
+        // Pop the result of our initializer so it doesn't corrupt the stack
+        initializerCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
 
         // Our body should return to the expression
-        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
-
-        const unsigned int jumpTarget = whileExpression.size() + whileBody.size();
-        whileBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(-jumpTarget)));
-        whileBody.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
-
-        whileBody.push_back(std::shared_ptr<Instruction>(new PopLoopInstruction()));
-        targetFrame.push_back(std::shared_ptr<Instruction>(new PushLoopInstruction(whileExpression.size() + whileBody.size())));
-
-        // Set comments
-        whileExpression[0]->mComment = "Begin While";
-        whileBody[whileBody.size() - 1]->mComment = "End While";
-
-        // Push generated instructions
-        targetFrame.insert(targetFrame.end(), whileExpression.begin(), whileExpression.end());
-        targetFrame.insert(targetFrame.end(), whileBody.begin(), whileBody.end());
-    }
-
-    void Compiler::enterControlexpression(TorqueParser::ControlexpressionContext* context)
-    {
-        this->pushInstructionFrame();
-    }
-
-    void Compiler::exitControlexpression(TorqueParser::ControlexpressionContext* context)
-    {
-
-    }
-
-    void Compiler::enterTernary(TorqueParser::TernaryContext* context)
-    {
-
-    }
-
-    void Compiler::exitTernary(TorqueParser::TernaryContext* context)
-    {
-        // A ternary is made up of three expressions
-        std::vector<std::shared_ptr<Instruction>> falseExpression = this->getCurrentInstructionFrame();
-        this->popInstructionFrame();
-        std::vector<std::shared_ptr<Instruction>> trueExpression = this->getCurrentInstructionFrame();
-        this->popInstructionFrame();
-
-        std::vector<std::shared_ptr<Instruction>> statement = this->getCurrentInstructionFrame();
-        this->popInstructionFrame();
-
-        // We add a NOP to the false expressions for a target to jump to
-        falseExpression.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
-
-        // In the true expression we need to jump over the false expression
-        trueExpression.push_back(std::shared_ptr<Instruction>(new JumpInstruction(falseExpression.size())));
-
-        // Jump to the false expression if our expression is false
-        statement.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(falseExpression.size() + 1)));
-
-        // Push generated instructions back
-        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
-        targetFrame.insert(targetFrame.end(), statement.begin(), statement.end());
-        targetFrame.insert(targetFrame.end(), trueExpression.begin(), trueExpression.end());
-        targetFrame.insert(targetFrame.end(), falseExpression.begin(), falseExpression.end());
-    }
-
-    void Compiler::enterForcontrol(TorqueParser::ForcontrolContext* context)
-    {
-
-    }
-
-    void Compiler::exitForcontrol(TorqueParser::ForcontrolContext* context)
-    {
-        // A for control is made up of any number of statements and 3 expressions
-        const unsigned int statementCount = context->statement().size();
-
-        std::vector<std::shared_ptr<Instruction>> forBody;
-        for (unsigned int iteration = 0; iteration < statementCount; ++iteration)
-        {
-            std::vector<std::shared_ptr<Instruction>> bodyStatement = this->getCurrentInstructionFrame();
-            forBody.insert(forBody.begin(), bodyStatement.begin(), bodyStatement.end());
-            this->popInstructionFrame();
-        }
-
-        // A for is made of 3 expressions
-        std::vector<std::shared_ptr<Instruction>> advanceExpression = this->getCurrentInstructionFrame();
-        this->popInstructionFrame();
-        std::vector<std::shared_ptr<Instruction>> conditionExpression = this->getCurrentInstructionFrame();
-        this->popInstructionFrame();
-
-        std::vector<std::shared_ptr<Instruction>> initialExpression = this->getCurrentInstructionFrame();
-
-        this->popInstructionFrame();
-
-        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
-
-        // Push our initial expression out and pop its result
-        initialExpression.push_back(std::shared_ptr<Instruction>(new PopInstruction()));
-        targetFrame.insert(targetFrame.end(), initialExpression.begin(), initialExpression.end());
-
-        // At the end of our loop, run the advance expression
-        forBody.insert(forBody.end(), advanceExpression.begin(), advanceExpression.end());
-
-        // Our body should return to the expression
-        const unsigned int jumpTarget = conditionExpression.size() + forBody.size();
-        forBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(-jumpTarget)));
-        forBody.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
+        const AddressType jumpTarget = expressionCode.size() + forBody.size();
+        forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(-jumpTarget)));
+        forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
 
         // Check if our expression is false
-        conditionExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(forBody.size())));
+        expressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction((int)forBody.size())));
 
-        forBody.push_back(std::shared_ptr<Instruction>(new PopLoopInstruction()));
-        targetFrame.push_back(std::shared_ptr<Instruction>(new PushLoopInstruction(conditionExpression.size() + forBody.size())));
-
-        // Set comments
-        conditionExpression[0]->mComment = "Begin For";
-        forBody[forBody.size() - 1]->mComment = "End For";
+        forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopLoopInstruction()));
+        initializerCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLoopInstruction(expressionCode.size() + forBody.size())));
 
         // Output final code
-        targetFrame.insert(targetFrame.end(), conditionExpression.begin(), conditionExpression.end());
-        targetFrame.insert(targetFrame.end(), forBody.begin(), forBody.end());
+        out.insert(out.end(), initializerCode.begin(), initializerCode.end());
+        out.insert(out.end(), expressionCode.begin(), expressionCode.end());
+        out.insert(out.end(), forBody.begin(), forBody.end());
+
+        return out;
     }
 
-    void Compiler::enterSubreference(TorqueParser::SubreferenceContext* context)
+    antlrcpp::Any Compiler::visitBreakNode(AST::BreakNode* node)
     {
-
+        InstructionSequence out;
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::BreakInstruction()));
+        return out;
     }
 
-    void Compiler::exitSubreference(TorqueParser::SubreferenceContext* context)
+    antlrcpp::Any Compiler::visitReturnNode(AST::ReturnNode* node)
     {
-        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
-
-        targetFrame.push_back(std::shared_ptr<Instruction>(new SubReferenceInstruction(context->label()->getText())));
-    }
-
-    void Compiler::enterIfcontrol(TorqueParser::IfcontrolContext* context)
-    {
-
-    }
-
-    void Compiler::exitIfcontrol(TorqueParser::IfcontrolContext* context)
-    {
-        // Load the else if present
-        std::vector<std::shared_ptr<Instruction>> elseBody;
-        if (context->elsecontrol())
+        InstructionSequence out;
+        if (node->mExpression)
         {
-            unsigned int statementCount = context->elsecontrol()->statement().size();
-            for (unsigned int iteration = 0; iteration < statementCount; ++iteration)
+            out = node->mExpression->accept(this).as<InstructionSequence>();
+        }
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::ReturnInstruction()));
+        return out;
+    }
+
+    antlrcpp::Any Compiler::visitTernaryNode(AST::TernaryNode* node)
+    {
+        InstructionSequence out;
+
+        InstructionSequence expressionCode = node->mExpression->accept(this).as<InstructionSequence>();
+        InstructionSequence trueValueCode = node->mTrueValue->accept(this).as<InstructionSequence>();
+        InstructionSequence falseValueCode = node->mFalseValue->accept(this).as<InstructionSequence>();
+
+        // We add a NOP to the false expressions for a target to jump to
+        falseValueCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
+
+        // In the true expression we need to jump over the false expression
+        trueValueCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(falseValueCode.size())));
+
+        // Jump to the false expression if our expression is false
+        expressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(falseValueCode.size() + 1)));
+
+        out.insert(out.end(), expressionCode.begin(), expressionCode.end());
+        out.insert(out.end(), trueValueCode.begin(), trueValueCode.end());
+        out.insert(out.end(), falseValueCode.begin(), falseValueCode.end());
+
+        return out;
+    }
+
+    antlrcpp::Any Compiler::visitSwitchNode(AST::SwitchNode* node)
+    {
+        InstructionSequence out;
+
+        InstructionSequence expressionCode = node->mExpression->accept(this).as<InstructionSequence>();
+
+        // NOTE: We intentionally process in reverse order due to needing to know how long existing code is to jump over
+        // Add a NOP to jump to
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
+
+        InstructionSequence defaultInstructions;
+        for (AST::ASTNode* defaultNode : node->mDefaultBody)
+        {
+            InstructionSequence childInstructions = defaultNode->accept(this).as<InstructionSequence>();
+            defaultInstructions.insert(defaultInstructions.end(), childInstructions.begin(), childInstructions.end());
+        }
+        out.insert(out.begin(), defaultInstructions.begin(), defaultInstructions.end());
+
+        // Process all cases
+        for (AST::SwitchCaseNode* caseNode : node->mCases)
+        {
+            InstructionSequence caseBody;
+            for (AST::ASTNode* node : caseNode->mBody)
             {
-                std::vector<std::shared_ptr<Instruction>> bodyStatement = this->getCurrentInstructionFrame();
-                elseBody.insert(elseBody.begin(), bodyStatement.begin(), bodyStatement.end());
-                this->popInstructionFrame();
+                InstructionSequence childInstructions = node->accept(this).as<InstructionSequence>();
+                caseBody.insert(caseBody.end(), childInstructions.begin(), childInstructions.end());
             }
-        }
-        elseBody.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
+            // If we enter this body we should skip over the rest of the instructions
+            caseBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(out.size())));
 
-        // Set comments
-        elseBody[0]->mComment = "Begin Else";
-        elseBody[elseBody.size() - 1]->mComment = "End Else";
-
-        // Deal with else if's
-        std::vector<std::shared_ptr<Instruction>> elseIfCode;
-        unsigned int elseIfCount = context->elseifcontrol().size();
-        for (unsigned int iteration = 0; iteration < elseIfCount; ++iteration)
-        {
-            unsigned int statementCount = context->elseifcontrol()[iteration]->statement().size();
-
-            // Load all statements from else if
-            std::vector<std::shared_ptr<Instruction>> elseIfBody;
-            for (unsigned int elseIfIteration = 0; elseIfIteration < statementCount; ++elseIfIteration)
+            // Generate a sequence of checks until something comes out to be true
+            InstructionSequence caseExpressions;
+            for (auto iterator = caseNode->mCases.begin(); iterator != caseNode->mCases.end(); ++iterator)
             {
-                std::vector<std::shared_ptr<Instruction>> bodyStatement = this->getCurrentInstructionFrame();
-                elseIfBody.insert(elseIfBody.begin(), bodyStatement.begin(), bodyStatement.end());
-                this->popInstructionFrame();
+                AST::ASTNode* currentCaseExpression = *iterator;
+                InstructionSequence caseExpressionCode = currentCaseExpression->accept(this).as<InstructionSequence>();
+
+                // Place our expression to check against and then check if equal
+                caseExpressionCode.insert(caseExpressionCode.end(), expressionCode.begin(), expressionCode.end());
+                caseExpressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::EqualsInstruction()));
+
+                if (iterator != caseNode->mCases.begin())
+                {
+                    caseExpressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpTrueInstruction(caseExpressions.size() + 1)));
+                }
+                else
+                {
+                    caseExpressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(caseBody.size() + 1)));
+                }
+
+                caseExpressions.insert(caseExpressions.begin(), caseExpressionCode.begin(), caseExpressionCode.end());
             }
 
-            // Load the expression
-            std::vector<std::shared_ptr<Instruction>> elseIfExpression = this->getCurrentInstructionFrame();
-            this->popInstructionFrame();
-
-            // If the expression is false, jump to next statement or end
-            elseIfExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(elseIfBody.size() + 2)));
-
-            // The if body should skip over all instructions in the true branch
-            elseIfBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(elseIfCode.size() + elseBody.size() + 1)));
-
-            // Set comments
-            elseIfExpression[0]->mComment = "Begin Else If";
-            elseIfBody[elseIfBody.size() - 1]->mComment = "End Else If";
-
-            elseIfCode.insert(elseIfCode.begin(), elseIfBody.begin(), elseIfBody.end());
-            elseIfCode.insert(elseIfCode.begin(), elseIfExpression.begin(), elseIfExpression.end());
+            out.insert(out.begin(), caseBody.begin(), caseBody.end());
+            out.insert(out.begin(), caseExpressions.begin(), caseExpressions.end());
         }
 
-        // Load the original if now
-        std::vector<std::shared_ptr<Instruction>> ifBody;
-        unsigned int statementCount = context->statement().size();
-
-        for (unsigned int iteration = 0; iteration < statementCount; ++iteration)
-        {
-            std::vector<std::shared_ptr<Instruction>> bodyStatement = this->getCurrentInstructionFrame();
-            ifBody.insert(ifBody.begin(), bodyStatement.begin(), bodyStatement.end());
-            this->popInstructionFrame();
-        }
-
-        std::vector<std::shared_ptr<Instruction>> ifExpression = this->getCurrentInstructionFrame();
-        this->popInstructionFrame();
-
-        // The if body should skip over all instructions in the true branch
-        ifBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(elseIfCode.size() + elseBody.size() + 1)));
-
-        // Make the expression jump over the body if our expression is false
-        ifExpression.push_back(std::shared_ptr<Instruction>(new JumpFalseInstruction(ifBody.size() + 1)));
-
-        // Set comments
-        ifExpression[0]->mComment = "Begin If";
-        ifBody[ifBody.size() - 1]->mComment = "End If";
-
-        // Output code
-        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
-
-        targetFrame.insert(targetFrame.end(), ifExpression.begin(), ifExpression.end());
-        targetFrame.insert(targetFrame.end(), ifBody.begin(), ifBody.end());
-
-        targetFrame.insert(targetFrame.end(), elseIfCode.begin(), elseIfCode.end());
-        targetFrame.insert(targetFrame.end(), elseBody.begin(), elseBody.end());
+        return out;
     }
 
-    void Compiler::enterReturncontrol(TorqueParser::ReturncontrolContext* context)
+    antlrcpp::Any Compiler::visitIfNode(AST::IfNode* node)
     {
+        InstructionSequence out;
 
-    }
-
-    void Compiler::exitReturncontrol(TorqueParser::ReturncontrolContext* context)
-    {
-        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
-        targetFrame.push_back(std::shared_ptr<Instruction>(new ReturnInstruction()));
-    }
-
-    void Compiler::enterEquality(TorqueParser::EqualityContext* context)
-    {
-
-    }
-
-    void Compiler::exitEquality(TorqueParser::EqualityContext* context)
-    {
-        std::vector<std::shared_ptr<Instruction>>& targetFrame = this->getCurrentInstructionFrame();
-
-        if (context->EQUAL())
+        // Generate else code
+        InstructionSequence elseCode;
+        for (AST::ASTNode* bodyNode : node->mElseBody)
         {
-            targetFrame.push_back(std::shared_ptr<Instruction>(new EqualsInstruction()));
+            InstructionSequence childInstructions = bodyNode->accept(this).as<InstructionSequence>();
+            elseCode.insert(elseCode.end(), childInstructions.begin(), childInstructions.end());
         }
-        else
-        {
-            throw std::runtime_error("Unhandled equality op!");
-        }
-    }
+        elseCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction())); // Add a NOP for jump targets
+        out.insert(out.end(), elseCode.begin(), elseCode.end());
 
-    void Compiler::enterArray(TorqueParser::ArrayContext* context)
-    {
-
-    }
-
-    void Compiler::exitArray(TorqueParser::ArrayContext* context)
-    {
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-
-        std::string name = "";
-        bool global = false;
-        if (context->globalvariable())
+        // Generate all else if's
+        for (AST::ElseIfNode* elseIf : node->mElseIfs)
         {
-            global = true;
-            name = context->globalvariable()->label()->getText();
-        }
-        else if (context->localvariable())
-        {
-            name = context->localvariable()->label()->getText();
-        }
-        else
-        {
-            throw std::runtime_error("Encountered unknown variable reference type in array!");
+            InstructionSequence elseIfBody;
+
+            for (AST::ASTNode* node : elseIf->mBody)
+            {
+                InstructionSequence childInstructions = node->accept(this).as<InstructionSequence>();
+                elseIfBody.insert(elseIfBody.end(), childInstructions.begin(), childInstructions.end());
+            }
+
+            InstructionSequence elseIfExpression = elseIf->mExpression->accept(this).as<InstructionSequence>();
+
+            // The expression must jump over our body if false
+            elseIfExpression.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(elseIfBody.size() + 2)));
+
+            // The body, when done, must jump over the remaining code
+            elseIfBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(out.size())));
+
+            out.insert(out.begin(), elseIfBody.begin(), elseIfBody.end());
+            out.insert(out.begin(), elseIfExpression.begin(), elseIfExpression.end());
         }
 
-        currentFrame.push_back(std::shared_ptr<Instruction>(new AccessArrayInstruction(name, context->expression().size(), global)));
+        // Generate primary if condition
+        InstructionSequence ifExpression = node->mExpression->accept(this).as<InstructionSequence>();
+
+        InstructionSequence ifBody;
+        for (AST::ASTNode* bodyNode : node->mBody)
+        {
+            InstructionSequence childInstructions = bodyNode->accept(this).as<InstructionSequence>();
+            ifBody.insert(ifBody.end(), childInstructions.begin(), childInstructions.end());
+        }
+
+        // The expression must jump over our body if false
+        ifExpression.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(ifBody.size() + 2)));
+
+        // The body, when done, must jump over the remaining code
+        ifBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(out.size())));
+
+        out.insert(out.begin(), ifBody.begin(), ifBody.end());
+        out.insert(out.begin(), ifExpression.begin(), ifExpression.end());
+        return out;
     }
 
-    void Compiler::enterDatablockdeclaration(TorqueParser::DatablockdeclarationContext* context)
+    antlrcpp::Any Compiler::visitArrayNode(AST::ArrayNode* array)
+    {
+        InstructionSequence out;
+
+        AST::LocalVariableNode* localVariable = dynamic_cast<AST::LocalVariableNode*>(array->mTarget);
+        AST::GlobalVariableNode* globalVariable = dynamic_cast<AST::GlobalVariableNode*>(array->mTarget);
+
+        assert(localVariable || globalVariable);
+        std::string variableName = localVariable ? localVariable->getName() : globalVariable->getName();
+
+        // Ask all indices to generate their code
+        for (AST::ASTNode* node : array->mIndices)
+        {
+            InstructionSequence childInstructions = node->accept(this).as<InstructionSequence>();
+            out.insert(out.end(), childInstructions.begin(), childInstructions.end());
+        }
+
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::AccessArrayInstruction(variableName, array->mIndices.size(), globalVariable != nullptr)));
+        return out;
+    }
+
+    antlrcpp::Any Compiler::visitEqualsNode(AST::EqualsNode* expression)
+    {
+        InstructionSequence out;
+
+        InstructionSequence lhsCode = expression->mLeft->accept(this).as<InstructionSequence>();
+        InstructionSequence rhsCode = expression->mRight->accept(this).as<InstructionSequence>();
+
+        out.insert(out.end(), lhsCode.begin(), lhsCode.end());
+        out.insert(out.end(), rhsCode.begin(), rhsCode.end());
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::EqualsInstruction()));
+
+        return out;
+    }
+
+    antlrcpp::Any Compiler::visitConcatNode(AST::ConcatNode* expression)
+    {
+        InstructionSequence out;
+
+        InstructionSequence lhsCode = expression->mLeft->accept(this).as<InstructionSequence>();
+        InstructionSequence rhsCode = expression->mRight->accept(this).as<InstructionSequence>();
+
+        out.insert(out.end(), lhsCode.begin(), lhsCode.end());
+        out.insert(out.end(), rhsCode.begin(), rhsCode.end());
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::ConcatInstruction(expression->mSeperator)));
+
+        return out;
+    }
+
+    antlrcpp::Any Compiler::visitDivideNode(AST::DivideNode* expression)
+    {
+        InstructionSequence out;
+
+        InstructionSequence lhsCode = expression->mLeft->accept(this).as<InstructionSequence>();
+        InstructionSequence rhsCode = expression->mRight->accept(this).as<InstructionSequence>();
+
+        out.insert(out.end(), lhsCode.begin(), lhsCode.end());
+        out.insert(out.end(), rhsCode.begin(), rhsCode.end());
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::DivideInstruction()));
+
+        return out;
+    }
+
+    antlrcpp::Any Compiler::visitMultiplyNode(AST::MultiplyNode* expression)
+    {
+        InstructionSequence out;
+
+        InstructionSequence lhsCode = expression->mLeft->accept(this).as<InstructionSequence>();
+        InstructionSequence rhsCode = expression->mRight->accept(this).as<InstructionSequence>();
+
+        out.insert(out.end(), lhsCode.begin(), lhsCode.end());
+        out.insert(out.end(), rhsCode.begin(), rhsCode.end());
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::MultiplyInstruction()));
+
+        return out;
+    }
+
+    antlrcpp::Any Compiler::visitDatablockDeclarationNode(AST::DatablockDeclarationNode* datablock)
     {
         throw std::runtime_error("Datablocks not Implemented Yet");
     }
 
-    void Compiler::exitDatablockdeclaration(TorqueParser::DatablockdeclarationContext* context)
+    antlrcpp::Any Compiler::visitFieldAssignNode(AST::FieldAssignNode* node)
     {
+        InstructionSequence out;
 
-    }
+        // Push base
+        const std::size_t stringID = mStringTable->getOrAssign(node->mFieldBaseName);
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringID)));
 
-    void Compiler::enterPackagedeclaration(TorqueParser::PackagedeclarationContext* context)
-    {
-        throw std::runtime_error("Packages not Implemented Yet");
-    }
-
-    void Compiler::exitPackagedeclaration(TorqueParser::PackagedeclarationContext* context)
-    {
-
-    }
-
-    void Compiler::enterSwitchcontrol(TorqueParser::SwitchcontrolContext* context)
-    {
-
-    }
-
-    void Compiler::exitSwitchcontrol(TorqueParser::SwitchcontrolContext* context)
-    {
-        std::vector<std::shared_ptr<Instruction>> defaultCaseInstructions;
-        if (context->defaultcase())
+        // Push all array components
+        for (AST::ASTNode* childNode : node->mFieldExpressions)
         {
-            TorqueParser::DefaultcaseContext* defaultCase = context->defaultcase();
-
-            // Load instructions for the default case
-            std::vector<TorqueParser::StatementContext*> defaultStatements = defaultCase->statement();
-            for (auto statement : defaultStatements)
-            {
-                std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-                defaultCaseInstructions.insert(defaultCaseInstructions.begin(), currentFrame.begin(), currentFrame.end());
-                this->popInstructionFrame();
-            }
+            InstructionSequence childCode = childNode->accept(this).as<InstructionSequence>();
+            out.insert(out.end(), childCode.begin(), childCode.end());
         }
 
-        // The switch structure is a little more complex - a set of expressions is associated with it so we need to track a list of expressions
-        // and the body code
-        struct SwitchCaseData
+        // Push the rvalue
+        InstructionSequence rvalueCode = node->mRight->accept(this).as<InstructionSequence>();
+        out.insert(out.end(), rvalueCode.begin(), rvalueCode.end());
+
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushObjectFieldInstruction(node->mFieldExpressions.size())));
+        return out;
+    }
+
+    antlrcpp::Any Compiler::visitObjectDeclarationNode(AST::ObjectDeclarationNode* object)
+    {
+        InstructionSequence out;
+
+        // The stack should look something like:
+        // ...
+        // ObjectTypeName
+        // ObjectName
+        InstructionSequence typeNameCode = object->mType->accept(this).as<InstructionSequence>();
+        out.insert(out.begin(), typeNameCode.begin(), typeNameCode.end());
+
+        if (object->mName)
         {
-            std::vector<std::shared_ptr<Instruction>> mCaseBody;
-            std::vector<std::vector<std::shared_ptr<Instruction>>> mExpressions;
-        };
-
-        // Now enumerate all case statements
-        std::vector<SwitchCaseData> caseData;
-        std::vector<TorqueParser::SwitchcaseContext*> switchCases = context->switchcase();
-        for (auto iterator = switchCases.rbegin(); iterator != switchCases.rend(); ++iterator)
+            InstructionSequence nameCode = object->mName->accept(this).as<InstructionSequence>();
+            out.insert(out.end(), nameCode.begin(), nameCode.end());
+        }
+        else
         {
-            caseData.push_back(SwitchCaseData());
-            SwitchCaseData& currentCaseData = caseData.back();
-
-            TorqueParser::SwitchcaseContext* caseContext = *iterator;
-
-            // Load all statements from the case
-            std::vector<TorqueParser::StatementContext*> caseStatements = caseContext->statement();
-            for (auto statementIterator = caseStatements.begin(); statementIterator != caseStatements.end(); ++statementIterator)
-            {
-                std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-                currentCaseData.mCaseBody.insert(currentCaseData.mCaseBody.begin(), currentFrame.begin(), currentFrame.end());
-                this->popInstructionFrame();
-            }
-
-            // Load all expressions
-            std::vector<TorqueParser::ControlexpressionContext*> caseExpressions = caseContext->controlexpression();
-            for (auto expressionIterator = caseExpressions.begin(); expressionIterator != caseExpressions.end(); ++expressionIterator)
-            {
-                currentCaseData.mExpressions.push_back(std::vector<std::shared_ptr<Instruction>>());
-                std::vector<std::shared_ptr<Instruction>>& currentExpression = currentCaseData.mExpressions.back();
-
-                std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-                currentExpression.insert(currentExpression.begin(), currentFrame.begin(), currentFrame.end());
-                this->popInstructionFrame();
-            }
+            const std::size_t stringID = mStringTable->getOrAssign("");
+            out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringID)));
         }
 
-        // Finally load the expression to switch on
-        std::vector<std::shared_ptr<Instruction>> switchExpression = this->getCurrentInstructionFrame();
-        this->popInstructionFrame();
+        // Push Object
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushObjectInstantiationInstruction()));
 
-        // Once we know our expression, we need to cycle through our stored case data and generate handlers for each one
-        for (SwitchCaseData& currentCaseData : caseData)
+        // ... gen fields
+        for (AST::ASTNode* field : object->mFields)
         {
-            std::vector<std::shared_ptr<Instruction>> generatedConditions;
-
-            // For each sub expression we push our expression
-            const unsigned int expressionCount = currentCaseData.mExpressions.size();
-            for (auto expressionIteration = currentCaseData.mExpressions.begin(); expressionIteration != currentCaseData.mExpressions.end(); ++expressionIteration)
-            {
-                std::vector<std::shared_ptr<Instruction>>& expression = *expressionIteration;
-
-                // Check if the expression is true - if so, jump to body immediately unless we're the last check then we jump false over the body
-                if (expressionIteration == currentCaseData.mExpressions.begin())
-                {
-                    generatedConditions.insert(generatedConditions.begin(), std::shared_ptr<Instruction>(new JumpFalseInstruction(currentCaseData.mCaseBody.size() + 2)));
-                }
-                else
-                {
-                    generatedConditions.insert(generatedConditions.begin(), std::shared_ptr<Instruction>(new JumpTrueInstruction(generatedConditions.size() + 1)));
-                }
-
-                generatedConditions.insert(generatedConditions.begin(), std::shared_ptr<Instruction>(new EqualsInstruction()));
-                generatedConditions.insert(generatedConditions.begin(), switchExpression.begin(), switchExpression.end());
-                generatedConditions.insert(generatedConditions.begin(), expression.begin(), expression.end());
-
-                generatedConditions[0]->mComment = "Begin Case";
-                generatedConditions[generatedConditions.size() - 1]->mComment = "End Case";
-            }
-            currentCaseData.mCaseBody.insert(currentCaseData.mCaseBody.begin(), generatedConditions.begin(), generatedConditions.end());
+            InstructionSequence fieldCode = field->accept(this).as<InstructionSequence>();
+            out.insert(out.end(), fieldCode.begin(), fieldCode.end());
         }
 
-        // Stick the default case entry at the end
-        caseData.insert(caseData.begin(), SwitchCaseData());
-        SwitchCaseData& defaultCaseData = caseData.front();
-        defaultCaseData.mCaseBody.insert(defaultCaseData.mCaseBody.begin(), defaultCaseInstructions.begin(), defaultCaseInstructions.end());
-        defaultCaseData.mCaseBody.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
-        defaultCaseData.mCaseBody[0]->mComment = "Begin Default Case";
-        defaultCaseData.mCaseBody[defaultCaseData.mCaseBody.size() - 1]->mComment = "End Default Case";
-
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-
-        // Output code and insert jumps for true branches
-        for (auto iterator = caseData.begin(); iterator != caseData.end(); ++iterator)
+        // ... gen children
+        for (AST::ObjectDeclarationNode* child : object->mChildren)
         {
-            SwitchCaseData& currentCaseData = *iterator;
-
-            // Generate a jump to end for the true case
-            if (currentFrame.size() != 0)
-            {
-                currentCaseData.mCaseBody.push_back(std::shared_ptr<Instruction>(new JumpInstruction(currentFrame.size())));
-            }
-            else
-            {
-                currentCaseData.mCaseBody.push_back(std::shared_ptr<Instruction>(new NOPInstruction()));
-            }
-
-            currentFrame.insert(currentFrame.begin(), currentCaseData.mCaseBody.begin(), currentCaseData.mCaseBody.end());
+            InstructionSequence childCode = child->accept(this).as<InstructionSequence>();
+            out.insert(out.end(), childCode.begin(), childCode.end());
         }
-    }
 
-    void Compiler::enterNewobject(TorqueParser::NewobjectContext* context)
-    {
-        throw std::runtime_error("New Object Statements not Implemented Yet");
-    }
+        // Pop object
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopObjectInstantiationInstruction()));
 
-    void Compiler::exitNewobject(TorqueParser::NewobjectContext* context)
-    {
+            /*
+            *                 ASTNode* mName;
+                ASTNode* mType;
 
-    }
+                std::vector<ObjectDeclarationNode*> mChildren;
+                std::vector<ASTNode*> mFields;
+            */
 
-    void Compiler::enterBreakcontrol(TorqueParser::BreakcontrolContext* context)
-    {
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-        currentFrame.push_back(std::shared_ptr<Instruction>(new BreakInstruction()));
-    }
-
-    void Compiler::exitBreakcontrol(TorqueParser::BreakcontrolContext* context)
-    {
-
-    }
-
-    void Compiler::enterLogicalop(TorqueParser::LogicalopContext* context)
-    {
-        throw std::runtime_error("Logical Operators not Implemented Yet");
-    }
-
-    void Compiler::exitLogicalop(TorqueParser::LogicalopContext* context)
-    {
-
-    }
-
-    void Compiler::enterLocalVariableValue(TorqueParser::LocalVariableValueContext* context)
-    {
-
-    }
-
-    void Compiler::exitLocalVariableValue(TorqueParser::LocalVariableValueContext* context)
-    {
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-
-        const std::string variableName = context->localvariable()->label()->getText();
-        currentFrame.push_back(std::shared_ptr<Instruction>(new PushLocalReferenceInstruction(variableName)));
-    }
-
-    void Compiler::enterGlobalVariableValue(TorqueParser::GlobalVariableValueContext* context)
-    {
-
-    }
-
-    void Compiler::exitGlobalVariableValue(TorqueParser::GlobalVariableValueContext* context)
-    {
-        std::vector<std::shared_ptr<Instruction>>& currentFrame = this->getCurrentInstructionFrame();
-
-        const std::string variableName = context->globalvariable()->label()->getText();
-        currentFrame.push_back(std::shared_ptr<Instruction>(new PushGlobalReferenceInstruction(variableName)));
+        return out;
     }
 }

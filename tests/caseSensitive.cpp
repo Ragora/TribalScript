@@ -12,32 +12,37 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <vector>
-#include <string>
+#include <memory>
 
-#include <torquescript/parsererrorlistener.hpp>
+#include "gtest/gtest.h"
 
-namespace TorqueScript
+#include <torquescript/interpreter.hpp>
+#include <torquescript/storedvalue.hpp>
+#include <torquescript/libraries/libraries.hpp>
+#include <torquescript/executionstate.hpp>
+
+TEST(InterpreterTest, Array)
 {
-    void ParserErrorListener::syntaxError(antlr4::Recognizer* recognizer, antlr4::Token* offendingSymbol, size_t line, size_t charPositionInLine, const std::string& msg, std::exception_ptr e)
-    {
-        std::ostringstream out;
+    TorqueScript::InterpreterConfiguration config;
+    config.mCaseSensitive = true;
 
-        if (offendingSymbol)
-        {
-            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << " : '" << offendingSymbol->getText() << "'" << std::endl;
-        }
-        else
-        {
-            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << std::endl;
-        }
-       
-        out << msg << std::endl;
-        mErrors.push_back(out.str());
-    }
+    TorqueScript::Interpreter interpreter(config);
+    TorqueScript::registerAllLibraries(&interpreter);
 
-    const std::vector<std::string>& ParserErrorListener::getErrors()
-    {
-        return mErrors;
-    }
+    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    interpreter.execute("cases/caseSensitive.cs", state);
+
+    TorqueScript::StoredValue* resultLower = interpreter.getGlobal("result");
+    ASSERT_TRUE(resultLower);
+    TorqueScript::StoredValue* resultUpper = interpreter.getGlobal("RESULT");
+    ASSERT_TRUE(resultUpper);
+
+    ASSERT_EQ(resultLower->toFloat(state), 2.0f);
+    ASSERT_EQ(resultUpper->toFloat(state), 0.5f);
+}
+
+int main()
+{
+    testing::InitGoogleTest();
+    return RUN_ALL_TESTS();
 }

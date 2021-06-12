@@ -16,9 +16,32 @@
 
 namespace TorqueScript
 {
-    std::shared_ptr<StoredValue> ExecutionScope::getVariable(const std::string& name)
+    ExecutionScope::ExecutionScope(const InterpreterConfiguration& config, StringTable* table) : mConfig(config), mStringTable(table)
     {
-        std::string lookup = toLowerCase(name);
+        this->pushFrame(nullptr);
+    }
+
+    StoredValue* ExecutionScope::getVariable(const std::size_t name)
+    {
+        if (mExecutionScopeData.empty())
+        {
+            return nullptr;
+        }
+
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+
+        auto search = currentScope.mLocalVariables.find(name);
+        if (search != currentScope.mLocalVariables.end())
+        {
+            return &search->second;
+        }
+
+        return nullptr;
+    }
+
+    StoredValue* ExecutionScope::getVariable(const std::string& name)
+    {
+        std::size_t lookup = mStringTable->getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
 
         if (mExecutionScopeData.empty())
         {
@@ -30,29 +53,55 @@ namespace TorqueScript
         auto search = currentScope.mLocalVariables.find(lookup);
         if (search != currentScope.mLocalVariables.end())
         {
-            return search->second;
+            return &search->second;
         }
 
         return nullptr;
     }
 
-    void ExecutionScope::setVariable(const std::string& name, std::shared_ptr<StoredValue> variable)
+    void ExecutionScope::setVariable(const std::size_t name, StoredValue variable)
     {
-        std::string key = toLowerCase(name);
+        // Initialize if necessary
+        if (mExecutionScopeData.empty())
+        {
+            this->pushFrame(nullptr);
+        }
+
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+
+        auto search = currentScope.mLocalVariables.find(name);
+        if (search != currentScope.mLocalVariables.end())
+        {
+            search->second = variable;
+            return;
+        }
+
+        currentScope.mLocalVariables.insert(std::make_pair(name, variable));
+    }
+
+    void ExecutionScope::setVariable(const std::string& name, StoredValue variable)
+    {
+        std::size_t key = mStringTable->getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
 
         // Initialize if necessary
         if (mExecutionScopeData.empty())
         {
-            this->pushFrame();
+            this->pushFrame(nullptr);
         }
 
         ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
-        currentScope.mLocalVariables[key] = variable;
+        auto search = currentScope.mLocalVariables.find(key);
+        if (search != currentScope.mLocalVariables.end())
+        {
+            search->second = variable;
+            return;
+        }
+        currentScope.mLocalVariables.insert(std::make_pair(key, variable));
     }
 
-    void ExecutionScope::pushFrame()
+    void ExecutionScope::pushFrame(Function* function)
     {
-        mExecutionScopeData.push_back(ExecutionScopeData());
+        mExecutionScopeData.push_back(ExecutionScopeData(function));
     }
 
     void ExecutionScope::popFrame()
@@ -60,12 +109,12 @@ namespace TorqueScript
         mExecutionScopeData.pop_back();
     }
 
-    void ExecutionScope::pushLoop(const unsigned int pointer, const unsigned int depth)
+    void ExecutionScope::pushLoop(const AddressType pointer, const std::size_t depth)
     {
         // Initialize if necessary
         if (mExecutionScopeData.empty())
         {
-            this->pushFrame();
+            this->pushFrame(nullptr);
         }
 
         ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
@@ -101,5 +150,59 @@ namespace TorqueScript
 
         ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
         return currentScope.mLoopDescriptors.empty();
+    }
+
+    std::size_t ExecutionScope::getFrameDepth()
+    {
+        return mExecutionScopeData.size();
+    }
+
+    Function* ExecutionScope::getCurrentFunction()
+    {
+        if (mExecutionScopeData.empty())
+        {
+            return nullptr;
+        }
+
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+        return currentScope.mCurrentFunction;
+    }
+
+    StoredValueStack& ExecutionScope::getStack()
+    {
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+        return currentScope.mStack;
+    }
+
+    StoredValueStack& ExecutionScope::getReturnStack()
+    {
+        ExecutionScopeData& currentScope = *(mExecutionScopeData.rbegin() + 1);
+        return currentScope.mStack;
+    }
+
+    bool ExecutionScope::isAwaitingParentInstantiation()
+    {
+        ExecutionScopeData& currentScope = *(mExecutionScopeData.rbegin());
+        return currentScope.mObjectInstantiations.size() != 0;
+    }
+
+    void ExecutionScope::pushObjectInstantiation(const std::string& typeName, const std::string& name)
+    {
+        ExecutionScopeData& currentScope = *(mExecutionScopeData.rbegin());
+        currentScope.mObjectInstantiations.push_back(ObjectInstantiationDescriptor(typeName, name));
+    }
+
+    ObjectInstantiationDescriptor ExecutionScope::popObjectInstantiation()
+    {
+        ExecutionScopeData& currentScope = *(mExecutionScopeData.rbegin());
+        ObjectInstantiationDescriptor result = currentScope.mObjectInstantiations.back();
+        currentScope.mObjectInstantiations.pop_back();
+        return result;
+    }
+
+    ObjectInstantiationDescriptor& ExecutionScope::currentObjectInstantiation()
+    {
+        ExecutionScopeData& currentScope = *(mExecutionScopeData.rbegin());
+        return currentScope.mObjectInstantiations.back();
     }
 }

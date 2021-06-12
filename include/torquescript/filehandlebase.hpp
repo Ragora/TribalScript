@@ -12,32 +12,40 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <vector>
-#include <string>
+#pragma once
 
-#include <torquescript/parsererrorlistener.hpp>
+#include <string>
+#include <iostream>
 
 namespace TorqueScript
 {
-    void ParserErrorListener::syntaxError(antlr4::Recognizer* recognizer, antlr4::Token* offendingSymbol, size_t line, size_t charPositionInLine, const std::string& msg, std::exception_ptr e)
+    class FileHandleBase
     {
-        std::ostringstream out;
+        public:
+            FileHandleBase(const std::string& path);
+            virtual ~FileHandleBase();
 
-        if (offendingSymbol)
-        {
-            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << " : '" << offendingSymbol->getText() << "'" << std::endl;
-        }
-        else
-        {
-            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << std::endl;
-        }
-       
-        out << msg << std::endl;
-        mErrors.push_back(out.str());
-    }
+            virtual bool isOpen() = 0;
 
-    const std::vector<std::string>& ParserErrorListener::getErrors()
-    {
-        return mErrors;
-    }
+            virtual void seek(const std::streampos& position) = 0;
+            virtual void seek(const std::streampos& offset, std::ios_base::seekdir way) = 0;
+
+            virtual void read(char* out, const std::size_t size) = 0;
+            virtual void close();
+            virtual bool isEOF() = 0;
+            virtual void write(const char* buffer, const std::size_t size) = 0;
+            virtual std::string readLine() = 0;
+
+            virtual std::streampos tell() = 0;
+
+            virtual void openForWrite() = 0;
+            virtual void openForRead() = 0;
+            virtual void openForReadAndWrite() = 0;
+
+            virtual bool exists() = 0;
+            virtual bool deleteFile() = 0;
+
+            //! The file path this handle refers to.
+            const std::string mPath;
+    };
 }

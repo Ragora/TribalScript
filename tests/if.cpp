@@ -12,35 +12,41 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-
-#include <string>
 #include <memory>
 
+#include "gtest/gtest.h"
+
+#include <torquescript/interpreter.hpp>
 #include <torquescript/storedvalue.hpp>
+#include <torquescript/libraries/libraries.hpp>
+#include <torquescript/executionstate.hpp>
 
-namespace TorqueScript
+TEST(InterpreterTest, If)
 {
-    class Interpreter;
-    class ExecutionState;
+    TorqueScript::Interpreter interpreter;
+    TorqueScript::registerAllLibraries(&interpreter);
 
-    /**
-     *  @brief Storage class for a reference to a global value.
-     */
-    class StoredGlobalReferenceValue : public StoredValue
-    {
-        public:
-            StoredGlobalReferenceValue(const std::string& name);
+    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    interpreter.execute("cases/if.cs", state);
 
-            virtual int toInteger(std::shared_ptr<ExecutionState> state) override;
-            virtual float toFloat(std::shared_ptr<ExecutionState> state) override;
-            virtual std::string toString(std::shared_ptr<ExecutionState> state) override;
-            virtual std::shared_ptr<StoredValue> getReferencedValueCopy(std::shared_ptr<ExecutionState> state) override;
+    // Here we have three values
+    TorqueScript::StoredValue* resultOne = interpreter.getGlobal("one");
+    ASSERT_TRUE(resultOne);
+    TorqueScript::StoredValue* resultTwo = interpreter.getGlobal("two");
+    ASSERT_TRUE(resultTwo);
+    TorqueScript::StoredValue* resultThree = interpreter.getGlobal("three");
+    ASSERT_TRUE(resultThree);
+    TorqueScript::StoredValue* resultFour = interpreter.getGlobal("four");
+    ASSERT_TRUE(resultFour);
 
-            bool setValue(std::shared_ptr<StoredValue> value, std::shared_ptr<ExecutionState> state) override;
+    ASSERT_EQ(resultOne->toInteger(state), 10);
+    ASSERT_EQ(resultTwo->toInteger(state), -10);
+    ASSERT_EQ(resultThree->toInteger(state), 200);
+    ASSERT_EQ(resultFour->toInteger(state), 500);
+}
 
-        protected:
-            //! The name of the referenced variable.
-            std::string mName;
-    };
+int main()
+{
+    testing::InitGoogleTest();
+    return RUN_ALL_TESTS();
 }

@@ -14,42 +14,32 @@
 
 #pragma once
 
+#include <string>
+#include <vector>
 #include <memory>
-#include <iostream>
-#include <stdexcept>
 
 #include <torquescript/function.hpp>
-#include <torquescript/executionscope.hpp>
-#include <torquescript/interpreter.hpp>
-#include <torquescript/executionstate.hpp>
-#include <torquescript/storedvaluestack.hpp>
-#include <torquescript/storedintegervalue.hpp>
 
 namespace TorqueScript
 {
-    class Echo : public Function
+    typedef void (*NativeFunctionPointer)(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
+
+    /**
+     *  @brief A NativeFunction is a specialization of Function that allows native C++ programming to be called from within the
+     *  interpreter.
+     */
+    class NativeFunction : public Function
     {
         public:
-            Echo() : Function("echo") { }
+            NativeFunction(NativeFunctionPointer native, const std::string& package, const std::string& space, const std::string& name);
 
-            virtual void execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount) override
-            {
-                std::string outputString = "";
+            /**
+             *  @brief Executes the native function provided to the interpreter.
+             */
+            virtual void execute(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount) override;
 
-                for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
-                {
-                    // Parameters will flow right to left so we build the string considering this
-                    std::string printedPayload = state->mStack.popString(state);
-                    outputString = printedPayload + outputString;
-                }
-
-                state->mInterpreter->logEcho(outputString);
-                state->mStack.push_back(std::shared_ptr<StoredValue>(new StoredIntegerValue(0)));
-            }
+        private:
+            //! The pointer to the native function to call.
+            NativeFunctionPointer mNativeFunction;
     };
-
-    void registerBuiltIns(Interpreter* interpreter)
-    {
-        interpreter->addFunction(std::shared_ptr<Function>(new Echo()));
-    }
 }

@@ -14,15 +14,22 @@
 
 #pragma once
 
-#include <map>
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
+#include <torquescript/interpreterconfiguration.hpp>
 #include <torquescript/function.hpp>
-#include <torquescript/simobject.hpp>
+#include <torquescript/consoleobject.hpp>
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/stringhelpers.hpp>
+#include <torquescript/stringtable.hpp>
+#include <torquescript/functionregistry.hpp>
 #include <torquescript/storedvaluestack.hpp>
+#include <torquescript/consoleobjectregistry.hpp>
+
+#define NAMESPACE_EMPTY ""
+#define PACKAGE_EMPTY ""
 
 namespace TorqueScript
 {
@@ -38,14 +45,48 @@ namespace TorqueScript
     class Interpreter
     {
         public:
+            /**
+             *  @brief Constructs a new interpreter with the default configuration.
+             *  @see TorqueScript::InterpreterConfiguration
+             *  @example interpreterInit.cpp
+             */
             Interpreter();
+
+            /**
+             *  @brief Constructs a new interpreter with the specified configuration.
+             *  @param config The configuration to initialize a new interpreter with.
+             */
+            Interpreter(const InterpreterConfiguration& config);
             ~Interpreter();
 
-            void setGlobal(const std::string& name, std::shared_ptr<StoredValue> value);
-            std::shared_ptr<StoredValue> getGlobal(const std::string& name);
+            /// @name Global Variables
+            ///
+            /// These functions handle getting and setting global variables within
+            /// the context of an interpreter.
+            /// @{
+            void setGlobal(const std::size_t name, StoredValue value);
+            void setGlobal(const std::string& name, StoredValue value);
 
-            void setSimObject(const std::string& name, std::shared_ptr<SimObject> value);
-            std::shared_ptr<SimObject> getSimObject(const std::string& name);
+            /**
+             *  @brief Retrieves a global variable by string.
+             *  @param name A string containining the name of the variable
+             *  to retrieve, excluding the $ prefix.
+             *  @return The stored value at that global variable. If no such variable
+             *  exists, nullptr is returned.
+             */
+            StoredValue* getGlobal(const std::string& name);
+
+            /**
+             *  @brief Retrieves a global variable by string ID.
+             *  @param name The string ID representing the global variable
+             *  name to lookup. This should be preferred over the lookup by name
+             *  as this version will be faster.
+             *  @return The stored value at that global variable. If no such variable
+             *  exists, nullptr is returned.
+             */
+            StoredValue* getGlobal(const std::size_t name);
+
+            /// @}
 
             /**
              *  @brief Ask the interpreter to compile the input string and return the resulting
@@ -56,45 +97,63 @@ namespace TorqueScript
             void evaluate(const std::string& input, std::shared_ptr<ExecutionState> state = nullptr);
             void execute(const std::string& path, std::shared_ptr<ExecutionState> state = nullptr);
 
+            /// @name Functions
+            ///
+            /// These functions handle management of functions registered in the interpreter.
+            /// @{
+
             /**
-             *  @brief Registers a new function to the interpreter. Ownership is transferred to the interpreter at this
-             *  point.
+             *  @brief Registers a new function to the interpreter.
+             *  @param function The function object to register to the interpreter.
              */
             void addFunction(std::shared_ptr<Function> function);
+            std::shared_ptr<Function> getFunction(const std::string& space, const std::string& name);
+            std::shared_ptr<Function> getFunctionParent(Function* function);
 
-            std::shared_ptr<Function> getFunction(const std::string& name);
+            FunctionRegistry* findFunctionRegistry(const std::string packageName);
+            void addFunctionRegistry(const std::string& packageName);
+            void activateFunctionRegistry(const std::string& packageName);
+            void deactivateFunctionRegistry(const std::string& packageName);
+            void removeFunctionRegistry(const std::string& packageName);
+            /// @}
 
             std::shared_ptr<ExecutionState> getExecutionState();
 
-            /**
-             *  @brief Asks the interpreter to handle a simple echo message.
-             *  @param message The message to echo.
-             */
-            virtual void logEcho(const std::string& message);
+            //! The ConsoleObjectRegistry associated with this interpreter. It is used to store all ConsoleObject instances associated with the interpreter.
+            ConsoleObjectRegistry mConsoleObjectRegistry;
+
+            //! The string table associated with this interpreter.
+            StringTable mStringTable;
+
+            //! The interpreter configuration.
+            const InterpreterConfiguration mConfig;
 
             /**
-             *  @brief Asks the interpreter to handle an error log message.
-             *  @param message The message to output as an error.
+             *  @brief Initializes the tree of objects described by the provided descriptor.
+             *  @details The tree described is walked and all objects along the tree will be initialized,
+             *  unless any parent is invalid (Ie. bad typename, invalid parameters, etc) at which point
+             *  that entire branch of the tree is invalidated and *not* instantiated.
+             *  @param descriptor The descriptor describing the root of the tree to initialize.
+             *  @return The root level ConsoleObject that was instantiated if successful. Otherwise,
+             *  nullptr is returned.
              */
-            virtual void logError(const std::string& message);
+            std::shared_ptr<ConsoleObject> initializeConsoleObjectTree(ObjectInstantiationDescriptor& descriptor);
 
-            /**
-             *  @brief Asks the interpreter to handle a warning log message.
-             *  @param message The message to output as a warning.
-             */
-            virtual void logWarning(const std::string& message);
+            template <typename classType>
+            void registerConsoleObjectType()
+            {
+                // Ensure descriptors are initialized
+                classType::initializeMemberFields(TypeInformation<classType>::Descriptor);
+            }
 
         private:
             //! Keep a ready instance of the compiler on hand as it is reusable.
             Compiler* mCompiler;
 
-            //! A mapping of function names to the function object.
-            std::map<std::string, std::shared_ptr<Function>> mFunctions;
+            //! A mapping of function namespaces to a mapping of function names to the function object.
+            std::vector<FunctionRegistry> mFunctionRegistries;
 
             //! A mapping of global variable names to their stored value instance.
-            std::map<std::string, std::shared_ptr<StoredValue>> mGlobalVariables;
-
-            //! A mapping of object names to their sim objects
-            std::map<std::string, std::shared_ptr<SimObject>> mSimObjects;
+            std::unordered_map<std::size_t, StoredValue> mGlobalVariables;
     };
 }

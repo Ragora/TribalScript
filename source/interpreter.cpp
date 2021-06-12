@@ -22,9 +22,18 @@
 
 namespace TorqueScript
 {
-    Interpreter::Interpreter()
+    Interpreter::Interpreter() : Interpreter(InterpreterConfiguration())
     {
-        mCompiler = new Compiler();
+        relinkNamespaces();
+    }
+
+    Interpreter::Interpreter(const InterpreterConfiguration& config) : mConfig(config)
+    {
+        mCompiler = new Compiler(mConfig);
+
+        // "" is the default top-level
+        this->addFunctionRegistry(PACKAGE_EMPTY);
+        this->activateFunctionRegistry(PACKAGE_EMPTY);
     }
 
     Interpreter::~Interpreter()
@@ -52,7 +61,7 @@ namespace TorqueScript
 
     void Interpreter::execute(const std::string& path, std::shared_ptr<ExecutionState> state)
     {
-        CodeBlock* compiled = mCompiler->compileFile(path);
+        CodeBlock* compiled = mCompiler->compileFile(path, &mStringTable);
 
         // FIXME: Some kind of error was encountered. Ask the compiler?
         if (!compiled)
@@ -71,82 +80,245 @@ namespace TorqueScript
 
     CodeBlock* Interpreter::compile(const std::string& input)
     {
-        return mCompiler->compileString(input);
+        return mCompiler->compileString(input, &mStringTable);
     }
 
-    std::shared_ptr<StoredValue> Interpreter::getGlobal(const std::string& name)
+    StoredValue* Interpreter::getGlobal(const std::string& name)
     {
-        const std::string key = toLowerCase(name);
-
-        auto search = mGlobalVariables.find(key);
+        const std::size_t stringID = mStringTable.getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
+        auto search = mGlobalVariables.find(stringID);
         if (search != mGlobalVariables.end())
         {
-            return search->second;
+            return &search->second;
+        }
+        return nullptr;
+    }
+
+    StoredValue* Interpreter::getGlobal(const std::size_t name)
+    {
+        auto search = mGlobalVariables.find(name);
+        if (search != mGlobalVariables.end())
+        {
+            return &search->second;
         }
         return nullptr;
     }
 
     void Interpreter::addFunction(std::shared_ptr<Function> function)
     {
-        const std::string storedName = toLowerCase(function->getName());
-        auto search = mFunctions.find(storedName);
+        // Make sure the registry exists - if it already does this does nothing
+        std::string package = function->getDeclaredPackage();
+        this->addFunctionRegistry(package);
+        FunctionRegistry* registry = this->findFunctionRegistry(package);
 
-        if (search != mFunctions.end())
-        {
-            mFunctions.erase(search);
-        }
-
-        mFunctions[storedName] = function;
+        const std::string storedName = toLowerCase(function->getDeclaredName());
+        const std::string storedNameSpace = toLowerCase(function->getDeclaredNameSpace());
+        registry->mFunctions[storedNameSpace][storedName] = function;
     }
 
-    std::shared_ptr<Function> Interpreter::getFunction(const std::string& name)
+    std::shared_ptr<Function> Interpreter::getFunction(const std::string& space, const std::string& name)
     {
+        // Search registries back to front
         const std::string searchedName = toLowerCase(name);
-        auto search = mFunctions.find(searchedName);
+        const std::string searchedNameSpace = toLowerCase(space);
 
-        if (search != mFunctions.end())
+        for (auto iterator = mFunctionRegistries.rbegin(); iterator != mFunctionRegistries.rend(); ++iterator)
         {
-            return search->second;
+            FunctionRegistry& registry = *iterator;
+
+            if (registry.mActive)
+            {
+                auto namespaceSearch = registry.mFunctions.find(searchedNameSpace);
+                if (namespaceSearch != registry.mFunctions.end())
+                {
+                    auto nameSearch = namespaceSearch->second.find(searchedName);
+                    if (nameSearch != namespaceSearch->second.end())
+                    {
+                        return nameSearch->second;
+                    }
+                }
+            }
+        }
+
+        return nullptr;
+    }
+
+    std::shared_ptr<Function> Interpreter::getFunctionParent(Function* function)
+    {
+        const std::string searchedPackage = toLowerCase(function->getDeclaredPackage());
+        const std::string searchedNameSpace = toLowerCase(function->getDeclaredNameSpace());
+        const std::string searchedFunction = toLowerCase(function->getDeclaredName());
+
+        // Search registries back to front
+        bool shouldSearchFunction = false;
+        for (auto iterator = mFunctionRegistries.rbegin(); iterator != mFunctionRegistries.rend(); ++iterator)
+        {
+            FunctionRegistry& registry = *iterator;
+            // Ignore inactive registries
+            if (!registry.mActive)
+            {
+                continue;
+            }
+            else if (!shouldSearchFunction)
+            {
+                if (registry.mActive && registry.mPackageName == searchedPackage)
+                {
+                    shouldSearchFunction = true;
+                }
+                continue;
+            }
+
+            auto namespaceSearch = registry.mFunctions.find(searchedNameSpace);
+            if (namespaceSearch != registry.mFunctions.end())
+            {
+                auto nameSearch = namespaceSearch->second.find(searchedFunction);
+                if (nameSearch != namespaceSearch->second.end())
+                {
+                    return nameSearch->second;
+                }
+            }
+        }
+
+        return nullptr;
+    }
+
+    void Interpreter::setGlobal(const std::string& name, StoredValue value)
+    {
+        const std::size_t key = mStringTable.getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
+
+        auto search = mGlobalVariables.find(key);
+        if (search != mGlobalVariables.end())
+        {
+            search->second = value;
+            return;
+        }
+
+        mGlobalVariables.emplace(std::make_pair(key, value));
+    }
+
+    void Interpreter::setGlobal(const std::size_t name, StoredValue value)
+    {
+        auto search = mGlobalVariables.find(name);
+        if (search != mGlobalVariables.end())
+        {
+            search->second = value;
+            return;
+        }
+
+        mGlobalVariables.emplace(std::make_pair(name, value));
+    }
+
+    FunctionRegistry* Interpreter::findFunctionRegistry(const std::string packageName)
+    {
+        std::string searchedName = toLowerCase(packageName);
+        for (FunctionRegistry& registry : mFunctionRegistries)
+        {
+            if (registry.mPackageName == searchedName)
+            {
+                return &registry;
+            }
         }
         return nullptr;
     }
 
-    void Interpreter::setGlobal(const std::string& name, std::shared_ptr<StoredValue> value)
+    void Interpreter::removeFunctionRegistry(const std::string& packageName)
     {
-        const std::string key = toLowerCase(name);
-        mGlobalVariables[key] = value;
-    }
+        // We cannot remove root level
+        assert(packageName != PACKAGE_EMPTY);
 
-    void Interpreter::setSimObject(const std::string& name, std::shared_ptr<SimObject> value)
-    {
-        const std::string setName = toLowerCase(name);
-        mSimObjects[setName] = value;
-    }
-
-    std::shared_ptr<SimObject> Interpreter::getSimObject(const std::string& name)
-    {
-        const std::string searchedName = toLowerCase(name);
-        auto search = mSimObjects.find(searchedName);
-
-        if (search != mSimObjects.end())
+        std::string removedName = toLowerCase(packageName);
+        for (auto iterator = mFunctionRegistries.begin(); iterator != mFunctionRegistries.end(); ++iterator)
         {
-            return search->second;
+            FunctionRegistry& registry = *iterator;
+
+            if (registry.mPackageName == packageName)
+            {
+                mFunctionRegistries.erase(iterator);
+                return;
+            }
         }
-        return nullptr;
     }
 
-    void Interpreter::logEcho(const std::string& message)
+    void Interpreter::addFunctionRegistry(const std::string& packageName)
     {
-        std::cout << "Echo > " << message << std::endl;
+        std::string addedName = toLowerCase(packageName);
+        if (this->findFunctionRegistry(packageName))
+        {
+            return;
+        }
+
+        mFunctionRegistries.push_back(FunctionRegistry(packageName));
     }
 
-    void Interpreter::logError(const std::string& message)
+    void Interpreter::activateFunctionRegistry(const std::string& packageName)
     {
-        std::cerr << "Error > " << message << std::endl;
+        std::string activatedName = toLowerCase(packageName);
+
+        // When we activate a package, it gets moved to the back to take precedence in the stack
+        for (auto iterator = mFunctionRegistries.begin(); iterator != mFunctionRegistries.end(); ++iterator)
+        {
+            FunctionRegistry& registry = *iterator;
+
+            if (registry.mPackageName == packageName)
+            {
+                if (!registry.mActive)
+                {
+                    registry.mActive = true;
+                    std::rotate(iterator, iterator + 1, mFunctionRegistries.end());
+                }
+
+                return;
+            }
+        }
     }
 
-    void Interpreter::logWarning(const std::string& message)
+    void Interpreter::deactivateFunctionRegistry(const std::string& packageName)
     {
-        std::cout << "Warning > " << message << std::endl;
+        std::string deactivatedName = toLowerCase(packageName);
+
+        FunctionRegistry* deactivated = this->findFunctionRegistry(deactivatedName);
+        if (!deactivated)
+        {
+            return;
+        }
+
+        deactivated->mActive = false;
+    }
+
+    std::shared_ptr<ConsoleObject> Interpreter::initializeConsoleObjectTree(ObjectInstantiationDescriptor& descriptor)
+    {
+        // Lookup console object descriptor
+        auto search = sConsoleObjectDescriptors->find(descriptor.mTypeName);
+        if (search == sConsoleObjectDescriptors->end())
+        {
+            std::ostringstream errorStream;
+            errorStream << "Cannot instantiate non-console object type '" << descriptor.mTypeName << "'!";
+
+            mConfig.mPlatform->logError(errorStream.str());
+
+            // Forget about child initialization at this point
+            return nullptr;
+        }
+
+        ConsoleObjectDescriptor* objectDescriptor = search->second;
+        std::shared_ptr<ConsoleObject> initialized = std::shared_ptr<ConsoleObject>(objectDescriptor->mInitializePointer(this, descriptor));
+
+        // Register to interpreter
+        mConsoleObjectRegistry.addConsoleObject(initialized);
+        mConsoleObjectRegistry.setConsoleObject(descriptor.mName, initialized);
+
+        // Handle child init
+        for (ObjectInstantiationDescriptor& childDescriptor : descriptor.mChildren)
+        {
+            std::shared_ptr<ConsoleObject> childObject = this->initializeConsoleObjectTree(childDescriptor);
+
+            // Add to parent
+            if (childObject)
+            {
+                initialized->addChild(childObject);
+            }
+        }
+
+        return initialized;
     }
 }

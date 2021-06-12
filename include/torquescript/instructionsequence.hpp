@@ -20,14 +20,22 @@
 
 namespace TorqueScript
 {
-    class Instruction;
+    namespace Instructions
+    {
+        class Instruction;
+    }
+
     class ExecutionState;
 
+    //! Typedef for the signed integer type to be used when calculating addresses.
+    typedef long long int AddressType;
+    typedef unsigned long long int AddressOffsetType;
+
     /**
-     *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
-     *  This is the base class and should not be instantiated directly.
+     *  @brief Storage class for a sequence of instructions to be executed. Also implements the
+     *  primary execution code for running Torque Script virtual instructions.
      */
-    class InstructionSequence : public std::vector<std::shared_ptr<Instruction>>
+    class InstructionSequence : public std::vector<std::shared_ptr<Instructions::Instruction>>
     {
         public:
             void execute(std::shared_ptr<ExecutionState> state);

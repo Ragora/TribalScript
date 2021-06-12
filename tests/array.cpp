@@ -12,32 +12,33 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <vector>
-#include <string>
+#include <memory>
 
-#include <torquescript/parsererrorlistener.hpp>
+#include "gtest/gtest.h"
 
-namespace TorqueScript
+#include <torquescript/interpreter.hpp>
+#include <torquescript/storedvalue.hpp>
+#include <torquescript/libraries/libraries.hpp>
+#include <torquescript/executionstate.hpp>
+
+TEST(InterpreterTest, Array)
 {
-    void ParserErrorListener::syntaxError(antlr4::Recognizer* recognizer, antlr4::Token* offendingSymbol, size_t line, size_t charPositionInLine, const std::string& msg, std::exception_ptr e)
-    {
-        std::ostringstream out;
+    TorqueScript::Interpreter interpreter;
+    TorqueScript::registerAllLibraries(&interpreter);
 
-        if (offendingSymbol)
-        {
-            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << " : '" << offendingSymbol->getText() << "'" << std::endl;
-        }
-        else
-        {
-            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << std::endl;
-        }
-       
-        out << msg << std::endl;
-        mErrors.push_back(out.str());
-    }
+    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    interpreter.execute("cases/array.cs", state);
 
-    const std::vector<std::string>& ParserErrorListener::getErrors()
-    {
-        return mErrors;
-    }
+    // The assignment performed is: $result[1,2,3] = %value;
+    // However, in Torque Script this is treated as a single variable key $result1_2_3
+    TorqueScript::StoredValue* result = interpreter.getGlobal("result1_2_3");
+    ASSERT_TRUE(result);
+
+    ASSERT_EQ(result->toInteger(state), 5);
+}
+
+int main()
+{
+    testing::InitGoogleTest();
+    return RUN_ALL_TESTS();
 }

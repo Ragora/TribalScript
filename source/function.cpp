@@ -19,12 +19,12 @@
 
 namespace TorqueScript
 {
-    Function::Function(const std::string& name) : mName(name)
+    Function::Function(const std::string& package, const std::string& space, const std::string& name) : mPackage(toLowerCase(package)), mNameSpace(toLowerCase(space)), mName(toLowerCase(name))
     {
 
     }
 
-    Function::Function(const std::string& name, const std::vector<std::string>& parameterNames) : mName(name), mParameterNames(parameterNames)
+    Function::Function(const std::string& package, const std::string& space, const std::string& name, const std::vector<std::string>& parameterNames) : mPackage(package), mNameSpace(space), mName(name), mParameterNames(parameterNames)
     {
 
     }
@@ -37,37 +37,69 @@ namespace TorqueScript
         }
     }
 
-    void Function::execute(std::shared_ptr<ExecutionState> state, const unsigned int argumentCount)
+    void Function::execute(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
+
+        // OPTIMIZATION: We incur a copy cost here
+        std::vector<std::string> parameterNames = mParameterNames;
+
+        std::map<std::string, StoredValue> newLocals;
+
+        // If thisObject is non-null, we always provide this as the first parameter
+        if (thisObject && parameterNames.size() >= 1)
+        {
+            const std::string thisParameterName = parameterNames[0];
+            parameterNames.erase(parameterNames.begin());
+
+            newLocals.emplace(std::make_pair(thisParameterName, StoredValue((int)state->mInterpreter->mConsoleObjectRegistry.getConsoleObjectID(thisObject))));
+        }
+
         // Calculate expected versus provided to determine what parameters should be left empty
-        const unsigned int expectedParameterCount = mParameterNames.size();
-        const unsigned int emptyParameters = expectedParameterCount > argumentCount ? expectedParameterCount - argumentCount : 0;
+        const std::size_t expectedParameterCount = parameterNames.size();
+        const std::size_t emptyParameters = expectedParameterCount > argumentCount ? expectedParameterCount - argumentCount : 0;
 
         // If we have too many parameters, just lop them off
-        unsigned int adjustedArgumentCount = argumentCount;
+        std::size_t adjustedArgumentCount = argumentCount;
         if (argumentCount > expectedParameterCount)
         {
-            const unsigned int removedParameters = argumentCount - expectedParameterCount;
+            const std::size_t removedParameters = argumentCount - expectedParameterCount;
 
-            for (unsigned int iteration = 0; iteration < removedParameters; ++iteration)
+            for (std::size_t iteration = 0; iteration < removedParameters; ++iteration)
             {
-                state->mStack.pop_back();
+                stack.pop_back();
             }
             adjustedArgumentCount -= removedParameters;
         }
 
         // Once we know what parameters we're providing for, set the values
-        std::map<std::string, std::shared_ptr<StoredValue>> newLocals;
         for (unsigned int iteration = 0; iteration < adjustedArgumentCount; ++iteration)
         {
-            const std::string nextParameterName = mParameterNames[mParameterNames.size() - (iteration + emptyParameters + 1)];
+            const std::string nextParameterName = parameterNames[parameterNames.size() - (iteration + emptyParameters + 1)];
 
-            newLocals[nextParameterName] = state->mStack.back()->getReferencedValueCopy(state);
-            state->mStack.pop_back();
+            auto search = newLocals.find(nextParameterName);
+            if (search != newLocals.end())
+            {
+                search->second = stack.back().getReferencedValueCopy(state);
+            }
+            else
+            {
+                newLocals.insert(std::make_pair(nextParameterName, stack.back().getReferencedValueCopy(state)));
+            }
+
+            stack.pop_back();
+        }
+
+        // Once we've cleared the stack, check if we're at max recursion depth
+        if (state->mInterpreter->mConfig.mMaxRecursionDepth > 0 && state->mExecutionScope.getFrameDepth() >= state->mInterpreter->mConfig.mMaxRecursionDepth)
+        {
+            state->mInterpreter->mConfig.mPlatform->logError("Reached maximum recursion depth! Pushing 0 and returning.");
+            stack.push_back(StoredValue(0));
+            return;
         }
 
         // Push scope once we're done dealing with locals and load in to current scope
-        state->mExecutionScope.pushFrame();
+        state->mExecutionScope.pushFrame(this);
         for (auto localIterator = newLocals.begin(); localIterator != newLocals.end(); ++localIterator)
         {
             auto currentLocal = *localIterator;
@@ -79,8 +111,18 @@ namespace TorqueScript
         state->mExecutionScope.popFrame();
     }
 
-    std::string Function::getName()
+    const std::string& Function::getDeclaredName()
     {
         return mName;
+    }
+
+    const std::string& Function::getDeclaredNameSpace()
+    {
+        return mNameSpace;
+    }
+
+    const std::string& Function::getDeclaredPackage()
+    {
+        return mPackage;
     }
 }

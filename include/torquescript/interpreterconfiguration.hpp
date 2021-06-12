@@ -12,32 +12,31 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <vector>
-#include <string>
+#pragma once
 
-#include <torquescript/parsererrorlistener.hpp>
+#include <torquescript/platformcontext.hpp>
 
 namespace TorqueScript
 {
-    void ParserErrorListener::syntaxError(antlr4::Recognizer* recognizer, antlr4::Token* offendingSymbol, size_t line, size_t charPositionInLine, const std::string& msg, std::exception_ptr e)
+    /**
+     *  @brief A structure representing overall interpreter runtime configuration. Some settings can be
+     *  changed at runtime while others are static once initialized.
+     */
+    struct InterpreterConfiguration
     {
-        std::ostringstream out;
-
-        if (offendingSymbol)
+        InterpreterConfiguration(PlatformContext* platform = new PlatformContext()) :
+                                 mPlatform(platform), mMaxRecursionDepth(1024), mCaseSensitive(false)
         {
-            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << " : '" << offendingSymbol->getText() << "'" << std::endl;
-        }
-        else
-        {
-            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << std::endl;
-        }
-       
-        out << msg << std::endl;
-        mErrors.push_back(out.str());
-    }
 
-    const std::vector<std::string>& ParserErrorListener::getErrors()
-    {
-        return mErrors;
-    }
+        }
+
+        //! The platform context used for handling ie. logging, File I/O and so on. While this can be reassigned at runtime, it is not recommended.
+        PlatformContext* const mPlatform;
+
+        //! Maximum call stack depth. If set to 0, no maximum call depth is enforced.
+        unsigned int mMaxRecursionDepth;
+
+        //! Whether or not the interpreter should be case sensitive. While this can be reassigned at runtime, it is not recommended.
+        bool mCaseSensitive;
+    };
 }

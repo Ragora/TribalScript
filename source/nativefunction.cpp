@@ -12,46 +12,20 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/storedstringvalue.hpp>
+#include <torquescript/nativefunction.hpp>
+#include <torquescript/instructions.hpp>
+#include <torquescript/stringhelpers.hpp>
+#include <torquescript/storedvaluestack.hpp>
 
 namespace TorqueScript
 {
-    StoredStringValue::StoredStringValue(const std::string& value) : mValue(value)
+    NativeFunction::NativeFunction(NativeFunctionPointer native, const std::string& package, const std::string& space, const std::string& name) : mNativeFunction(native), Function(package, space, name)
     {
 
     }
 
-    float StoredStringValue::toFloat(std::shared_ptr<ExecutionState> state)
+    void NativeFunction::execute(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
-        try
-        {
-            return std::stof(mValue);
-        }
-        catch (std::invalid_argument exception)
-        {
-            return 0.0f; // In Torque if the value cannot be converted it is treated as zero
-        }
-    }
-
-    std::string StoredStringValue::toString(std::shared_ptr<ExecutionState> state)
-    {
-        return mValue;
-    }
-
-    int StoredStringValue::toInteger(std::shared_ptr<ExecutionState> state)
-    {
-        try
-        {
-            return std::stoi(mValue);
-        }
-        catch (std::invalid_argument exception)
-        {
-            return 0; // In Torque if the value cannot be converted it is treated as zero
-        }
-    }
-
-    std::shared_ptr<StoredValue> StoredStringValue::getReferencedValueCopy(std::shared_ptr<ExecutionState> state)
-    {
-        return std::shared_ptr<StoredValue>(new StoredStringValue(mValue));
+        this->mNativeFunction(thisObject, state, argumentCount);
     }
 }

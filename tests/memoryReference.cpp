@@ -12,35 +12,40 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-
-#include <string>
 #include <memory>
 
+#include "gtest/gtest.h"
+
+#include <torquescript/interpreter.hpp>
 #include <torquescript/storedvalue.hpp>
+#include <torquescript/libraries/libraries.hpp>
+#include <torquescript/executionstate.hpp>
 
-namespace TorqueScript
+static float aStaticFloat = 3.14f;
+
+TEST(InterpreterTest, MemoryReference)
 {
-    class Interpreter;
-    class ExecutionState;
+    TorqueScript::Interpreter interpreter;
+    TorqueScript::registerAllLibraries(&interpreter);
 
-    /**
-     *  @brief Storage class for a floating point value.
-     */
-    class StoredLocalReferenceValue : public StoredValue
-    {
-        public:
-            StoredLocalReferenceValue(const std::string& name);
+    // Set memory reference
+    interpreter.setGlobal("pi", TorqueScript::StoredValue(&aStaticFloat, TorqueScript::MemoryReferenceType::FloatMemory));
 
-            virtual int toInteger(std::shared_ptr<ExecutionState> state) override;
-            virtual float toFloat(std::shared_ptr<ExecutionState> state) override;
-            virtual std::string toString(std::shared_ptr<ExecutionState> state) override;
-            virtual std::shared_ptr<StoredValue> getReferencedValueCopy(std::shared_ptr<ExecutionState> state) override;
+    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    interpreter.execute("cases/memoryReference.cs", state);
 
-            bool setValue(std::shared_ptr<StoredValue> value, std::shared_ptr<ExecutionState> state) override;
+    // After execution, the result of $global should be 50
+    TorqueScript::StoredValue* result = interpreter.getGlobal("result");
+    ASSERT_TRUE(result);
 
-        protected:
-            //! The name of the referenced variable.
-            std::string mName;
-    };
+    ASSERT_EQ(result->toFloat(state), 6.28f);
+
+    // Check if the memory has been written
+    ASSERT_EQ(aStaticFloat, 1337.0f);
+}
+
+int main()
+{
+    testing::InitGoogleTest();
+    return RUN_ALL_TESTS();
 }

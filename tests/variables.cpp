@@ -12,32 +12,35 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <vector>
-#include <string>
+#include <memory>
 
-#include <torquescript/parsererrorlistener.hpp>
+#include "gtest/gtest.h"
 
-namespace TorqueScript
+#include <torquescript/interpreter.hpp>
+#include <torquescript/storedvalue.hpp>
+#include <torquescript/libraries/libraries.hpp>
+#include <torquescript/executionstate.hpp>
+
+TEST(InterpreterTest, Variables)
 {
-    void ParserErrorListener::syntaxError(antlr4::Recognizer* recognizer, antlr4::Token* offendingSymbol, size_t line, size_t charPositionInLine, const std::string& msg, std::exception_ptr e)
-    {
-        std::ostringstream out;
+    TorqueScript::Interpreter interpreter;
+    TorqueScript::registerAllLibraries(&interpreter);
 
-        if (offendingSymbol)
-        {
-            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << " : '" << offendingSymbol->getText() << "'" << std::endl;
-        }
-        else
-        {
-            out << "Syntax Error on Line " << line << " Character " << charPositionInLine << std::endl;
-        }
-       
-        out << msg << std::endl;
-        mErrors.push_back(out.str());
-    }
+    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    interpreter.execute("cases/variables.cs", state);
 
-    const std::vector<std::string>& ParserErrorListener::getErrors()
-    {
-        return mErrors;
-    }
+    // We have a global and a global value within a namespace
+    TorqueScript::StoredValue* resultGlobal = interpreter.getGlobal("global");
+    ASSERT_TRUE(resultGlobal);
+    TorqueScript::StoredValue* resultGlobalNameSpace = interpreter.getGlobal("global::namespaced");
+    ASSERT_TRUE(resultGlobalNameSpace);
+
+    ASSERT_EQ(resultGlobal->toInteger(state), 50);
+    ASSERT_EQ(resultGlobalNameSpace->toInteger(state), 123);
+}
+
+int main()
+{
+    testing::InitGoogleTest();
+    return RUN_ALL_TESTS();
 }

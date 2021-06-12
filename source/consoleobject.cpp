@@ -12,32 +12,53 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/storedfloatvalue.hpp>
+#include <torquescript/consoleobject.hpp>
+#include <torquescript/stringhelpers.hpp>
+#include <torquescript/interpreter.hpp>
 
 namespace TorqueScript
 {
-    StoredFloatValue::StoredFloatValue(float value) : mValue(value)
+    std::unordered_map<std::string, ConsoleObjectDescriptor*>* sConsoleObjectDescriptors = nullptr;
+
+    ConsoleObject::ConsoleObject(Interpreter* interpreter) : mInterpreter(interpreter)
     {
 
     }
 
-    float StoredFloatValue::toFloat(std::shared_ptr<ExecutionState> state)
+    ConsoleObject::~ConsoleObject()
     {
-        return mValue;
+
     }
 
-    int StoredFloatValue::toInteger(std::shared_ptr<ExecutionState> state)
+    StoredValue* ConsoleObject::getTaggedField(const std::string& name)
     {
-        return (int)mValue;
+        const std::string searchName = toLowerCase(name);
+        auto search = mTaggedFields.find(searchName);
+
+        if (search != mTaggedFields.end())
+        {
+            return &search->second;
+        }
+        return nullptr;
     }
 
-    std::string StoredFloatValue::toString(std::shared_ptr<ExecutionState> state)
+    void ConsoleObject::setTaggedField(const std::string& name, StoredValue value)
     {
-        return std::to_string(mValue);
+        const std::string setName = toLowerCase(name);
+
+        auto search = mTaggedFields.find(setName);
+        if (search != mTaggedFields.end())
+        {
+            search->second = value;
+        }
+        else
+        {
+            mTaggedFields.insert(std::make_pair(setName, value));
+        }
     }
 
-    std::shared_ptr<StoredValue> StoredFloatValue::getReferencedValueCopy(std::shared_ptr<ExecutionState> state)
+    bool ConsoleObject::addChild(std::shared_ptr<ConsoleObject> child)
     {
-        return std::shared_ptr<StoredValue>(new StoredFloatValue(mValue));
+        return false;
     }
 }

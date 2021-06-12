@@ -14,30 +14,78 @@
 
 #pragma once
 
-#include <map>
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/stringhelpers.hpp>
+#include <torquescript/function.hpp>
+#include <torquescript/stringtable.hpp>
+#include <torquescript/codeblock.hpp>
+#include <torquescript/stringtable.hpp>
+#include <torquescript/interpreterconfiguration.hpp>
+#include <torquescript/storedvaluestack.hpp>
+#include <torquescript/consoleobject.hpp>
 
 namespace TorqueScript
 {
     struct LoopDescriptor
     {
-        LoopDescriptor(const unsigned int pointer, const unsigned int size) : mInstructionPointer(pointer), mLoopSize(size)
+        LoopDescriptor(const AddressType pointer, const std::size_t size) : mInstructionPointer(pointer), mLoopSize(size)
         {
 
         }
 
-        unsigned int mInstructionPointer;
-        unsigned int mLoopSize;
+        AddressType mInstructionPointer;
+        std::size_t mLoopSize;
+    };
+
+    /**
+     *  @brief Struct describing a tree of console object initializations.
+     */
+    struct ObjectInstantiationDescriptor
+    {
+        /**
+         *  @brief Constructs a new ObjectInstantiationDescriptor.
+         *  @param typeName The console object type to inititalize.
+         *  @param name The name of the new object.
+         */
+        ObjectInstantiationDescriptor(const std::string typeName, const std::string& name) : mName(name), mTypeName(typeName)
+        {
+
+        }
+
+        //! The name to assign the new console object.
+        std::string mName;
+
+        //! The typename to instantiate the console object as.
+        std::string mTypeName;
+
+        //! All children of this object. These will not be initialized until the parent is initialized.
+        std::vector<ObjectInstantiationDescriptor> mChildren;
+        
+        //! All resolved field names mapped to the values to set.
+        std::map<std::string, StoredValue> mFieldAssignments;
     };
 
     struct ExecutionScopeData
     {
+        ExecutionScopeData(Function* function) : mCurrentFunction(function)
+        {
+
+        }
+
+        Function* mCurrentFunction;
+
+        //! The stack used for execution in this state.
+        StoredValueStack mStack;
+
+        //! Awaiting root-level object instantiations.
+        std::vector<ObjectInstantiationDescriptor> mObjectInstantiations;
+
         std::vector<LoopDescriptor> mLoopDescriptors;
-        std::map<std::string, std::shared_ptr<StoredValue>> mLocalVariables;
+        std::map<std::size_t, StoredValue> mLocalVariables;
     };
 
     /**
@@ -47,18 +95,38 @@ namespace TorqueScript
     class ExecutionScope
     {
         public:
-            void pushFrame();
+            ExecutionScope(const InterpreterConfiguration& config, StringTable* table);
+
+            void pushFrame(Function* function);
             void popFrame();
 
-            void pushLoop(const unsigned int pointer, const unsigned int depth);
+            void pushLoop(const AddressType pointer, const std::size_t depth);
             LoopDescriptor popLoop();
             LoopDescriptor currentLoopDescriptor();
-            bool isLoopStackEmpty();
 
-            std::shared_ptr<StoredValue> getVariable(const std::string& name);
-            void setVariable(const std::string& name, std::shared_ptr<StoredValue> variable);
+            bool isAwaitingParentInstantiation();
+            void pushObjectInstantiation(const std::string& typeName, const std::string& name);
+            ObjectInstantiationDescriptor popObjectInstantiation();
+            ObjectInstantiationDescriptor& currentObjectInstantiation();
+
+            bool isLoopStackEmpty();
+            std::size_t getFrameDepth();
+
+            Function* getCurrentFunction();
+            StoredValueStack& getStack();
+            StoredValueStack& getReturnStack();
+
+            StoredValue* getVariable(const std::string& name);
+            StoredValue* getVariable(const std::size_t name);
+            void setVariable(const std::string& name, StoredValue variable);
+            void setVariable(const std::size_t name, StoredValue variable);
+
+            //! The InterpreterConfiguration associated with this ExecutionScope.+
+            const InterpreterConfiguration mConfig;
 
         private:
+            StringTable* mStringTable;
+
             //! A stack of mappings of local variable names to their stored value instance.
             std::vector<ExecutionScopeData> mExecutionScopeData;
     };

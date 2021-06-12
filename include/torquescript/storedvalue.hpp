@@ -17,45 +17,142 @@
 #include <iostream>
 #include <assert.h>
 #include <memory>
-#include <variant>
 #include <string>
 
 namespace TorqueScript
 {
     class ExecutionScope;
-    class SimObject;
+    class ConsoleObject;
     class ExecutionState;
+
+    enum StoredValueType
+    {
+        NullType,
+        Integer,
+        Float,
+        String,
+        LocalReference,
+        GlobalReference,
+        MemoryReference,
+        SubfieldReference
+    };
+
+    enum MemoryReferenceType
+    {
+        NullReferenceType,
+        FloatMemory,
+        IntegerMemory,
+        StringMemory
+    };
+
+    union StoredValueUnion
+    {
+        int mInteger;
+        float mFloat;
+        std::size_t mStringID;
+
+        StoredValueUnion()
+        {
+
+        }
+
+        StoredValueUnion(const int value) : mInteger(value)
+        {
+
+        }
+
+        StoredValueUnion(const float value) : mFloat(value)
+        {
+
+        }
+
+        StoredValueUnion(const std::size_t value) : mStringID(value)
+        {
+
+        }
+    };
 
     /**
      *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
-     *  This is the base class and should not be instantiated directly.
+     *  The data types supported as integers, floats and strings (via string ID table references).
      */
     class StoredValue
     {
         public:
-            virtual int toInteger(std::shared_ptr<ExecutionState> state) = 0;
+            StoredValue(void* memoryLocation, const MemoryReferenceType type) : mType(StoredValueType::MemoryReference), mStorage(), mMemoryReferenceType(type), mMemoryLocation(memoryLocation), mConsoleObject(nullptr)
+            {
+
+            }
+
+            StoredValue(const int value) : mType(StoredValueType::Integer), mStorage(value), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(nullptr)
+            {
+
+            }
+
+            StoredValue(const float value) : mType(StoredValueType::Float), mStorage(value), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(nullptr)
+            {
+
+            }
+
+            StoredValue(const std::size_t value, const StoredValueType type) : mType(type), mStorage(value), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(nullptr)
+            {
+
+            }
+
+            StoredValue(std::shared_ptr<ConsoleObject> object, const std::size_t field) : mType(StoredValueType::SubfieldReference), mStorage(field), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(object)
+            {
+
+            }
+
+            /// @name Value Retrieval
+            ///
+            /// These functions are used to retrieve the data stored in this object.
+            /// @{
+            ///
+
+            int toInteger(std::shared_ptr<ExecutionState> state);
 
             /**
              *  @brief Converts the value in question to a native floating point type.
              *  @param scope The execution scope within which this conversion is occurring.
              *  @return A floating point representation of this value.
              */
-            virtual float toFloat(std::shared_ptr<ExecutionState> state) = 0;
+            float toFloat(std::shared_ptr<ExecutionState> state);
 
             /**
              *  @brief Converts the value in question to a native sting type.
              *  @param scope The execution scope within which this conversion is occurring.
              *  @return A string representation of this value.
              */
-            virtual std::string toString(std::shared_ptr<ExecutionState> state) = 0;
+            std::string toString(std::shared_ptr<ExecutionState> state);
 
-            virtual bool toBoolean(std::shared_ptr<ExecutionState> state);
+            bool toBoolean(std::shared_ptr<ExecutionState> state);
 
-            virtual std::shared_ptr<SimObject> toSimObject(std::shared_ptr<ExecutionState> state);
+            std::shared_ptr<ConsoleObject> toConsoleObject(std::shared_ptr<ExecutionState> state);
 
-            virtual std::shared_ptr<StoredValue> getReferencedValueCopy(std::shared_ptr<ExecutionState> state) = 0;
+            /// @}
 
-            // In Torque, if we end up trying to set a value of ie. a float it does nothing
-            virtual bool setValue(std::shared_ptr<StoredValue> newValue, std::shared_ptr<ExecutionState> state);
+            StoredValue getReferencedValueCopy(std::shared_ptr<ExecutionState> state);
+
+            bool isInteger(std::shared_ptr<ExecutionState> state);
+
+            /**
+             *  @brief Sets the value of this object. Only has an effect if this object
+             *  is a reference to a local or global variable.
+             *  @param newValue The new value to set.
+             *  @param state The execution state this assignment is taking place in.
+             *  @return True if an assignment has taken place. False otherwise.
+             */
+            bool setValue(StoredValue newValue, std::shared_ptr<ExecutionState> state);
+
+            std::string getRepresentation();
+
+        private:
+            StoredValueType mType;
+            StoredValueUnion mStorage;
+            MemoryReferenceType mMemoryReferenceType;
+
+            void* mMemoryLocation;
+            std::shared_ptr<ConsoleObject> mConsoleObject;
     };
 }

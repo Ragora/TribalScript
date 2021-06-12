@@ -12,30 +12,35 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <iostream>
 
-#include <torquescript/storedvalue.hpp>
+#include <torquescript/platformcontext.hpp>
+#include <torquescript/standardfilehandle.hpp>
 
 namespace TorqueScript
 {
-    class Interpreter;
-    class ExecutionState;
-
-    /**
-     *  @brief Storage class for a floating point value.
-     */
-    class StoredFloatValue : public StoredValue
+    void PlatformContext::logEcho(const std::string& message)
     {
-        public:
-            StoredFloatValue(float value);
+        std::cout << "Echo > " << message << std::endl;
+    }
 
-            virtual int toInteger(std::shared_ptr<ExecutionState> state) override;
-            virtual float toFloat(std::shared_ptr<ExecutionState> state) override;
-            virtual std::string toString(std::shared_ptr<ExecutionState> state) override;
-            virtual std::shared_ptr<StoredValue> getReferencedValueCopy(std::shared_ptr<ExecutionState> state) override;
+    void PlatformContext::logError(const std::string& message)
+    {
+        std::cerr << "Error > " << message << std::endl;
+    }
 
-        protected:
-            //! The stored float value.
-            float mValue;
-    };
+    void PlatformContext::logWarning(const std::string& message)
+    {
+        std::cout << "Warning > " << message << std::endl;
+    }
+
+    void PlatformContext::logDebug(const std::string& message)
+    {
+        std::cout << "Debug > " << message << std::endl;
+    }
+
+    std::unique_ptr<FileHandleBase> PlatformContext::getFileHandle(const std::string& path)
+    {
+        return std::unique_ptr<FileHandleBase>(new StandardFileHandle(path));
+    }
 }

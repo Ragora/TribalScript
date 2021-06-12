@@ -12,32 +12,32 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <memory>
 
-#include <string>
+#include "gtest/gtest.h"
 
+#include <torquescript/interpreter.hpp>
 #include <torquescript/storedvalue.hpp>
+#include <torquescript/libraries/libraries.hpp>
+#include <torquescript/executionstate.hpp>
 
-namespace TorqueScript
+TEST(InterpreterTest, ForLoop)
 {
-    class Interpreter;
-    class ExecutionState;
+    TorqueScript::Interpreter interpreter;
+    TorqueScript::registerAllLibraries(&interpreter);
 
-    /**
-     *  @brief Storage class for a string value.
-     */
-    class StoredStringValue : public StoredValue
-    {
-        public:
-            StoredStringValue(const std::string& value);
+    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    interpreter.execute("cases/for.cs", state);
 
-            virtual int toInteger(std::shared_ptr<ExecutionState> state) override;
-            virtual float toFloat(std::shared_ptr<ExecutionState> state) override;
-            virtual std::string toString(std::shared_ptr<ExecutionState> state) override;
-            virtual std::shared_ptr<StoredValue> getReferencedValueCopy(std::shared_ptr<ExecutionState> state) override;
+    // After execution, the result of $global should be 50
+    TorqueScript::StoredValue* result = interpreter.getGlobal("global");
+    ASSERT_TRUE(result);
 
-        protected:
-            //! The stored string value.
-            std::string mValue;
-    };
+    ASSERT_EQ(result->toInteger(state), 50);
+}
+
+int main()
+{
+    testing::InitGoogleTest();
+    return RUN_ALL_TESTS();
 }

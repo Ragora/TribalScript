@@ -1,9 +1,23 @@
-antlr_target(Torque Torque.g4 LISTENER)
+# Copyright 2021 Robert MacGregor
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+antlr_target(Torque Torque.g4 VISITOR)
 include_directories(${ANTLR_Torque_OUTPUT_DIR})
 
 file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/source/*.cpp)
+file(GLOB INCLUDES ${PROJECT_SOURCE_DIR}/include/torquescript/*.hpp ${PROJECT_SOURCE_DIR}/include/torquescript/libraries/*.hpp)
 add_library(TorqueCompiler
     ${SOURCES}
+    ${INCLUDES}
     ${ANTLR_Torque_CXX_OUTPUTS}
 )
 target_link_libraries(TorqueCompiler antlr4_static)
@@ -14,16 +28,3 @@ target_include_directories(TorqueCompiler PUBLIC
 
 add_executable(main main.cpp)
 target_link_libraries(main TorqueCompiler)
-
-if (${DOXYGEN_FOUND})
-    set(DOXYGEN_GENERATE_HTML YES)
-    set(DOXYGEN_GENERATE_MAN NO)
-
-    doxygen_add_docs(
-        TorqueCompilerDocs
-        ${PROJECT_SOURCE_DIR}/include
-        ${PROJECT_SOURCE_DIR}/source/doxymain.h
-        ${SOURCES}
-        COMMENT "Generate Documentation for the Compiler"
-    )
-endif (${DOXYGEN_FOUND})

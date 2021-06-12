@@ -12,16 +12,21 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/builtins.hpp>
+#include <ctime>
+
+#include <torquescript/libraries/libraries.hpp>
 #include <torquescript/interpreter.hpp>
 #include <torquescript/executionscope.hpp>
 #include <torquescript/codeblock.hpp>
 #include <torquescript/executionstate.hpp>
+#include <torquescript/fileobject.hpp>
 
 int main(int argc, char* argv[])
 {
+    std::srand(std::time(nullptr));
+
     TorqueScript::Interpreter interpreter;
-    TorqueScript::registerBuiltIns(&interpreter);
+    TorqueScript::registerAllLibraries(&interpreter);
 
     std::cout << "Type TorqueScript Program, use EOF (CTRL+D on Unix, CTRL+Z on Windows) to End Input" << std::endl << std::endl;
 

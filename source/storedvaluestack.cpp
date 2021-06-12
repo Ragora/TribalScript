@@ -12,6 +12,8 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <sstream>
+
 #include <torquescript/storedvaluestack.hpp>
 #include <torquescript/executionstate.hpp>
 
@@ -23,8 +25,8 @@ namespace TorqueScript
         {
             return 0;
         }
-        std::shared_ptr<StoredValue> currentValue = this->back();
-        int result = currentValue->toInteger(state);
+        StoredValue& currentValue = this->back();
+        int result = currentValue.toInteger(state);
         this->pop_back();
         return result;
     }
@@ -35,8 +37,8 @@ namespace TorqueScript
         {
             return "";
         }
-        std::shared_ptr<StoredValue> currentValue = this->back();
-        std::string result = currentValue->toString(state);
+        StoredValue& currentValue = this->back();
+        std::string result = currentValue.toString(state);
         this->pop_back();
         return result;
     }
@@ -47,9 +49,22 @@ namespace TorqueScript
         {
             return 0.0f;
         }
-        std::shared_ptr<StoredValue> currentValue = this->back();
-        float result = currentValue->toFloat(state);
+        StoredValue& currentValue = this->back();
+        float result = currentValue.toFloat(state);
         this->pop_back();
+        return result;
+    }
+
+    std::vector<std::string> StoredValueStack::dump()
+    {
+        std::vector<std::string> result;
+        for (unsigned int iteration = 0; iteration < this->size(); ++iteration)
+        {
+            std::ostringstream element;
+            element << iteration << ": " << this->at(iteration).getRepresentation();
+
+            result.push_back(element.str());
+        }
         return result;
     }
 }

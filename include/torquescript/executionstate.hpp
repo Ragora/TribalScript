@@ -19,7 +19,6 @@
 
 #include <torquescript/interpreter.hpp>
 #include <torquescript/executionscope.hpp>
-#include <torquescript/storedvaluestack.hpp>
 
 namespace TorqueScript
 {
@@ -27,23 +26,21 @@ namespace TorqueScript
      *  @brief Execution state structure - this is passed around internally in the virtual machine
      *  for arbitrary access.
      */
-    struct ExecutionState
+    class ExecutionState
     {
-        ExecutionState(Interpreter* interpreter) : mInterpreter(interpreter)
-        {
+        public:
+            ExecutionState(Interpreter* interpreter) : mInterpreter(interpreter), mExecutionScope(interpreter->mConfig, &interpreter->mStringTable)
+            {
 
-        }
+            }
 
-        //! Instruction pointer - used primarily for handling breaks.
-        unsigned int mInstructionPointer;
+            //! Instruction pointer - used primarily for handling breaks.
+            AddressType mInstructionPointer;
 
-        //! The interpreter instance this state is associated with.
-        Interpreter* mInterpreter;
+            //! The interpreter instance this state is associated with.
+            Interpreter* mInterpreter;
 
-        //! The execution scope used for managing local variables & for loop structures.
-        ExecutionScope mExecutionScope;
-
-        //! The stack used for execution in this state.
-        StoredValueStack mStack;
+            //! The execution scope used for managing local variables & for loop structures.
+            ExecutionScope mExecutionScope;
     };
 }

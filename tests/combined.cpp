@@ -12,44 +12,32 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-
-#include <string>
-#include <vector>
 #include <memory>
 
-namespace TorqueScript
+#include "gtest/gtest.h"
+
+#include <torquescript/interpreter.hpp>
+#include <torquescript/storedvalue.hpp>
+#include <torquescript/libraries/libraries.hpp>
+#include <torquescript/executionstate.hpp>
+
+TEST(InterpreterTest, Combined)
 {
-    //! Forward declaration to avoid circular dependencies.
-    class Interpreter;
-    class Instruction;
-    class ExecutionScope;
-    class StoredValue;
+    TorqueScript::Interpreter interpreter;
+    TorqueScript::registerAllLibraries(&interpreter);
 
-    /**
-     *  @brief A function is callable subroutine from anywhere in the language.
-     */
-    class Function
-    {
-        public:
-            Function(const std::string& name);
+    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    interpreter.execute("cases/combined.cs", state);
 
-            void addInstructions(const std::vector<std::shared_ptr<Instruction>>& instructions);
+    // We have several globals here
+    TorqueScript::StoredValue* result = interpreter.getGlobal("result");
+    ASSERT_TRUE(result);
 
-            /**
-             *  @brief Default implementation will execute virtual instructions but can be overriden to implement native
-             *  functions.
-             */
-            virtual void execute(Interpreter* interpreter, ExecutionScope* scope, std::vector<std::shared_ptr<StoredValue>>& stack);
+    ASSERT_EQ(result->toInteger(state), 120);
+}
 
-            std::string getName();
-
-        private:
-            //! The name of the function.
-            std::string mName;
-
-            //! All instructions associated with this function.
-            std::vector<std::shared_ptr<Instruction>> mInstructions;
-
-    };
+int main()
+{
+    testing::InitGoogleTest();
+    return RUN_ALL_TESTS();
 }

@@ -12,26 +12,33 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/simobject.hpp>
-#include <torquescript/stringhelpers.hpp>
+#pragma once
+
+#include <memory>
+#include <iostream>
+#include <stdexcept>
+
+#include <torquescript/nativefunction.hpp>
+#include <torquescript/executionscope.hpp>
+#include <torquescript/interpreter.hpp>
+#include <torquescript/executionstate.hpp>
+#include <torquescript/storedvaluestack.hpp>
+#include <torquescript/consoleobject.hpp>
+#include <torquescript/fileobject.hpp>
 
 namespace TorqueScript
 {
-    std::shared_ptr<StoredValue> SimObject::getField(const std::string& name)
+    static void GetRandomBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
-        const std::string searchName = toLowerCase(name);
-        auto search = mValueMap.find(searchName);
+        StoredValueStack& stack = state->mExecutionScope.getStack();
 
-        if (search != mValueMap.end())
-        {
-            return search->second;
-        }
-        return nullptr;
+        // FIXME: If argC == 1, generate int between 0 and value, if argC == 2, generate int between min and max
+        const float result = (float)std::rand() / RAND_MAX;
+        stack.push_back(StoredValue(result));
     }
 
-    void SimObject::setField(const std::string& name, std::shared_ptr<StoredValue> value)
+    static void registerMathLibrary(Interpreter* interpreter)
     {
-        const std::string setName = toLowerCase(name);
-        mValueMap[setName] = value;
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetRandomBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "getRandom")));
     }
 }

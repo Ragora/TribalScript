@@ -14,28 +14,16 @@
 
 #pragma once
 
-#include <torquescript/storedvalue.hpp>
+#include <torquescript/libraries/math.hpp>
+#include <torquescript/libraries/core.hpp>
+#include <torquescript/libraries/fileobject.hpp>
 
 namespace TorqueScript
 {
-    class Interpreter;
-    class ExecutionState;
-
-    /**
-     *  @brief Storage class for an integer value.
-     */
-    class StoredIntegerValue : public StoredValue
+    static void registerAllLibraries(Interpreter* interpreter)
     {
-        public:
-            StoredIntegerValue(int value);
-
-            virtual int toInteger(std::shared_ptr<ExecutionState> state) override;
-            virtual float toFloat(std::shared_ptr<ExecutionState> state) override;
-            virtual std::string toString(std::shared_ptr<ExecutionState> state) override;
-            virtual std::shared_ptr<StoredValue> getReferencedValueCopy(std::shared_ptr<ExecutionState> state) override;
-
-        protected:
-            //! The stored float value.
-            int mValue;
-    };
+        registerMathLibrary(interpreter);
+        registerCoreLibrary(interpreter);
+        registerFileObjectLibrary(interpreter);
+    }
 }
