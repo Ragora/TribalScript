@@ -28,127 +28,21 @@
 
 namespace TorqueScript
 {
-    static void OpenForWriteBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
-    {
-        StoredValueStack& stack = state->mExecutionScope.getStack();
-        std::string path = stack.popString(state);
+    void OpenForWriteBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
 
-        // Open the handle
-        assert(thisObject);
-        std::shared_ptr<FileObject> fileObject = std::dynamic_pointer_cast<FileObject>(thisObject);
-        assert(fileObject);
+    void OpenForReadBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
 
-        if (fileObject->openForWrite(path))
-        {
-            stack.push_back(StoredValue(0));
-            return;
-        }
+    void WriteBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
 
-        stack.push_back(StoredValue(-1));
-    }
+    void CloseBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
 
-    static void OpenForReadBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
-    {
-        StoredValueStack& stack = state->mExecutionScope.getStack();
-        std::string path = stack.popString(state);
+    void IsEOFBuiltin(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
 
-        // Open the handle
-        assert(thisObject);
-        std::shared_ptr<FileObject> fileObject = std::dynamic_pointer_cast<FileObject>(thisObject);
-        assert(fileObject);
+    void ReadLineBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
 
-        if (fileObject->openForRead(path))
-        {
-            stack.push_back(StoredValue(0));
-            return;
-        }
+    void IsFileBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
 
-        stack.push_back(StoredValue(-1));
-    }
+    void DeleteFileBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
 
-    static void WriteBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
-    {
-        StoredValueStack& stack = state->mExecutionScope.getStack();
-        std::string written = stack.popString(state);
-
-        // Open the handle
-        assert(thisObject);
-        std::shared_ptr<FileObject> fileObject = std::dynamic_pointer_cast<FileObject>(thisObject);
-        assert(fileObject);
-
-        fileObject->write(written);
-        stack.push_back(StoredValue(0));
-    }
-
-    static void CloseBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
-    {
-        StoredValueStack& stack = state->mExecutionScope.getStack();
-
-        // Open the handle
-        assert(thisObject);
-        std::shared_ptr<FileObject> fileObject = std::dynamic_pointer_cast<FileObject>(thisObject);
-        assert(fileObject);
-
-        fileObject->close();
-        stack.push_back(StoredValue(0));
-    }
-
-    static void IsEOFBuiltin(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
-    {
-        StoredValueStack& stack = state->mExecutionScope.getStack();
-
-        // Open the handle
-        assert(thisObject);
-        std::shared_ptr<FileObject> fileObject = std::dynamic_pointer_cast<FileObject>(thisObject);
-        assert(fileObject);
-
-        stack.push_back(StoredValue(fileObject->isEOF() ? 1 : 0));
-    }
-
-    static void ReadLineBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
-    {
-        StoredValueStack& stack = state->mExecutionScope.getStack();
-
-        // Open the handle
-        assert(thisObject);
-        std::shared_ptr<FileObject> fileObject = std::dynamic_pointer_cast<FileObject>(thisObject);
-        assert(fileObject);
-
-
-        std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(fileObject->readLine());
-        stack.push_back(StoredValue(stringID, StoredValueType::String));
-    }
-
-    static void IsFileBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
-    {
-        StoredValueStack& stack = state->mExecutionScope.getStack();
-        std::string path = stack.popString(state);
-
-        std::unique_ptr<FileHandleBase> handle = state->mInterpreter->mConfig.mPlatform->getFileHandle(path);
-        stack.push_back(StoredValue(handle->exists() ? 1 : 0));
-    }
-
-    static void DeleteFileBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
-    {
-        StoredValueStack& stack = state->mExecutionScope.getStack();
-        std::string path = stack.popString(state);
-
-        std::unique_ptr<FileHandleBase> handle = state->mInterpreter->mConfig.mPlatform->getFileHandle(path);
-        stack.push_back(StoredValue(handle->deleteFile()));
-    }
-
-    static void registerFileObjectLibrary(Interpreter* interpreter)
-    {
-        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(OpenForWriteBuiltIn, PACKAGE_EMPTY, "FileObject", "openForWrite")));
-        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(OpenForReadBuiltIn, PACKAGE_EMPTY, "FileObject", "openForRead")));
-        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(WriteBuiltIn, PACKAGE_EMPTY, "FileObject", "write")));
-        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(CloseBuiltIn, PACKAGE_EMPTY, "FileObject", "close")));
-        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(IsEOFBuiltin, PACKAGE_EMPTY, "FileObject", "isEOF")));
-        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(ReadLineBuiltIn, PACKAGE_EMPTY, "FileObject", "readLine")));
-
-        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(IsFileBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "isFile")));
-        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(DeleteFileBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "deleteFile")));
-
-        interpreter->registerConsoleObjectType<FileObject>();
-    }
+    void registerFileObjectLibrary(Interpreter* interpreter);
 }

@@ -12,23 +12,23 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <assert.h>
 
-#include <memory>
-#include <iostream>
-#include <stdexcept>
-
-#include <torquescript/nativefunction.hpp>
-#include <torquescript/executionscope.hpp>
-#include <torquescript/interpreter.hpp>
-#include <torquescript/executionstate.hpp>
-#include <torquescript/storedvaluestack.hpp>
-#include <torquescript/consoleobject.hpp>
-#include <torquescript/fileobject.hpp>
+#include <torquescript/libraries/math.hpp>
 
 namespace TorqueScript
 {
-    void GetRandomBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
+    void GetRandomBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
 
-    void registerMathLibrary(Interpreter* interpreter);
+        // FIXME: If argC == 1, generate int between 0 and value, if argC == 2, generate int between min and max
+        const float result = (float)std::rand() / RAND_MAX;
+        stack.push_back(StoredValue(result));
+    }
+
+    void registerMathLibrary(Interpreter* interpreter)
+    {
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetRandomBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "getRandom")));
+    }
 }
