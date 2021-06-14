@@ -83,7 +83,7 @@ namespace TorqueScript
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
-        state->mInterpreter->mConsoleObjectRegistry.removeConsoleObject(thisObject);
+        state->mInterpreter->mConfig.mConsoleObjectRegistry->removeConsoleObject(thisObject);
         stack.push_back(StoredValue(0));
     }
 
@@ -91,7 +91,7 @@ namespace TorqueScript
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
-        const std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(state->mInterpreter->mConsoleObjectRegistry.getConsoleObjectName(thisObject));
+        const std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectName(thisObject));
         stack.push_back(StoredValue(stringID, StoredValueType::String));
     }
 

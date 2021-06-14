@@ -304,8 +304,8 @@ namespace TorqueScript
         ConsoleObject* initialized = objectDescriptor->mInitializePointer(this, descriptor);
 
         // Register to interpreter
-        mConsoleObjectRegistry.addConsoleObject(initialized);
-        mConsoleObjectRegistry.setConsoleObject(descriptor.mName, initialized);
+        mConfig.mConsoleObjectRegistry->addConsoleObject(initialized);
+        mConfig.mConsoleObjectRegistry->setConsoleObject(descriptor.mName, initialized);
 
         // Handle child init
         for (ObjectInstantiationDescriptor& childDescriptor : descriptor.mChildren)

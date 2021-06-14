@@ -34,30 +34,19 @@ namespace TorqueScript
     class CodeBlock;
     class ExecutionState;
 
-    class ConsoleObjectRegistry
+    class ConsoleObjectRegistryBase
     {
         public:
-            ConsoleObjectRegistry();
+            virtual void setConsoleObject(const std::string& name, ConsoleObject* value) = 0;
+            virtual ConsoleObject* getConsoleObject(const std::string& name) = 0;
+            virtual ConsoleObject* getConsoleObject(const unsigned int id) = 0;
 
-            void setConsoleObject(const std::string& name, ConsoleObject* value);
-            ConsoleObject* getConsoleObject(const std::string& name);
-            ConsoleObject* getConsoleObject(const unsigned int id);
+            virtual std::string getConsoleObjectName(ConsoleObject* target) = 0;
+            virtual unsigned int getConsoleObjectID(ConsoleObject* target) = 0;
 
-            std::string getConsoleObjectName(ConsoleObject* target);
-            unsigned int getConsoleObjectID(ConsoleObject* target);
+            virtual unsigned int addConsoleObject(ConsoleObject* value) = 0;
 
-            unsigned int addConsoleObject(ConsoleObject* value);
-
-            void removeConsoleObject(const std::string& name);
-            void removeConsoleObject(ConsoleObject* target);
-
-        private:
-            unsigned int mNextObjectID;
-
-            //! A mapping of object IDs to their sim objects
-            std::unordered_map<unsigned int, ConsoleObject*> mConsoleObjectsByID;
-
-            //! A mapping of object names to their sim objects
-            std::unordered_map<std::string, ConsoleObject*> mConsoleObjectsByName;
+            virtual void removeConsoleObject(const std::string& name) = 0;
+            virtual void removeConsoleObject(ConsoleObject* target) = 0;
     };
 }

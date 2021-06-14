@@ -26,7 +26,6 @@
 #include <torquescript/stringtable.hpp>
 #include <torquescript/functionregistry.hpp>
 #include <torquescript/storedvaluestack.hpp>
-#include <torquescript/consoleobjectregistry.hpp>
 
 #define NAMESPACE_EMPTY ""
 #define PACKAGE_EMPTY ""
@@ -118,9 +117,6 @@ namespace TorqueScript
             /// @}
 
             std::shared_ptr<ExecutionState> getExecutionState();
-
-            //! The ConsoleObjectRegistry associated with this interpreter. It is used to store all ConsoleObject instances associated with the interpreter.
-            ConsoleObjectRegistry mConsoleObjectRegistry;
 
             //! The string table associated with this interpreter.
             StringTable mStringTable;

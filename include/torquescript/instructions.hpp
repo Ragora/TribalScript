@@ -1312,7 +1312,7 @@ namespace TorqueScript
 
                         if (result)
                         {
-                            stack.push_back(StoredValue((int)state->mInterpreter->mConsoleObjectRegistry.getConsoleObjectID(result)));
+                            stack.push_back(StoredValue((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(result)));
                         }
                         else
                         {
