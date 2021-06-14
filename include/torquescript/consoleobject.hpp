@@ -166,7 +166,7 @@ namespace TorqueScript
              */
             virtual std::string getClassName() = 0;
 
-            virtual bool addChild(std::shared_ptr<ConsoleObject> child);
+            virtual bool addChild(ConsoleObject* child);
 
         protected:
             Interpreter* mInterpreter;

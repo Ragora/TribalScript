@@ -18,14 +18,14 @@
 
 namespace TorqueScript
 {
-    void OpenForWriteBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void OpenForWriteBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string path = stack.popString(state);
 
         // Open the handle
         assert(thisObject);
-        std::shared_ptr<FileObject> fileObject = std::dynamic_pointer_cast<FileObject>(thisObject);
+        FileObject* fileObject = reinterpret_cast<FileObject*>(thisObject);
         assert(fileObject);
 
         if (fileObject->openForWrite(path))
@@ -37,14 +37,14 @@ namespace TorqueScript
         stack.push_back(StoredValue(-1));
     }
 
-    void OpenForReadBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void OpenForReadBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string path = stack.popString(state);
 
         // Open the handle
         assert(thisObject);
-        std::shared_ptr<FileObject> fileObject = std::dynamic_pointer_cast<FileObject>(thisObject);
+        FileObject* fileObject = reinterpret_cast<FileObject*>(thisObject);
         assert(fileObject);
 
         if (fileObject->openForRead(path))
@@ -56,60 +56,59 @@ namespace TorqueScript
         stack.push_back(StoredValue(-1));
     }
 
-    void WriteBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void WriteBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string written = stack.popString(state);
 
         // Open the handle
         assert(thisObject);
-        std::shared_ptr<FileObject> fileObject = std::dynamic_pointer_cast<FileObject>(thisObject);
+        FileObject* fileObject = reinterpret_cast<FileObject*>(thisObject);
         assert(fileObject);
 
         fileObject->write(written);
         stack.push_back(StoredValue(0));
     }
 
-    void CloseBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void CloseBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
         // Open the handle
         assert(thisObject);
-        std::shared_ptr<FileObject> fileObject = std::dynamic_pointer_cast<FileObject>(thisObject);
+        FileObject* fileObject = reinterpret_cast<FileObject*>(thisObject);
         assert(fileObject);
 
         fileObject->close();
         stack.push_back(StoredValue(0));
     }
 
-    void IsEOFBuiltin(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void IsEOFBuiltin(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
         // Open the handle
         assert(thisObject);
-        std::shared_ptr<FileObject> fileObject = std::dynamic_pointer_cast<FileObject>(thisObject);
+        FileObject* fileObject = reinterpret_cast<FileObject*>(thisObject);
         assert(fileObject);
 
         stack.push_back(StoredValue(fileObject->isEOF() ? 1 : 0));
     }
 
-    void ReadLineBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void ReadLineBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
         // Open the handle
         assert(thisObject);
-        std::shared_ptr<FileObject> fileObject = std::dynamic_pointer_cast<FileObject>(thisObject);
+        FileObject* fileObject = reinterpret_cast<FileObject*>(thisObject);
         assert(fileObject);
-
 
         std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(fileObject->readLine());
         stack.push_back(StoredValue(stringID, StoredValueType::String));
     }
 
-    void IsFileBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void IsFileBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string path = stack.popString(state);
@@ -118,7 +117,7 @@ namespace TorqueScript
         stack.push_back(StoredValue(handle->exists() ? 1 : 0));
     }
 
-    void DeleteFileBuiltIn(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void DeleteFileBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string path = stack.popString(state);

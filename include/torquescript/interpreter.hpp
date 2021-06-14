@@ -137,7 +137,7 @@ namespace TorqueScript
              *  @return The root level ConsoleObject that was instantiated if successful. Otherwise,
              *  nullptr is returned.
              */
-            std::shared_ptr<ConsoleObject> initializeConsoleObjectTree(ObjectInstantiationDescriptor& descriptor);
+            ConsoleObject* initializeConsoleObjectTree(ObjectInstantiationDescriptor& descriptor);
 
             template <typename classType>
             void registerConsoleObjectType()

@@ -57,7 +57,7 @@ namespace TorqueScript
         }
     }
 
-    bool ConsoleObject::addChild(std::shared_ptr<ConsoleObject> child)
+    bool ConsoleObject::addChild(ConsoleObject* child)
     {
         return false;
     }

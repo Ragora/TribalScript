@@ -27,7 +27,7 @@ namespace TorqueScript
 
     }
 
-    void ConsoleObjectRegistry::setConsoleObject(const std::string& name, std::shared_ptr<ConsoleObject> value)
+    void ConsoleObjectRegistry::setConsoleObject(const std::string& name, ConsoleObject* value)
     {
         const std::string setName = toLowerCase(name);
         mConsoleObjectsByName[setName] = value;
@@ -36,7 +36,7 @@ namespace TorqueScript
         this->addConsoleObject(value);
     }
 
-    std::shared_ptr<ConsoleObject> ConsoleObjectRegistry::getConsoleObject(const std::string& name)
+    ConsoleObject* ConsoleObjectRegistry::getConsoleObject(const std::string& name)
     {
         const std::string searchedName = toLowerCase(name);
         auto search = mConsoleObjectsByName.find(searchedName);
@@ -48,7 +48,7 @@ namespace TorqueScript
         return nullptr;
     }
 
-    std::shared_ptr<ConsoleObject> ConsoleObjectRegistry::getConsoleObject(const unsigned int id)
+    ConsoleObject* ConsoleObjectRegistry::getConsoleObject(const unsigned int id)
     {
         auto search = mConsoleObjectsByID.find(id);
 
@@ -71,7 +71,7 @@ namespace TorqueScript
         }
     }
 
-    void ConsoleObjectRegistry::removeConsoleObject(std::shared_ptr<ConsoleObject> target)
+    void ConsoleObjectRegistry::removeConsoleObject(ConsoleObject* target)
     {
         // Remove from name mapping & ID mapping
         for (auto iterator = mConsoleObjectsByName.begin(); iterator != mConsoleObjectsByName.end(); ++iterator)
@@ -93,7 +93,7 @@ namespace TorqueScript
         }
     }
 
-    unsigned int ConsoleObjectRegistry::addConsoleObject(std::shared_ptr<ConsoleObject> value)
+    unsigned int ConsoleObjectRegistry::addConsoleObject(ConsoleObject* value)
     {
         // Check if it exists already in our ID mapping
         for (auto iterator = mConsoleObjectsByID.begin(); iterator != mConsoleObjectsByID.end(); ++iterator)
@@ -110,7 +110,7 @@ namespace TorqueScript
         return result;
     }
 
-    std::string ConsoleObjectRegistry::getConsoleObjectName(std::shared_ptr<ConsoleObject> target)
+    std::string ConsoleObjectRegistry::getConsoleObjectName(ConsoleObject* target)
     {
         // Search name set
         for (auto iterator = mConsoleObjectsByName.begin(); iterator != mConsoleObjectsByName.end(); ++iterator)
@@ -123,7 +123,7 @@ namespace TorqueScript
         return "";
     }
 
-    unsigned int ConsoleObjectRegistry::getConsoleObjectID(std::shared_ptr<ConsoleObject> target)
+    unsigned int ConsoleObjectRegistry::getConsoleObjectID(ConsoleObject* target)
     {
         for (auto iterator = mConsoleObjectsByID.begin(); iterator != mConsoleObjectsByID.end(); ++iterator)
         {

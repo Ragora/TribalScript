@@ -48,7 +48,7 @@ namespace TorqueScript
              *  @brief Default implementation will execute virtual instructions but can be overriden to implement native
              *  functions.
              */
-            virtual void execute(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
+            virtual void execute(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
 
             /**
              *  @brief Retrieves the declared name of this function.

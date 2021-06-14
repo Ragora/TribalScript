@@ -39,25 +39,25 @@ namespace TorqueScript
         public:
             ConsoleObjectRegistry();
 
-            void setConsoleObject(const std::string& name, std::shared_ptr<ConsoleObject> value);
-            std::shared_ptr<ConsoleObject> getConsoleObject(const std::string& name);
-            std::shared_ptr<ConsoleObject> getConsoleObject(const unsigned int id);
+            void setConsoleObject(const std::string& name, ConsoleObject* value);
+            ConsoleObject* getConsoleObject(const std::string& name);
+            ConsoleObject* getConsoleObject(const unsigned int id);
 
-            std::string getConsoleObjectName(std::shared_ptr<ConsoleObject> target);
-            unsigned int getConsoleObjectID(std::shared_ptr<ConsoleObject> target);
+            std::string getConsoleObjectName(ConsoleObject* target);
+            unsigned int getConsoleObjectID(ConsoleObject* target);
 
-            unsigned int addConsoleObject(std::shared_ptr<ConsoleObject> value);
+            unsigned int addConsoleObject(ConsoleObject* value);
 
             void removeConsoleObject(const std::string& name);
-            void removeConsoleObject(std::shared_ptr<ConsoleObject> target);
+            void removeConsoleObject(ConsoleObject* target);
 
         private:
             unsigned int mNextObjectID;
 
             //! A mapping of object IDs to their sim objects
-            std::unordered_map<unsigned int, std::shared_ptr<ConsoleObject>> mConsoleObjectsByID;
+            std::unordered_map<unsigned int, ConsoleObject*> mConsoleObjectsByID;
 
             //! A mapping of object names to their sim objects
-            std::unordered_map<std::string, std::shared_ptr<ConsoleObject>> mConsoleObjectsByName;
+            std::unordered_map<std::string, ConsoleObject*> mConsoleObjectsByName;
     };
 }
