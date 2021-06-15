@@ -474,6 +474,68 @@ namespace TorqueScript
         };
 
         /**
+         *  @brief Performs a logical and of two values on the stack and pushes back the result.
+         */
+        class LogicalAndInstruction : public Instruction
+        {
+            public:
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
+                {
+                    StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                    assert(stack.size() >= 2);
+
+                    StoredValue rhsStored = stack.back();
+                    stack.pop_back();
+                    StoredValue lhsStored = stack.back();
+                    stack.pop_back();
+
+                    const bool lhs = lhsStored.toBoolean(state);
+                    const bool rhs = rhsStored.toBoolean(state);
+
+                    const int result = lhs && rhs ? 1 : 0;
+                    stack.push_back(StoredValue(result));
+                    return 1;
+                };
+
+                virtual std::string disassemble() override
+                {
+                    return "LogicalAnd";
+                }
+        };
+
+        /**
+         *  @brief Performs a logical or of two values on the stack and pushes back the result.
+         */
+        class LogicalOrInstruction : public Instruction
+        {
+            public:
+                virtual AddressOffsetType execute(std::shared_ptr<ExecutionState> state) override
+                {
+                    StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                    assert(stack.size() >= 2);
+
+                    StoredValue rhsStored = stack.back();
+                    stack.pop_back();
+                    StoredValue lhsStored = stack.back();
+                    stack.pop_back();
+
+                    const bool lhs = lhsStored.toBoolean(state);
+                    const bool rhs = rhsStored.toBoolean(state);
+
+                    const int result = lhs || rhs ? 1 : 0;
+                    stack.push_back(StoredValue(result));
+                    return 1;
+                };
+
+                virtual std::string disassemble() override
+                {
+                    return "LogicalOr";
+                }
+        };
+
+        /**
          *  @brief Adds together two values on the stack and pushes the sum.
          */
         class AddInstruction : public Instruction
@@ -1091,25 +1153,9 @@ namespace TorqueScript
                     // When we encounter this instruction, we generate a new variable reference by appending all string representations together
                     // This is what T2 does - it has no concept of arrays despite pretending to
 
-                    // FIXME: With more clever use of the ostream we might be able to make this work without the vector
-                    std::vector<std::string> variableComponents;
-                    for (unsigned int iteration = 0; iteration < mArgc; ++iteration)
-                    {
-                        variableComponents.push_back(stack.popString(state));
-                    }
+                    const std::string arrayName = resolveArrayNameFromStack(stack, state, mName, mArgc);
 
-                    std::ostringstream out;
-                    out << mName;
-                    for (auto iterator = variableComponents.rbegin(); iterator != variableComponents.rend(); ++iterator)
-                    {
-                        if (iterator != variableComponents.rbegin())
-                        {
-                            out << "_";
-                        }
-                        out << *iterator;
-                    }
-
-                    const std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(out.str());
+                    const std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(arrayName);
                     if (mGlobal)
                     {
                         stack.push_back(StoredValue(stringID, StoredValueType::GlobalReference));
@@ -1275,7 +1321,6 @@ namespace TorqueScript
                     {
                         descriptor.mFieldAssignments.insert(std::make_pair(out.str(), rvalue));
                     }
-                    //descriptor.mFieldAssignments[out.str()] = rvalue;
 
                     return 1;
                 };

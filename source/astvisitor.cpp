@@ -106,6 +106,26 @@ namespace TorqueScript
             return result;
         }
 
+        antlrcpp::Any ASTVisitor::visitLogicalOrNode(AST::LogicalOrNode* expression)
+        {
+            antlrcpp::Any result = this->defaultResult();
+
+            antlrcpp::Any childResult = expression->mLeft->accept(this);
+            result = this->aggregateResult(result, childResult);
+            childResult = expression->mRight->accept(this);
+            return this->aggregateResult(result, childResult);
+        }
+
+        antlrcpp::Any ASTVisitor::visitLogicalAndNode(AST::LogicalAndNode* expression)
+        {
+            antlrcpp::Any result = this->defaultResult();
+
+            antlrcpp::Any childResult = expression->mLeft->accept(this);
+            result = this->aggregateResult(result, childResult);
+            childResult = expression->mRight->accept(this);
+            return this->aggregateResult(result, childResult);
+        }
+
         antlrcpp::Any ASTVisitor::visitAddNode(AST::AddNode* expression)
         {
             antlrcpp::Any result = this->defaultResult();

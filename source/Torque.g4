@@ -123,10 +123,12 @@ expression : (op=MINUS
            | expression '.' expression                                          # subfieldExpression
            | lvalue                                                             # lvalueExpression
            | '(' expression ')'                                                 # parentheses
-           | expression '^' expression                                          # bitwise
-           | expression '&' expression                                          # bitwise
-           | expression '|' expression                                          # bitwise
-           | expression (op=MODULUS|op=MULTIPLY|op=DIVIDE) expression           # arithmetic
+           | expression (op=BITWISEXOR
+                        |op=BITWISEOR
+                        |op=BITWISEAND) expression                              # bitwise
+           | expression (op=MODULUS
+                        |op=MULTIPLY
+                        |op=DIVIDE) expression                                  # arithmetic
            | expression (op=PLUS
                         |op=MINUS) expression                                   # arithmetic
            | expression '?' expression ':' expression                           # ternary
@@ -134,10 +136,10 @@ expression : (op=MINUS
                         |op=GREATERTHAN
                         |op=LESSTHANOREQUAL
                         |op=GREATERTHANOREQUAL) expression                      # relational
-           | expression '||' expression                                         # logical
-           | expression '<<' expression                                         # bitshift
-           | expression '>>' expression                                         # bitshift
-           | expression '&&' expression                                         # logical
+           | expression (op=LEFTBITSHIFT
+                        |op=RIGHTBITSHIFT) expression                           # bitshift
+           | expression (op=LOGICALAND
+                        |op=LOGICALOR) expression                               # logical
            | expression (op=EQUALS
                         |op=NOTEQUAL
                         |op=STRINGEQUALS
@@ -199,6 +201,13 @@ SPACECONCAT : 'SPC' ;
 TABCONCAT : 'TAB' ;
 NEWLINECONCAT : 'NL' ;
 CONTINUE : 'continue' ;
+LOGICALAND : '&&' ;
+LOGICALOR : '||' ;
+LEFTBITSHIFT : '<<' ;
+RIGHTBITSHIFT : '>>' ;
+BITWISEXOR : '^' ;
+BITWISEAND : '&' ;
+BITWISEOR : '|' ;
 
 // Labels can contain numbers but not at the start
 LABEL : [a-zA-Z_]+[a-zA-Z_0-9]* ;

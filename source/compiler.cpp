@@ -198,6 +198,34 @@ namespace TorqueScript
         return result;
     }
 
+    antlrcpp::Any Compiler::visitLogicalOrNode(AST::LogicalOrNode* expression)
+    {
+        InstructionSequence result;
+
+        InstructionSequence lhsCode = expression->mLeft->accept(this).as<InstructionSequence>();
+        InstructionSequence rhsCode = expression->mRight->accept(this).as<InstructionSequence>();
+
+        result.insert(result.end(), lhsCode.begin(), lhsCode.end());
+        result.insert(result.end(), rhsCode.begin(), rhsCode.end());
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::LogicalOrInstruction()));
+
+        return result;
+    }
+
+    antlrcpp::Any Compiler::visitLogicalAndNode(AST::LogicalAndNode* expression)
+    {
+        InstructionSequence result;
+
+        InstructionSequence lhsCode = expression->mLeft->accept(this).as<InstructionSequence>();
+        InstructionSequence rhsCode = expression->mRight->accept(this).as<InstructionSequence>();
+
+        result.insert(result.end(), lhsCode.begin(), lhsCode.end());
+        result.insert(result.end(), rhsCode.begin(), rhsCode.end());
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::LogicalAndInstruction()));
+
+        return result;
+    }
+
     antlrcpp::Any Compiler::visitAddNode(AST::AddNode* expression)
     {
         InstructionSequence result;

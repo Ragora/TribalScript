@@ -274,6 +274,34 @@ namespace TorqueScript
                 ASTNode* mRight;
         };
 
+        class LogicalAndNode : public InfixExpressionNode
+        {
+            public:
+                LogicalAndNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
+                {
+
+                }
+
+                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                {
+                    return visitor->visitLogicalAndNode(this);
+                }
+        };
+
+        class LogicalOrNode : public InfixExpressionNode
+        {
+            public:
+                LogicalOrNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
+                {
+
+                }
+
+                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                {
+                    return visitor->visitLogicalOrNode(this);
+                }
+        };
+
         class AddNode : public InfixExpressionNode
         {
             public:
@@ -833,7 +861,7 @@ namespace TorqueScript
 
                 }
 
-                virtual ~IfNode() 
+                virtual ~IfNode()
                 {
                     delete mExpression;
 

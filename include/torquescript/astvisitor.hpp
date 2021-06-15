@@ -57,6 +57,8 @@ namespace TorqueScript
         class SwitchNode;
         class ElseIfNode;
         class IfNode;
+        class LogicalAndNode;
+        class LogicalOrNode;
         class DatablockDeclarationNode;
         class FieldAssignNode;
         class ObjectDeclarationNode;
@@ -81,6 +83,8 @@ namespace TorqueScript
                 virtual antlrcpp::Any visitSubFunctionCallNode(AST::SubFunctionCallNode* call);
                 virtual antlrcpp::Any visitSubFieldNode(AST::SubFieldNode* subfield);
                 virtual antlrcpp::Any visitAddNode(AST::AddNode* expression);
+                virtual antlrcpp::Any visitLogicalAndNode(AST::LogicalAndNode* expression);
+                virtual antlrcpp::Any visitLogicalOrNode(AST::LogicalOrNode* expression);
                 virtual antlrcpp::Any visitSubtractNode(AST::SubtractNode* expression);
                 virtual antlrcpp::Any visitMultiplyNode(AST::MultiplyNode* expression);
                 virtual antlrcpp::Any visitDivideNode(AST::DivideNode* expression);

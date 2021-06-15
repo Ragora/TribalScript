@@ -260,6 +260,32 @@ namespace TorqueScript
             return result;
         }
 
+        antlrcpp::Any ASTBuilder::visitLogical(TorqueParser::LogicalContext* context)
+        {
+            std::vector<AST::ASTNode*> result = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
+            assert(result.size() == 2);
+
+            AST::ASTNode* right = result.back();
+            result.pop_back();
+            AST::ASTNode* left = result.back();
+            result.pop_back();
+
+            if (context->LOGICALAND())
+            {
+                result.push_back(new AST::LogicalAndNode(left, right));
+            }
+            else if (context->LOGICALOR())
+            {
+                result.push_back(new AST::LogicalOrNode(left, right));
+            }
+            else
+            {
+                throw std::runtime_error("Unhandled logical type!");
+            }
+
+            return result;
+        }
+
         antlrcpp::Any ASTBuilder::visitArithmetic(TorqueParser::ArithmeticContext* context)
         {
             std::vector<AST::ASTNode*> result = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
