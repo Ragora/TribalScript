@@ -26,7 +26,6 @@
 #include <torquescript/stringtable.hpp>
 #include <torquescript/functionregistry.hpp>
 #include <torquescript/storedvaluestack.hpp>
-#include <torquescript/consoleobjectregistry.hpp>
 
 #define NAMESPACE_EMPTY ""
 #define PACKAGE_EMPTY ""
@@ -119,9 +118,6 @@ namespace TorqueScript
 
             std::shared_ptr<ExecutionState> getExecutionState();
 
-            //! The ConsoleObjectRegistry associated with this interpreter. It is used to store all ConsoleObject instances associated with the interpreter.
-            ConsoleObjectRegistry mConsoleObjectRegistry;
-
             //! The string table associated with this interpreter.
             StringTable mStringTable;
 
@@ -137,7 +133,7 @@ namespace TorqueScript
              *  @return The root level ConsoleObject that was instantiated if successful. Otherwise,
              *  nullptr is returned.
              */
-            std::shared_ptr<ConsoleObject> initializeConsoleObjectTree(ObjectInstantiationDescriptor& descriptor);
+            ConsoleObject* initializeConsoleObjectTree(ObjectInstantiationDescriptor& descriptor);
 
             template <typename classType>
             void registerConsoleObjectType()

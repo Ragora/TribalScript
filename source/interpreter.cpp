@@ -285,7 +285,7 @@ namespace TorqueScript
         deactivated->mActive = false;
     }
 
-    std::shared_ptr<ConsoleObject> Interpreter::initializeConsoleObjectTree(ObjectInstantiationDescriptor& descriptor)
+    ConsoleObject* Interpreter::initializeConsoleObjectTree(ObjectInstantiationDescriptor& descriptor)
     {
         // Lookup console object descriptor
         auto search = sConsoleObjectDescriptors->find(descriptor.mTypeName);
@@ -301,16 +301,16 @@ namespace TorqueScript
         }
 
         ConsoleObjectDescriptor* objectDescriptor = search->second;
-        std::shared_ptr<ConsoleObject> initialized = std::shared_ptr<ConsoleObject>(objectDescriptor->mInitializePointer(this, descriptor));
+        ConsoleObject* initialized = objectDescriptor->mInitializePointer(this, descriptor);
 
         // Register to interpreter
-        mConsoleObjectRegistry.addConsoleObject(initialized);
-        mConsoleObjectRegistry.setConsoleObject(descriptor.mName, initialized);
+        mConfig.mConsoleObjectRegistry->addConsoleObject(initialized);
+        mConfig.mConsoleObjectRegistry->setConsoleObject(descriptor.mName, initialized);
 
         // Handle child init
         for (ObjectInstantiationDescriptor& childDescriptor : descriptor.mChildren)
         {
-            std::shared_ptr<ConsoleObject> childObject = this->initializeConsoleObjectTree(childDescriptor);
+            ConsoleObject* childObject = this->initializeConsoleObjectTree(childDescriptor);
 
             // Add to parent
             if (childObject)

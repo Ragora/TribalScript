@@ -15,6 +15,7 @@
 #pragma once
 
 #include <torquescript/platformcontext.hpp>
+#include <torquescript/standardconsoleobjectregistry.hpp>
 
 namespace TorqueScript
 {
@@ -24,14 +25,17 @@ namespace TorqueScript
      */
     struct InterpreterConfiguration
     {
-        InterpreterConfiguration(PlatformContext* platform = new PlatformContext()) :
-                                 mPlatform(platform), mMaxRecursionDepth(1024), mCaseSensitive(false)
+        InterpreterConfiguration(PlatformContext* platform = new PlatformContext(), ConsoleObjectRegistryBase* registry = new StandardConsoleObjectRegistry()) :
+                                 mPlatform(platform), mConsoleObjectRegistry(registry), mMaxRecursionDepth(1024), mCaseSensitive(false)
         {
 
         }
 
         //! The platform context used for handling ie. logging, File I/O and so on. While this can be reassigned at runtime, it is not recommended.
         PlatformContext* const mPlatform;
+
+        //! The ConsoleObjectRegistry associated with this interpreter. It is used to store all ConsoleObject instances associated with the interpreter.
+        ConsoleObjectRegistryBase* mConsoleObjectRegistry;
 
         //! Maximum call stack depth. If set to 0, no maximum call depth is enforced.
         unsigned int mMaxRecursionDepth;

@@ -34,30 +34,19 @@ namespace TorqueScript
     class CodeBlock;
     class ExecutionState;
 
-    class ConsoleObjectRegistry
+    class ConsoleObjectRegistryBase
     {
         public:
-            ConsoleObjectRegistry();
+            virtual void setConsoleObject(const std::string& name, ConsoleObject* value) = 0;
+            virtual ConsoleObject* getConsoleObject(const std::string& name) = 0;
+            virtual ConsoleObject* getConsoleObject(const unsigned int id) = 0;
 
-            void setConsoleObject(const std::string& name, std::shared_ptr<ConsoleObject> value);
-            std::shared_ptr<ConsoleObject> getConsoleObject(const std::string& name);
-            std::shared_ptr<ConsoleObject> getConsoleObject(const unsigned int id);
+            virtual std::string getConsoleObjectName(ConsoleObject* target) = 0;
+            virtual unsigned int getConsoleObjectID(ConsoleObject* target) = 0;
 
-            std::string getConsoleObjectName(std::shared_ptr<ConsoleObject> target);
-            unsigned int getConsoleObjectID(std::shared_ptr<ConsoleObject> target);
+            virtual unsigned int addConsoleObject(ConsoleObject* value) = 0;
 
-            unsigned int addConsoleObject(std::shared_ptr<ConsoleObject> value);
-
-            void removeConsoleObject(const std::string& name);
-            void removeConsoleObject(std::shared_ptr<ConsoleObject> target);
-
-        private:
-            unsigned int mNextObjectID;
-
-            //! A mapping of object IDs to their sim objects
-            std::unordered_map<unsigned int, std::shared_ptr<ConsoleObject>> mConsoleObjectsByID;
-
-            //! A mapping of object names to their sim objects
-            std::unordered_map<std::string, std::shared_ptr<ConsoleObject>> mConsoleObjectsByName;
+            virtual void removeConsoleObject(const std::string& name) = 0;
+            virtual void removeConsoleObject(ConsoleObject* target) = 0;
     };
 }

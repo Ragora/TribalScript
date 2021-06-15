@@ -99,7 +99,7 @@ namespace TorqueScript
 
             }
 
-            StoredValue(std::shared_ptr<ConsoleObject> object, const std::size_t field) : mType(StoredValueType::SubfieldReference), mStorage(field), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(object)
+            StoredValue(ConsoleObject* object, const std::size_t field) : mType(StoredValueType::SubfieldReference), mStorage(field), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(object)
             {
 
             }
@@ -128,7 +128,7 @@ namespace TorqueScript
 
             bool toBoolean(std::shared_ptr<ExecutionState> state);
 
-            std::shared_ptr<ConsoleObject> toConsoleObject(std::shared_ptr<ExecutionState> state);
+            ConsoleObject* toConsoleObject(std::shared_ptr<ExecutionState> state);
 
             /// @}
 
@@ -153,6 +153,6 @@ namespace TorqueScript
             MemoryReferenceType mMemoryReferenceType;
 
             void* mMemoryLocation;
-            std::shared_ptr<ConsoleObject> mConsoleObject;
+            ConsoleObject* mConsoleObject;
     };
 }

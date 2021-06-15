@@ -37,7 +37,7 @@ namespace TorqueScript
         }
     }
 
-    void Function::execute(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void Function::execute(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -52,7 +52,7 @@ namespace TorqueScript
             const std::string thisParameterName = parameterNames[0];
             parameterNames.erase(parameterNames.begin());
 
-            newLocals.emplace(std::make_pair(thisParameterName, StoredValue((int)state->mInterpreter->mConsoleObjectRegistry.getConsoleObjectID(thisObject))));
+            newLocals.emplace(std::make_pair(thisParameterName, StoredValue((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(thisObject))));
         }
 
         // Calculate expected versus provided to determine what parameters should be left empty

@@ -24,14 +24,14 @@ namespace TorqueScript
         return this->toInteger(state) != 0;
     }
 
-    std::shared_ptr<ConsoleObject> StoredValue::toConsoleObject(std::shared_ptr<ExecutionState> state)
+    ConsoleObject* StoredValue::toConsoleObject(std::shared_ptr<ExecutionState> state)
     {
         StoredValue rawValue = this->getReferencedValueCopy(state);
 
         // Search by ID first
         if (rawValue.isInteger(state))
         {
-            std::shared_ptr<ConsoleObject> idLookup = state->mInterpreter->mConsoleObjectRegistry.getConsoleObject(rawValue.toInteger(state));
+            ConsoleObject* idLookup = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(rawValue.toInteger(state));
             if (idLookup)
             {
                 return idLookup;
@@ -39,7 +39,7 @@ namespace TorqueScript
         }
 
         const std::string lookupName = rawValue.toString(state);
-        return state->mInterpreter->mConsoleObjectRegistry.getConsoleObject(lookupName);
+        return state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(lookupName);
     }
 
     bool StoredValue::isInteger(std::shared_ptr<ExecutionState> state)

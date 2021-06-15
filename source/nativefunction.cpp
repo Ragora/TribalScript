@@ -24,7 +24,7 @@ namespace TorqueScript
 
     }
 
-    void NativeFunction::execute(std::shared_ptr<ConsoleObject> thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void NativeFunction::execute(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
     {
         this->mNativeFunction(thisObject, state, argumentCount);
     }

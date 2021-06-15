@@ -931,7 +931,7 @@ namespace TorqueScript
 
                     StoredValue targetStored = stack.back();
                     stack.pop_back();
-                    std::shared_ptr<ConsoleObject> referenced = targetStored.toConsoleObject(state);
+                    ConsoleObject* referenced = targetStored.toConsoleObject(state);
 
                     if (referenced)
                     {
@@ -1160,7 +1160,7 @@ namespace TorqueScript
                     stack.pop_back();
 
                     // Retrieve the referenced ConsoleObject
-                    std::shared_ptr<ConsoleObject> targetObject = targetStored.toConsoleObject(state);
+                    ConsoleObject* targetObject = targetStored.toConsoleObject(state);
                     if (!targetObject)
                     {
                         std::ostringstream output;
@@ -1308,11 +1308,11 @@ namespace TorqueScript
                     else
                     {
                         // Ask the interpreter to initialize the resulting tree
-                        std::shared_ptr<ConsoleObject> result = state->mInterpreter->initializeConsoleObjectTree(descriptor);
+                        ConsoleObject* result = state->mInterpreter->initializeConsoleObjectTree(descriptor);
 
                         if (result)
                         {
-                            stack.push_back(StoredValue((int)state->mInterpreter->mConsoleObjectRegistry.getConsoleObjectID(result)));
+                            stack.push_back(StoredValue((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(result)));
                         }
                         else
                         {
