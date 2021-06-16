@@ -85,7 +85,7 @@ namespace TorqueScript
 
     StoredValue* Interpreter::getGlobal(const std::string& name)
     {
-        const std::size_t stringID = mStringTable.getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
+        const StringTableEntry stringID = mStringTable.getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
         auto search = mGlobalVariables.find(stringID);
         if (search != mGlobalVariables.end())
         {
@@ -94,7 +94,7 @@ namespace TorqueScript
         return nullptr;
     }
 
-    StoredValue* Interpreter::getGlobal(const std::size_t name)
+    StoredValue* Interpreter::getGlobal(const StringTableEntry name)
     {
         auto search = mGlobalVariables.find(name);
         if (search != mGlobalVariables.end())
@@ -184,7 +184,7 @@ namespace TorqueScript
 
     void Interpreter::setGlobal(const std::string& name, StoredValue value)
     {
-        const std::size_t key = mStringTable.getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
+        const StringTableEntry key = mStringTable.getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
 
         auto search = mGlobalVariables.find(key);
         if (search != mGlobalVariables.end())
@@ -196,7 +196,7 @@ namespace TorqueScript
         mGlobalVariables.emplace(std::make_pair(key, value));
     }
 
-    void Interpreter::setGlobal(const std::size_t name, StoredValue value)
+    void Interpreter::setGlobal(const StringTableEntry name, StoredValue value)
     {
         auto search = mGlobalVariables.find(name);
         if (search != mGlobalVariables.end())

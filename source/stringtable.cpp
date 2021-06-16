@@ -16,11 +16,11 @@
 
 namespace TorqueScript
 {
-    std::size_t StringTable::getOrAssign(const std::string& string)
+    StringTableEntry StringTable::getOrAssign(const std::string& string)
     {
         std::hash<std::string> hasher;
 
-        const std::size_t stringHash = hasher(string);
+        const StringTableEntry stringHash = hasher(string);
         auto search = this->find(stringHash);
 
         if (search == this->end())
@@ -30,7 +30,7 @@ namespace TorqueScript
         return stringHash;
     }
 
-    const std::string& StringTable::getString(const std::size_t id)
+    const std::string& StringTable::getString(const StringTableEntry id)
     {
         return this->at(id);
     }

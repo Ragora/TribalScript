@@ -40,7 +40,7 @@ namespace TorqueScript
         while (std::regex_search(result, match, hexRegex))
         {
             const unsigned long hexValue = std::stoul(match[1], nullptr, 16);
-            std::string hexString(1, hexValue);
+            std::string hexString(1, (const char)hexValue);
 
             const std::string beginning = result.substr(0, match.position());
             const std::string ending = result.substr(match.position() + match.length(), result.size());

@@ -123,7 +123,7 @@ namespace TorqueScript
         class PushStringInstruction : public Instruction
         {
             public:
-                PushStringInstruction(const std::size_t value) : mStringID(value)
+                PushStringInstruction(const StringTableEntry value) : mStringID(value)
                 {
 
                 }
@@ -144,7 +144,7 @@ namespace TorqueScript
 
             private:
                 //! The string table ID of the parameter to push.
-                std::size_t mStringID;
+                StringTableEntry mStringID;
         };
 
         /**
@@ -154,7 +154,7 @@ namespace TorqueScript
         class PushLocalReferenceInstruction : public Instruction
         {
             public:
-                PushLocalReferenceInstruction(const std::size_t value) : mStringID(value)
+                PushLocalReferenceInstruction(const StringTableEntry value) : mStringID(value)
                 {
 
                 }
@@ -175,7 +175,7 @@ namespace TorqueScript
 
             private:
                 //! The value to push.
-                std::size_t mStringID;
+                StringTableEntry mStringID;
         };
 
         /**
@@ -185,7 +185,7 @@ namespace TorqueScript
         class PushGlobalReferenceInstruction : public Instruction
         {
             public:
-                PushGlobalReferenceInstruction(const std::size_t value) : mStringID(value)
+                PushGlobalReferenceInstruction(const StringTableEntry value) : mStringID(value)
                 {
 
                 }
@@ -206,7 +206,7 @@ namespace TorqueScript
 
             private:
                 //! The value to push.
-                std::size_t mStringID;
+                StringTableEntry mStringID;
         };
 
         /**
@@ -310,7 +310,7 @@ namespace TorqueScript
                     std::string rhs = rhsStored.toString(state);
 
                     // Generate a new string ID
-                    const std::size_t requestedStringID = state->mInterpreter->mStringTable.getOrAssign(lhs + mSeperator + rhs);
+                    const StringTableEntry requestedStringID = state->mInterpreter->mStringTable.getOrAssign(lhs + mSeperator + rhs);
                     stack.push_back(StoredValue(requestedStringID, StoredValueType::String));
                     return 1;
                 };
@@ -978,7 +978,7 @@ namespace TorqueScript
         class SubReferenceInstruction : public Instruction
         {
             public:
-                SubReferenceInstruction(const std::size_t value, const std::size_t arrayIndices) : mStringID(value), mArrayIndices(arrayIndices)
+                SubReferenceInstruction(const StringTableEntry value, const std::size_t arrayIndices) : mStringID(value), mArrayIndices(arrayIndices)
                 {
 
                 }
@@ -997,7 +997,7 @@ namespace TorqueScript
 
                     if (referenced)
                     {
-                        const std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(arrayName);
+                        const StringTableEntry stringID = state->mInterpreter->mStringTable.getOrAssign(arrayName);
 
                         stack.push_back(StoredValue(referenced, mStringID));
                         return 1;
@@ -1015,7 +1015,7 @@ namespace TorqueScript
                 }
 
             private:
-                std::size_t mStringID;
+                StringTableEntry mStringID;
                 std::size_t mArrayIndices;
         };
 

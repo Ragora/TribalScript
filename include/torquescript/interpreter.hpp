@@ -63,7 +63,7 @@ namespace TorqueScript
             /// These functions handle getting and setting global variables within
             /// the context of an interpreter.
             /// @{
-            void setGlobal(const std::size_t name, StoredValue value);
+            void setGlobal(const StringTableEntry name, StoredValue value);
             void setGlobal(const std::string& name, StoredValue value);
 
             /**
@@ -83,7 +83,7 @@ namespace TorqueScript
              *  @return The stored value at that global variable. If no such variable
              *  exists, nullptr is returned.
              */
-            StoredValue* getGlobal(const std::size_t name);
+            StoredValue* getGlobal(const StringTableEntry name);
 
             /// @}
 
@@ -150,6 +150,6 @@ namespace TorqueScript
             std::vector<FunctionRegistry> mFunctionRegistries;
 
             //! A mapping of global variable names to their stored value instance.
-            std::unordered_map<std::size_t, StoredValue> mGlobalVariables;
+            std::unordered_map<StringTableEntry, StoredValue> mGlobalVariables;
     };
 }

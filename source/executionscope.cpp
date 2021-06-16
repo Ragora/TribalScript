@@ -21,7 +21,7 @@ namespace TorqueScript
         this->pushFrame(nullptr);
     }
 
-    StoredValue* ExecutionScope::getVariable(const std::size_t name)
+    StoredValue* ExecutionScope::getVariable(const StringTableEntry name)
     {
         if (mExecutionScopeData.empty())
         {
@@ -41,7 +41,7 @@ namespace TorqueScript
 
     StoredValue* ExecutionScope::getVariable(const std::string& name)
     {
-        std::size_t lookup = mStringTable->getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
+        const StringTableEntry lookup = mStringTable->getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
 
         if (mExecutionScopeData.empty())
         {
@@ -59,7 +59,7 @@ namespace TorqueScript
         return nullptr;
     }
 
-    void ExecutionScope::setVariable(const std::size_t name, StoredValue variable)
+    void ExecutionScope::setVariable(const StringTableEntry name, StoredValue variable)
     {
         // Initialize if necessary
         if (mExecutionScopeData.empty())
@@ -81,7 +81,7 @@ namespace TorqueScript
 
     void ExecutionScope::setVariable(const std::string& name, StoredValue variable)
     {
-        std::size_t key = mStringTable->getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
+        const StringTableEntry key = mStringTable->getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
 
         // Initialize if necessary
         if (mExecutionScopeData.empty())

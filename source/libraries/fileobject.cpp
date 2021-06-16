@@ -104,7 +104,7 @@ namespace TorqueScript
         FileObject* fileObject = reinterpret_cast<FileObject*>(thisObject);
         assert(fileObject);
 
-        std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(fileObject->readLine());
+        const StringTableEntry stringID = state->mInterpreter->mStringTable.getOrAssign(fileObject->readLine());
         stack.push_back(StoredValue(stringID, StoredValueType::String));
     }
 

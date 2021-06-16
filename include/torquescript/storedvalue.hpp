@@ -19,6 +19,8 @@
 #include <memory>
 #include <string>
 
+#include <torquescript/stringtable.hpp>
+
 namespace TorqueScript
 {
     class ExecutionScope;
@@ -49,7 +51,7 @@ namespace TorqueScript
     {
         int mInteger;
         float mFloat;
-        std::size_t mStringID;
+        StringTableEntry mStringID;
 
         StoredValueUnion()
         {
@@ -66,7 +68,7 @@ namespace TorqueScript
 
         }
 
-        StoredValueUnion(const std::size_t value) : mStringID(value)
+        StoredValueUnion(const StringTableEntry value) : mStringID(value)
         {
 
         }

@@ -168,7 +168,7 @@ namespace TorqueScript
     {
         InstructionSequence result = subfield->mTarget->accept(this).as<InstructionSequence>();
 
-        const std::size_t stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? subfield->mName : toLowerCase(subfield->mName));
+        const StringTableEntry stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? subfield->mName : toLowerCase(subfield->mName));
 
         // Push array indices
         for (AST::ASTNode* node : subfield->mIndices)
@@ -259,7 +259,7 @@ namespace TorqueScript
     {
         InstructionSequence result;
 
-        const std::size_t stringID = mStringTable->getOrAssign(value->mValue);
+        const StringTableEntry stringID = mStringTable->getOrAssign(expandEscapeSequences(value->mValue));
         result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringID)));
         return result;
     }
@@ -268,7 +268,7 @@ namespace TorqueScript
     {
         InstructionSequence result;
 
-        const std::size_t stringID = mStringTable->getOrAssign(value->mValue);
+        const StringTableEntry stringID = mStringTable->getOrAssign(expandEscapeSequences(value->mValue));
         result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushIntegerInstruction((int)stringID)));
         return result;
     }
@@ -280,7 +280,7 @@ namespace TorqueScript
         // NOTE: For now we collapse the name into a single string for lookup
         std::string lookupName = value->getName();
 
-        const std::size_t stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? lookupName : toLowerCase(lookupName));
+        const StringTableEntry stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? lookupName : toLowerCase(lookupName));
         out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLocalReferenceInstruction(stringID)));
         return out;
     }
@@ -292,7 +292,7 @@ namespace TorqueScript
         // NOTE: For now we collapse the name into a single string for lookup
         std::string lookupName = value->getName();
 
-        const std::size_t stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? lookupName : toLowerCase(lookupName));
+        const StringTableEntry stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? lookupName : toLowerCase(lookupName));
         out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushGlobalReferenceInstruction(stringID)));
         return out;
     }
@@ -680,7 +680,7 @@ namespace TorqueScript
         InstructionSequence out;
 
         // Push base
-        const std::size_t stringID = mStringTable->getOrAssign(node->mFieldBaseName);
+        const StringTableEntry stringID = mStringTable->getOrAssign(node->mFieldBaseName);
         out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringID)));
 
         // Push all array components
@@ -716,7 +716,7 @@ namespace TorqueScript
         }
         else
         {
-            const std::size_t stringID = mStringTable->getOrAssign("");
+            const StringTableEntry stringID = mStringTable->getOrAssign("");
             out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringID)));
         }
 
@@ -739,14 +739,6 @@ namespace TorqueScript
 
         // Pop object
         out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopObjectInstantiationInstruction()));
-
-            /*
-            *                 ASTNode* mName;
-                ASTNode* mType;
-
-                std::vector<ObjectDeclarationNode*> mChildren;
-                std::vector<ASTNode*> mFields;
-            */
 
         return out;
     }
