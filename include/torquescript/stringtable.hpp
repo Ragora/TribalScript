@@ -21,6 +21,8 @@
 
 namespace TorqueScript
 {
+    typedef std::size_t StringTableEntry;
+
     /**
      *  @brief A string table maintains a mapping of numeric identifiers to their
      *  raw string values. This is used to simplify code referencing strings
