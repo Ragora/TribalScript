@@ -26,7 +26,7 @@ TEST(InterpreterTest, Variables)
     TorqueScript::Interpreter interpreter;
     TorqueScript::registerAllLibraries(&interpreter);
 
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    TorqueScript::ExecutionState* state = interpreter.getExecutionState();
     interpreter.execute("cases/variables.cs", state);
 
     // We have a global and a global value within a namespace

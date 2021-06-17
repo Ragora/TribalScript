@@ -23,7 +23,7 @@ namespace TorqueScript
     std::string toLowerCase(const std::string& in);
     std::string expandEscapeSequences(const std::string& in);
 
-    static std::string resolveArrayNameFromStack(StoredValueStack& stack, std::shared_ptr<ExecutionState> state, const std::string& base, const std::size_t argumentCount)
+    static std::string resolveArrayNameFromStack(StoredValueStack& stack, ExecutionState* state, const std::string& base, const std::size_t argumentCount)
     {
         std::vector<std::string> variableComponents;
         for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)

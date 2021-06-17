@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
         }
         std::cout << std::endl;
 
-        std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+        TorqueScript::ExecutionState* state = interpreter.getExecutionState();
         compiled->execute(state);
 
         delete compiled;

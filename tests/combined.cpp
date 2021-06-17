@@ -26,7 +26,7 @@ TEST(InterpreterTest, Combined)
     TorqueScript::Interpreter interpreter;
     TorqueScript::registerAllLibraries(&interpreter);
 
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    TorqueScript::ExecutionState* state = interpreter.getExecutionState();
     interpreter.execute("cases/combined.cs", state);
 
     // We have several globals here

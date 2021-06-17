@@ -31,9 +31,9 @@ namespace TorqueScript
     class StoredValueStack : public std::vector<StoredValue>
     {
         public:
-            int popInteger(std::shared_ptr<ExecutionState> state);
-            std::string popString(std::shared_ptr<ExecutionState> state);
-            float popFloat(std::shared_ptr<ExecutionState> state);
+            int popInteger(ExecutionState* state);
+            std::string popString(ExecutionState* state);
+            float popFloat(ExecutionState* state);
 
             std::vector<std::string> dump();
     };

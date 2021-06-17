@@ -26,7 +26,7 @@ TEST(InterpreterTest, Array)
     TorqueScript::Interpreter interpreter;
     TorqueScript::registerAllLibraries(&interpreter);
 
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    TorqueScript::ExecutionState* state = interpreter.getExecutionState();
     interpreter.execute("cases/array.cs", state);
 
     // The assignment performed is: $result[1,2,3] = %value;

@@ -29,7 +29,7 @@ TEST(InterpreterTest, Array)
     TorqueScript::Interpreter interpreter(config);
     TorqueScript::registerAllLibraries(&interpreter);
 
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    TorqueScript::ExecutionState* state = interpreter.getExecutionState();
     interpreter.execute("cases/caseSensitive.cs", state);
 
     TorqueScript::StoredValue* resultLower = interpreter.getGlobal("result");

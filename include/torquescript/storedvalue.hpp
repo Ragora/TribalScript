@@ -47,33 +47,6 @@ namespace TorqueScript
         StringMemory
     };
 
-    union StoredValueUnion
-    {
-        int mInteger;
-        float mFloat;
-        StringTableEntry mStringID;
-
-        StoredValueUnion()
-        {
-
-        }
-
-        StoredValueUnion(const int value) : mInteger(value)
-        {
-
-        }
-
-        StoredValueUnion(const float value) : mFloat(value)
-        {
-
-        }
-
-        StoredValueUnion(const StringTableEntry value) : mStringID(value)
-        {
-
-        }
-    };
-
     /**
      *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
      *  The data types supported as integers, floats and strings (via string ID table references).
@@ -81,27 +54,27 @@ namespace TorqueScript
     class StoredValue
     {
         public:
-            StoredValue(void* memoryLocation, const MemoryReferenceType type) : mType(StoredValueType::MemoryReference), mStorage(), mMemoryReferenceType(type), mMemoryLocation(memoryLocation), mConsoleObject(nullptr)
+            StoredValue(void* memoryLocation, const MemoryReferenceType type) : mType(StoredValueType::MemoryReference), mMemoryReferenceType(type), mMemoryLocation(memoryLocation), mConsoleObject(nullptr)
             {
 
             }
 
-            StoredValue(const int value) : mType(StoredValueType::Integer), mStorage(value), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(nullptr)
+            StoredValue(const int value) : mType(StoredValueType::Integer), mInteger(value), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(nullptr)
             {
 
             }
 
-            StoredValue(const float value) : mType(StoredValueType::Float), mStorage(value), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(nullptr)
+            StoredValue(const float value) : mType(StoredValueType::Float), mFloat(value), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(nullptr)
             {
 
             }
 
-            StoredValue(const std::size_t value, const StoredValueType type) : mType(type), mStorage(value), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(nullptr)
+            StoredValue(const std::size_t value, const StoredValueType type) : mType(type), mStringID(value), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(nullptr)
             {
 
             }
 
-            StoredValue(ConsoleObject* object, const std::size_t field) : mType(StoredValueType::SubfieldReference), mStorage(field), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(object)
+            StoredValue(ConsoleObject* object, const std::size_t field) : mType(StoredValueType::SubfieldReference), mStringID(field), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(object)
             {
 
             }
@@ -112,31 +85,31 @@ namespace TorqueScript
             /// @{
             ///
 
-            int toInteger(std::shared_ptr<ExecutionState> state);
+            int toInteger(ExecutionState* state);
 
             /**
              *  @brief Converts the value in question to a native floating point type.
              *  @param scope The execution scope within which this conversion is occurring.
              *  @return A floating point representation of this value.
              */
-            float toFloat(std::shared_ptr<ExecutionState> state);
+            float toFloat(ExecutionState* state);
 
             /**
              *  @brief Converts the value in question to a native sting type.
              *  @param scope The execution scope within which this conversion is occurring.
              *  @return A string representation of this value.
              */
-            std::string toString(std::shared_ptr<ExecutionState> state);
+            std::string toString(ExecutionState* state);
 
-            bool toBoolean(std::shared_ptr<ExecutionState> state);
+            bool toBoolean(ExecutionState* state);
 
-            ConsoleObject* toConsoleObject(std::shared_ptr<ExecutionState> state);
+            ConsoleObject* toConsoleObject(ExecutionState* state);
 
             /// @}
 
-            StoredValue getReferencedValueCopy(std::shared_ptr<ExecutionState> state);
+            StoredValue getReferencedValueCopy(ExecutionState* state);
 
-            bool isInteger(std::shared_ptr<ExecutionState> state);
+            bool isInteger(ExecutionState* state);
 
             /**
              *  @brief Sets the value of this object. Only has an effect if this object
@@ -145,13 +118,16 @@ namespace TorqueScript
              *  @param state The execution state this assignment is taking place in.
              *  @return True if an assignment has taken place. False otherwise.
              */
-            bool setValue(StoredValue newValue, std::shared_ptr<ExecutionState> state);
+            bool setValue(StoredValue newValue, ExecutionState* state);
 
             std::string getRepresentation();
 
         private:
+            int mInteger;
+            float mFloat;
+            StringTableEntry mStringID;
+
             StoredValueType mType;
-            StoredValueUnion mStorage;
             MemoryReferenceType mMemoryReferenceType;
 
             void* mMemoryLocation;

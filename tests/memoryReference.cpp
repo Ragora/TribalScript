@@ -31,7 +31,7 @@ TEST(InterpreterTest, MemoryReference)
     // Set memory reference
     interpreter.setGlobal("pi", TorqueScript::StoredValue(&aStaticFloat, TorqueScript::MemoryReferenceType::FloatMemory));
 
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
+    TorqueScript::ExecutionState* state = interpreter.getExecutionState();
     interpreter.execute("cases/memoryReference.cs", state);
 
     // After execution, the result of $global should be 50

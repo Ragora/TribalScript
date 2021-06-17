@@ -42,7 +42,7 @@ namespace TorqueScript
         delete mCompiler;
     }
 
-    void Interpreter::evaluate(const std::string& input, std::shared_ptr<ExecutionState> state)
+    void Interpreter::evaluate(const std::string& input, ExecutionState* state)
     {
         assert(mCompiler);
 
@@ -59,7 +59,7 @@ namespace TorqueScript
         compiled->execute(state);
     }
 
-    void Interpreter::execute(const std::string& path, std::shared_ptr<ExecutionState> state)
+    void Interpreter::execute(const std::string& path, ExecutionState* state)
     {
         CodeBlock* compiled = mCompiler->compileFile(path, &mStringTable);
 
@@ -73,9 +73,9 @@ namespace TorqueScript
         compiled->execute(state);
     }
 
-    std::shared_ptr<ExecutionState> Interpreter::getExecutionState()
+    ExecutionState* Interpreter::getExecutionState()
     {
-        return std::shared_ptr<ExecutionState>(new ExecutionState(this));
+        return new ExecutionState(this);
     }
 
     CodeBlock* Interpreter::compile(const std::string& input)
