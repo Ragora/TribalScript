@@ -26,6 +26,7 @@
 #include <torquescript/stringtable.hpp>
 #include <torquescript/functionregistry.hpp>
 #include <torquescript/storedvaluestack.hpp>
+#include <torquescript/ringbuffer.hpp>
 
 #define NAMESPACE_EMPTY ""
 #define PACKAGE_EMPTY ""
@@ -63,8 +64,8 @@ namespace TorqueScript
             /// These functions handle getting and setting global variables within
             /// the context of an interpreter.
             /// @{
-            void setGlobal(const StringTableEntry name, StoredValue value);
-            void setGlobal(const std::string& name, StoredValue value);
+            void setGlobal(const StringTableEntry name, StoredValue* value);
+            void setGlobal(const std::string& name, StoredValue* value);
 
             /**
              *  @brief Retrieves a global variable by string.
@@ -118,6 +119,8 @@ namespace TorqueScript
 
             std::shared_ptr<ExecutionState> getExecutionState();
 
+            RingBuffer<StoredValue> mValueBuffer;
+
             //! The string table associated with this interpreter.
             StringTable mStringTable;
 
@@ -150,6 +153,6 @@ namespace TorqueScript
             std::vector<FunctionRegistry> mFunctionRegistries;
 
             //! A mapping of global variable names to their stored value instance.
-            std::unordered_map<StringTableEntry, StoredValue> mGlobalVariables;
+            std::unordered_map<StringTableEntry, StoredValue*> mGlobalVariables;
     };
 }

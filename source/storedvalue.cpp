@@ -26,19 +26,19 @@ namespace TorqueScript
 
     ConsoleObject* StoredValue::toConsoleObject(std::shared_ptr<ExecutionState> state)
     {
-        StoredValue rawValue = this->getReferencedValueCopy(state);
+        StoredValue* rawValue = this->getReferencedValueCopy(state);
 
         // Search by ID first
-        if (rawValue.isInteger(state))
+        if (rawValue->isInteger(state))
         {
-            ConsoleObject* idLookup = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(rawValue.toInteger(state));
+            ConsoleObject* idLookup = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(rawValue->toInteger(state));
             if (idLookup)
             {
                 return idLookup;
             }
         }
 
-        const std::string lookupName = rawValue.toString(state);
+        const std::string lookupName = rawValue->toString(state);
         return state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(lookupName);
     }
 
@@ -48,23 +48,23 @@ namespace TorqueScript
     }
 
     // In Torque, if we end up trying to set a value of ie. a float it does nothing
-    bool StoredValue::setValue(StoredValue newValue, std::shared_ptr<ExecutionState> state)
+    bool StoredValue::setValue(StoredValue* newValue, std::shared_ptr<ExecutionState> state)
     {
         std::string variableName;
 
         switch (mType)
         {
             case StoredValueType::LocalReference:
-                state->mExecutionScope.setVariable(mStorage.mStringID, newValue.getReferencedValueCopy(state));
+                state->mExecutionScope.setVariable(mStorage.mStringID, newValue->getReferencedValueCopy(state));
                 return true;
             case StoredValueType::GlobalReference:
-                state->mInterpreter->setGlobal(mStorage.mStringID, newValue.getReferencedValueCopy(state));
+                state->mInterpreter->setGlobal(mStorage.mStringID, newValue->getReferencedValueCopy(state));
                 return true;
             case StoredValueType::SubfieldReference:
                 assert(mConsoleObject);
 
                 variableName = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-                mConsoleObject->setTaggedField(variableName, newValue.getReferencedValueCopy(state));
+                mConsoleObject->setTaggedField(variableName, newValue->getReferencedValueCopy(state));
                 return true;
             case StoredValueType::MemoryReference:
                 assert(mMemoryLocation);
@@ -72,7 +72,7 @@ namespace TorqueScript
                 switch (mMemoryReferenceType)
                 {
                     case MemoryReferenceType::FloatMemory:
-                        *(float*)mMemoryLocation = newValue.toFloat(state);
+                        *(float*)mMemoryLocation = newValue->toFloat(state);
                         break;
                     default:
                         throw std::runtime_error("Unknown Memory Reference Type");
@@ -173,7 +173,7 @@ namespace TorqueScript
         throw std::runtime_error("Unknown Conversion");
     }
 
-    StoredValue StoredValue::getReferencedValueCopy(std::shared_ptr<ExecutionState> state)
+    StoredValue* StoredValue::getReferencedValueCopy(std::shared_ptr<ExecutionState> state)
     {
         StoredValue* referenced;
         std::string stringValue;
@@ -203,11 +203,11 @@ namespace TorqueScript
                 }
                 break;
             case StoredValueType::Integer:
-                return StoredValue(mStorage.mInteger);
+                return state->mInterpreter->mValueBuffer.getNextAvailable(mStorage.mInteger);
             case StoredValueType::Float:
-                return StoredValue(mStorage.mFloat);
+                return state->mInterpreter->mValueBuffer.getNextAvailable(mStorage.mFloat);
             case StoredValueType::String:
-                return StoredValue(mStorage.mStringID, StoredValueType::String);
+                return state->mInterpreter->mValueBuffer.getNextAvailable(mStorage.mStringID, StoredValueType::String);
         }
 
         throw std::runtime_error("Unknown Conversion");

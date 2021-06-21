@@ -14,9 +14,11 @@
 
 #include <torquescript/executionscope.hpp>
 
+#include <torquescript/interpreter.hpp>
+
 namespace TorqueScript
 {
-    ExecutionScope::ExecutionScope(const InterpreterConfiguration& config, StringTable* table) : mConfig(config), mStringTable(table)
+    ExecutionScope::ExecutionScope(Interpreter* interpreter) : mInterpreter(interpreter)
     {
         this->pushFrame(nullptr);
     }
@@ -33,7 +35,7 @@ namespace TorqueScript
         auto search = currentScope.mLocalVariables.find(name);
         if (search != currentScope.mLocalVariables.end())
         {
-            return &search->second;
+            return search->second;
         }
 
         return nullptr;
@@ -41,7 +43,7 @@ namespace TorqueScript
 
     StoredValue* ExecutionScope::getVariable(const std::string& name)
     {
-        const StringTableEntry lookup = mStringTable->getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
+        const StringTableEntry lookup = mInterpreter->mStringTable.getOrAssign(mInterpreter->mConfig.mCaseSensitive ? name : toLowerCase(name));
 
         if (mExecutionScopeData.empty())
         {
@@ -53,13 +55,13 @@ namespace TorqueScript
         auto search = currentScope.mLocalVariables.find(lookup);
         if (search != currentScope.mLocalVariables.end())
         {
-            return &search->second;
+            return search->second;
         }
 
         return nullptr;
     }
 
-    void ExecutionScope::setVariable(const StringTableEntry name, StoredValue variable)
+    void ExecutionScope::setVariable(const StringTableEntry name, StoredValue* variable)
     {
         // Initialize if necessary
         if (mExecutionScopeData.empty())
@@ -72,6 +74,7 @@ namespace TorqueScript
         auto search = currentScope.mLocalVariables.find(name);
         if (search != currentScope.mLocalVariables.end())
         {
+            mInterpreter->mValueBuffer.free(search->second);
             search->second = variable;
             return;
         }
@@ -79,9 +82,9 @@ namespace TorqueScript
         currentScope.mLocalVariables.insert(std::make_pair(name, variable));
     }
 
-    void ExecutionScope::setVariable(const std::string& name, StoredValue variable)
+    void ExecutionScope::setVariable(const std::string& name, StoredValue* variable)
     {
-        const StringTableEntry key = mStringTable->getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
+        const StringTableEntry key = mInterpreter->mStringTable.getOrAssign(mInterpreter->mConfig.mCaseSensitive ? name : toLowerCase(name));
 
         // Initialize if necessary
         if (mExecutionScopeData.empty())
@@ -93,6 +96,7 @@ namespace TorqueScript
         auto search = currentScope.mLocalVariables.find(key);
         if (search != currentScope.mLocalVariables.end())
         {
+            mInterpreter->mValueBuffer.free(search->second);
             search->second = variable;
             return;
         }

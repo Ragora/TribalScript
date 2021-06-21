@@ -29,7 +29,7 @@ TEST(InterpreterTest, MemoryReference)
     TorqueScript::registerAllLibraries(&interpreter);
 
     // Set memory reference
-    interpreter.setGlobal("pi", TorqueScript::StoredValue(&aStaticFloat, TorqueScript::MemoryReferenceType::FloatMemory));
+    // interpreter.setGlobal("pi", interpreter.mValueBuffer.getNextAvailable(&aStaticFloat, TorqueScript::MemoryReferenceType::FloatMemory));
 
     std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
     interpreter.execute("cases/memoryReference.cs", state);

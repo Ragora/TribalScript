@@ -37,12 +37,12 @@ namespace TorqueScript
 
         if (search != mTaggedFields.end())
         {
-            return &search->second;
+            return search->second;
         }
         return nullptr;
     }
 
-    void ConsoleObject::setTaggedField(const std::string& name, StoredValue value)
+    void ConsoleObject::setTaggedField(const std::string& name, StoredValue* value)
     {
         const std::string setName = toLowerCase(name);
 

@@ -44,7 +44,7 @@ namespace TorqueScript
         // OPTIMIZATION: We incur a copy cost here
         std::vector<std::string> parameterNames = mParameterNames;
 
-        std::map<std::string, StoredValue> newLocals;
+        std::map<std::string, StoredValue*> newLocals;
 
         // If thisObject is non-null, we always provide this as the first parameter
         if (thisObject && parameterNames.size() >= 1)
@@ -52,7 +52,7 @@ namespace TorqueScript
             const std::string thisParameterName = parameterNames[0];
             parameterNames.erase(parameterNames.begin());
 
-            newLocals.emplace(std::make_pair(thisParameterName, StoredValue((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(thisObject))));
+            newLocals.emplace(std::make_pair(thisParameterName, state->mInterpreter->mValueBuffer.getNextAvailable((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(thisObject))));
         }
 
         // Calculate expected versus provided to determine what parameters should be left empty
@@ -80,11 +80,11 @@ namespace TorqueScript
             auto search = newLocals.find(nextParameterName);
             if (search != newLocals.end())
             {
-                search->second = stack.back().getReferencedValueCopy(state);
+                search->second = stack.back()->getReferencedValueCopy(state);
             }
             else
             {
-                newLocals.insert(std::make_pair(nextParameterName, stack.back().getReferencedValueCopy(state)));
+                newLocals.insert(std::make_pair(nextParameterName, stack.back()->getReferencedValueCopy(state)));
             }
 
             stack.pop_back();
@@ -94,7 +94,7 @@ namespace TorqueScript
         if (state->mInterpreter->mConfig.mMaxRecursionDepth > 0 && state->mExecutionScope.getFrameDepth() >= state->mInterpreter->mConfig.mMaxRecursionDepth)
         {
             state->mInterpreter->mConfig.mPlatform->logError("Reached maximum recursion depth! Pushing 0 and returning.");
-            stack.push_back(StoredValue(0));
+            stack.push_back(state->mInterpreter->mValueBuffer.getNextAvailable(0));
             return;
         }
 

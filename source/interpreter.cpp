@@ -89,7 +89,7 @@ namespace TorqueScript
         auto search = mGlobalVariables.find(stringID);
         if (search != mGlobalVariables.end())
         {
-            return &search->second;
+            return search->second;
         }
         return nullptr;
     }
@@ -99,7 +99,7 @@ namespace TorqueScript
         auto search = mGlobalVariables.find(name);
         if (search != mGlobalVariables.end())
         {
-            return &search->second;
+            return search->second;
         }
         return nullptr;
     }
@@ -182,7 +182,7 @@ namespace TorqueScript
         return nullptr;
     }
 
-    void Interpreter::setGlobal(const std::string& name, StoredValue value)
+    void Interpreter::setGlobal(const std::string& name, StoredValue* value)
     {
         const StringTableEntry key = mStringTable.getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
 
@@ -196,7 +196,7 @@ namespace TorqueScript
         mGlobalVariables.emplace(std::make_pair(key, value));
     }
 
-    void Interpreter::setGlobal(const StringTableEntry name, StoredValue value)
+    void Interpreter::setGlobal(const StringTableEntry name, StoredValue* value)
     {
         auto search = mGlobalVariables.find(name);
         if (search != mGlobalVariables.end())

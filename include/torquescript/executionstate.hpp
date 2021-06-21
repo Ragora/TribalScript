@@ -29,7 +29,7 @@ namespace TorqueScript
     class ExecutionState
     {
         public:
-            ExecutionState(Interpreter* interpreter) : mInterpreter(interpreter), mExecutionScope(interpreter->mConfig, &interpreter->mStringTable)
+            ExecutionState(Interpreter* interpreter) : mInterpreter(interpreter), mExecutionScope(interpreter)
             {
 
             }

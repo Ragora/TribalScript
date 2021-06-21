@@ -158,7 +158,7 @@ namespace TorqueScript
              *  @param name The tagged field name to set, which is case insensitive.
              *  @param value The value to set.
              */
-            void setTaggedField(const std::string& name, StoredValue value);
+            void setTaggedField(const std::string& name, StoredValue* value);
 
             /**
              *  @brief Retrieves the class name of this ConsoleObject instance.
@@ -172,7 +172,7 @@ namespace TorqueScript
             Interpreter* mInterpreter;
 
             //! A mapping of tagged field names to their stored values.
-            std::unordered_map<std::string, StoredValue> mTaggedFields;
+            std::unordered_map<std::string, StoredValue*> mTaggedFields;
     };
 
     template<>

@@ -30,6 +30,8 @@
 
 namespace TorqueScript
 {
+    class Interpreter;
+
     struct LoopDescriptor
     {
         LoopDescriptor(const AddressType pointer, const std::size_t size) : mInstructionPointer(pointer), mLoopSize(size)
@@ -66,7 +68,7 @@ namespace TorqueScript
         std::vector<ObjectInstantiationDescriptor> mChildren;
         
         //! All resolved field names mapped to the values to set.
-        std::map<std::string, StoredValue> mFieldAssignments;
+        std::map<std::string, StoredValue*> mFieldAssignments;
     };
 
     struct ExecutionScopeData
@@ -85,7 +87,7 @@ namespace TorqueScript
         std::vector<ObjectInstantiationDescriptor> mObjectInstantiations;
 
         std::vector<LoopDescriptor> mLoopDescriptors;
-        std::map<StringTableEntry, StoredValue> mLocalVariables;
+        std::map<StringTableEntry, StoredValue*> mLocalVariables;
     };
 
     /**
@@ -95,7 +97,7 @@ namespace TorqueScript
     class ExecutionScope
     {
         public:
-            ExecutionScope(const InterpreterConfiguration& config, StringTable* table);
+            ExecutionScope(Interpreter* interpreter);
 
             void pushFrame(Function* function);
             void popFrame();
@@ -118,14 +120,11 @@ namespace TorqueScript
 
             StoredValue* getVariable(const std::string& name);
             StoredValue* getVariable(const StringTableEntry name);
-            void setVariable(const std::string& name, StoredValue variable);
-            void setVariable(const StringTableEntry name, StoredValue variable);
-
-            //! The InterpreterConfiguration associated with this ExecutionScope.+
-            const InterpreterConfiguration mConfig;
+            void setVariable(const std::string& name, StoredValue* variable);
+            void setVariable(const StringTableEntry name, StoredValue* variable);
 
         private:
-            StringTable* mStringTable;
+            Interpreter* mInterpreter;
 
             //! A stack of mappings of local variable names to their stored value instance.
             std::vector<ExecutionScopeData> mExecutionScopeData;

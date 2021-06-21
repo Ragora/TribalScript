@@ -24,7 +24,7 @@ namespace TorqueScript
 
         // FIXME: If argC == 1, generate int between 0 and value, if argC == 2, generate int between min and max
         const float result = (float)std::rand() / RAND_MAX;
-        stack.push_back(StoredValue(result));
+        stack.push_back(state->mInterpreter->mValueBuffer.getNextAvailable(result));
     }
 
     void registerMathLibrary(Interpreter* interpreter)

@@ -28,7 +28,7 @@ namespace TorqueScript
      *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
      *  This is the base class and should not be instantiated directly.
      */
-    class StoredValueStack : public std::vector<StoredValue>
+    class StoredValueStack : public std::vector<StoredValue*>
     {
         public:
             int popInteger(std::shared_ptr<ExecutionState> state);

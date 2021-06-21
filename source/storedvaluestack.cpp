@@ -25,8 +25,8 @@ namespace TorqueScript
         {
             return 0;
         }
-        StoredValue& currentValue = this->back();
-        int result = currentValue.toInteger(state);
+        StoredValue* currentValue = this->back();
+        int result = currentValue->toInteger(state);
         this->pop_back();
         return result;
     }
@@ -37,8 +37,8 @@ namespace TorqueScript
         {
             return "";
         }
-        StoredValue& currentValue = this->back();
-        std::string result = currentValue.toString(state);
+        StoredValue* currentValue = this->back();
+        std::string result = currentValue->toString(state);
         this->pop_back();
         return result;
     }
@@ -49,8 +49,8 @@ namespace TorqueScript
         {
             return 0.0f;
         }
-        StoredValue& currentValue = this->back();
-        float result = currentValue.toFloat(state);
+        StoredValue* currentValue = this->back();
+        float result = currentValue->toFloat(state);
         this->pop_back();
         return result;
     }
@@ -61,7 +61,7 @@ namespace TorqueScript
         for (unsigned int iteration = 0; iteration < this->size(); ++iteration)
         {
             std::ostringstream element;
-            element << iteration << ": " << this->at(iteration).getRepresentation();
+            element << iteration << ": " << this->at(iteration)->getRepresentation();
 
             result.push_back(element.str());
         }

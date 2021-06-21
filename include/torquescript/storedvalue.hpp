@@ -81,6 +81,11 @@ namespace TorqueScript
     class StoredValue
     {
         public:
+            StoredValue()
+            {
+
+            }
+
             StoredValue(void* memoryLocation, const MemoryReferenceType type) : mType(StoredValueType::MemoryReference), mStorage(), mMemoryReferenceType(type), mMemoryLocation(memoryLocation), mConsoleObject(nullptr)
             {
 
@@ -134,7 +139,7 @@ namespace TorqueScript
 
             /// @}
 
-            StoredValue getReferencedValueCopy(std::shared_ptr<ExecutionState> state);
+            StoredValue* getReferencedValueCopy(std::shared_ptr<ExecutionState> state);
 
             bool isInteger(std::shared_ptr<ExecutionState> state);
 
@@ -145,7 +150,7 @@ namespace TorqueScript
              *  @param state The execution state this assignment is taking place in.
              *  @return True if an assignment has taken place. False otherwise.
              */
-            bool setValue(StoredValue newValue, std::shared_ptr<ExecutionState> state);
+            bool setValue(StoredValue* newValue, std::shared_ptr<ExecutionState> state);
 
             std::string getRepresentation();
 
