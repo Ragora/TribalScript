@@ -24,7 +24,7 @@ namespace TorqueScript
         mInstructions.insert(mInstructions.end(), instructions.begin(), instructions.end());
     }
 
-    void CodeBlock::execute(std::shared_ptr<ExecutionState> state)
+    void CodeBlock::execute(ExecutionState* state)
     {
         mInstructions.execute(state);
     }

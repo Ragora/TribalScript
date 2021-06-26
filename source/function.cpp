@@ -37,7 +37,7 @@ namespace TorqueScript
         }
     }
 
-    void Function::execute(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void Function::execute(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 

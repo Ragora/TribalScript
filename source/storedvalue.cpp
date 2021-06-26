@@ -19,12 +19,12 @@
 
 namespace TorqueScript
 {
-    bool StoredValue::toBoolean(std::shared_ptr<ExecutionState> state)
+    bool StoredValue::toBoolean(ExecutionState* state)
     {
         return this->toInteger(state) != 0;
     }
 
-    ConsoleObject* StoredValue::toConsoleObject(std::shared_ptr<ExecutionState> state)
+    ConsoleObject* StoredValue::toConsoleObject(ExecutionState* state)
     {
         StoredValue rawValue = this->getReferencedValueCopy(state);
 
@@ -42,13 +42,13 @@ namespace TorqueScript
         return state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(lookupName);
     }
 
-    bool StoredValue::isInteger(std::shared_ptr<ExecutionState> state)
+    bool StoredValue::isInteger(ExecutionState* state)
     {
         return mType == StoredValueType::Integer;
     }
 
     // In Torque, if we end up trying to set a value of ie. a float it does nothing
-    bool StoredValue::setValue(StoredValue newValue, std::shared_ptr<ExecutionState> state)
+    bool StoredValue::setValue(StoredValue newValue, ExecutionState* state)
     {
         std::string variableName;
 
@@ -81,7 +81,7 @@ namespace TorqueScript
         return false;
     }
 
-    int StoredValue::toInteger(std::shared_ptr<ExecutionState> state)
+    int StoredValue::toInteger(ExecutionState* state)
     {
         StoredValue* referenced;
         std::string stringValue;
@@ -131,7 +131,7 @@ namespace TorqueScript
         throw std::runtime_error("Unknown Conversion");
     }
 
-    std::string StoredValue::toString(std::shared_ptr<ExecutionState> state)
+    std::string StoredValue::toString(ExecutionState* state)
     {
         StoredValue* referenced;
         std::string stringValue;
@@ -173,7 +173,7 @@ namespace TorqueScript
         throw std::runtime_error("Unknown Conversion");
     }
 
-    StoredValue StoredValue::getReferencedValueCopy(std::shared_ptr<ExecutionState> state)
+    StoredValue StoredValue::getReferencedValueCopy(ExecutionState* state)
     {
         StoredValue* referenced;
         std::string stringValue;
@@ -213,7 +213,7 @@ namespace TorqueScript
         throw std::runtime_error("Unknown Conversion");
     }
 
-    float StoredValue::toFloat(std::shared_ptr<ExecutionState> state)
+    float StoredValue::toFloat(ExecutionState* state)
     {
         StoredValue* referenced;
         std::string stringValue;

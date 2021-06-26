@@ -18,7 +18,7 @@
 
 namespace TorqueScript
 {
-    void InstructionSequence::execute(std::shared_ptr<ExecutionState> state)
+    void InstructionSequence::execute(ExecutionState* state)
     {
         AddressType instructionIndex = 0;
 

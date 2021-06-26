@@ -26,8 +26,8 @@ TEST(InterpreterTest, OpOrder)
     TorqueScript::Interpreter interpreter;
     TorqueScript::registerAllLibraries(&interpreter);
 
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
-    interpreter.execute("cases/opOrder.cs", state);
+    TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
+    interpreter.execute("cases/opOrder.cs", &state);
 
     // After execution, the result of $global should be 50
     TorqueScript::StoredValue* noParen = interpreter.getGlobal("noParen");
@@ -35,8 +35,8 @@ TEST(InterpreterTest, OpOrder)
     TorqueScript::StoredValue* paren = interpreter.getGlobal("paren");
     ASSERT_TRUE(paren);
 
-    ASSERT_EQ(noParen->toInteger(state), 3);
-    ASSERT_EQ(paren->toInteger(state), 4);
+    ASSERT_EQ(noParen->toInteger(&state), 3);
+    ASSERT_EQ(paren->toInteger(&state), 4);
 }
 
 int main()

@@ -112,31 +112,31 @@ namespace TorqueScript
             /// @{
             ///
 
-            int toInteger(std::shared_ptr<ExecutionState> state);
+            int toInteger(ExecutionState* state);
 
             /**
              *  @brief Converts the value in question to a native floating point type.
              *  @param scope The execution scope within which this conversion is occurring.
              *  @return A floating point representation of this value.
              */
-            float toFloat(std::shared_ptr<ExecutionState> state);
+            float toFloat(ExecutionState* state);
 
             /**
              *  @brief Converts the value in question to a native sting type.
              *  @param scope The execution scope within which this conversion is occurring.
              *  @return A string representation of this value.
              */
-            std::string toString(std::shared_ptr<ExecutionState> state);
+            std::string toString(ExecutionState* state);
 
-            bool toBoolean(std::shared_ptr<ExecutionState> state);
+            bool toBoolean(ExecutionState* state);
 
-            ConsoleObject* toConsoleObject(std::shared_ptr<ExecutionState> state);
+            ConsoleObject* toConsoleObject(ExecutionState* state);
 
             /// @}
 
-            StoredValue getReferencedValueCopy(std::shared_ptr<ExecutionState> state);
+            StoredValue getReferencedValueCopy(ExecutionState* state);
 
-            bool isInteger(std::shared_ptr<ExecutionState> state);
+            bool isInteger(ExecutionState* state);
 
             /**
              *  @brief Sets the value of this object. Only has an effect if this object
@@ -145,7 +145,7 @@ namespace TorqueScript
              *  @param state The execution state this assignment is taking place in.
              *  @return True if an assignment has taken place. False otherwise.
              */
-            bool setValue(StoredValue newValue, std::shared_ptr<ExecutionState> state);
+            bool setValue(StoredValue newValue, ExecutionState* state);
 
             std::string getRepresentation();
 

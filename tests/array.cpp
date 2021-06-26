@@ -26,15 +26,15 @@ TEST(InterpreterTest, Array)
     TorqueScript::Interpreter interpreter;
     TorqueScript::registerAllLibraries(&interpreter);
 
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
-    interpreter.execute("cases/array.cs", state);
+    TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
+    interpreter.execute("cases/array.cs", &state);
 
     // The assignment performed is: $result[1,2,3] = %value;
     // However, in Torque Script this is treated as a single variable key $result1_2_3
     TorqueScript::StoredValue* result = interpreter.getGlobal("result1_2_3");
     ASSERT_TRUE(result);
 
-    ASSERT_EQ(result->toInteger(state), 5);
+    ASSERT_EQ(result->toInteger(&state), 5);
 }
 
 int main()

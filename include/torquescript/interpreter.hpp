@@ -93,8 +93,8 @@ namespace TorqueScript
              *  @param input The string input containing the TorqueScript program.
              */
             CodeBlock* compile(const std::string& input);
-            void evaluate(const std::string& input, std::shared_ptr<ExecutionState> state = nullptr);
-            void execute(const std::string& path, std::shared_ptr<ExecutionState> state = nullptr);
+            void evaluate(const std::string& input, ExecutionState* state = nullptr);
+            void execute(const std::string& path, ExecutionState* state = nullptr);
 
             /// @name Functions
             ///
@@ -115,8 +115,6 @@ namespace TorqueScript
             void deactivateFunctionRegistry(const std::string& packageName);
             void removeFunctionRegistry(const std::string& packageName);
             /// @}
-
-            std::shared_ptr<ExecutionState> getExecutionState();
 
             //! The string table associated with this interpreter.
             StringTable mStringTable;

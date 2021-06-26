@@ -29,16 +29,16 @@ TEST(InterpreterTest, Array)
     TorqueScript::Interpreter interpreter(config);
     TorqueScript::registerAllLibraries(&interpreter);
 
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
-    interpreter.execute("cases/caseSensitive.cs", state);
+    TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
+    interpreter.execute("cases/caseSensitive.cs", &state);
 
     TorqueScript::StoredValue* resultLower = interpreter.getGlobal("result");
     ASSERT_TRUE(resultLower);
     TorqueScript::StoredValue* resultUpper = interpreter.getGlobal("RESULT");
     ASSERT_TRUE(resultUpper);
 
-    ASSERT_EQ(resultLower->toFloat(state), 2.0f);
-    ASSERT_EQ(resultUpper->toFloat(state), 0.5f);
+    ASSERT_EQ(resultLower->toFloat(&state), 2.0f);
+    ASSERT_EQ(resultUpper->toFloat(&state), 0.5f);
 }
 
 int main()
