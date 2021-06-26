@@ -26,8 +26,8 @@ TEST(InterpreterTest, If)
     TorqueScript::Interpreter interpreter;
     TorqueScript::registerAllLibraries(&interpreter);
 
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
-    interpreter.execute("cases/if.cs", state);
+    TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
+    interpreter.execute("cases/if.cs", &state);
 
     // Here we have three values
     TorqueScript::StoredValue* resultOne = interpreter.getGlobal("one");
@@ -39,10 +39,10 @@ TEST(InterpreterTest, If)
     TorqueScript::StoredValue* resultFour = interpreter.getGlobal("four");
     ASSERT_TRUE(resultFour);
 
-    ASSERT_EQ(resultOne->toInteger(state), 10);
-    ASSERT_EQ(resultTwo->toInteger(state), -10);
-    ASSERT_EQ(resultThree->toInteger(state), 200);
-    ASSERT_EQ(resultFour->toInteger(state), 500);
+    ASSERT_EQ(resultOne->toInteger(&state), 10);
+    ASSERT_EQ(resultTwo->toInteger(&state), -10);
+    ASSERT_EQ(resultThree->toInteger(&state), 200);
+    ASSERT_EQ(resultFour->toInteger(&state), 500);
 }
 
 int main()

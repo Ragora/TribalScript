@@ -38,6 +38,6 @@ namespace TorqueScript
     class InstructionSequence : public std::vector<std::shared_ptr<Instructions::Instruction>>
     {
         public:
-            void execute(std::shared_ptr<ExecutionState> state);
+            void execute(ExecutionState* state);
     };
 }

@@ -26,8 +26,8 @@ TEST(InterpreterTest, Switch)
     TorqueScript::Interpreter interpreter;
     TorqueScript::registerAllLibraries(&interpreter);
 
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
-    interpreter.execute("cases/switch.cs", state);
+    TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
+    interpreter.execute("cases/switch.cs", &state);
 
     TorqueScript::StoredValue* resultOne = interpreter.getGlobal("global::one");
     ASSERT_TRUE(resultOne);
@@ -38,10 +38,10 @@ TEST(InterpreterTest, Switch)
     TorqueScript::StoredValue* resultFour = interpreter.getGlobal("global::four");
     ASSERT_TRUE(resultFour);
 
-    ASSERT_EQ(resultOne->toInteger(state), 5);
-    ASSERT_EQ(resultTwo->toInteger(state), 5);
-    ASSERT_EQ(resultThree->toInteger(state), 10);
-    ASSERT_EQ(resultFour->toInteger(state), -10);
+    ASSERT_EQ(resultOne->toInteger(&state), 5);
+    ASSERT_EQ(resultTwo->toInteger(&state), 5);
+    ASSERT_EQ(resultThree->toInteger(&state), 10);
+    ASSERT_EQ(resultFour->toInteger(&state), -10);
 }
 
 int main()

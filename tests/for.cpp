@@ -26,14 +26,14 @@ TEST(InterpreterTest, ForLoop)
     TorqueScript::Interpreter interpreter;
     TorqueScript::registerAllLibraries(&interpreter);
 
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
-    interpreter.execute("cases/for.cs", state);
+    TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
+    interpreter.execute("cases/for.cs", &state);
 
     // After execution, the result of $global should be 50
     TorqueScript::StoredValue* result = interpreter.getGlobal("global");
     ASSERT_TRUE(result);
 
-    ASSERT_EQ(result->toInteger(state), 50);
+    ASSERT_EQ(result->toInteger(&state), 50);
 }
 
 int main()

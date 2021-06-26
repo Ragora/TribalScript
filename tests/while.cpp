@@ -26,14 +26,14 @@ TEST(InterpreterTest, WhileLoop)
     TorqueScript::Interpreter interpreter;
     TorqueScript::registerAllLibraries(&interpreter);
 
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
-    interpreter.execute("cases/while.cs", state);
+    TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
+    interpreter.execute("cases/while.cs", &state);
 
     // After execution, the result of $global should be 110
     TorqueScript::StoredValue* result = interpreter.getGlobal("global");
     ASSERT_TRUE(result);
 
-    ASSERT_EQ(result->toInteger(state), 110);
+    ASSERT_EQ(result->toInteger(&state), 110);
 }
 
 int main()

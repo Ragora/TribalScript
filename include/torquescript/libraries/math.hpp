@@ -28,7 +28,7 @@
 
 namespace TorqueScript
 {
-    void GetRandomBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
+    void GetRandomBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
 
     void registerMathLibrary(Interpreter* interpreter);
 }

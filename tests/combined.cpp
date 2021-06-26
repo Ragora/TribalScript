@@ -26,14 +26,14 @@ TEST(InterpreterTest, Combined)
     TorqueScript::Interpreter interpreter;
     TorqueScript::registerAllLibraries(&interpreter);
 
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
-    interpreter.execute("cases/combined.cs", state);
+    TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
+    interpreter.execute("cases/combined.cs", &state);
 
     // We have several globals here
     TorqueScript::StoredValue* result = interpreter.getGlobal("result");
     ASSERT_TRUE(result);
 
-    ASSERT_EQ(result->toInteger(state), 120);
+    ASSERT_EQ(result->toInteger(&state), 120);
 }
 
 int main()

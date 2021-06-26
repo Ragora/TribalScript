@@ -28,21 +28,21 @@
 
 namespace TorqueScript
 {
-    void OpenForWriteBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
+    void OpenForWriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
 
-    void OpenForReadBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
+    void OpenForReadBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
 
-    void WriteBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
+    void WriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
 
-    void CloseBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
+    void CloseBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
 
-    void IsEOFBuiltin(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
+    void IsEOFBuiltin(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
 
-    void ReadLineBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
+    void ReadLineBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
 
-    void IsFileBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
+    void IsFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
 
-    void DeleteFileBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount);
+    void DeleteFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
 
     void registerFileObjectLibrary(Interpreter* interpreter);
 }

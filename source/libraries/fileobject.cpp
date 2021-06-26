@@ -18,7 +18,7 @@
 
 namespace TorqueScript
 {
-    void OpenForWriteBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void OpenForWriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string path = stack.popString(state);
@@ -37,7 +37,7 @@ namespace TorqueScript
         stack.push_back(StoredValue(-1));
     }
 
-    void OpenForReadBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void OpenForReadBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string path = stack.popString(state);
@@ -56,7 +56,7 @@ namespace TorqueScript
         stack.push_back(StoredValue(-1));
     }
 
-    void WriteBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void WriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string written = stack.popString(state);
@@ -70,7 +70,7 @@ namespace TorqueScript
         stack.push_back(StoredValue(0));
     }
 
-    void CloseBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void CloseBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -83,7 +83,7 @@ namespace TorqueScript
         stack.push_back(StoredValue(0));
     }
 
-    void IsEOFBuiltin(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void IsEOFBuiltin(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -95,7 +95,7 @@ namespace TorqueScript
         stack.push_back(StoredValue(fileObject->isEOF() ? 1 : 0));
     }
 
-    void ReadLineBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void ReadLineBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -108,7 +108,7 @@ namespace TorqueScript
         stack.push_back(StoredValue(stringID, StoredValueType::String));
     }
 
-    void IsFileBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void IsFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string path = stack.popString(state);
@@ -117,7 +117,7 @@ namespace TorqueScript
         stack.push_back(StoredValue(handle->exists() ? 1 : 0));
     }
 
-    void DeleteFileBuiltIn(ConsoleObject* thisObject, std::shared_ptr<ExecutionState> state, const std::size_t argumentCount)
+    void DeleteFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string path = stack.popString(state);

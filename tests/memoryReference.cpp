@@ -31,14 +31,14 @@ TEST(InterpreterTest, MemoryReference)
     // Set memory reference
     interpreter.setGlobal("pi", TorqueScript::StoredValue(&aStaticFloat, TorqueScript::MemoryReferenceType::FloatMemory));
 
-    std::shared_ptr<TorqueScript::ExecutionState> state = interpreter.getExecutionState();
-    interpreter.execute("cases/memoryReference.cs", state);
+    TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
+    interpreter.execute("cases/memoryReference.cs", &state);
 
     // After execution, the result of $global should be 50
     TorqueScript::StoredValue* result = interpreter.getGlobal("result");
     ASSERT_TRUE(result);
 
-    ASSERT_EQ(result->toFloat(state), 6.28f);
+    ASSERT_EQ(result->toFloat(&state), 6.28f);
 
     // Check if the memory has been written
     ASSERT_EQ(aStaticFloat, 1337.0f);
