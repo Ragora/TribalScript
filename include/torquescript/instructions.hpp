@@ -778,6 +778,8 @@ namespace TorqueScript
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
                     assert(stack.size() >= 1);
+
+                    state->mInterpreter->mValueBuffer.free(stack.back());
                     stack.pop_back();
 
                     return 1;

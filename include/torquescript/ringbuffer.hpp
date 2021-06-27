@@ -19,7 +19,7 @@
 
 namespace TorqueScript
 {
-	template <typename storedType, std::size_t bufferSize = 2048>
+	template <typename storedType, std::size_t bufferSize = 512>
 	class RingBuffer
 	{
 		public:

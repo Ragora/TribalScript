@@ -408,6 +408,9 @@ namespace TorqueScript
             forBody.insert(forBody.end(), childInstructions.begin(), childInstructions.end());
         }
 
+        // Pop the result of advance
+        advanceCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
+
         // At the end of the loop, run advance
         forBody.insert(forBody.end(), advanceCode.begin(), advanceCode.end());
 
