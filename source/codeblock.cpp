@@ -36,11 +36,11 @@ namespace TorqueScript
         for (auto&& instruction : mInstructions)
         {
             std::ostringstream out;
-            out << instruction->disassemble();
+            out << instruction.disassemble();
 
-            if (instruction->mComment != "")
+            if (instruction.mComment != "")
             {
-                out << " // " << instruction->mComment;
+                out << " // " << instruction.mComment;
             }
             result.push_back(out.str());
         }

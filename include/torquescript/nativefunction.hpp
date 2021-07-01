@@ -19,6 +19,7 @@
 #include <memory>
 
 #include <torquescript/function.hpp>
+#include <torquescript/instructions.hpp>
 
 namespace TorqueScript
 {

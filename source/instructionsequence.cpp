@@ -24,14 +24,17 @@ namespace TorqueScript
 
         while (instructionIndex < this->size() && instructionIndex >= 0)
         {
-            std::shared_ptr<Instructions::Instruction> nextInstruction = this->at(instructionIndex);
+            Instructions::Instruction& nextInstruction = this->at(instructionIndex);
 
             state->mInstructionPointer = instructionIndex;
-            const AddressOffsetType advance = nextInstruction->execute(state);
+
+            // FIXME: Handle unoptimized ops?
+            const AddressOffsetType advance = nextInstruction.mFunction(&nextInstruction, state);
             if (advance == 0)
             {
                 break;
             }
+
             instructionIndex += advance;
         }
     }
