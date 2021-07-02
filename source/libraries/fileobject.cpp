@@ -30,11 +30,11 @@ namespace TorqueScript
 
         if (fileObject->openForWrite(path))
         {
-            stack.push_back(state->mExecutionScope.allocateStoredValue(0));
+            stack.push_back(state->mExecutionScope.allocateTemporaryValue(0));
             return;
         }
 
-        stack.push_back(state->mExecutionScope.allocateStoredValue(-1));
+        stack.push_back(state->mExecutionScope.allocateTemporaryValue(-1));
     }
 
     void OpenForReadBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
@@ -49,11 +49,11 @@ namespace TorqueScript
 
         if (fileObject->openForRead(path))
         {
-            stack.push_back(state->mExecutionScope.allocateStoredValue(0));
+            stack.push_back(state->mExecutionScope.allocateTemporaryValue(0));
             return;
         }
 
-        stack.push_back(state->mExecutionScope.allocateStoredValue(-1));
+        stack.push_back(state->mExecutionScope.allocateTemporaryValue(-1));
     }
 
     void WriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
@@ -67,7 +67,7 @@ namespace TorqueScript
         assert(fileObject);
 
         fileObject->write(written);
-        stack.push_back(state->mExecutionScope.allocateStoredValue(0));
+        stack.push_back(state->mExecutionScope.allocateTemporaryValue(0));
     }
 
     void CloseBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
@@ -80,7 +80,7 @@ namespace TorqueScript
         assert(fileObject);
 
         fileObject->close();
-        stack.push_back(state->mExecutionScope.allocateStoredValue(0));
+        stack.push_back(state->mExecutionScope.allocateTemporaryValue(0));
     }
 
     void IsEOFBuiltin(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
@@ -92,7 +92,7 @@ namespace TorqueScript
         FileObject* fileObject = reinterpret_cast<FileObject*>(thisObject);
         assert(fileObject);
 
-        stack.push_back(state->mExecutionScope.allocateStoredValue(fileObject->isEOF() ? 1 : 0));
+        stack.push_back(state->mExecutionScope.allocateTemporaryValue(fileObject->isEOF() ? 1 : 0));
     }
 
     void ReadLineBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
@@ -105,7 +105,7 @@ namespace TorqueScript
         assert(fileObject);
 
         const StringTableEntry stringID = state->mInterpreter->mStringTable.getOrAssign(fileObject->readLine());
-        stack.push_back(state->mExecutionScope.allocateStoredValue(stringID, StoredValueType::String));
+        stack.push_back(state->mExecutionScope.allocateTemporaryValue(stringID, StoredValueType::String));
     }
 
     void IsFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
@@ -114,7 +114,7 @@ namespace TorqueScript
         std::string path = stack.popString(state);
 
         std::unique_ptr<FileHandleBase> handle = state->mInterpreter->mConfig.mPlatform->getFileHandle(path);
-        stack.push_back(state->mExecutionScope.allocateStoredValue(handle->exists() ? 1 : 0));
+        stack.push_back(state->mExecutionScope.allocateTemporaryValue(handle->exists() ? 1 : 0));
     }
 
     void DeleteFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
@@ -123,7 +123,7 @@ namespace TorqueScript
         std::string path = stack.popString(state);
 
         std::unique_ptr<FileHandleBase> handle = state->mInterpreter->mConfig.mPlatform->getFileHandle(path);
-        stack.push_back(state->mExecutionScope.allocateStoredValue(handle->deleteFile()));
+        stack.push_back(state->mExecutionScope.allocateTemporaryValue(handle->deleteFile()));
     }
 
     void registerFileObjectLibrary(Interpreter* interpreter)

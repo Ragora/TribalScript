@@ -33,8 +33,6 @@ namespace TorqueScript
         Integer,
         Float,
         String,
-        LocalReference,
-        GlobalReference,
         MemoryReference,
         SubfieldReference
     };

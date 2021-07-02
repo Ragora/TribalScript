@@ -75,7 +75,7 @@ namespace TorqueScript
 
     struct ExecutionScopeData
     {
-        ExecutionScopeData(Function* function) : mCurrentFunction(function), mUtilizedLocals(0)
+        ExecutionScopeData(Function* function) : mCurrentFunction(function), mUtilizedTemporaries(0), mUtilizedLocals(0)
         {
 
         }
@@ -92,10 +92,15 @@ namespace TorqueScript
         std::map<StringTableEntry, StoredValue*> mLocalVariables;
 
         //! Currently used local allocation slots.
+        std::size_t mUtilizedTemporaries;
+
         std::size_t mUtilizedLocals;
 
         //! Available location allocations in the current scope.
+        StoredValue mTemporaryAllocations[EXECUTION_SCOPE_MAX_LOCALS];
         StoredValue mLocalAllocations[EXECUTION_SCOPE_MAX_LOCALS];
+
+        std::set<std::size_t> mFreedTemporaries;
     };
 
     /**
@@ -132,7 +137,33 @@ namespace TorqueScript
             void setVariable(const StringTableEntry name, const StoredValue& variable);
 
             template <typename... parameters>
-            StoredValue* allocateStoredValue(parameters... params)
+            StoredValue* allocateTemporaryValue(parameters... params)
+            {
+                ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+
+                // Pull an item from the freed indices first if available
+                if (!currentScope.mFreedTemporaries.empty())
+                {
+                    const std::size_t nextLocalIndex = *currentScope.mFreedTemporaries.begin();
+                    StoredValue* nextLocal = &currentScope.mTemporaryAllocations[nextLocalIndex];
+                    nextLocal = new (nextLocal) StoredValue (params...);
+
+                    return nextLocal;
+                }
+
+                if (currentScope.mUtilizedTemporaries >= EXECUTION_SCOPE_MAX_LOCALS)
+                {
+                    throw std::out_of_range("No more Available Temporaries");
+                }
+
+                StoredValue* nextLocal = &currentScope.mTemporaryAllocations[currentScope.mUtilizedTemporaries++];
+                nextLocal = new (nextLocal) StoredValue (params...);
+
+                return nextLocal;
+            }
+
+            template <typename... parameters>
+            StoredValue* allocateLocalVariable(parameters... params)
             {
                 ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
 
@@ -147,7 +178,7 @@ namespace TorqueScript
                 return nextLocal;
             }
 
-            void freeStoredValue(StoredValue* value);
+            void freeTemporaryValue(StoredValue* value);
 
             //! The InterpreterConfiguration associated with this ExecutionScope.
             const InterpreterConfiguration mConfig;

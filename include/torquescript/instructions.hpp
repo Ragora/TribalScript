@@ -70,7 +70,7 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.push_back(StoredValueReference(state->mExecutionScope.allocateStoredValue(mParameter)));
+                    stack.push_back(StoredValueReference(state->mExecutionScope.allocateTemporaryValue(mParameter)));
                     return 1;
                 };
 
@@ -101,7 +101,7 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.push_back(StoredValueReference(state->mExecutionScope.allocateStoredValue(mParameter)));
+                    stack.push_back(StoredValueReference(state->mExecutionScope.allocateTemporaryValue(mParameter)));
                     return 1;
                 };
 
@@ -132,7 +132,7 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.push_back(StoredValueReference(state->mExecutionScope.allocateStoredValue(mStringID, StoredValueType::String)));
+                    stack.push_back(StoredValueReference(state->mExecutionScope.allocateTemporaryValue(mStringID, StoredValueType::String)));
                     return 1;
                 };
 
@@ -163,7 +163,8 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.push_back(StoredValueReference(state->mExecutionScope.allocateStoredValue(mStringID, StoredValueType::LocalReference)));
+
+                    stack.push_back(state->mExecutionScope.getVariable(mStringID));
                     return 1;
                 };
 
@@ -194,7 +195,7 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.push_back(state->mExecutionScope.allocateStoredValue(mStringID, StoredValueType::GlobalReference));
+                    stack.push_back(state->mInterpreter->getGlobal(mStringID));
                     return 1;
                 };
 
@@ -232,7 +233,7 @@ namespace TorqueScript
                     resultRaw = lhsStored.mValue->toFloat(state);
                     resultRaw += rhsStored.mValue->toFloat(state);
 
-                    StoredValue* result = state->mExecutionScope.allocateStoredValue(resultRaw);
+                    StoredValue* result = state->mExecutionScope.allocateTemporaryValue(resultRaw);
                     if (!lhsStored.mValue->setValue(*result, state))
                     {
                         state->mInterpreter->mConfig.mPlatform->logError("Attempted to perform no-op assignment!");
@@ -240,6 +241,10 @@ namespace TorqueScript
 
                     // In Torque, the result of the assignment is pushed to stack
                     stack.push_back(StoredValueReference(result));
+
+                    state->mExecutionScope.freeTemporaryValue(lhsStored.mValue);
+                    state->mExecutionScope.freeTemporaryValue(rhsStored.mValue);
+
                     return 1;
                 };
 
@@ -274,6 +279,9 @@ namespace TorqueScript
 
                     // In Torque, the result of the assignment is pushed to stack
                     stack.push_back(rhsStored);
+
+                    state->mExecutionScope.freeTemporaryValue(lhsStored.mValue);
+
                     return 1;
                 };
 
@@ -312,7 +320,7 @@ namespace TorqueScript
 
                     // Generate a new string ID
                     const StringTableEntry requestedStringID = state->mInterpreter->mStringTable.getOrAssign(lhs + mSeperator + rhs);
-                    stack.push_back(state->mExecutionScope.allocateStoredValue(requestedStringID, StoredValueType::String));
+                    stack.push_back(state->mExecutionScope.allocateTemporaryValue(requestedStringID, StoredValueType::String));
                     return 1;
                 };
 
@@ -343,7 +351,7 @@ namespace TorqueScript
                     StoredValueReference storedTarget = stack.back();
                     stack.pop_back();
 
-                    stack.push_back(StoredValueReference(state->mExecutionScope.allocateStoredValue (-storedTarget.mValue->toFloat(state))));
+                    stack.push_back(StoredValueReference(state->mExecutionScope.allocateTemporaryValue (-storedTarget.mValue->toFloat(state))));
                     return 1;
                 };
 
@@ -369,7 +377,7 @@ namespace TorqueScript
                 StoredValueReference storedTarget = stack.back();
                 stack.pop_back();
 
-                stack.push_back(StoredValueReference(state->mExecutionScope.allocateStoredValue(!storedTarget.mValue->toBoolean(state) ? 1 : 0)));
+                stack.push_back(StoredValueReference(state->mExecutionScope.allocateTemporaryValue(!storedTarget.mValue->toBoolean(state) ? 1 : 0)));
                 return 1;
             };
 
@@ -408,7 +416,7 @@ namespace TorqueScript
                         if (currentFunction == nullptr)
                         {
                             state->mInterpreter->mConfig.mPlatform->logError("Attempted to call parent:: function at root!");
-                            stack.push_back(state->mExecutionScope.allocateStoredValue(0));
+                            stack.push_back(state->mExecutionScope.allocateTemporaryValue(0));
                             return 1;
                         }
 
@@ -421,7 +429,7 @@ namespace TorqueScript
                             stream << "Could not find parent function '" << mName << "' for calling! Placing 0 on the stack.";
                             state->mInterpreter->mConfig.mPlatform->logError(stream.str());
 
-                            stack.push_back(state->mExecutionScope.allocateStoredValue(0));
+                            stack.push_back(state->mExecutionScope.allocateTemporaryValue(0));
                             return 1;
                         }
 
@@ -443,7 +451,7 @@ namespace TorqueScript
                         stream << "Could not find function '" << mName << "' for calling! Placing 0 on the stack.";
                         state->mInterpreter->mConfig.mPlatform->logError(stream.str());
 
-                        stack.push_back(state->mExecutionScope.allocateStoredValue(0));
+                        stack.push_back(state->mExecutionScope.allocateTemporaryValue(0));
                     }
                     return 1;
                 };
@@ -495,7 +503,7 @@ namespace TorqueScript
                     const bool rhs = rhsStored.mValue->toBoolean(state);
 
                     const int result = lhs && rhs ? 1 : 0;
-                    stack.push_back(state->mExecutionScope.allocateStoredValue(result));
+                    stack.push_back(state->mExecutionScope.allocateTemporaryValue(result));
                     return 1;
                 };
 
@@ -526,7 +534,7 @@ namespace TorqueScript
                     const bool rhs = rhsStored.mValue->toBoolean(state);
 
                     const int result = lhs || rhs ? 1 : 0;
-                    stack.push_back(StoredValueReference(state->mExecutionScope.allocateStoredValue(result)));
+                    stack.push_back(StoredValueReference(state->mExecutionScope.allocateTemporaryValue(result)));
                     return 1;
                 };
 
@@ -558,7 +566,7 @@ namespace TorqueScript
                     float rhs = rhsStored.mValue->toFloat(state);
 
                     const float result = lhs + rhs;
-                    stack.push_back(state->mExecutionScope.allocateStoredValue(state->mExecutionScope.allocateStoredValue(result)));
+                    stack.push_back(state->mExecutionScope.allocateTemporaryValue(state->mExecutionScope.allocateTemporaryValue(result)));
                     return 1;
                 };
 
@@ -590,7 +598,10 @@ namespace TorqueScript
                     float rhs = rhsStored.mValue->toFloat(state);
 
                     const int result = lhs < rhs ? 1 : 0;
-                    stack.push_back(state->mExecutionScope.allocateStoredValue(result));
+                    stack.push_back(state->mExecutionScope.allocateTemporaryValue(result));
+
+                    state->mExecutionScope.freeTemporaryValue(lhsStored.mValue);
+                    state->mExecutionScope.freeTemporaryValue(rhsStored.mValue);
                     return 1;
                 };
 
@@ -622,7 +633,7 @@ namespace TorqueScript
                     float rhs = rhsStored.mValue->toFloat(state);
 
                     const int result = lhs == rhs ? 1 : 0;
-                    stack.push_back(state->mExecutionScope.allocateStoredValue(result));
+                    stack.push_back(state->mExecutionScope.allocateTemporaryValue(result));
                     return 1;
                 };
 
@@ -654,7 +665,7 @@ namespace TorqueScript
                     int rhs = rhsStored.mValue->toInteger(state);
 
                     const int result = lhs & rhs;
-                    stack.push_back(state->mExecutionScope.allocateStoredValue(result));
+                    stack.push_back(state->mExecutionScope.allocateTemporaryValue(result));
                     return 1;
                 };
 
@@ -688,7 +699,7 @@ namespace TorqueScript
                     float rhs = rhsStored.mValue->toFloat(state);
 
                     const float result = lhs * rhs;
-                    stack.push_back(state->mExecutionScope.allocateStoredValue(result));
+                    stack.push_back(state->mExecutionScope.allocateTemporaryValue(result));
                     return 1;
                 };
 
@@ -722,7 +733,7 @@ namespace TorqueScript
                     float rhs = rhsStored.mValue->toFloat(state);
 
                     const float result = lhs / rhs;
-                    stack.push_back(state->mExecutionScope.allocateStoredValue(state->mExecutionScope.allocateStoredValue(result)));
+                    stack.push_back(state->mExecutionScope.allocateTemporaryValue(state->mExecutionScope.allocateTemporaryValue(result)));
                     return 1;
                 };
 
@@ -1000,11 +1011,11 @@ namespace TorqueScript
                     {
                         const StringTableEntry stringID = state->mInterpreter->mStringTable.getOrAssign(arrayName);
 
-                        stack.push_back(StoredValueReference(state->mExecutionScope.allocateStoredValue(referenced, mStringID)));
+                        stack.push_back(StoredValueReference(state->mExecutionScope.allocateTemporaryValue(referenced, mStringID)));
                         return 1;
                     }
 
-                    stack.push_back(StoredValueReference(state->mExecutionScope.allocateStoredValue(0)));
+                    stack.push_back(StoredValueReference(state->mExecutionScope.allocateTemporaryValue(0)));
                     return 1;
                 };
 
@@ -1038,7 +1049,7 @@ namespace TorqueScript
 
                     // For if we return a variable reference, we want to pass back a copy
                     StoredValueStack& returnStack = state->mExecutionScope.getReturnStack();
-                    returnStack.push_back(state->mExecutionScope.allocateStoredValue(targetStored.mValue->getReferencedValueCopy(state)));
+                    returnStack.push_back(state->mExecutionScope.allocateTemporaryValue(targetStored.mValue->getReferencedValueCopy(state)));
                     return 0;
                 };
 
@@ -1159,11 +1170,11 @@ namespace TorqueScript
                     const std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(arrayName);
                     if (mGlobal)
                     {
-                        stack.push_back(state->mExecutionScope.allocateStoredValue(stringID, StoredValueType::GlobalReference));
+                        stack.push_back(state->mInterpreter->getGlobal(stringID));
                     }
                     else
                     {
-                        stack.push_back(state->mExecutionScope.allocateStoredValue(stringID, StoredValueType::LocalReference));
+                        stack.push_back(state->mExecutionScope.getVariable(stringID));
                     }
                     return 1;
                 };
@@ -1233,7 +1244,7 @@ namespace TorqueScript
                         }
                     }
 
-                    stack.push_back(state->mExecutionScope.allocateStoredValue(0));
+                    stack.push_back(state->mExecutionScope.allocateTemporaryValue(0));
                     return 1;
                 };
 
@@ -1358,11 +1369,11 @@ namespace TorqueScript
 
                         if (result)
                         {
-                            stack.push_back(state->mExecutionScope.allocateStoredValue((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(result)));
+                            stack.push_back(state->mExecutionScope.allocateTemporaryValue((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(result)));
                         }
                         else
                         {
-                            stack.push_back(state->mExecutionScope.allocateStoredValue(-1));
+                            stack.push_back(state->mExecutionScope.allocateTemporaryValue(-1));
                         }
                     }
 

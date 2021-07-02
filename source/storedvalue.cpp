@@ -54,12 +54,6 @@ namespace TorqueScript
 
         switch (mType)
         {
-            case StoredValueType::LocalReference:
-                state->mExecutionScope.setVariable(mStorage.mStringID, newValue.getReferencedValueCopy(state));
-                return true;
-            case StoredValueType::GlobalReference:
-                state->mInterpreter->setGlobal(mStorage.mStringID, newValue.getReferencedValueCopy(state));
-                return true;
             case StoredValueType::SubfieldReference:
                 assert(mConsoleObject);
 
@@ -77,6 +71,10 @@ namespace TorqueScript
                     default:
                         throw std::runtime_error("Unknown Memory Reference Type");
                 }
+            default:
+                mType = newValue.mType;
+                mStorage = newValue.mStorage;
+                return true;
         }
         return false;
     }
@@ -87,10 +85,6 @@ namespace TorqueScript
 
         switch (mType)
         {
-            case StoredValueType::LocalReference:
-                return state->mExecutionScope.getVariable(mStorage.mStringID).mValue->toInteger(state);
-            case StoredValueType::GlobalReference:
-                return state->mInterpreter->getGlobal(mStorage.mStringID).mValue->toInteger(state);
             case StoredValueType::SubfieldReference:
                 stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
                 assert(mConsoleObject);
@@ -121,10 +115,6 @@ namespace TorqueScript
 
         switch (mType)
         {
-            case StoredValueType::LocalReference:
-                return state->mExecutionScope.getVariable(mStorage.mStringID).mValue->toString(state);
-            case StoredValueType::GlobalReference:
-                return state->mInterpreter->getGlobal(mStorage.mStringID).mValue->toString(state);
             case StoredValueType::SubfieldReference:
                 stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
                 assert(mConsoleObject);
@@ -147,10 +137,6 @@ namespace TorqueScript
 
         switch (mType)
         {
-            case StoredValueType::LocalReference:
-                return state->mExecutionScope.getVariable(mStorage.mStringID).mValue->getReferencedValueCopy(state);
-            case StoredValueType::GlobalReference:
-                return state->mInterpreter->getGlobal(mStorage.mStringID).mValue->getReferencedValueCopy(state);
             case StoredValueType::SubfieldReference:
                 stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
                 return mConsoleObject->getTaggedField(stringValue).mValue->getReferencedValueCopy(state);
@@ -171,10 +157,6 @@ namespace TorqueScript
 
         switch (mType)
         {
-            case StoredValueType::LocalReference:
-                return state->mExecutionScope.getVariable(mStorage.mStringID).mValue->toFloat(state);
-            case StoredValueType::GlobalReference:
-                return state->mInterpreter->getGlobal(mStorage.mStringID).mValue->toFloat(state);
             case StoredValueType::SubfieldReference:
                 stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
                 assert(mConsoleObject);
@@ -216,10 +198,6 @@ namespace TorqueScript
 
         switch (mType)
         {
-            case StoredValueType::LocalReference:
-                return "LocalReference";
-            case StoredValueType::GlobalReference:
-                return "GlobalReference";
             case StoredValueType::SubfieldReference:
                 return "SubfieldReference";
             case StoredValueType::Integer:

@@ -25,8 +25,15 @@ namespace TorqueScript
     {
         ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
 
-        StoredValue* result = currentScope.mLocalVariables.at(name);
-        return StoredValueReference(result);
+        auto search = currentScope.mLocalVariables.find(name);
+        if (search == currentScope.mLocalVariables.end())
+        {
+            StoredValue* stored = this->allocateLocalVariable(0);
+
+            currentScope.mLocalVariables.insert(std::make_pair(name, stored));
+            return StoredValueReference(stored);
+        }
+        return StoredValueReference(search->second);
     }
 
     StoredValueReference ExecutionScope::getVariable(const std::string& name)
@@ -89,16 +96,19 @@ namespace TorqueScript
         mExecutionScopeData.pop_back();
     }
 
-    void ExecutionScope::freeStoredValue(StoredValue* value)
+    void ExecutionScope::freeTemporaryValue(StoredValue* value)
     {
         ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
 
         // First determine if this is a value tracked by us
-        if (value >= currentScope.mLocalAllocations && value <= currentScope.mLocalAllocations + EXECUTION_SCOPE_MAX_LOCALS)
+        if (value >= currentScope.mTemporaryAllocations && value <= currentScope.mTemporaryAllocations + EXECUTION_SCOPE_MAX_LOCALS)
         {
-            std::size_t index = value - currentScope.mLocalAllocations;
-        }
+            const std::size_t index = value - currentScope.mTemporaryAllocations;
 
+            assert(currentScope.mFreedTemporaries.find(index) == currentScope.mFreedTemporaries.end());
+
+            currentScope.mFreedTemporaries.insert(index);
+        }
     }
 
     void ExecutionScope::pushLoop(const AddressType pointer, const std::size_t depth)

@@ -101,8 +101,15 @@ namespace TorqueScript
 
     StoredValueReference Interpreter::getGlobal(const StringTableEntry name)
     {
-        StoredValue* search = mGlobalVariables.at(name);
-        return StoredValueReference(search);
+        auto search = mGlobalVariables.find(name);
+
+        if (search == mGlobalVariables.end())
+        {
+            StoredValue* stored = this->allocateStoredValue(0);
+            mGlobalVariables.insert(std::make_pair(name, stored));
+            return StoredValueReference(stored);
+        }
+        return StoredValueReference(search->second);
     }
 
     void Interpreter::addFunction(std::shared_ptr<Function> function)
