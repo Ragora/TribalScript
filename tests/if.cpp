@@ -30,19 +30,19 @@ TEST(InterpreterTest, If)
     interpreter.execute("cases/if.cs", &state);
 
     // Here we have three values
-    TorqueScript::StoredValue* resultOne = interpreter.getGlobal("one");
+    TorqueScript::StoredValueReference* resultOne = interpreter.getGlobal("one");
     ASSERT_TRUE(resultOne);
-    TorqueScript::StoredValue* resultTwo = interpreter.getGlobal("two");
+    TorqueScript::StoredValueReference* resultTwo = interpreter.getGlobal("two");
     ASSERT_TRUE(resultTwo);
-    TorqueScript::StoredValue* resultThree = interpreter.getGlobal("three");
+    TorqueScript::StoredValueReference* resultThree = interpreter.getGlobal("three");
     ASSERT_TRUE(resultThree);
-    TorqueScript::StoredValue* resultFour = interpreter.getGlobal("four");
+    TorqueScript::StoredValueReference* resultFour = interpreter.getGlobal("four");
     ASSERT_TRUE(resultFour);
 
-    ASSERT_EQ(resultOne->toInteger(&state), 10);
-    ASSERT_EQ(resultTwo->toInteger(&state), -10);
-    ASSERT_EQ(resultThree->toInteger(&state), 200);
-    ASSERT_EQ(resultFour->toInteger(&state), 500);
+    ASSERT_EQ(resultOne->mValue->toInteger(&state), 10);
+    ASSERT_EQ(resultTwo->mValue->toInteger(&state), -10);
+    ASSERT_EQ(resultThree->mValue->toInteger(&state), 200);
+    ASSERT_EQ(resultFour->mValue->toInteger(&state), 500);
 }
 
 int main()

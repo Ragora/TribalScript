@@ -66,7 +66,7 @@ namespace TorqueScript
         std::vector<ObjectInstantiationDescriptor> mChildren;
 
         //! All resolved field names mapped to the values to set.
-        std::map<std::string, StoredValue> mFieldAssignments;
+        std::map<std::string, StoredValue*> mFieldAssignments;
     };
 
     struct ExecutionScopeData
@@ -85,7 +85,7 @@ namespace TorqueScript
         std::vector<ObjectInstantiationDescriptor> mObjectInstantiations;
 
         std::vector<LoopDescriptor> mLoopDescriptors;
-        std::map<StringTableEntry, StoredValue> mLocalVariables;
+        std::map<StringTableEntry, StoredValue*> mLocalVariables;
     };
 
     /**
@@ -116,8 +116,8 @@ namespace TorqueScript
             StoredValueStack& getStack();
             StoredValueStack& getReturnStack();
 
-            StoredValue* getVariable(const std::string& name);
-            StoredValue* getVariable(const StringTableEntry name);
+            StoredValueReference getVariable(const std::string& name);
+            StoredValueReference getVariable(const StringTableEntry name);
             void setVariable(const std::string& name, const StoredValue& variable);
             void setVariable(const StringTableEntry name, const StoredValue& variable);
 

@@ -21,6 +21,7 @@
 #include <torquescript/interpreterconfiguration.hpp>
 #include <torquescript/function.hpp>
 #include <torquescript/consoleobject.hpp>
+#include <torquescript/storedvaluereference.hpp>
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/stringhelpers.hpp>
 #include <torquescript/stringtable.hpp>
@@ -73,7 +74,7 @@ namespace TorqueScript
              *  @return The stored value at that global variable. If no such variable
              *  exists, nullptr is returned.
              */
-            StoredValue* getGlobal(const std::string& name);
+            StoredValueReference* getGlobal(const std::string& name);
 
             /**
              *  @brief Retrieves a global variable by string ID.
@@ -83,7 +84,7 @@ namespace TorqueScript
              *  @return The stored value at that global variable. If no such variable
              *  exists, nullptr is returned.
              */
-            StoredValue* getGlobal(const StringTableEntry name);
+            StoredValueReference* getGlobal(const StringTableEntry name);
 
             /// @}
 

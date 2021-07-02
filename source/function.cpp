@@ -80,11 +80,11 @@ namespace TorqueScript
             auto search = newLocals.find(nextParameterName);
             if (search != newLocals.end())
             {
-                search->second = stack.back().getReferencedValueCopy(state);
+                search->second = stack.back().mValue->getReferencedValueCopy(state);
             }
             else
             {
-                newLocals.insert(std::make_pair(nextParameterName, stack.back().getReferencedValueCopy(state)));
+                newLocals.insert(std::make_pair(nextParameterName, stack.back().mValue->getReferencedValueCopy(state)));
             }
 
             stack.pop_back();

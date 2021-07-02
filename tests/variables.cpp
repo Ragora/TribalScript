@@ -30,13 +30,13 @@ TEST(InterpreterTest, Variables)
     interpreter.execute("cases/variables.cs", &state);
 
     // We have a global and a global value within a namespace
-    TorqueScript::StoredValue* resultGlobal = interpreter.getGlobal("global");
+    TorqueScript::StoredValueReference* resultGlobal = interpreter.getGlobal("global");
     ASSERT_TRUE(resultGlobal);
-    TorqueScript::StoredValue* resultGlobalNameSpace = interpreter.getGlobal("global::namespaced");
+    TorqueScript::StoredValueReference* resultGlobalNameSpace = interpreter.getGlobal("global::namespaced");
     ASSERT_TRUE(resultGlobalNameSpace);
 
-    ASSERT_EQ(resultGlobal->toInteger(&state), 50);
-    ASSERT_EQ(resultGlobalNameSpace->toInteger(&state), 123);
+    ASSERT_EQ(resultGlobal->mValue->toInteger(&state), 50);
+    ASSERT_EQ(resultGlobalNameSpace->mValue->toInteger(&state), 123);
 }
 
 int main()

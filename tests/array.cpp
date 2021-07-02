@@ -31,10 +31,10 @@ TEST(InterpreterTest, Array)
 
     // The assignment performed is: $result[1,2,3] = %value;
     // However, in Torque Script this is treated as a single variable key $result1_2_3
-    TorqueScript::StoredValue* result = interpreter.getGlobal("result1_2_3");
+    TorqueScript::StoredValueReference* result = interpreter.getGlobal("result1_2_3");
     ASSERT_TRUE(result);
 
-    ASSERT_EQ(result->toInteger(&state), 5);
+    ASSERT_EQ(result->mValue->toInteger(&state), 5);
 }
 
 int main()

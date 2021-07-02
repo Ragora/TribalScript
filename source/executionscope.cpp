@@ -21,42 +21,22 @@ namespace TorqueScript
         this->pushFrame(nullptr);
     }
 
-    StoredValue* ExecutionScope::getVariable(const StringTableEntry name)
+    StoredValueReference ExecutionScope::getVariable(const StringTableEntry name)
     {
-        if (mExecutionScopeData.empty())
-        {
-            return nullptr;
-        }
-
         ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
 
-        auto search = currentScope.mLocalVariables.find(name);
-        if (search != currentScope.mLocalVariables.end())
-        {
-            return &search->second;
-        }
-
-        return nullptr;
+        StoredValue* result = currentScope.mLocalVariables.at(name);
+        return StoredValueReference(result);
     }
 
-    StoredValue* ExecutionScope::getVariable(const std::string& name)
+    StoredValueReference ExecutionScope::getVariable(const std::string& name)
     {
         const StringTableEntry lookup = mStringTable->getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
 
-        if (mExecutionScopeData.empty())
-        {
-            return nullptr;
-        }
-
         ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
 
-        auto search = currentScope.mLocalVariables.find(lookup);
-        if (search != currentScope.mLocalVariables.end())
-        {
-            return &search->second;
-        }
-
-        return nullptr;
+        StoredValue* result = currentScope.mLocalVariables.at(lookup);
+        return StoredValueReference(result);
     }
 
     void ExecutionScope::setVariable(const StringTableEntry name, const StoredValue& variable)
@@ -72,11 +52,11 @@ namespace TorqueScript
         auto search = currentScope.mLocalVariables.find(name);
         if (search != currentScope.mLocalVariables.end())
         {
-            search->second = variable;
+            search->second = new StoredValue(variable);
             return;
         }
 
-        currentScope.mLocalVariables.insert(std::make_pair(name, variable));
+        currentScope.mLocalVariables.insert(std::make_pair(name, new StoredValue(variable)));
     }
 
     void ExecutionScope::setVariable(const std::string& name, const StoredValue& variable)
@@ -93,10 +73,10 @@ namespace TorqueScript
         auto search = currentScope.mLocalVariables.find(key);
         if (search != currentScope.mLocalVariables.end())
         {
-            search->second = variable;
+            search->second = new StoredValue(variable);
             return;
         }
-        currentScope.mLocalVariables.insert(std::make_pair(key, variable));
+        currentScope.mLocalVariables.insert(std::make_pair(key, new StoredValue(variable)));
     }
 
     void ExecutionScope::pushFrame(Function* function)

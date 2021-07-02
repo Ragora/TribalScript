@@ -19,6 +19,7 @@
 #include <vector>
 #include <unordered_map>
 
+#include <torquescript/storedvaluereference.hpp>
 #include <torquescript/storedvalue.hpp>
 
 namespace TorqueScript
@@ -151,7 +152,7 @@ namespace TorqueScript
              *  @return A StoredValue pointer of the value currently in that tagged field
              *  slot.
              */
-            StoredValue* getTaggedField(const std::string& name);
+            StoredValueReference* getTaggedField(const std::string& name);
 
             /**
              *  @brief Sets a tagged field by name on the object.

@@ -30,27 +30,27 @@ TEST(InterpreterTest, Package)
     interpreter.execute("cases/package.cs", &state);
 
     // We have several globals here
-    TorqueScript::StoredValue* before = interpreter.getGlobal("before");
+    TorqueScript::StoredValueReference* before = interpreter.getGlobal("before");
     ASSERT_TRUE(before);
-    TorqueScript::StoredValue* afterA = interpreter.getGlobal("afterA");
+    TorqueScript::StoredValueReference* afterA = interpreter.getGlobal("afterA");
     ASSERT_TRUE(afterA);
-    TorqueScript::StoredValue* afterB = interpreter.getGlobal("afterB");
+    TorqueScript::StoredValueReference* afterB = interpreter.getGlobal("afterB");
     ASSERT_TRUE(afterB);
 
-    TorqueScript::StoredValue* beforeNamespace = interpreter.getGlobal("beforenamespace");
+    TorqueScript::StoredValueReference* beforeNamespace = interpreter.getGlobal("beforenamespace");
     ASSERT_TRUE(beforeNamespace);
-    TorqueScript::StoredValue* afterANamespace = interpreter.getGlobal("afterAnamespace");
+    TorqueScript::StoredValueReference* afterANamespace = interpreter.getGlobal("afterAnamespace");
     ASSERT_TRUE(afterANamespace);
-    TorqueScript::StoredValue* afterBNamespace = interpreter.getGlobal("afterBnamespace");
+    TorqueScript::StoredValueReference* afterBNamespace = interpreter.getGlobal("afterBnamespace");
     ASSERT_TRUE(afterBNamespace);
 
-    ASSERT_EQ(before->toInteger(&state), 1);
-    ASSERT_EQ(afterA->toInteger(&state), 2);
-    ASSERT_EQ(afterB->toInteger(&state), 3);
+    ASSERT_EQ(before->mValue->toInteger(&state), 1);
+    ASSERT_EQ(afterA->mValue->toInteger(&state), 2);
+    ASSERT_EQ(afterB->mValue->toInteger(&state), 3);
 
-    ASSERT_EQ(beforeNamespace->toInteger(&state), 2);
-    ASSERT_EQ(afterANamespace->toInteger(&state), 4);
-    ASSERT_EQ(afterBNamespace->toInteger(&state), 6);
+    ASSERT_EQ(beforeNamespace->mValue->toInteger(&state), 2);
+    ASSERT_EQ(afterANamespace->mValue->toInteger(&state), 4);
+    ASSERT_EQ(afterBNamespace->mValue->toInteger(&state), 6);
 }
 
 int main()

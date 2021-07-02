@@ -29,19 +29,19 @@ TEST(InterpreterTest, Switch)
     TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
     interpreter.execute("cases/switch.cs", &state);
 
-    TorqueScript::StoredValue* resultOne = interpreter.getGlobal("global::one");
+    TorqueScript::StoredValueReference* resultOne = interpreter.getGlobal("global::one");
     ASSERT_TRUE(resultOne);
-    TorqueScript::StoredValue* resultTwo = interpreter.getGlobal("global::two");
+    TorqueScript::StoredValueReference* resultTwo = interpreter.getGlobal("global::two");
     ASSERT_TRUE(resultTwo);
-    TorqueScript::StoredValue* resultThree = interpreter.getGlobal("global::three");
+    TorqueScript::StoredValueReference* resultThree = interpreter.getGlobal("global::three");
     ASSERT_TRUE(resultThree);
-    TorqueScript::StoredValue* resultFour = interpreter.getGlobal("global::four");
+    TorqueScript::StoredValueReference* resultFour = interpreter.getGlobal("global::four");
     ASSERT_TRUE(resultFour);
 
-    ASSERT_EQ(resultOne->toInteger(&state), 5);
-    ASSERT_EQ(resultTwo->toInteger(&state), 5);
-    ASSERT_EQ(resultThree->toInteger(&state), 10);
-    ASSERT_EQ(resultFour->toInteger(&state), -10);
+    ASSERT_EQ(resultOne->mValue->toInteger(&state), 5);
+    ASSERT_EQ(resultTwo->mValue->toInteger(&state), 5);
+    ASSERT_EQ(resultThree->mValue->toInteger(&state), 10);
+    ASSERT_EQ(resultFour->mValue->toInteger(&state), -10);
 }
 
 int main()
