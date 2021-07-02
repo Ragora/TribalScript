@@ -112,14 +112,14 @@ namespace TorqueScript
             /// @{
             ///
 
-            int toInteger(ExecutionState* state);
+            int toInteger(ExecutionState* state) const;
 
             /**
              *  @brief Converts the value in question to a native floating point type.
              *  @param scope The execution scope within which this conversion is occurring.
              *  @return A floating point representation of this value.
              */
-            float toFloat(ExecutionState* state);
+            float toFloat(ExecutionState* state) const;
 
             /**
              *  @brief Converts the value in question to a native sting type.
@@ -128,13 +128,13 @@ namespace TorqueScript
              */
             std::string toString(ExecutionState* state);
 
-            bool toBoolean(ExecutionState* state);
+            bool toBoolean(ExecutionState* state) const;
 
             ConsoleObject* toConsoleObject(ExecutionState* state);
 
             /// @}
 
-            StoredValue getReferencedValueCopy(ExecutionState* state);
+            StoredValue getReferencedValueCopy(ExecutionState* state) const;
 
             bool isInteger(ExecutionState* state);
 
@@ -145,7 +145,7 @@ namespace TorqueScript
              *  @param state The execution state this assignment is taking place in.
              *  @return True if an assignment has taken place. False otherwise.
              */
-            bool setValue(StoredValue newValue, ExecutionState* state);
+            bool setValue(const StoredValue& newValue, ExecutionState* state);
 
             std::string getRepresentation();
 
