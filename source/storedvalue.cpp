@@ -19,7 +19,7 @@
 
 namespace TorqueScript
 {
-    bool StoredValue::toBoolean(ExecutionState* state)
+    bool StoredValue::toBoolean(ExecutionState* state) const
     {
         return this->toInteger(state) != 0;
     }
@@ -48,7 +48,7 @@ namespace TorqueScript
     }
 
     // In Torque, if we end up trying to set a value of ie. a float it does nothing
-    bool StoredValue::setValue(StoredValue newValue, ExecutionState* state)
+    bool StoredValue::setValue(const StoredValue& newValue, ExecutionState* state)
     {
         std::string variableName;
 
@@ -81,7 +81,7 @@ namespace TorqueScript
         return false;
     }
 
-    int StoredValue::toInteger(ExecutionState* state)
+    int StoredValue::toInteger(ExecutionState* state) const
     {
         StoredValue* referenced;
         std::string stringValue;
@@ -173,7 +173,7 @@ namespace TorqueScript
         throw std::runtime_error("Unknown Conversion");
     }
 
-    StoredValue StoredValue::getReferencedValueCopy(ExecutionState* state)
+    StoredValue StoredValue::getReferencedValueCopy(ExecutionState* state) const
     {
         StoredValue* referenced;
         std::string stringValue;
@@ -213,7 +213,7 @@ namespace TorqueScript
         throw std::runtime_error("Unknown Conversion");
     }
 
-    float StoredValue::toFloat(ExecutionState* state)
+    float StoredValue::toFloat(ExecutionState* state) const
     {
         StoredValue* referenced;
         std::string stringValue;

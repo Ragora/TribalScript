@@ -64,7 +64,7 @@ namespace TorqueScript
 
         //! All children of this object. These will not be initialized until the parent is initialized.
         std::vector<ObjectInstantiationDescriptor> mChildren;
-        
+
         //! All resolved field names mapped to the values to set.
         std::map<std::string, StoredValue> mFieldAssignments;
     };
@@ -118,10 +118,10 @@ namespace TorqueScript
 
             StoredValue* getVariable(const std::string& name);
             StoredValue* getVariable(const StringTableEntry name);
-            void setVariable(const std::string& name, StoredValue variable);
-            void setVariable(const StringTableEntry name, StoredValue variable);
+            void setVariable(const std::string& name, const StoredValue& variable);
+            void setVariable(const StringTableEntry name, const StoredValue& variable);
 
-            //! The InterpreterConfiguration associated with this ExecutionScope.+
+            //! The InterpreterConfiguration associated with this ExecutionScope.
             const InterpreterConfiguration mConfig;
 
         private:
