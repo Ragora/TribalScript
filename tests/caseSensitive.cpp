@@ -32,13 +32,11 @@ TEST(InterpreterTest, Array)
     TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
     interpreter.execute("cases/caseSensitive.cs", &state);
 
-    TorqueScript::StoredValueReference* resultLower = interpreter.getGlobal("result");
-    ASSERT_TRUE(resultLower);
-    TorqueScript::StoredValueReference* resultUpper = interpreter.getGlobal("RESULT");
-    ASSERT_TRUE(resultUpper);
+    TorqueScript::StoredValueReference resultLower = interpreter.getGlobal("result");
+    TorqueScript::StoredValueReference resultUpper = interpreter.getGlobal("RESULT");
 
-    ASSERT_EQ(resultLower->mValue->toFloat(&state), 2.0f);
-    ASSERT_EQ(resultUpper->mValue->toFloat(&state), 0.5f);
+    ASSERT_EQ(resultLower.mValue->toFloat(&state), 2.0f);
+    ASSERT_EQ(resultUpper.mValue->toFloat(&state), 0.5f);
 }
 
 int main()

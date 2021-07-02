@@ -30,13 +30,11 @@ TEST(InterpreterTest, OpOrder)
     interpreter.execute("cases/opOrder.cs", &state);
 
     // After execution, the result of $global should be 50
-    TorqueScript::StoredValueReference* noParen = interpreter.getGlobal("noParen");
-    ASSERT_TRUE(noParen);
-    TorqueScript::StoredValueReference* paren = interpreter.getGlobal("paren");
-    ASSERT_TRUE(paren);
+    TorqueScript::StoredValueReference noParen = interpreter.getGlobal("noParen");
+    TorqueScript::StoredValueReference paren = interpreter.getGlobal("paren");
 
-    ASSERT_EQ(noParen->mValue->toInteger(&state), 3);
-    ASSERT_EQ(paren->mValue->toInteger(&state), 4);
+    ASSERT_EQ(noParen.mValue->toInteger(&state), 3);
+    ASSERT_EQ(paren.mValue->toInteger(&state), 4);
 }
 
 int main()

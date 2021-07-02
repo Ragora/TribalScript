@@ -35,10 +35,9 @@ TEST(InterpreterTest, MemoryReference)
     interpreter.execute("cases/memoryReference.cs", &state);
 
     // After execution, the result of $global should be 50
-    TorqueScript::StoredValueReference* result = interpreter.getGlobal("result");
-    ASSERT_TRUE(result);
+    TorqueScript::StoredValueReference result = interpreter.getGlobal("result");
 
-    ASSERT_EQ(result->mValue->toFloat(&state), 6.28f);
+    ASSERT_EQ(result.mValue->toFloat(&state), 6.28f);
 
     // Check if the memory has been written
     ASSERT_EQ(aStaticFloat, 1337.0f);

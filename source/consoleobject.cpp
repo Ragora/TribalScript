@@ -30,16 +30,12 @@ namespace TorqueScript
 
     }
 
-    StoredValueReference* ConsoleObject::getTaggedField(const std::string& name)
+    StoredValueReference ConsoleObject::getTaggedField(const std::string& name)
     {
         const std::string searchName = toLowerCase(name);
-        auto search = mTaggedFields.find(searchName);
+        StoredValue& search = mTaggedFields.at(searchName);
 
-        if (search != mTaggedFields.end())
-        {
-            return new StoredValueReference(search->second);
-        }
-        return nullptr;
+        return StoredValueReference(&search);
     }
 
     void ConsoleObject::setTaggedField(const std::string& name, StoredValue value)

@@ -81,6 +81,11 @@ namespace TorqueScript
     class StoredValue
     {
         public:
+            StoredValue() : mType(StoredValueType::NullType)
+            {
+
+            }
+
             StoredValue(void* memoryLocation, const MemoryReferenceType type) : mType(StoredValueType::MemoryReference), mStorage(), mMemoryReferenceType(type), mMemoryLocation(memoryLocation), mConsoleObject(nullptr)
             {
 
@@ -102,6 +107,11 @@ namespace TorqueScript
             }
 
             StoredValue(ConsoleObject* object, const std::size_t field) : mType(StoredValueType::SubfieldReference), mStorage(field), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(object)
+            {
+
+            }
+
+            StoredValue(StoredValue* copied) : mType(copied->mType), mStorage(copied->mStorage), mMemoryReferenceType(copied->mMemoryReferenceType), mMemoryLocation(copied->mMemoryLocation), mConsoleObject(copied->mConsoleObject)
             {
 
             }

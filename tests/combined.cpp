@@ -30,10 +30,9 @@ TEST(InterpreterTest, Combined)
     interpreter.execute("cases/combined.cs", &state);
 
     // We have several globals here
-    TorqueScript::StoredValueReference* result = interpreter.getGlobal("result");
-    ASSERT_TRUE(result);
+    TorqueScript::StoredValueReference result = interpreter.getGlobal("result");
 
-    ASSERT_EQ(result->mValue->toInteger(&state), 120);
+    ASSERT_EQ(result.mValue->toInteger(&state), 120);
 }
 
 int main()

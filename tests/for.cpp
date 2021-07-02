@@ -30,10 +30,9 @@ TEST(InterpreterTest, ForLoop)
     interpreter.execute("cases/for.cs", &state);
 
     // After execution, the result of $global should be 50
-    TorqueScript::StoredValueReference* result = interpreter.getGlobal("global");
-    ASSERT_TRUE(result);
+    TorqueScript::StoredValueReference result = interpreter.getGlobal("global");
 
-    ASSERT_EQ(result->mValue->toInteger(&state), 50);
+    ASSERT_EQ(result.mValue->toInteger(&state), 50);
 }
 
 int main()

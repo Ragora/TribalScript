@@ -74,7 +74,7 @@ namespace TorqueScript
              *  @return The stored value at that global variable. If no such variable
              *  exists, nullptr is returned.
              */
-            StoredValueReference* getGlobal(const std::string& name);
+            StoredValueReference getGlobal(const std::string& name);
 
             /**
              *  @brief Retrieves a global variable by string ID.
@@ -84,7 +84,7 @@ namespace TorqueScript
              *  @return The stored value at that global variable. If no such variable
              *  exists, nullptr is returned.
              */
-            StoredValueReference* getGlobal(const StringTableEntry name);
+            StoredValueReference getGlobal(const StringTableEntry name);
 
             /// @}
 
@@ -141,6 +141,12 @@ namespace TorqueScript
                 classType::initializeMemberFields(TypeInformation<classType>::Descriptor);
             }
 
+            template <typename... parameters>
+            StoredValue* allocateStoredValue(parameters... params)
+            {
+                return  new StoredValue (params...);
+            }
+
         private:
             //! Keep a ready instance of the compiler on hand as it is reusable.
             Compiler* mCompiler;
@@ -149,6 +155,6 @@ namespace TorqueScript
             std::vector<FunctionRegistry> mFunctionRegistries;
 
             //! A mapping of global variable names to their stored value instance.
-            std::unordered_map<StringTableEntry, StoredValue> mGlobalVariables;
+            std::unordered_map<StringTableEntry, StoredValue*> mGlobalVariables;
     };
 }

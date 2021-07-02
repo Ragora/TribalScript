@@ -152,7 +152,7 @@ namespace TorqueScript
              *  @return A StoredValue pointer of the value currently in that tagged field
              *  slot.
              */
-            StoredValueReference* getTaggedField(const std::string& name);
+            StoredValueReference getTaggedField(const std::string& name);
 
             /**
              *  @brief Sets a tagged field by name on the object.

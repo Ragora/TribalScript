@@ -94,7 +94,7 @@ namespace TorqueScript
         if (state->mInterpreter->mConfig.mMaxRecursionDepth > 0 && state->mExecutionScope.getFrameDepth() >= state->mInterpreter->mConfig.mMaxRecursionDepth)
         {
             state->mInterpreter->mConfig.mPlatform->logError("Reached maximum recursion depth! Pushing 0 and returning.");
-            stack.push_back(StoredValue(0));
+            stack.push_back(state->mExecutionScope.allocateStoredValue(0));
             return;
         }
 

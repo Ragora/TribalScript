@@ -30,10 +30,9 @@ TEST(InterpreterTest, WhileLoop)
     interpreter.execute("cases/while.cs", &state);
 
     // After execution, the result of $global should be 110
-    TorqueScript::StoredValueReference* result = interpreter.getGlobal("global");
-    ASSERT_TRUE(result);
+    TorqueScript::StoredValueReference result = interpreter.getGlobal("global");
 
-    ASSERT_EQ(result->mValue->toInteger(&state), 110);
+    ASSERT_EQ(result.mValue->toInteger(&state), 110);
 }
 
 int main()

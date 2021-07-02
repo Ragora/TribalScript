@@ -89,6 +89,18 @@ namespace TorqueScript
         mExecutionScopeData.pop_back();
     }
 
+    void ExecutionScope::freeStoredValue(StoredValue* value)
+    {
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+
+        // First determine if this is a value tracked by us
+        if (value >= currentScope.mLocalAllocations && value <= currentScope.mLocalAllocations + EXECUTION_SCOPE_MAX_LOCALS)
+        {
+            std::size_t index = value - currentScope.mLocalAllocations;
+        }
+
+    }
+
     void ExecutionScope::pushLoop(const AddressType pointer, const std::size_t depth)
     {
         // Initialize if necessary

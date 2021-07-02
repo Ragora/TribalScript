@@ -92,25 +92,17 @@ namespace TorqueScript
         return mCompiler->compileString(input, &mStringTable);
     }
 
-    StoredValueReference* Interpreter::getGlobal(const std::string& name)
+    StoredValueReference Interpreter::getGlobal(const std::string& name)
     {
         const StringTableEntry stringID = mStringTable.getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
-        auto search = mGlobalVariables.find(stringID);
-        if (search != mGlobalVariables.end())
-        {
-            return new StoredValueReference(search->second);
-        }
-        return nullptr;
+        auto search = mGlobalVariables.at(stringID);
+        return StoredValueReference(search);
     }
 
-    StoredValueReference* Interpreter::getGlobal(const StringTableEntry name)
+    StoredValueReference Interpreter::getGlobal(const StringTableEntry name)
     {
-        auto search = mGlobalVariables.find(name);
-        if (search != mGlobalVariables.end())
-        {
-            return new StoredValueReference(search->second);
-        }
-        return nullptr;
+        StoredValue* search = mGlobalVariables.at(name);
+        return StoredValueReference(search);
     }
 
     void Interpreter::addFunction(std::shared_ptr<Function> function)
@@ -198,11 +190,11 @@ namespace TorqueScript
         auto search = mGlobalVariables.find(key);
         if (search != mGlobalVariables.end())
         {
-            search->second = value;
+            search->second = this->allocateStoredValue(value);
             return;
         }
 
-        mGlobalVariables.emplace(std::make_pair(key, value));
+        mGlobalVariables.emplace(std::make_pair(key, this->allocateStoredValue(value)));
     }
 
     void Interpreter::setGlobal(const StringTableEntry name, StoredValue value)
@@ -210,11 +202,11 @@ namespace TorqueScript
         auto search = mGlobalVariables.find(name);
         if (search != mGlobalVariables.end())
         {
-            search->second = value;
+            search->second = this->allocateStoredValue(value);
             return;
         }
 
-        mGlobalVariables.emplace(std::make_pair(name, value));
+        mGlobalVariables.emplace(std::make_pair(name, this->allocateStoredValue(value)));
     }
 
     FunctionRegistry* Interpreter::findFunctionRegistry(const std::string packageName)

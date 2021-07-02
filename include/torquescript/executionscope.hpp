@@ -17,6 +17,8 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
+#include <array>
+#include <set>
 
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/stringhelpers.hpp>
@@ -27,6 +29,8 @@
 #include <torquescript/interpreterconfiguration.hpp>
 #include <torquescript/storedvaluestack.hpp>
 #include <torquescript/consoleobject.hpp>
+
+#define EXECUTION_SCOPE_MAX_LOCALS 512
 
 namespace TorqueScript
 {
@@ -71,7 +75,7 @@ namespace TorqueScript
 
     struct ExecutionScopeData
     {
-        ExecutionScopeData(Function* function) : mCurrentFunction(function)
+        ExecutionScopeData(Function* function) : mCurrentFunction(function), mUtilizedLocals(0)
         {
 
         }
@@ -86,6 +90,12 @@ namespace TorqueScript
 
         std::vector<LoopDescriptor> mLoopDescriptors;
         std::map<StringTableEntry, StoredValue*> mLocalVariables;
+
+        //! Currently used local allocation slots.
+        std::size_t mUtilizedLocals;
+
+        //! Available location allocations in the current scope.
+        StoredValue mLocalAllocations[EXECUTION_SCOPE_MAX_LOCALS];
     };
 
     /**
@@ -120,6 +130,24 @@ namespace TorqueScript
             StoredValueReference getVariable(const StringTableEntry name);
             void setVariable(const std::string& name, const StoredValue& variable);
             void setVariable(const StringTableEntry name, const StoredValue& variable);
+
+            template <typename... parameters>
+            StoredValue* allocateStoredValue(parameters... params)
+            {
+                ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+
+                if (currentScope.mUtilizedLocals >= EXECUTION_SCOPE_MAX_LOCALS)
+                {
+                    throw std::out_of_range("No more Available Locals");
+                }
+
+                StoredValue* nextLocal = &currentScope.mLocalAllocations[currentScope.mUtilizedLocals++];
+                nextLocal = new (nextLocal) StoredValue (params...);
+
+                return nextLocal;
+            }
+
+            void freeStoredValue(StoredValue* value);
 
             //! The InterpreterConfiguration associated with this ExecutionScope.
             const InterpreterConfiguration mConfig;
