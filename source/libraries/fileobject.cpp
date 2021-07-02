@@ -105,7 +105,7 @@ namespace TorqueScript
         assert(fileObject);
 
         const StringTableEntry stringID = state->mInterpreter->mStringTable.getOrAssign(fileObject->readLine());
-        stack.push_back(StoredValue(stringID, StoredValueType::String));
+        stack.push_back(StoredValue(stringID));
     }
 
     void IsFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)

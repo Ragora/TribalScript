@@ -21,11 +21,21 @@ namespace TorqueScript
 {
     bool StoredValue::toBoolean(ExecutionState* state) const
     {
+        if (mReference)
+        {
+            return mReference->toInteger(state);
+        }
+
         return this->toInteger(state) != 0;
     }
 
     ConsoleObject* StoredValue::toConsoleObject(ExecutionState* state)
     {
+        if (mReference)
+        {
+            return mReference->toConsoleObject(state);
+        }
+
         StoredValue rawValue = this->getReferencedValueCopy(state);
 
         // Search by ID first
@@ -44,74 +54,43 @@ namespace TorqueScript
 
     bool StoredValue::isInteger(ExecutionState* state)
     {
+        if (mReference)
+        {
+            return mReference->isInteger(state);
+        }
+
         return mType == StoredValueType::Integer;
     }
 
     // In Torque, if we end up trying to set a value of ie. a float it does nothing
     bool StoredValue::setValue(const StoredValue& newValue, ExecutionState* state)
     {
+        if (mReference)
+        {
+            return mReference->setValue(newValue, state);
+        }
+    
         std::string variableName;
 
-        switch (mType)
-        {
-            case StoredValueType::LocalReference:
-                state->mExecutionScope.setVariable(mStorage.mStringID, newValue.getReferencedValueCopy(state));
-                return true;
-            case StoredValueType::GlobalReference:
-                state->mInterpreter->setGlobal(mStorage.mStringID, newValue.getReferencedValueCopy(state));
-                return true;
-            case StoredValueType::SubfieldReference:
-                assert(mConsoleObject);
+        // Copy over stored data
+        mType = newValue.mType;
+        mStorage = newValue.mStorage;
 
-                variableName = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-                mConsoleObject->setTaggedField(variableName, newValue.getReferencedValueCopy(state));
-                return true;
-            case StoredValueType::MemoryReference:
-                assert(mMemoryLocation);
-
-                switch (mMemoryReferenceType)
-                {
-                    case MemoryReferenceType::FloatMemory:
-                        *(float*)mMemoryLocation = newValue.toFloat(state);
-                        break;
-                    default:
-                        throw std::runtime_error("Unknown Memory Reference Type");
-                }
-        }
-        return false;
+        return true;
     }
 
     int StoredValue::toInteger(ExecutionState* state) const
     {
+        if (mReference)
+        {
+            return mReference->toInteger(state);
+        }
+
         StoredValue* referenced;
         std::string stringValue;
 
         switch (mType)
         {
-            case StoredValueType::LocalReference:
-                referenced = state->mExecutionScope.getVariable(mStorage.mStringID);
-                if (referenced)
-                {
-                    return referenced->toInteger(state);
-                }
-                return 0;
-            case StoredValueType::GlobalReference:
-                referenced = state->mInterpreter->getGlobal(mStorage.mStringID);
-                if (referenced)
-                {
-                    return referenced->toInteger(state);
-                }
-                return 0;
-            case StoredValueType::SubfieldReference:
-                stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-                assert(mConsoleObject);
-
-                referenced = mConsoleObject->getTaggedField(stringValue);
-                if (referenced)
-                {
-                    return referenced->toInteger(state);
-                }
-                return 0;
             case StoredValueType::Integer:
                 return mStorage.mInteger;
             case StoredValueType::Float:
@@ -133,35 +112,16 @@ namespace TorqueScript
 
     std::string StoredValue::toString(ExecutionState* state)
     {
+        if (mReference)
+        {
+            return mReference->toString(state);
+        }
+
         StoredValue* referenced;
         std::string stringValue;
 
         switch (mType)
         {
-            case StoredValueType::LocalReference:
-                referenced = state->mExecutionScope.getVariable(mStorage.mStringID);
-                if (referenced)
-                {
-                    return referenced->toString(state);
-                }
-                return "";
-            case StoredValueType::GlobalReference:
-                referenced = state->mInterpreter->getGlobal(mStorage.mStringID);
-                if (referenced)
-                {
-                    return referenced->toString(state);
-                }
-                return "";
-            case StoredValueType::SubfieldReference:
-                stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-                assert(mConsoleObject);
-
-                referenced = mConsoleObject->getTaggedField(stringValue);
-                if (referenced)
-                {
-                    return referenced->toString(state);
-                }
-                return "";
             case StoredValueType::Integer:
                 return std::to_string(mStorage.mInteger);
             case StoredValueType::Float:
@@ -175,39 +135,22 @@ namespace TorqueScript
 
     StoredValue StoredValue::getReferencedValueCopy(ExecutionState* state) const
     {
+        if (mReference)
+        {
+            return mReference->getReferencedValueCopy(state);
+        }
+
         StoredValue* referenced;
         std::string stringValue;
 
         switch (mType)
         {
-            case StoredValueType::LocalReference:
-                referenced = state->mExecutionScope.getVariable(mStorage.mStringID);
-                if (referenced)
-                {
-                    return referenced->getReferencedValueCopy(state);
-                }
-				break;
-            case StoredValueType::GlobalReference:
-                referenced = state->mInterpreter->getGlobal(mStorage.mStringID);
-                if (referenced)
-                {
-                    return referenced->getReferencedValueCopy(state);
-                }
-				break;
-            case StoredValueType::SubfieldReference:
-                stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-                referenced = mConsoleObject->getTaggedField(stringValue);
-                if (referenced)
-                {
-                    return referenced->getReferencedValueCopy(state);
-                }
-                break;
             case StoredValueType::Integer:
                 return StoredValue(mStorage.mInteger);
             case StoredValueType::Float:
                 return StoredValue(mStorage.mFloat);
             case StoredValueType::String:
-                return StoredValue(mStorage.mStringID, StoredValueType::String);
+                return StoredValue(mStorage.mStringID);
         }
 
         throw std::runtime_error("Unknown Conversion");
@@ -215,35 +158,16 @@ namespace TorqueScript
 
     float StoredValue::toFloat(ExecutionState* state) const
     {
+        if (mReference)
+        {
+            return mReference->toFloat(state);
+        }
+
         StoredValue* referenced;
         std::string stringValue;
 
         switch (mType)
         {
-            case StoredValueType::LocalReference:
-                referenced = state->mExecutionScope.getVariable(mStorage.mStringID);
-                if (referenced)
-                {
-                    return referenced->toFloat(state);
-                }
-                return 0;
-            case StoredValueType::GlobalReference:
-                referenced = state->mInterpreter->getGlobal(mStorage.mStringID);
-                if (referenced)
-                {
-                    return referenced->toFloat(state);
-                }
-                return 0;
-            case StoredValueType::SubfieldReference:
-                stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
-                assert(mConsoleObject);
-
-                referenced = mConsoleObject->getTaggedField(stringValue);
-                if (referenced)
-                {
-                    return referenced->toFloat(state);
-                }
-                return 0;
             case StoredValueType::Integer:
                 return (float)mStorage.mInteger;
             case StoredValueType::MemoryReference:
@@ -275,17 +199,16 @@ namespace TorqueScript
 
     std::string StoredValue::getRepresentation()
     {
+        if (mReference)
+        {
+            return mReference->getRepresentation();
+        }
+
         StoredValue* referenced;
         std::string stringValue;
 
         switch (mType)
         {
-            case StoredValueType::LocalReference:
-                return "LocalReference";
-            case StoredValueType::GlobalReference:
-                return "GlobalReference";
-            case StoredValueType::SubfieldReference:
-                return "SubfieldReference";
             case StoredValueType::Integer:
                 return std::to_string(mStorage.mInteger);
             case StoredValueType::Float:

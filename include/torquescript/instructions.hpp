@@ -131,7 +131,7 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.push_back(StoredValue(mStringID, StoredValueType::String));
+                    stack.push_back(StoredValue(mStringID));
                     return 1;
                 };
 
@@ -162,7 +162,7 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.push_back(StoredValue(mStringID, StoredValueType::LocalReference));
+                    stack.push_back(StoredValue(state->mExecutionScope.getVariableOrAllocate(mStringID)));
                     return 1;
                 };
 
@@ -193,7 +193,7 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.push_back(StoredValue(mStringID, StoredValueType::GlobalReference));
+                    stack.push_back(StoredValue(state->mInterpreter->getGlobalOrAllocate(mStringID)));
                     return 1;
                 };
 
@@ -311,7 +311,7 @@ namespace TorqueScript
 
                     // Generate a new string ID
                     const StringTableEntry requestedStringID = state->mInterpreter->mStringTable.getOrAssign(lhs + mSeperator + rhs);
-                    stack.push_back(StoredValue(requestedStringID, StoredValueType::String));
+                    stack.push_back(StoredValue(requestedStringID));
                     return 1;
                 };
 
@@ -1158,11 +1158,11 @@ namespace TorqueScript
                     const std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(arrayName);
                     if (mGlobal)
                     {
-                        stack.push_back(StoredValue(stringID, StoredValueType::GlobalReference));
+                        stack.push_back(StoredValue(state->mInterpreter->getGlobalOrAllocate(stringID)));
                     }
                     else
                     {
-                        stack.push_back(StoredValue(stringID, StoredValueType::LocalReference));
+                        stack.push_back(StoredValue(state->mExecutionScope.getVariableOrAllocate(stringID)));
                     }
                     return 1;
                 };

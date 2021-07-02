@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
     std::string evaluated(begin, end);
 
     TorqueScript::CodeBlock* compiled = interpreter.compile(evaluated);
-
+     
     if (compiled)
     {
         // Produce a disassembly for debugging

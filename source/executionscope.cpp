@@ -33,10 +33,30 @@ namespace TorqueScript
         auto search = currentScope.mLocalVariables.find(name);
         if (search != currentScope.mLocalVariables.end())
         {
-            return &search->second;
+            return search->second;
         }
 
         return nullptr;
+    }
+
+    StoredValue* ExecutionScope::getVariableOrAllocate(const StringTableEntry name)
+    {
+        if (mExecutionScopeData.empty())
+        {
+            return nullptr;
+        }
+
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+
+        auto search = currentScope.mLocalVariables.find(name);
+        if (search != currentScope.mLocalVariables.end())
+        {
+            return search->second;
+        }
+
+        StoredValue* newValue = new StoredValue(0);
+        currentScope.mLocalVariables.insert(std::make_pair(name, newValue));
+        return newValue;
     }
 
     StoredValue* ExecutionScope::getVariable(const std::string& name)
@@ -53,7 +73,7 @@ namespace TorqueScript
         auto search = currentScope.mLocalVariables.find(lookup);
         if (search != currentScope.mLocalVariables.end())
         {
-            return &search->second;
+            return search->second;
         }
 
         return nullptr;
@@ -72,11 +92,11 @@ namespace TorqueScript
         auto search = currentScope.mLocalVariables.find(name);
         if (search != currentScope.mLocalVariables.end())
         {
-            search->second = variable;
+            search->second->setValue(variable, nullptr);
             return;
         }
 
-        currentScope.mLocalVariables.insert(std::make_pair(name, variable));
+        currentScope.mLocalVariables.insert(std::make_pair(name, new StoredValue(variable)));
     }
 
     void ExecutionScope::setVariable(const std::string& name, const StoredValue& variable)
@@ -93,10 +113,10 @@ namespace TorqueScript
         auto search = currentScope.mLocalVariables.find(key);
         if (search != currentScope.mLocalVariables.end())
         {
-            search->second = variable;
+            search->second->setValue(variable, nullptr);
             return;
         }
-        currentScope.mLocalVariables.insert(std::make_pair(key, variable));
+        currentScope.mLocalVariables.insert(std::make_pair(key, new StoredValue(variable)));
     }
 
     void ExecutionScope::pushFrame(Function* function)

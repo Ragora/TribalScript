@@ -85,6 +85,8 @@ namespace TorqueScript
              */
             StoredValue* getGlobal(const StringTableEntry name);
 
+            StoredValue* getGlobalOrAllocate(const StringTableEntry name);
+
             /// @}
 
             /**
@@ -148,6 +150,6 @@ namespace TorqueScript
             std::vector<FunctionRegistry> mFunctionRegistries;
 
             //! A mapping of global variable names to their stored value instance.
-            std::unordered_map<StringTableEntry, StoredValue> mGlobalVariables;
+            std::unordered_map<StringTableEntry, StoredValue*> mGlobalVariables;
     };
 }
