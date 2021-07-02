@@ -59,7 +59,7 @@ namespace TorqueScript
         return nullptr;
     }
 
-    void ExecutionScope::setVariable(const StringTableEntry name, StoredValue variable)
+    void ExecutionScope::setVariable(const StringTableEntry name, const StoredValue& variable)
     {
         // Initialize if necessary
         if (mExecutionScopeData.empty())
@@ -79,7 +79,7 @@ namespace TorqueScript
         currentScope.mLocalVariables.insert(std::make_pair(name, variable));
     }
 
-    void ExecutionScope::setVariable(const std::string& name, StoredValue variable)
+    void ExecutionScope::setVariable(const std::string& name, const StoredValue& variable)
     {
         const StringTableEntry key = mStringTable->getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
 
