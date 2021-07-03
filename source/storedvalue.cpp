@@ -73,8 +73,16 @@ namespace TorqueScript
         std::string variableName;
 
         // Copy over stored data
-        mType = newValue.mType;
-        mStorage = newValue.mStorage;
+        if (newValue.mReference)
+        {
+            mType = newValue.mReference->mType;
+            mStorage = newValue.mReference->mStorage;
+        }
+        else
+        {
+            mType = newValue.mType;
+            mStorage = newValue.mStorage;
+        }
 
         return true;
     }
