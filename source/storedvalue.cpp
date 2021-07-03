@@ -62,12 +62,25 @@ namespace TorqueScript
         return mType == StoredValueType::Integer;
     }
 
-    // In Torque, if we end up trying to set a value of ie. a float it does nothing
     bool StoredValue::setValue(const StoredValue& newValue, ExecutionState* state)
     {
         if (mReference)
         {
             return mReference->setValue(newValue, state);
+        }
+        else if (mMemoryLocation)
+        {
+            switch (mType)
+            {
+                case StoredValueType::Float:
+                    *reinterpret_cast<float*>(mMemoryLocation) = newValue.toFloat(state);
+                    return true;
+                case StoredValueType::Integer:
+                    *reinterpret_cast<int*>(mMemoryLocation) = newValue.toInteger(state);
+                    return true;
+                default:
+                    throw std::runtime_error("Unknown Memory Type");
+            }
         }
     
         std::string variableName;
@@ -170,6 +183,18 @@ namespace TorqueScript
         {
             return mReference->toFloat(state);
         }
+        else if (mMemoryLocation)
+        {
+            switch (mType)
+            {
+                case StoredValueType::Float:
+                    return *reinterpret_cast<float*>(mMemoryLocation);
+                case StoredValueType::Integer:
+                    return static_cast<int>(*reinterpret_cast<int*>(mMemoryLocation));
+                default:
+                    throw std::runtime_error("Unknown Memory Type");
+            }
+        }
 
         StoredValue* referenced;
         std::string stringValue;
@@ -178,16 +203,6 @@ namespace TorqueScript
         {
             case StoredValueType::Integer:
                 return (float)mStorage.mInteger;
-            case StoredValueType::MemoryReference:
-                assert(mMemoryLocation);
-
-                switch (mMemoryReferenceType)
-                {
-                    case MemoryReferenceType::FloatMemory:
-                        return *(float*)mMemoryLocation;
-                    default:
-                        throw std::runtime_error("Unknown Memory Reference Type in toFloat");
-                }
             case StoredValueType::Float:
                 return mStorage.mFloat;
             case StoredValueType::String:

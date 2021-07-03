@@ -22,19 +22,20 @@
 #include <torquescript/executionstate.hpp>
 
 static float aStaticFloat = 3.14f;
+static int aStaticInt = 123456;
 
 TEST(InterpreterTest, MemoryReference)
 {
     TorqueScript::Interpreter interpreter;
     TorqueScript::registerAllLibraries(&interpreter);
 
-    // Set memory reference
-    interpreter.setGlobal("pi", TorqueScript::StoredValue(&aStaticFloat, TorqueScript::MemoryReferenceType::FloatMemory));
+    // Set memory references
+    interpreter.setGlobal("pi", TorqueScript::StoredValue(&aStaticFloat, TorqueScript::StoredValueType::Float));
+    interpreter.setGlobal("numbers", TorqueScript::StoredValue(&aStaticInt, TorqueScript::StoredValueType::Integer));
 
     TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
     interpreter.execute("cases/memoryReference.cs", &state);
 
-    // After execution, the result of $global should be 50
     TorqueScript::StoredValue* result = interpreter.getGlobal("result");
     ASSERT_TRUE(result);
 
@@ -42,6 +43,7 @@ TEST(InterpreterTest, MemoryReference)
 
     // Check if the memory has been written
     ASSERT_EQ(aStaticFloat, 1337.0f);
+    ASSERT_EQ(aStaticInt, 5);
 }
 
 int main()
