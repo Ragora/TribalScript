@@ -39,7 +39,7 @@ namespace TorqueScript
         StoredValue rawValue = this->getReferencedValueCopy(state);
 
         // Search by ID first
-        if (rawValue.isInteger(state))
+        if (rawValue.isInteger())
         {
             ConsoleObject* idLookup = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(rawValue.toInteger(state));
             if (idLookup)
@@ -52,11 +52,11 @@ namespace TorqueScript
         return state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(lookupName);
     }
 
-    bool StoredValue::isInteger(ExecutionState* state)
+    bool StoredValue::isInteger()
     {
         if (mReference)
         {
-            return mReference->isInteger(state);
+            return mReference->isInteger();
         }
 
         return mType == StoredValueType::Integer;
@@ -107,7 +107,6 @@ namespace TorqueScript
             return mReference->toInteger(state);
         }
 
-        StoredValue* referenced;
         std::string stringValue;
 
         switch (mType)
@@ -138,7 +137,6 @@ namespace TorqueScript
             return mReference->toString(state);
         }
 
-        StoredValue* referenced;
         std::string stringValue;
 
         switch (mType)
@@ -190,13 +188,12 @@ namespace TorqueScript
                 case StoredValueType::Float:
                     return *reinterpret_cast<float*>(mMemoryLocation);
                 case StoredValueType::Integer:
-                    return static_cast<int>(*reinterpret_cast<int*>(mMemoryLocation));
+                    return static_cast<float>(*reinterpret_cast<int*>(mMemoryLocation));
                 default:
                     throw std::runtime_error("Unknown Memory Type");
             }
         }
 
-        StoredValue* referenced;
         std::string stringValue;
 
         switch (mType)
@@ -227,7 +224,6 @@ namespace TorqueScript
             return mReference->getRepresentation();
         }
 
-        StoredValue* referenced;
         std::string stringValue;
 
         switch (mType)

@@ -162,7 +162,7 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.push_back(StoredValue(state->mExecutionScope.getVariableOrAllocate(mStringID)));
+                    stack.emplace_back(state->mExecutionScope.getVariableOrAllocate(mStringID));
                     return 1;
                 };
 
@@ -225,20 +225,14 @@ namespace TorqueScript
                     StoredValue rhsStored = stack.back();
                     stack.pop_back();
                     StoredValue lhsStored = stack.back();
-                    stack.pop_back();
 
                     float resultRaw = 0.0f;
                     resultRaw = lhsStored.toFloat(state);
                     resultRaw += rhsStored.toFloat(state);
 
                     StoredValue result = StoredValue(resultRaw);
-                    if (!lhsStored.setValue(result, state))
-                    {
-                        state->mInterpreter->mConfig.mPlatform->logError("Attempted to perform no-op assignment!");
-                    }
+                    lhsStored.setValue(result, state);
 
-                    // In Torque, the result of the assignment is pushed to stack
-                    stack.push_back(result);
                     return 1;
                 };
 
@@ -264,15 +258,8 @@ namespace TorqueScript
                     StoredValue rhsStored = stack.back();
                     stack.pop_back();
                     StoredValue lhsStored = stack.back();
-                    stack.pop_back();
 
-                    if (!lhsStored.setValue(rhsStored, state))
-                    {
-                        state->mInterpreter->mConfig.mPlatform->logError("Attempted to perform no-op assignment!");
-                    }
-
-                    // In Torque, the result of the assignment is pushed to stack
-                    stack.push_back(rhsStored);
+                    lhsStored.setValue(rhsStored, state);
                     return 1;
                 };
 
@@ -311,7 +298,7 @@ namespace TorqueScript
 
                     // Generate a new string ID
                     const StringTableEntry requestedStringID = state->mInterpreter->mStringTable.getOrAssign(lhs + mSeperator + rhs);
-                    stack.push_back(StoredValue(requestedStringID));
+                    stack.emplace_back(requestedStringID);
                     return 1;
                 };
 

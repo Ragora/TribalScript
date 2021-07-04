@@ -30,8 +30,8 @@ TEST(InterpreterTest, MemoryReference)
     TorqueScript::registerAllLibraries(&interpreter);
 
     // Set memory references
-    interpreter.setGlobal("pi", TorqueScript::StoredValue(&aStaticFloat, TorqueScript::StoredValueType::Float));
-    interpreter.setGlobal("numbers", TorqueScript::StoredValue(&aStaticInt, TorqueScript::StoredValueType::Integer));
+    interpreter.setGlobal("pi", TorqueScript::StoredValue(&aStaticFloat));
+    interpreter.setGlobal("numbers", TorqueScript::StoredValue(&aStaticInt));
 
     TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
     interpreter.execute("cases/memoryReference.cs", &state);

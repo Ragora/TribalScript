@@ -75,6 +75,16 @@ namespace TorqueScript
 
             }
 
+            StoredValue(float* memoryLocation) : mType(StoredValueType::Float), mStorage(), mMemoryLocation(memoryLocation), mConsoleObject(nullptr), mReference(nullptr)
+            {
+
+            }
+
+            StoredValue(int* memoryLocation) : mType(StoredValueType::Integer), mStorage(), mMemoryLocation(memoryLocation), mConsoleObject(nullptr), mReference(nullptr)
+            {
+
+            }
+
             StoredValue(const int value) : mType(StoredValueType::Integer), mStorage(value), mMemoryLocation(nullptr), mConsoleObject(nullptr), mReference(nullptr)
             {
 
@@ -130,7 +140,7 @@ namespace TorqueScript
 
             StoredValue getReferencedValueCopy(ExecutionState* state) const;
 
-            bool isInteger(ExecutionState* state);
+            bool isInteger();
 
             /**
              *  @brief Sets the value of this object. Only has an effect if this object
