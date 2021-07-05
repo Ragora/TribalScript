@@ -100,6 +100,33 @@ namespace TorqueScript
         return true;
     }
 
+    void StoredValue::setValue(const float newValue, ExecutionState* state)
+    {
+        if (mReference)
+        {
+            return mReference->setValue(newValue, state);
+        }
+        else if (mMemoryLocation)
+        {
+            switch (mType)
+            {
+            case StoredValueType::Float:
+                *reinterpret_cast<float*>(mMemoryLocation) = newValue;
+                return;
+            case StoredValueType::Integer:
+                *reinterpret_cast<int*>(mMemoryLocation) = static_cast<int>(newValue);
+                return;
+            default:
+                throw std::runtime_error("Unknown Memory Type");
+            }
+        }
+
+        std::string variableName;
+
+        mType = StoredValueType::Float;
+        mStorage.mFloat = newValue;
+    }
+
     int StoredValue::toInteger(ExecutionState* state) const
     {
         if (mReference)

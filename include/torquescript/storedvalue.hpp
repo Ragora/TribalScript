@@ -150,6 +150,7 @@ namespace TorqueScript
              *  @return True if an assignment has taken place. False otherwise.
              */
             bool setValue(const StoredValue& newValue, ExecutionState* state);
+            void setValue(const float newValue, ExecutionState* state);
 
             std::string getRepresentation();
 

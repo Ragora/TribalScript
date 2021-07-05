@@ -230,8 +230,7 @@ namespace TorqueScript
                     resultRaw = lhsStored.toFloat(state);
                     resultRaw += rhsStored.toFloat(state);
 
-                    StoredValue result = StoredValue(resultRaw);
-                    lhsStored.setValue(result, state);
+                    lhsStored.setValue(resultRaw, state);
 
                     return 1;
                 };
@@ -329,7 +328,7 @@ namespace TorqueScript
                     StoredValue storedTarget = stack.back();
                     stack.pop_back();
 
-                    stack.push_back(StoredValue(-storedTarget.toFloat(state)));
+                    stack.emplace_back(-storedTarget.toFloat(state));
                     return 1;
                 };
 
@@ -355,7 +354,7 @@ namespace TorqueScript
                 StoredValue storedTarget = stack.back();
                 stack.pop_back();
 
-                stack.push_back(StoredValue(!storedTarget.toBoolean(state) ? 1 : 0));
+                stack.emplace_back(!storedTarget.toBoolean(state) ? 1 : 0);
                 return 1;
             };
 
@@ -394,7 +393,7 @@ namespace TorqueScript
                         if (currentFunction == nullptr)
                         {
                             state->mInterpreter->mConfig.mPlatform->logError("Attempted to call parent:: function at root!");
-                            stack.push_back(StoredValue(0));
+                            stack.emplace_back(0);
                             return 1;
                         }
 
@@ -407,7 +406,7 @@ namespace TorqueScript
                             stream << "Could not find parent function '" << mName << "' for calling! Placing 0 on the stack.";
                             state->mInterpreter->mConfig.mPlatform->logError(stream.str());
 
-                            stack.push_back(StoredValue(0));
+                            stack.emplace_back(0);
                             return 1;
                         }
 
@@ -429,7 +428,7 @@ namespace TorqueScript
                         stream << "Could not find function '" << mName << "' for calling! Placing 0 on the stack.";
                         state->mInterpreter->mConfig.mPlatform->logError(stream.str());
 
-                        stack.push_back(StoredValue(0));
+                        stack.emplace_back(0);
                     }
                     return 1;
                 };
@@ -481,7 +480,7 @@ namespace TorqueScript
                     const bool rhs = rhsStored.toBoolean(state);
 
                     const int result = lhs && rhs ? 1 : 0;
-                    stack.push_back(StoredValue(result));
+                    stack.emplace_back(result);
                     return 1;
                 };
 
@@ -512,7 +511,7 @@ namespace TorqueScript
                     const bool rhs = rhsStored.toBoolean(state);
 
                     const int result = lhs || rhs ? 1 : 0;
-                    stack.push_back(StoredValue(result));
+                    stack.emplace_back(result);
                     return 1;
                 };
 
@@ -544,7 +543,7 @@ namespace TorqueScript
                     float rhs = rhsStored.toFloat(state);
 
                     const float result = lhs + rhs;
-                    stack.push_back(StoredValue(result));
+                    stack.emplace_back(result);
                     return 1;
                 };
 
@@ -576,7 +575,7 @@ namespace TorqueScript
                     float rhs = rhsStored.toFloat(state);
 
                     const int result = lhs < rhs ? 1 : 0;
-                    stack.push_back(StoredValue(result));
+                    stack.emplace_back(result);
                     return 1;
                 };
 
@@ -608,7 +607,7 @@ namespace TorqueScript
                     float rhs = rhsStored.toFloat(state);
 
                     const int result = lhs == rhs ? 1 : 0;
-                    stack.push_back(StoredValue(result));
+                    stack.emplace_back(result);
                     return 1;
                 };
 
@@ -640,7 +639,7 @@ namespace TorqueScript
                     int rhs = rhsStored.toInteger(state);
 
                     const int result = lhs & rhs;
-                    stack.push_back(StoredValue(result));
+                    stack.emplace_back(result);
                     return 1;
                 };
 
@@ -674,7 +673,7 @@ namespace TorqueScript
                     float rhs = rhsStored.toFloat(state);
 
                     const float result = lhs * rhs;
-                    stack.push_back(StoredValue(result));
+                    stack.emplace_back(result);
                     return 1;
                 };
 
@@ -708,7 +707,7 @@ namespace TorqueScript
                     float rhs = rhsStored.toFloat(state);
 
                     const float result = lhs / rhs;
-                    stack.push_back(StoredValue(result));
+                    stack.emplace_back(result);
                     return 1;
                 };
 
@@ -986,11 +985,11 @@ namespace TorqueScript
                     {
                         const StringTableEntry stringID = state->mInterpreter->mStringTable.getOrAssign(arrayName);
 
-                        stack.push_back(StoredValue(referenced, mStringID));
+                        stack.emplace_back(referenced, mStringID);
                         return 1;
                     }
 
-                    stack.push_back(StoredValue(0));
+                    stack.emplace_back(0);
                     return 1;
                 };
 
@@ -1145,11 +1144,11 @@ namespace TorqueScript
                     const std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(arrayName);
                     if (mGlobal)
                     {
-                        stack.push_back(StoredValue(state->mInterpreter->getGlobalOrAllocate(stringID)));
+                        stack.emplace_back(state->mInterpreter->getGlobalOrAllocate(stringID));
                     }
                     else
                     {
-                        stack.push_back(StoredValue(state->mExecutionScope.getVariableOrAllocate(stringID)));
+                        stack.emplace_back(state->mExecutionScope.getVariableOrAllocate(stringID));
                     }
                     return 1;
                 };
@@ -1200,7 +1199,7 @@ namespace TorqueScript
                         output << "Cannot find object '" << targetStored.toString(state) << "' to call function '" << mName << "'!";
                         state->mInterpreter->mConfig.mPlatform->logWarning(output.str());
 
-                        stack.push_back(StoredValue(0));
+                        stack.emplace_back(0);
                         return 1;
                     }
 
@@ -1219,7 +1218,7 @@ namespace TorqueScript
                         }
                     }
 
-                    stack.push_back(StoredValue(0));
+                    stack.emplace_back(0);
                     return 1;
                 };
 
@@ -1344,11 +1343,11 @@ namespace TorqueScript
 
                         if (result)
                         {
-                            stack.push_back(StoredValue((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(result)));
+                            stack.emplace_back((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(result));
                         }
                         else
                         {
-                            stack.push_back(StoredValue(-1));
+                            stack.emplace_back(-1);
                         }
                     }
 

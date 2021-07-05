@@ -405,6 +405,10 @@ namespace TorqueScript
         for (AST::ASTNode* bodyNode : node->mBody)
         {
             InstructionSequence childInstructions = bodyNode->accept(this).as<InstructionSequence>();
+
+            // Pop the result of each child statement
+            childInstructions.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
+
             forBody.insert(forBody.end(), childInstructions.begin(), childInstructions.end());
         }
 
