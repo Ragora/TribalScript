@@ -308,6 +308,10 @@ namespace TorqueScript
             {
                 result.push_back(new AST::DivideNode(left, right));
             }
+            else if (context->MINUS())
+            {
+                result.push_back(new AST::SubtractNode(left, right));
+            }
             else
             {
                 throw std::runtime_error("Unhandled arithmetic type!");

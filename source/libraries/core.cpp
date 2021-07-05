@@ -12,6 +12,7 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <chrono>
 #include <assert.h>
 
 #include <torquescript/libraries/core.hpp>
@@ -103,6 +104,14 @@ namespace TorqueScript
         stack.push_back(StoredValue(stringID));
     }
 
+    void GetRealTimeBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
+
+        auto result = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        stack.push_back(StoredValue((int)result));
+    }
+
     void CallBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
@@ -143,6 +152,8 @@ namespace TorqueScript
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(EchoBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "echo")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(ExecBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "exec")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(CallBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "call")));
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetRealTimeBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "getRealTime")));
+
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(ActivatePackageBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "activatePackage")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(DeactivatePackageBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "deactivatePackage")));
 

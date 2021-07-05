@@ -73,6 +73,7 @@ namespace TorqueScript
             virtual antlrcpp::Any visitFunctionCallNode(AST::FunctionCallNode* call) override;
             virtual antlrcpp::Any visitSubFunctionCallNode(AST::SubFunctionCallNode* call) override;
             virtual antlrcpp::Any visitSubFieldNode(AST::SubFieldNode* subfield) override;
+            virtual antlrcpp::Any visitSubtractNode(AST::SubtractNode* expression) override;
             virtual antlrcpp::Any visitAddNode(AST::AddNode* expression) override;
             virtual antlrcpp::Any visitLogicalOrNode(AST::LogicalOrNode* expression) override;
             virtual antlrcpp::Any visitLogicalAndNode(AST::LogicalAndNode* expression) override;

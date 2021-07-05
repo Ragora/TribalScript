@@ -226,6 +226,20 @@ namespace TorqueScript
         return result;
     }
 
+    antlrcpp::Any Compiler::visitSubtractNode(AST::SubtractNode* expression)
+    {
+        InstructionSequence result;
+
+        InstructionSequence lhsCode = expression->mLeft->accept(this).as<InstructionSequence>();
+        InstructionSequence rhsCode = expression->mRight->accept(this).as<InstructionSequence>();
+
+        result.insert(result.end(), lhsCode.begin(), lhsCode.end());
+        result.insert(result.end(), rhsCode.begin(), rhsCode.end());
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::SubtractInstruction()));
+
+        return result;
+    }
+
     antlrcpp::Any Compiler::visitAddNode(AST::AddNode* expression)
     {
         InstructionSequence result;
@@ -405,9 +419,6 @@ namespace TorqueScript
         for (AST::ASTNode* bodyNode : node->mBody)
         {
             InstructionSequence childInstructions = bodyNode->accept(this).as<InstructionSequence>();
-
-            // Pop the result of each child statement
-            childInstructions.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
 
             forBody.insert(forBody.end(), childInstructions.begin(), childInstructions.end());
         }

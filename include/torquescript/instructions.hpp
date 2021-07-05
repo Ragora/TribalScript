@@ -717,6 +717,36 @@ namespace TorqueScript
                 }
         };
 
+        class SubtractInstruction : public Instruction
+        {
+            public:
+                virtual AddressOffsetType execute(ExecutionState* state) override
+                {
+                    StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                    assert(stack.size() >= 2);
+
+                    StoredValue rhsStored = stack.back();
+                    stack.pop_back();
+                    StoredValue lhsStored = stack.back();
+                    stack.pop_back();
+
+                    // NOTE: For now we normalize to floats
+
+                    float lhs = lhsStored.toFloat(state);
+                    float rhs = rhsStored.toFloat(state);
+
+                    const float result = lhs - rhs;
+                    stack.emplace_back(result);
+                    return 1;
+                };
+
+                virtual std::string disassemble() override
+                {
+                    return "Subtract";
+                }
+        };
+
         /**
          *  @brief Pops a value from the stack, discarding it.
          */
