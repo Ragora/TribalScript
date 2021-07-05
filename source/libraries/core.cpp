@@ -103,10 +103,46 @@ namespace TorqueScript
         stack.push_back(StoredValue(stringID));
     }
 
+    void CallBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
+
+        std::vector<StoredValue> callArguments;
+        for (unsigned int iteration = 0; iteration < argumentCount - 1; ++iteration)
+        {
+            callArguments.insert(callArguments.begin(), stack.back());
+            stack.pop_back();
+        }
+
+        std::string calledFunctionName = stack.popString(state);
+
+        // Lookup the function to call
+        std::shared_ptr<Function> calledFunction = state->mInterpreter->getFunction(NAMESPACE_EMPTY, calledFunctionName);
+        if (calledFunction)
+        {
+            ExecutionState callState = ExecutionState(state->mInterpreter);
+
+            // Insert all arguments into the callstate
+            StoredValueStack& callStack = callState.mExecutionScope.getStack();
+
+            for (StoredValue& callArgument : callArguments)
+            {
+                callStack.push_back(callArgument);
+            }
+
+            calledFunction->execute(nullptr, &callState, callArguments.size());
+        }
+        else
+        {
+            stack.push_back(StoredValue(0));
+        }
+    }
+
     void registerCoreLibrary(Interpreter* interpreter)
     {
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(EchoBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "echo")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(ExecBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "exec")));
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(CallBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "call")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(ActivatePackageBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "activatePackage")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(DeactivatePackageBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "deactivatePackage")));
 

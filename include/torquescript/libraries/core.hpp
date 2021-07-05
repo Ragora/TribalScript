@@ -32,6 +32,8 @@ namespace TorqueScript
     void EchoBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
 
     void ExecBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+    void CallBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+
     void ActivatePackageBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
 
     void DeactivatePackageBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
