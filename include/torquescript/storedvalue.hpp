@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <memory>
 #include <string>
+#include <cstring>
 
 #include <torquescript/stringtable.hpp>
 
@@ -101,7 +102,7 @@ namespace TorqueScript
                 const std::size_t valueLength = stringLength ? stringLength : strlen(value);
 
                 mStorage.mStringPointer = new char[valueLength + 1];
-                memcpy(mStorage.mStringPointer, value, valueLength);
+                std::memcpy(mStorage.mStringPointer, value, valueLength);
                 mStorage.mStringPointer[valueLength] = 0x00;
             }
 
@@ -119,10 +120,10 @@ namespace TorqueScript
             {
                 if (copied.mType == StoredValueType::String)
                 {
-                    const std::size_t valueLength = strlen(copied.mStorage.mStringPointer);
+                    const std::size_t valueLength = std::strlen(copied.mStorage.mStringPointer);
 
                     mStorage.mStringPointer = new char[valueLength + 1];
-                    memcpy(mStorage.mStringPointer, copied.mStorage.mStringPointer, valueLength);
+                    std::memcpy(mStorage.mStringPointer, copied.mStorage.mStringPointer, valueLength);
                     mStorage.mStringPointer[valueLength] = 0x00;
                 }
             }
