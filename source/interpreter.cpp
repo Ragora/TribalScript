@@ -120,7 +120,7 @@ namespace TorqueScript
         {
             return search->second;
         }
-        
+
         StoredValue* newValue = new StoredValue(0);
         mGlobalVariables.insert(std::make_pair(name, newValue));
         return newValue;
@@ -211,7 +211,7 @@ namespace TorqueScript
         auto search = mGlobalVariables.find(key);
         if (search != mGlobalVariables.end())
         {
-            search->second->setValue(value, nullptr);
+            search->second->setValue(value);
             return;
         }
 
@@ -223,7 +223,7 @@ namespace TorqueScript
         auto search = mGlobalVariables.find(name);
         if (search != mGlobalVariables.end())
         {
-            search->second->setValue(value, nullptr);
+            search->second->setValue(value);
             return;
         }
 

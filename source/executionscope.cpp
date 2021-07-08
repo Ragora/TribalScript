@@ -92,7 +92,7 @@ namespace TorqueScript
         auto search = currentScope.mLocalVariables.find(name);
         if (search != currentScope.mLocalVariables.end())
         {
-            search->second->setValue(variable, nullptr);
+            search->second->setValue(variable);
             return;
         }
 
@@ -113,7 +113,7 @@ namespace TorqueScript
         auto search = currentScope.mLocalVariables.find(key);
         if (search != currentScope.mLocalVariables.end())
         {
-            search->second->setValue(variable, nullptr);
+            search->second->setValue(variable);
             return;
         }
         currentScope.mLocalVariables.insert(std::make_pair(key, new StoredValue(variable)));

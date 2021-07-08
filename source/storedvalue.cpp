@@ -62,11 +62,11 @@ namespace TorqueScript
         return mType == StoredValueType::Integer;
     }
 
-    bool StoredValue::setValue(const StoredValue& newValue, ExecutionState* state)
+    bool StoredValue::setValue(const StoredValue& newValue)
     {
         if (mReference)
         {
-            return mReference->setValue(newValue, state);
+            return mReference->setValue(newValue);
         }
         else if (mMemoryLocation)
         {
@@ -82,7 +82,7 @@ namespace TorqueScript
                     throw std::runtime_error("Unknown Memory Type");
             }
         }
-    
+
         std::string variableName;
 
         // Copy over stored data
@@ -100,11 +100,11 @@ namespace TorqueScript
         return true;
     }
 
-    void StoredValue::setValue(const float newValue, ExecutionState* state)
+    void StoredValue::setValue(const float newValue)
     {
         if (mReference)
         {
-            return mReference->setValue(newValue, state);
+            return mReference->setValue(newValue);
         }
         else if (mMemoryLocation)
         {

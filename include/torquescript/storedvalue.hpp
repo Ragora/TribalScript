@@ -136,6 +136,30 @@ namespace TorqueScript
                 }
             }
 
+            friend StoredValue operator+(const StoredValue& lhs, const StoredValue& rhs)
+            {
+                // FIXME: For now we normalize to floats
+                return StoredValue(lhs.toFloat() + rhs.toFloat());
+            }
+
+            friend StoredValue operator-(const StoredValue& lhs, const StoredValue& rhs)
+            {
+                // FIXME: For now we normalize to floats
+                return StoredValue(lhs.toFloat() - rhs.toFloat());
+            }
+
+            friend StoredValue operator/(const StoredValue& lhs, const StoredValue& rhs)
+            {
+                // FIXME: For now we normalize to floats
+                return StoredValue(lhs.toFloat() / rhs.toFloat());
+            }
+
+            friend StoredValue operator*(const StoredValue& lhs, const StoredValue& rhs)
+            {
+                // FIXME: For now we normalize to floats
+                return StoredValue(lhs.toFloat() * rhs.toFloat());
+            }
+
             /// @name Value Retrieval
             ///
             /// These functions are used to retrieve the data stored in this object.
@@ -175,8 +199,8 @@ namespace TorqueScript
              *  @param state The execution state this assignment is taking place in.
              *  @return True if an assignment has taken place. False otherwise.
              */
-            bool setValue(const StoredValue& newValue, ExecutionState* state);
-            void setValue(const float newValue, ExecutionState* state);
+            bool setValue(const StoredValue& newValue);
+            void setValue(const float newValue);
 
             std::string getRepresentation();
 

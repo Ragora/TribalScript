@@ -226,11 +226,7 @@ namespace TorqueScript
                     stack.pop_back();
                     StoredValue lhsStored = stack.back();
 
-                    float resultRaw = 0.0f;
-                    resultRaw = lhsStored.toFloat();
-                    resultRaw += rhsStored.toFloat();
-
-                    lhsStored.setValue(resultRaw, state);
+                    lhsStored.setValue(lhsStored + rhsStored);
 
                     return 1;
                 };
@@ -258,7 +254,7 @@ namespace TorqueScript
                     stack.pop_back();
                     StoredValue lhsStored = stack.back();
 
-                    lhsStored.setValue(rhsStored, state);
+                    lhsStored.setValue(rhsStored);
                     return 1;
                 };
 
@@ -538,12 +534,7 @@ namespace TorqueScript
                     StoredValue lhsStored = stack.back();
                     stack.pop_back();
 
-                    // NOTE: For now we normalize to floats
-                    float lhs = lhsStored.toFloat();
-                    float rhs = rhsStored.toFloat();
-
-                    const float result = lhs + rhs;
-                    stack.emplace_back(result);
+                    stack.emplace_back(lhsStored + rhsStored);
                     return 1;
                 };
 
@@ -667,13 +658,7 @@ namespace TorqueScript
                     StoredValue rhsStored = stack.back();
                     stack.pop_back();
 
-                    // NOTE: For now we normalize to floats
-
-                    float lhs = lhsStored.toFloat();
-                    float rhs = rhsStored.toFloat();
-
-                    const float result = lhs * rhs;
-                    stack.emplace_back(result);
+                    stack.emplace_back(lhsStored * rhsStored);
                     return 1;
                 };
 
@@ -701,13 +686,7 @@ namespace TorqueScript
                     StoredValue lhsStored = stack.back();
                     stack.pop_back();
 
-                    // NOTE: For now we normalize to floats
-
-                    float lhs = lhsStored.toFloat();
-                    float rhs = rhsStored.toFloat();
-
-                    const float result = lhs / rhs;
-                    stack.emplace_back(result);
+                    stack.emplace_back(lhsStored / rhsStored);
                     return 1;
                 };
 
@@ -731,13 +710,7 @@ namespace TorqueScript
                     StoredValue lhsStored = stack.back();
                     stack.pop_back();
 
-                    // NOTE: For now we normalize to floats
-
-                    float lhs = lhsStored.toFloat();
-                    float rhs = rhsStored.toFloat();
-
-                    const float result = lhs - rhs;
-                    stack.emplace_back(result);
+                    stack.emplace_back(lhsStored - rhsStored);
                     return 1;
                 };
 
