@@ -40,7 +40,7 @@ namespace TorqueScript
     {
         int mInteger;
         float mFloat;
-        StringTableEntry mStringID;
+        char* mStringPointer;
 
         StoredValueUnion()
         {
@@ -57,7 +57,7 @@ namespace TorqueScript
 
         }
 
-        StoredValueUnion(const StringTableEntry value) : mStringID(value)
+        StoredValueUnion(char* value) : mStringPointer(value)
         {
 
         }
@@ -95,19 +95,44 @@ namespace TorqueScript
 
             }
 
-            StoredValue(const std::size_t value) : mType(StoredValueType::String), mStorage(value), mMemoryLocation(nullptr), mConsoleObject(nullptr), mReference(nullptr)
+            StoredValue(const char* value, const std::size_t stringLength = 0) : mType(StoredValueType::String), mStorage(), mMemoryLocation(nullptr), mConsoleObject(nullptr), mReference(nullptr)
             {
+                // Initialize memory
+                const std::size_t valueLength = stringLength ? stringLength : strlen(value);
 
+                mStorage.mStringPointer = new char[valueLength + 1];
+                memcpy(mStorage.mStringPointer, value, valueLength);
+                mStorage.mStringPointer[valueLength] = 0x00;
             }
 
-            StoredValue(ConsoleObject* object, const std::size_t field) : mType(StoredValueType::SubfieldReference), mStorage(field), mMemoryLocation(nullptr), mConsoleObject(object), mReference(nullptr)
-            {
+            //StoredValue(ConsoleObject* object, const std::size_t field) : mType(StoredValueType::SubfieldReference), mStorage(field), mMemoryLocation(nullptr), mConsoleObject(object), mReference(nullptr)
+           // {
 
-            }
+           // }
 
             StoredValue(StoredValue* referenced) : mType(StoredValueType::NullType), mMemoryLocation(nullptr), mConsoleObject(nullptr), mReference(referenced)
             {
 
+            }
+
+            StoredValue(const StoredValue& copied) : mType(copied.mType), mStorage(copied.mStorage), mMemoryLocation(copied.mMemoryLocation), mConsoleObject(copied.mConsoleObject), mReference(copied.mReference)
+            {
+                if (copied.mType == StoredValueType::String)
+                {
+                    const std::size_t valueLength = strlen(copied.mStorage.mStringPointer);
+
+                    mStorage.mStringPointer = new char[valueLength + 1];
+                    memcpy(mStorage.mStringPointer, copied.mStorage.mStringPointer, valueLength);
+                    mStorage.mStringPointer[valueLength] = 0x00;
+                }
+            }
+
+            ~StoredValue()
+            {
+                if (mType == StoredValueType::String)
+                {
+                    delete mStorage.mStringPointer;
+                }
             }
 
             /// @name Value Retrieval
@@ -116,23 +141,23 @@ namespace TorqueScript
             /// @{
             ///
 
-            int toInteger(ExecutionState* state) const;
+            int toInteger() const;
 
             /**
              *  @brief Converts the value in question to a native floating point type.
              *  @param scope The execution scope within which this conversion is occurring.
              *  @return A floating point representation of this value.
              */
-            float toFloat(ExecutionState* state) const;
+            float toFloat() const;
 
             /**
              *  @brief Converts the value in question to a native sting type.
              *  @param scope The execution scope within which this conversion is occurring.
              *  @return A string representation of this value.
              */
-            std::string toString(ExecutionState* state);
+            std::string toString();
 
-            bool toBoolean(ExecutionState* state) const;
+            bool toBoolean() const;
 
             ConsoleObject* toConsoleObject(ExecutionState* state);
 

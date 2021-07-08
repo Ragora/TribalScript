@@ -33,7 +33,7 @@ TEST(InterpreterTest, WhileLoop)
     TorqueScript::StoredValue* result = interpreter.getGlobal("global");
     ASSERT_TRUE(result);
 
-    ASSERT_EQ(result->toInteger(&state), 110);
+    ASSERT_EQ(result->toInteger(), 110);
 }
 
 int main()

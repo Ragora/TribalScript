@@ -37,8 +37,8 @@ TEST(InterpreterTest, Array)
     TorqueScript::StoredValue* resultUpper = interpreter.getGlobal("RESULT");
     ASSERT_TRUE(resultUpper);
 
-    ASSERT_EQ(resultLower->toFloat(&state), 2.0f);
-    ASSERT_EQ(resultUpper->toFloat(&state), 0.5f);
+    ASSERT_EQ(resultLower->toFloat(), 2.0f);
+    ASSERT_EQ(resultUpper->toFloat(), 0.5f);
 }
 
 int main()

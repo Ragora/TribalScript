@@ -19,14 +19,14 @@
 
 namespace TorqueScript
 {
-    bool StoredValue::toBoolean(ExecutionState* state) const
+    bool StoredValue::toBoolean() const
     {
         if (mReference)
         {
-            return mReference->toInteger(state);
+            return mReference->toInteger();
         }
 
-        return this->toInteger(state) != 0;
+        return this->toInteger() != 0;
     }
 
     ConsoleObject* StoredValue::toConsoleObject(ExecutionState* state)
@@ -41,14 +41,14 @@ namespace TorqueScript
         // Search by ID first
         if (rawValue.isInteger())
         {
-            ConsoleObject* idLookup = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(rawValue.toInteger(state));
+            ConsoleObject* idLookup = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(rawValue.toInteger());
             if (idLookup)
             {
                 return idLookup;
             }
         }
 
-        const std::string lookupName = rawValue.toString(state);
+        const std::string lookupName = rawValue.toString();
         return state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(lookupName);
     }
 
@@ -73,10 +73,10 @@ namespace TorqueScript
             switch (mType)
             {
                 case StoredValueType::Float:
-                    *reinterpret_cast<float*>(mMemoryLocation) = newValue.toFloat(state);
+                    *reinterpret_cast<float*>(mMemoryLocation) = newValue.toFloat();
                     return true;
                 case StoredValueType::Integer:
-                    *reinterpret_cast<int*>(mMemoryLocation) = newValue.toInteger(state);
+                    *reinterpret_cast<int*>(mMemoryLocation) = newValue.toInteger();
                     return true;
                 default:
                     throw std::runtime_error("Unknown Memory Type");
@@ -127,11 +127,11 @@ namespace TorqueScript
         mStorage.mFloat = newValue;
     }
 
-    int StoredValue::toInteger(ExecutionState* state) const
+    int StoredValue::toInteger() const
     {
         if (mReference)
         {
-            return mReference->toInteger(state);
+            return mReference->toInteger();
         }
 
         std::string stringValue;
@@ -143,10 +143,9 @@ namespace TorqueScript
             case StoredValueType::Float:
                 return (int)mStorage.mFloat;
             case StoredValueType::String:
-                stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
                 try
                 {
-                    return std::stoi(stringValue);
+                    return std::stoi(mStorage.mStringPointer);
                 }
                 catch (std::invalid_argument exception)
                 {
@@ -157,11 +156,11 @@ namespace TorqueScript
         throw std::runtime_error("Unknown Conversion");
     }
 
-    std::string StoredValue::toString(ExecutionState* state)
+    std::string StoredValue::toString()
     {
         if (mReference)
         {
-            return mReference->toString(state);
+            return mReference->toString();
         }
 
         std::string stringValue;
@@ -173,7 +172,7 @@ namespace TorqueScript
             case StoredValueType::Float:
                 return std::to_string(mStorage.mFloat);
             case StoredValueType::String:
-                return state->mInterpreter->mStringTable.getString(mStorage.mStringID);
+                return mStorage.mStringPointer;
         }
 
         throw std::runtime_error("Unknown Conversion");
@@ -196,17 +195,17 @@ namespace TorqueScript
             case StoredValueType::Float:
                 return StoredValue(mStorage.mFloat);
             case StoredValueType::String:
-                return StoredValue(mStorage.mStringID);
+                return StoredValue(mStorage.mStringPointer);
         }
 
         throw std::runtime_error("Unknown Conversion");
     }
 
-    float StoredValue::toFloat(ExecutionState* state) const
+    float StoredValue::toFloat() const
     {
         if (mReference)
         {
-            return mReference->toFloat(state);
+            return mReference->toFloat();
         }
         else if (mMemoryLocation)
         {
@@ -230,10 +229,9 @@ namespace TorqueScript
             case StoredValueType::Float:
                 return mStorage.mFloat;
             case StoredValueType::String:
-                stringValue = state->mInterpreter->mStringTable.getString(mStorage.mStringID);
                 try
                 {
-                    return std::stof(stringValue);
+                    return std::stof(mStorage.mStringPointer);
                 }
                 catch (std::invalid_argument exception)
                 {
@@ -260,7 +258,7 @@ namespace TorqueScript
             case StoredValueType::Float:
                 return std::to_string(mStorage.mFloat);
             case StoredValueType::String:
-                return std::to_string(mStorage.mStringID);
+                return mStorage.mStringPointer;
         }
 
         throw std::runtime_error("Unknown Conversion");

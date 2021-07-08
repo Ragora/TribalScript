@@ -38,10 +38,10 @@ TEST(InterpreterTest, Switch)
     TorqueScript::StoredValue* resultFour = interpreter.getGlobal("global::four");
     ASSERT_TRUE(resultFour);
 
-    ASSERT_EQ(resultOne->toInteger(&state), 5);
-    ASSERT_EQ(resultTwo->toInteger(&state), 5);
-    ASSERT_EQ(resultThree->toInteger(&state), 10);
-    ASSERT_EQ(resultFour->toInteger(&state), -10);
+    ASSERT_EQ(resultOne->toInteger(), 5);
+    ASSERT_EQ(resultTwo->toInteger(), 5);
+    ASSERT_EQ(resultThree->toInteger(), 10);
+    ASSERT_EQ(resultFour->toInteger(), -10);
 }
 
 int main()

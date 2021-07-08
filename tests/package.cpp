@@ -44,13 +44,13 @@ TEST(InterpreterTest, Package)
     TorqueScript::StoredValue* afterBNamespace = interpreter.getGlobal("afterBnamespace");
     ASSERT_TRUE(afterBNamespace);
 
-    ASSERT_EQ(before->toInteger(&state), 1);
-    ASSERT_EQ(afterA->toInteger(&state), 2);
-    ASSERT_EQ(afterB->toInteger(&state), 3);
+    ASSERT_EQ(before->toInteger(), 1);
+    ASSERT_EQ(afterA->toInteger(), 2);
+    ASSERT_EQ(afterB->toInteger(), 3);
 
-    ASSERT_EQ(beforeNamespace->toInteger(&state), 2);
-    ASSERT_EQ(afterANamespace->toInteger(&state), 4);
-    ASSERT_EQ(afterBNamespace->toInteger(&state), 6);
+    ASSERT_EQ(beforeNamespace->toInteger(), 2);
+    ASSERT_EQ(afterANamespace->toInteger(), 4);
+    ASSERT_EQ(afterBNamespace->toInteger(), 6);
 }
 
 int main()

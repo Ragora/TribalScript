@@ -26,7 +26,7 @@ namespace TorqueScript
             return 0;
         }
         StoredValue& currentValue = this->back();
-        int result = currentValue.toInteger(state);
+        int result = currentValue.toInteger();
         this->pop_back();
         return result;
     }
@@ -38,7 +38,7 @@ namespace TorqueScript
             return "";
         }
         StoredValue& currentValue = this->back();
-        std::string result = currentValue.toString(state);
+        std::string result = currentValue.toString();
         this->pop_back();
         return result;
     }
@@ -50,7 +50,7 @@ namespace TorqueScript
             return 0.0f;
         }
         StoredValue& currentValue = this->back();
-        float result = currentValue.toFloat(state);
+        float result = currentValue.toFloat();
         this->pop_back();
         return result;
     }

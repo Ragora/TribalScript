@@ -39,7 +39,7 @@ TEST(InterpreterTest, MemoryReference)
     TorqueScript::StoredValue* result = interpreter.getGlobal("result");
     ASSERT_TRUE(result);
 
-    ASSERT_EQ(result->toFloat(&state), 6.28f);
+    ASSERT_EQ(result->toFloat(), 6.28f);
 
     // Check if the memory has been written
     ASSERT_EQ(aStaticFloat, 1337.0f);
