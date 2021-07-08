@@ -420,6 +420,9 @@ namespace TorqueScript
         {
             InstructionSequence childInstructions = bodyNode->accept(this).as<InstructionSequence>();
 
+            // Pop body statement results
+            childInstructions.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
+
             forBody.insert(forBody.end(), childInstructions.begin(), childInstructions.end());
         }
 

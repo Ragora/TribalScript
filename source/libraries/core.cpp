@@ -140,6 +140,9 @@ namespace TorqueScript
             }
 
             calledFunction->execute(nullptr, &callState, callArguments.size());
+
+            // FIXME: Return function result?
+            stack.push_back(0);
         }
         else
         {
