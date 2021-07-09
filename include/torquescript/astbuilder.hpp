@@ -70,6 +70,9 @@ namespace TorqueScript
                 virtual antlrcpp::Any visitDatablock_declaration(TorqueParser::Datablock_declarationContext* context) override;
                 virtual antlrcpp::Any visitObject_declaration(TorqueParser::Object_declarationContext* context) override;
 
+                virtual antlrcpp::Any visitRoot_statement(TorqueParser::Root_statementContext* context) override;
+
+
             private:
                 StringTable* mStringTable;
         };

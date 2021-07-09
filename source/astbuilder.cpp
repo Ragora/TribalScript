@@ -774,5 +774,16 @@ namespace TorqueScript
             result.push_back(new AST::ObjectDeclarationNode(name, typeName, children, fields));
             return result;
         }
+
+        antlrcpp::Any ASTBuilder::visitRoot_statement(TorqueParser::Root_statementContext* context)
+        {
+            std::vector<AST::ASTNode*> result = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
+
+            for (AST::ASTNode* node : result)
+            {
+                node->mIsRoot = true;
+            }
+            return result;
+        }
     }
 }

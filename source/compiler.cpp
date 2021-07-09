@@ -438,8 +438,12 @@ namespace TorqueScript
             InstructionSequence childInstructions = bodyNode->accept(this).as<InstructionSequence>();
 
             // Pop body statement results
-            childInstructions.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
-
+            if (bodyNode->mIsRoot)
+            {
+                childInstructions.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
+                childInstructions.back()->mComment = "Pop Primary Expression";
+            }
+            
             forBody.insert(forBody.end(), childInstructions.begin(), childInstructions.end());
         }
 
@@ -579,6 +583,14 @@ namespace TorqueScript
         for (AST::ASTNode* bodyNode : node->mElseBody)
         {
             InstructionSequence childInstructions = bodyNode->accept(this).as<InstructionSequence>();
+
+            // Pop body statement results
+            if (bodyNode->mIsRoot)
+            {
+                childInstructions.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
+                childInstructions.back()->mComment = "Pop Primary Expression";
+            }
+
             elseCode.insert(elseCode.end(), childInstructions.begin(), childInstructions.end());
         }
         elseCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction())); // Add a NOP for jump targets
@@ -592,6 +604,14 @@ namespace TorqueScript
             for (AST::ASTNode* node : elseIf->mBody)
             {
                 InstructionSequence childInstructions = node->accept(this).as<InstructionSequence>();
+
+                // Pop body statement results
+                if (node->mIsRoot)
+                {
+                    childInstructions.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
+                    childInstructions.back()->mComment = "Pop Primary Expression";
+                }
+
                 elseIfBody.insert(elseIfBody.end(), childInstructions.begin(), childInstructions.end());
             }
 
@@ -614,6 +634,14 @@ namespace TorqueScript
         for (AST::ASTNode* bodyNode : node->mBody)
         {
             InstructionSequence childInstructions = bodyNode->accept(this).as<InstructionSequence>();
+
+            // Pop body statement results
+            if (bodyNode->mIsRoot)
+            {
+                childInstructions.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
+                childInstructions.back()->mComment = "Pop Primary Expression";
+            }
+
             ifBody.insert(ifBody.end(), childInstructions.begin(), childInstructions.end());
         }
 

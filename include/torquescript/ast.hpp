@@ -35,12 +35,19 @@ namespace TorqueScript
         class ASTNode
         {
             public:
+                ASTNode() : mIsRoot(false)
+                {
+
+                }
+
                 virtual ~ASTNode()
                 {
 
                 }
 
                 virtual antlrcpp::Any accept(ASTVisitor* visitor) = 0;
+
+                bool mIsRoot;
         };
 
         class ProgramNode
