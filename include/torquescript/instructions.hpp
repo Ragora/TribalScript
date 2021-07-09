@@ -372,17 +372,17 @@ namespace TorqueScript
                  *  @param name The name of the function to call.
                  *  @param argc The total number of arguments to pull off the stack for use as parameters.
                  */
-                CallFunctionInstruction(const std::string& space, const std::string& name, const std::size_t argc) : mNameSpace(space), mName(name), mArgc(argc)
+                CallFunctionInstruction(const StringTableEntry space, const StringTableEntry name, const std::size_t argc) : mNameSpace(space), mName(name), mArgc(argc)
                 {
 
                 }
 
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
-                    const std::string namespaceName = toLowerCase(mNameSpace);
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
                     // If we're calling a parent function, perform an alternative lookup
+                    /*
                     if (namespaceName == "parent")
                     {
                         Function* currentFunction = state->mExecutionScope.getCurrentFunction();
@@ -411,6 +411,7 @@ namespace TorqueScript
 
                         return 1;
                     }
+                    */
 
                     std::shared_ptr<Function> functionLookup = state->mInterpreter->getFunction(mNameSpace, mName);
                     if (functionLookup)
@@ -433,11 +434,11 @@ namespace TorqueScript
                 {
                     std::ostringstream out;
 
-                    if (mNameSpace == "")
-                    {
-                        out << "CallFunction " << mName << " argc=" << mArgc;
-                    }
-                    else
+                   // if (mNameSpace == "")
+                   // {
+                   //     out << "CallFunction " << mName << " argc=" << mArgc;
+                   // }
+                   // else
                     {
                         out << "CallFunction " << mNameSpace << "::" << mName << " argc=" << mArgc;
                     }
@@ -446,10 +447,10 @@ namespace TorqueScript
 
                 private:
                     //! The namespace of the function to call.
-                    std::string mNameSpace;
+                    StringTableEntry mNameSpace;
 
                     //! The name of the function to call.
-                    std::string mName;
+                    StringTableEntry mName;
 
                     //! How many arguments are being passed to the function to call.
                     std::size_t mArgc;
@@ -545,6 +546,33 @@ namespace TorqueScript
         };
 
         /**
+         *  @brief Adds together two values on the stack and pushes the sum.
+         */
+        class ModulusInstruction : public Instruction
+        {
+            public:
+                virtual AddressOffsetType execute(ExecutionState* state) override
+                {
+                    StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                    assert(stack.size() >= 2);
+
+                    StoredValue rhsStored = stack.back();
+                    stack.pop_back();
+                    StoredValue lhsStored = stack.back();
+                    stack.pop_back();
+
+                    stack.emplace_back(lhsStored.toInteger() % rhsStored.toInteger());
+                    return 1;
+                };
+
+                virtual std::string disassemble() override
+                {
+                    return "Modulus";
+                }
+        };
+
+        /**
          *  @brief Compares two values on the stack using a less than relation.
          */
         class LessThanInstruction : public Instruction
@@ -606,6 +634,71 @@ namespace TorqueScript
                 {
                     return "Equals";
                 }
+        };
+
+        /**
+         *  @brief Compares two values on the stack using an equality.
+         */
+        class StringEqualsInstruction : public Instruction
+        {
+            public:
+                virtual AddressOffsetType execute(ExecutionState* state) override
+                {
+                    StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                    assert(stack.size() >= 2);
+
+                    StoredValue rhsStored = stack.back();
+                    stack.pop_back();
+                    StoredValue lhsStored = stack.back();
+                    stack.pop_back();
+
+                    // NOTE: For now we normalize to floats
+                    std::string lhs = lhsStored.toString();
+                    std::string rhs = rhsStored.toString();
+
+                    const int result = lhs == rhs ? 1 : 0;
+                    stack.emplace_back(result);
+                    return 1;
+                };
+
+                virtual std::string disassemble() override
+                {
+                    return "StringEquals";
+                }
+        };
+
+
+        /**
+          *  @brief Compares two values on the stack using an equality.
+          */
+        class NotEqualsInstruction : public Instruction
+        {
+        public:
+            virtual AddressOffsetType execute(ExecutionState* state) override
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                StoredValue rhsStored = stack.back();
+                stack.pop_back();
+                StoredValue lhsStored = stack.back();
+                stack.pop_back();
+
+                // NOTE: For now we normalize to floats
+                float lhs = lhsStored.toFloat();
+                float rhs = rhsStored.toFloat();
+
+                const int result = lhs != rhs ? 1 : 0;
+                stack.emplace_back(result);
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                return "NotEquals";
+            }
         };
 
         /**

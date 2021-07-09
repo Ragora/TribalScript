@@ -132,7 +132,7 @@ namespace TorqueScript
             {
                 if (mType == StoredValueType::String)
                 {
-                    delete mStorage.mStringPointer;
+                   // delete mStorage.mStringPointer;
                 }
             }
 

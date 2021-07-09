@@ -75,6 +75,7 @@ namespace TorqueScript
             virtual antlrcpp::Any visitSubFieldNode(AST::SubFieldNode* subfield) override;
             virtual antlrcpp::Any visitSubtractNode(AST::SubtractNode* expression) override;
             virtual antlrcpp::Any visitAddNode(AST::AddNode* expression) override;
+            virtual antlrcpp::Any visitModulusNode(AST::ModulusNode* expression) override;
             virtual antlrcpp::Any visitLogicalOrNode(AST::LogicalOrNode* expression) override;
             virtual antlrcpp::Any visitLogicalAndNode(AST::LogicalAndNode* expression) override;
             virtual antlrcpp::Any visitIntegerNode(AST::IntegerNode* value) override;
@@ -97,6 +98,8 @@ namespace TorqueScript
             virtual antlrcpp::Any visitIfNode(AST::IfNode* node) override;
             virtual antlrcpp::Any visitArrayNode(AST::ArrayNode* array) override;
             virtual antlrcpp::Any visitEqualsNode(AST::EqualsNode* expression) override;
+            virtual antlrcpp::Any visitStringEqualsNode(AST::StringEqualsNode* expression) override;
+            virtual antlrcpp::Any visitNotEqualsNode(AST::NotEqualsNode* expression) override;
             virtual antlrcpp::Any visitConcatNode(AST::ConcatNode* expression) override;
             virtual antlrcpp::Any visitMultiplyNode(AST::MultiplyNode* expression) override;
             virtual antlrcpp::Any visitDivideNode(AST::DivideNode* expression) override;

@@ -133,16 +133,40 @@ namespace TorqueScript
         this->addFunctionRegistry(package);
         FunctionRegistry* registry = this->findFunctionRegistry(package);
 
-        const std::string storedName = toLowerCase(function->getDeclaredName());
-        const std::string storedNameSpace = toLowerCase(function->getDeclaredNameSpace());
+        const StringTableEntry storedName = mStringTable.getOrAssign(toLowerCase(function->getDeclaredName()));
+        const StringTableEntry storedNameSpace = mStringTable.getOrAssign(toLowerCase(function->getDeclaredNameSpace()));
+
         registry->mFunctions[storedNameSpace][storedName] = function;
+    }
+
+    std::shared_ptr<Function> Interpreter::getFunction(const StringTableEntry space, const StringTableEntry name)
+    {
+        for (auto iterator = mFunctionRegistries.rbegin(); iterator != mFunctionRegistries.rend(); ++iterator)
+        {
+            FunctionRegistry& registry = *iterator;
+
+            if (registry.mActive)
+            {
+                auto namespaceSearch = registry.mFunctions.find(space);
+                if (namespaceSearch != registry.mFunctions.end())
+                {
+                    auto nameSearch = namespaceSearch->second.find(name);
+                    if (nameSearch != namespaceSearch->second.end())
+                    {
+                        return nameSearch->second;
+                    }
+                }
+            }
+        }
+
+        return nullptr;
     }
 
     std::shared_ptr<Function> Interpreter::getFunction(const std::string& space, const std::string& name)
     {
         // Search registries back to front
-        const std::string searchedName = toLowerCase(name);
-        const std::string searchedNameSpace = toLowerCase(space);
+        const StringTableEntry searchedName = mStringTable.getOrAssign(toLowerCase(name));
+        const StringTableEntry searchedNameSpace = mStringTable.getOrAssign(toLowerCase(space));
 
         for (auto iterator = mFunctionRegistries.rbegin(); iterator != mFunctionRegistries.rend(); ++iterator)
         {
@@ -168,8 +192,8 @@ namespace TorqueScript
     std::shared_ptr<Function> Interpreter::getFunctionParent(Function* function)
     {
         const std::string searchedPackage = toLowerCase(function->getDeclaredPackage());
-        const std::string searchedNameSpace = toLowerCase(function->getDeclaredNameSpace());
-        const std::string searchedFunction = toLowerCase(function->getDeclaredName());
+        const StringTableEntry searchedNameSpace = mStringTable.getOrAssign(toLowerCase(function->getDeclaredNameSpace()));
+        const StringTableEntry searchedFunction = mStringTable.getOrAssign(toLowerCase(function->getDeclaredName()));
 
         // Search registries back to front
         bool shouldSearchFunction = false;

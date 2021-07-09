@@ -312,6 +312,10 @@ namespace TorqueScript
             {
                 result.push_back(new AST::SubtractNode(left, right));
             }
+            else if (context->MODULUS())
+            {
+                result.push_back(new AST::ModulusNode(left, right));
+            }
             else
             {
                 throw std::runtime_error("Unhandled arithmetic type!");
@@ -377,6 +381,14 @@ namespace TorqueScript
             if (context->EQUALS())
             {
                 result.push_back(new AST::EqualsNode(left, right));
+            }
+            else if (context->NOTEQUAL())
+            {
+                result.push_back(new AST::NotEqualsNode(left, right));
+            }
+            else if (context->STRINGEQUALS())
+            {
+                result.push_back(new AST::StringEqualsNode(left, right));
             }
             else
             {

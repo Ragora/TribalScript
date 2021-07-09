@@ -19,8 +19,8 @@ program  : statement+ | <EOF> ;
 /*
     Main Blocks
 */
-function_declaration : FUNCTION LABEL '(' function_declaration_parameters? ')' '{' expression_statement* '}'
-                     | FUNCTION LABEL '::' LABEL '(' function_declaration_parameters? ')' '{' expression_statement* '}' ;
+function_declaration : FUNCTION LABEL '(' function_declaration_parameters? ')' '{' root_statement* '}'
+                     | FUNCTION LABEL '::' LABEL '(' function_declaration_parameters? ')' '{' root_statement* '}' ;
 function_declaration_parameters : localvariable (',' localvariable)* ;
 
 package_declaration : PACKAGE LABEL '{' function_declaration+ '}' ';' ;
@@ -38,8 +38,8 @@ object_declaration : NEW LABEL '(' (name=expression)? ')' object_initialization?
 /*
     Control blocks
 */
-control_statements : '{' expression_statement* '}'
-                   | expression_statement ;
+control_statements : '{' root_statement* '}'
+                   | root_statement ;
 
 while_control : WHILE '(' expression ')' control_statements ;
 
@@ -49,8 +49,8 @@ else_control : ELSE control_statements ;
 elseif_control : ELSE IF '(' expression ')' control_statements ;
 if_control : IF '(' expression ')' control_statements elseif_control* else_control? ;
 
-default_control : DEFAULT ':' expression_statement* ;
-case_control : CASE expression ('or' expression)* ':' expression_statement* ;
+default_control : DEFAULT ':' root_statement* ;
+case_control : CASE expression ('or' expression)* ':' root_statement* ;
 switch_control : SWITCH '$'? '(' expression ')' '{' case_control+ default_control? '}' ;
 
 break_control : BREAK ;
@@ -70,9 +70,12 @@ expression_statement : primary_expression ';'
                      | break_control ';'
                      | return_control ';' ;
 
+// Used primarily to allow generation of Pop statements of root level expressions
+root_statement : expression_statement ;
+
 statement : function_declaration
           | package_declaration
-          | expression_statement  ;
+          | root_statement  ;
 
 expression_list : expression (',' expression)* ;
 

@@ -108,7 +108,10 @@ namespace TorqueScript
              *  @param function The function object to register to the interpreter.
              */
             void addFunction(std::shared_ptr<Function> function);
+
             std::shared_ptr<Function> getFunction(const std::string& space, const std::string& name);
+            std::shared_ptr<Function> getFunction(const StringTableEntry space, const StringTableEntry name);
+
             std::shared_ptr<Function> getFunctionParent(Function* function);
 
             FunctionRegistry* findFunctionRegistry(const std::string packageName);

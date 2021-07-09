@@ -47,6 +47,6 @@ namespace TorqueScript
         bool mActive;
 
         //! A mapping of function namespaces to a mapping of function names to the function object.
-        std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<Function>>> mFunctions;
+        std::unordered_map<StringTableEntry, std::unordered_map<StringTableEntry, std::shared_ptr<Function>>> mFunctions;
     };
 }
