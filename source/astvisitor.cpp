@@ -136,6 +136,26 @@ namespace TorqueScript
             return this->aggregateResult(result, childResult);
         }
 
+        antlrcpp::Any ASTVisitor::visitMinusNode(AST::MinusNode* expression)
+        {
+            antlrcpp::Any result = this->defaultResult();
+
+            antlrcpp::Any childResult = expression->mLeft->accept(this);
+            result = this->aggregateResult(result, childResult);
+            childResult = expression->mRight->accept(this);
+            return this->aggregateResult(result, childResult);
+        }
+
+        antlrcpp::Any ASTVisitor::visitModulusNode(AST::ModulusNode* expression)
+        {
+            antlrcpp::Any result = this->defaultResult();
+
+            antlrcpp::Any childResult = expression->mLeft->accept(this);
+            result = this->aggregateResult(result, childResult);
+            childResult = expression->mRight->accept(this);
+            return this->aggregateResult(result, childResult);
+        }
+
         antlrcpp::Any ASTVisitor::visitSubtractNode(AST::SubtractNode* expression)
         {
             antlrcpp::Any result = this->defaultResult();
@@ -177,6 +197,26 @@ namespace TorqueScript
         }
 
         antlrcpp::Any ASTVisitor::visitEqualsNode(AST::EqualsNode* expression)
+        {
+            antlrcpp::Any result = this->defaultResult();
+
+            antlrcpp::Any childResult = expression->mLeft->accept(this);
+            result = this->aggregateResult(result, childResult);
+            childResult = expression->mRight->accept(this);
+            return this->aggregateResult(result, childResult);
+        }
+
+        antlrcpp::Any ASTVisitor::visitNotEqualsNode(AST::NotEqualsNode* expression)
+        {
+            antlrcpp::Any result = this->defaultResult();
+
+            antlrcpp::Any childResult = expression->mLeft->accept(this);
+            result = this->aggregateResult(result, childResult);
+            childResult = expression->mRight->accept(this);
+            return this->aggregateResult(result, childResult);
+        }
+
+        antlrcpp::Any ASTVisitor::visitStringEqualsNode(AST::StringEqualsNode* expression)
         {
             antlrcpp::Any result = this->defaultResult();
 

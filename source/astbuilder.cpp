@@ -300,6 +300,10 @@ namespace TorqueScript
             {
                 result.push_back(new AST::AddNode(left, right));
             }
+            else if (context->MINUS())
+            {
+                result.push_back(new AST::MinusNode(left, right));
+            }
             else if (context->MULTIPLY())
             {
                 result.push_back(new AST::MultiplyNode(left, right));
@@ -307,6 +311,10 @@ namespace TorqueScript
             else if (context->DIVIDE())
             {
                 result.push_back(new AST::DivideNode(left, right));
+            }
+            else if (context->MODULUS())
+            {
+                result.push_back(new AST::ModulusNode(left, right));
             }
             else
             {
@@ -373,6 +381,14 @@ namespace TorqueScript
             if (context->EQUALS())
             {
                 result.push_back(new AST::EqualsNode(left, right));
+            }
+            else if (context->NOTEQUAL())
+            {
+                result.push_back(new AST::NotEqualsNode(left, right));
+            }
+            else if (context->STRINGEQUALS())
+            {
+                result.push_back(new AST::StringEqualsNode(left, right));
             }
             else
             {

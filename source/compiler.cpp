@@ -240,6 +240,34 @@ namespace TorqueScript
         return result;
     }
 
+    antlrcpp::Any Compiler::visitMinusNode(AST::MinusNode* expression)
+    {
+        InstructionSequence result;
+
+        InstructionSequence lhsCode = expression->mLeft->accept(this).as<InstructionSequence>();
+        InstructionSequence rhsCode = expression->mRight->accept(this).as<InstructionSequence>();
+
+        result.insert(result.end(), lhsCode.begin(), lhsCode.end());
+        result.insert(result.end(), rhsCode.begin(), rhsCode.end());
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::MinusInstruction()));
+
+        return result;
+    }
+
+    antlrcpp::Any Compiler::visitModulusNode(AST::ModulusNode* expression)
+    {
+        InstructionSequence result;
+
+        InstructionSequence lhsCode = expression->mLeft->accept(this).as<InstructionSequence>();
+        InstructionSequence rhsCode = expression->mRight->accept(this).as<InstructionSequence>();
+
+        result.insert(result.end(), lhsCode.begin(), lhsCode.end());
+        result.insert(result.end(), rhsCode.begin(), rhsCode.end());
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::ModulusInstruction()));
+
+        return result;
+    }
+
     antlrcpp::Any Compiler::visitIntegerNode(AST::IntegerNode* value)
     {
         InstructionSequence result;
@@ -624,6 +652,34 @@ namespace TorqueScript
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
         out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::EqualsInstruction()));
+
+        return out;
+    }
+
+    antlrcpp::Any Compiler::visitNotEqualsNode(AST::NotEqualsNode* expression)
+    {
+        InstructionSequence out;
+
+        InstructionSequence lhsCode = expression->mLeft->accept(this).as<InstructionSequence>();
+        InstructionSequence rhsCode = expression->mRight->accept(this).as<InstructionSequence>();
+
+        out.insert(out.end(), lhsCode.begin(), lhsCode.end());
+        out.insert(out.end(), rhsCode.begin(), rhsCode.end());
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NotEqualsInstruction()));
+
+        return out;
+    }
+
+    antlrcpp::Any Compiler::visitStringEqualsNode(AST::StringEqualsNode* expression)
+    {
+        InstructionSequence out;
+
+        InstructionSequence lhsCode = expression->mLeft->accept(this).as<InstructionSequence>();
+        InstructionSequence rhsCode = expression->mRight->accept(this).as<InstructionSequence>();
+
+        out.insert(out.end(), lhsCode.begin(), lhsCode.end());
+        out.insert(out.end(), rhsCode.begin(), rhsCode.end());
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::StringEqualsInstruction()));
 
         return out;
     }

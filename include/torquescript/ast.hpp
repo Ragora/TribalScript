@@ -316,6 +316,34 @@ namespace TorqueScript
                 }
         };
 
+        class MinusNode : public InfixExpressionNode
+        {
+            public:
+                MinusNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
+                {
+
+                }
+
+                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                {
+                    return visitor->visitMinusNode(this);
+                }
+        };
+
+        class ModulusNode : public InfixExpressionNode
+        {
+            public:
+                ModulusNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
+                {
+
+                }
+
+                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                {
+                    return visitor->visitModulusNode(this);
+                }
+        };
+
         class SubtractNode : public InfixExpressionNode
         {
             public:
@@ -385,6 +413,34 @@ namespace TorqueScript
                 virtual antlrcpp::Any accept(ASTVisitor* visitor)
                 {
                     return visitor->visitEqualsNode(this);
+                }
+        };
+
+        class NotEqualsNode : public InfixExpressionNode
+        {
+            public:
+                NotEqualsNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
+                {
+
+                }
+
+                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                {
+                    return visitor->visitNotEqualsNode(this);
+                }
+        };
+
+        class StringEqualsNode : public InfixExpressionNode
+        {
+            public:
+                StringEqualsNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
+                {
+
+                }
+
+                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                {
+                    return visitor->visitStringEqualsNode(this);
                 }
         };
 

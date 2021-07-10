@@ -40,6 +40,8 @@ namespace TorqueScript
 
     void GetNameBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
 
+    void GetRealTimeBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+
     void GetClassNameBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
 
     void registerCoreLibrary(Interpreter* interpreter);

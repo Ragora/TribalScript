@@ -568,6 +568,70 @@ namespace TorqueScript
         };
 
         /**
+         *  @brief Adds together two values on the stack and pushes the sum.
+         */
+        class MinusInstruction : public Instruction
+        {
+        public:
+            virtual AddressOffsetType execute(ExecutionState* state) override
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                StoredValue rhsStored = stack.back();
+                stack.pop_back();
+                StoredValue lhsStored = stack.back();
+                stack.pop_back();
+
+                // NOTE: For now we normalize to floats
+                float lhs = lhsStored.toFloat(state);
+                float rhs = rhsStored.toFloat(state);
+
+                const float result = lhs - rhs;
+                stack.push_back(StoredValue(result));
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                return "Minus";
+            }
+        };
+
+        /**
+         *  @brief Adds together two values on the stack and pushes the sum.
+         */
+        class ModulusInstruction : public Instruction
+        {
+        public:
+            virtual AddressOffsetType execute(ExecutionState* state) override
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                StoredValue rhsStored = stack.back();
+                stack.pop_back();
+                StoredValue lhsStored = stack.back();
+                stack.pop_back();
+
+                // NOTE: For now we normalize to floats
+                int lhs = lhsStored.toInteger(state);
+                int rhs = rhsStored.toInteger(state);
+
+                const int result = lhs % rhs;
+                stack.push_back(StoredValue(result));
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                return "Modulus";
+            }
+        };
+
+        /**
          *  @brief Compares two values on the stack using a less than relation.
          */
         class LessThanInstruction : public Instruction
@@ -629,6 +693,70 @@ namespace TorqueScript
                 {
                     return "Equals";
                 }
+        };
+
+        /**
+         *  @brief Compares two values on the stack using an equality.
+         */
+        class NotEqualsInstruction : public Instruction
+        {
+        public:
+            virtual AddressOffsetType execute(ExecutionState* state) override
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                StoredValue rhsStored = stack.back();
+                stack.pop_back();
+                StoredValue lhsStored = stack.back();
+                stack.pop_back();
+
+                // NOTE: For now we normalize to floats
+                float lhs = lhsStored.toFloat(state);
+                float rhs = rhsStored.toFloat(state);
+
+                const int result = lhs != rhs ? 1 : 0;
+                stack.push_back(StoredValue(result));
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                return "NotEquals";
+            }
+        };
+
+        /**
+         *  @brief Compares two values on the stack using an equality.
+         */
+        class StringEqualsInstruction : public Instruction
+        {
+        public:
+            virtual AddressOffsetType execute(ExecutionState* state) override
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                StoredValue rhsStored = stack.back();
+                stack.pop_back();
+                StoredValue lhsStored = stack.back();
+                stack.pop_back();
+
+                // NOTE: For now we normalize to floats
+                std::string lhs = lhsStored.toString(state);
+                std::string rhs = rhsStored.toString(state);
+
+                const int result = lhs == rhs ? 1 : 0;
+                stack.push_back(StoredValue(result));
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                return "StringEquals";
+            }
         };
 
         /**

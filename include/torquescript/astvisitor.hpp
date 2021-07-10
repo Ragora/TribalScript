@@ -62,6 +62,10 @@ namespace TorqueScript
         class DatablockDeclarationNode;
         class FieldAssignNode;
         class ObjectDeclarationNode;
+        class NotEqualsNode;
+        class StringEqualsNode;
+        class ModulusNode;
+        class MinusNode;
 
         class ASTVisitor
         {
@@ -83,6 +87,8 @@ namespace TorqueScript
                 virtual antlrcpp::Any visitSubFunctionCallNode(AST::SubFunctionCallNode* call);
                 virtual antlrcpp::Any visitSubFieldNode(AST::SubFieldNode* subfield);
                 virtual antlrcpp::Any visitAddNode(AST::AddNode* expression);
+                virtual antlrcpp::Any visitMinusNode(AST::MinusNode* expression);
+                virtual antlrcpp::Any visitModulusNode(AST::ModulusNode* expression);
                 virtual antlrcpp::Any visitLogicalAndNode(AST::LogicalAndNode* expression);
                 virtual antlrcpp::Any visitLogicalOrNode(AST::LogicalOrNode* expression);
                 virtual antlrcpp::Any visitSubtractNode(AST::SubtractNode* expression);
@@ -90,6 +96,8 @@ namespace TorqueScript
                 virtual antlrcpp::Any visitDivideNode(AST::DivideNode* expression);
                 virtual antlrcpp::Any visitConcatNode(AST::ConcatNode* expression);
                 virtual antlrcpp::Any visitEqualsNode(AST::EqualsNode* expression);
+                virtual antlrcpp::Any visitNotEqualsNode(AST::NotEqualsNode* expression);
+                virtual antlrcpp::Any visitStringEqualsNode(AST::StringEqualsNode* expression);
                 virtual antlrcpp::Any visitAssignmentNode(AST::AssignmentNode* expression);
                 virtual antlrcpp::Any visitLessThanNode(AST::LessThanNode* expression);
                 virtual antlrcpp::Any visitNegateNode(AST::NegateNode* expression);
