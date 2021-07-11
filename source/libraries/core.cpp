@@ -40,8 +40,12 @@ namespace TorqueScript
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
-        auto result = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        stack.push_back(StoredValue((int)result));
+        typedef std::chrono::duration<float, std::milli> millisecondFloat;
+
+        auto currentTime = std::chrono::high_resolution_clock::now().time_since_epoch();
+        auto result = std::chrono::duration_cast<millisecondFloat>(currentTime);
+
+        stack.push_back(StoredValue(result.count()));
     }
 
     void ExecBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
