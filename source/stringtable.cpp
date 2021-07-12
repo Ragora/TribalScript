@@ -18,16 +18,17 @@ namespace TorqueScript
 {
     StringTableEntry StringTable::getOrAssign(const std::string& string)
     {
-        std::hash<std::string> hasher;
-
-        const StringTableEntry stringHash = hasher(string);
-        auto search = this->find(stringHash);
-
-        if (search == this->end())
+        for (std::size_t iteration = 0; iteration < this->size(); ++iteration)
         {
-            this->emplace(std::make_pair(stringHash, string));
+            if (this->at(iteration) == string)
+            {
+                return iteration;
+            }
         }
-        return stringHash;
+
+        const StringTableEntry result = this->size();
+        this->push_back(string);
+        return result;
     }
 
     const std::string& StringTable::getString(const StringTableEntry id)
