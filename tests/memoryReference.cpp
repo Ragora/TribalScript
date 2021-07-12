@@ -29,7 +29,7 @@ TEST(InterpreterTest, MemoryReference)
     TorqueScript::registerAllLibraries(&interpreter);
 
     // Set memory reference
-    interpreter.setGlobal("pi", TorqueScript::StoredValue(&aStaticFloat, TorqueScript::MemoryReferenceType::FloatMemory));
+    interpreter.setGlobal("pi", TorqueScript::StoredValue(&aStaticFloat));
 
     TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
     interpreter.execute("cases/memoryReference.cs", &state);
@@ -38,7 +38,7 @@ TEST(InterpreterTest, MemoryReference)
     TorqueScript::StoredValue* result = interpreter.getGlobal("result");
     ASSERT_TRUE(result);
 
-    ASSERT_EQ(result->toFloat(&state), 6.28f);
+    ASSERT_EQ(result->toFloat(), 6.28f);
 
     // Check if the memory has been written
     ASSERT_EQ(aStaticFloat, 1337.0f);

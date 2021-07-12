@@ -123,7 +123,7 @@ namespace TorqueScript
         class PushStringInstruction : public Instruction
         {
             public:
-                PushStringInstruction(const StringTableEntry value) : mStringID(value)
+                PushStringInstruction(const std::string& value) : mString(value)
                 {
 
                 }
@@ -131,20 +131,20 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.push_back(StoredValue(mStringID, StoredValueType::String));
+                    stack.push_back(StoredValue(mString.c_str()));
                     return 1;
                 };
 
                 virtual std::string disassemble() override
                 {
                     std::ostringstream out;
-                    out << "PushString " << mStringID;
+                    out << "PushString " << mString;
                     return out.str();
                 }
 
             private:
                 //! The string table ID of the parameter to push.
-                StringTableEntry mStringID;
+                std::string mString;
         };
 
         /**
@@ -162,7 +162,7 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.push_back(StoredValue(mStringID, StoredValueType::LocalReference));
+                    stack.emplace_back(state->mExecutionScope.getVariableOrAllocate(mStringID));
                     return 1;
                 };
 
@@ -193,7 +193,7 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.push_back(StoredValue(mStringID, StoredValueType::GlobalReference));
+                    stack.push_back(StoredValue(state->mInterpreter->getGlobalOrAllocate(mStringID)));
                     return 1;
                 };
 
@@ -228,11 +228,11 @@ namespace TorqueScript
                     stack.pop_back();
 
                     float resultRaw = 0.0f;
-                    resultRaw = lhsStored.toFloat(state);
-                    resultRaw += rhsStored.toFloat(state);
+                    resultRaw = lhsStored.toFloat();
+                    resultRaw += rhsStored.toFloat();
 
                     StoredValue result = StoredValue(resultRaw);
-                    if (!lhsStored.setValue(result, state))
+                    if (!lhsStored.setValue(result))
                     {
                         state->mInterpreter->mConfig.mPlatform->logError("Attempted to perform no-op assignment!");
                     }
@@ -266,7 +266,7 @@ namespace TorqueScript
                     StoredValue lhsStored = stack.back();
                     stack.pop_back();
 
-                    if (!lhsStored.setValue(rhsStored, state))
+                    if (!lhsStored.setValue(rhsStored))
                     {
                         state->mInterpreter->mConfig.mPlatform->logError("Attempted to perform no-op assignment!");
                     }
@@ -306,12 +306,12 @@ namespace TorqueScript
                     StoredValue lhsStored = stack.back();
                     stack.pop_back();
 
-                    std::string lhs = lhsStored.toString(state);
-                    std::string rhs = rhsStored.toString(state);
+                    std::string lhs = lhsStored.toString();
+                    std::string rhs = rhsStored.toString();
 
                     // Generate a new string ID
-                    const StringTableEntry requestedStringID = state->mInterpreter->mStringTable.getOrAssign(lhs + mSeperator + rhs);
-                    stack.push_back(StoredValue(requestedStringID, StoredValueType::String));
+                    const std::string requestedString = lhs + mSeperator + rhs;
+                    stack.emplace_back(requestedString.c_str());
                     return 1;
                 };
 
@@ -325,6 +325,7 @@ namespace TorqueScript
             private:
                 std::string mSeperator;
         };
+
 
         /**
          *  @brief Negate a value on the stack.
@@ -342,7 +343,7 @@ namespace TorqueScript
                     StoredValue storedTarget = stack.back();
                     stack.pop_back();
 
-                    stack.push_back(StoredValue(-storedTarget.toFloat(state)));
+                    stack.push_back(StoredValue(-storedTarget.toFloat()));
                     return 1;
                 };
 
@@ -368,7 +369,7 @@ namespace TorqueScript
                 StoredValue storedTarget = stack.back();
                 stack.pop_back();
 
-                stack.push_back(StoredValue(!storedTarget.toBoolean(state) ? 1 : 0));
+                stack.push_back(StoredValue(!storedTarget.toBoolean() ? 1 : 0));
                 return 1;
             };
 
@@ -490,8 +491,8 @@ namespace TorqueScript
                     StoredValue lhsStored = stack.back();
                     stack.pop_back();
 
-                    const bool lhs = lhsStored.toBoolean(state);
-                    const bool rhs = rhsStored.toBoolean(state);
+                    const bool lhs = lhsStored.toBoolean();
+                    const bool rhs = rhsStored.toBoolean();
 
                     const int result = lhs && rhs ? 1 : 0;
                     stack.push_back(StoredValue(result));
@@ -521,8 +522,8 @@ namespace TorqueScript
                     StoredValue lhsStored = stack.back();
                     stack.pop_back();
 
-                    const bool lhs = lhsStored.toBoolean(state);
-                    const bool rhs = rhsStored.toBoolean(state);
+                    const bool lhs = lhsStored.toBoolean();
+                    const bool rhs = rhsStored.toBoolean();
 
                     const int result = lhs || rhs ? 1 : 0;
                     stack.push_back(StoredValue(result));
@@ -553,8 +554,8 @@ namespace TorqueScript
                     stack.pop_back();
 
                     // NOTE: For now we normalize to floats
-                    float lhs = lhsStored.toFloat(state);
-                    float rhs = rhsStored.toFloat(state);
+                    float lhs = lhsStored.toFloat();
+                    float rhs = rhsStored.toFloat();
 
                     const float result = lhs + rhs;
                     stack.push_back(StoredValue(result));
@@ -585,8 +586,8 @@ namespace TorqueScript
                 stack.pop_back();
 
                 // NOTE: For now we normalize to floats
-                float lhs = lhsStored.toFloat(state);
-                float rhs = rhsStored.toFloat(state);
+                float lhs = lhsStored.toFloat();
+                float rhs = rhsStored.toFloat();
 
                 const float result = lhs - rhs;
                 stack.push_back(StoredValue(result));
@@ -617,8 +618,8 @@ namespace TorqueScript
                 stack.pop_back();
 
                 // NOTE: For now we normalize to floats
-                int lhs = lhsStored.toInteger(state);
-                int rhs = rhsStored.toInteger(state);
+                int lhs = lhsStored.toInteger();
+                int rhs = rhsStored.toInteger();
 
                 const int result = lhs % rhs;
                 stack.push_back(StoredValue(result));
@@ -649,8 +650,8 @@ namespace TorqueScript
                     stack.pop_back();
 
                     // NOTE: For now we normalize to floats
-                    float lhs = lhsStored.toFloat(state);
-                    float rhs = rhsStored.toFloat(state);
+                    float lhs = lhsStored.toFloat();
+                    float rhs = rhsStored.toFloat();
 
                     const int result = lhs < rhs ? 1 : 0;
                     stack.push_back(StoredValue(result));
@@ -681,8 +682,8 @@ namespace TorqueScript
                     stack.pop_back();
 
                     // NOTE: For now we normalize to floats
-                    float lhs = lhsStored.toFloat(state);
-                    float rhs = rhsStored.toFloat(state);
+                    float lhs = lhsStored.toFloat();
+                    float rhs = rhsStored.toFloat();
 
                     const int result = lhs == rhs ? 1 : 0;
                     stack.push_back(StoredValue(result));
@@ -713,8 +714,8 @@ namespace TorqueScript
                 stack.pop_back();
 
                 // NOTE: For now we normalize to floats
-                float lhs = lhsStored.toFloat(state);
-                float rhs = rhsStored.toFloat(state);
+                float lhs = lhsStored.toFloat();
+                float rhs = rhsStored.toFloat();
 
                 const int result = lhs != rhs ? 1 : 0;
                 stack.push_back(StoredValue(result));
@@ -745,8 +746,8 @@ namespace TorqueScript
                 stack.pop_back();
 
                 // NOTE: For now we normalize to floats
-                std::string lhs = lhsStored.toString(state);
-                std::string rhs = rhsStored.toString(state);
+                std::string lhs = lhsStored.toString();
+                std::string rhs = rhsStored.toString();
 
                 const int result = lhs == rhs ? 1 : 0;
                 stack.push_back(StoredValue(result));
@@ -777,8 +778,8 @@ namespace TorqueScript
                     stack.pop_back();
 
                     // NOTE: For now we normalize to floats
-                    int lhs = lhsStored.toInteger(state);
-                    int rhs = rhsStored.toInteger(state);
+                    int lhs = lhsStored.toInteger();
+                    int rhs = rhsStored.toInteger();
 
                     const int result = lhs & rhs;
                     stack.push_back(StoredValue(result));
@@ -811,8 +812,8 @@ namespace TorqueScript
 
                     // NOTE: For now we normalize to floats
 
-                    float lhs = lhsStored.toFloat(state);
-                    float rhs = rhsStored.toFloat(state);
+                    float lhs = lhsStored.toFloat();
+                    float rhs = rhsStored.toFloat();
 
                     const float result = lhs * rhs;
                     stack.push_back(StoredValue(result));
@@ -845,8 +846,8 @@ namespace TorqueScript
 
                     // NOTE: For now we normalize to floats
 
-                    float lhs = lhsStored.toFloat(state);
-                    float rhs = rhsStored.toFloat(state);
+                    float lhs = lhsStored.toFloat();
+                    float rhs = rhsStored.toFloat();
 
                     const float result = lhs / rhs;
                     stack.push_back(StoredValue(result));
@@ -939,7 +940,7 @@ namespace TorqueScript
                     StoredValue booleanStored = stack.back();
                     stack.pop_back();
 
-                    if (booleanStored.toBoolean(state))
+                    if (booleanStored.toBoolean())
                     {
                         return mOffset;
                     }
@@ -984,7 +985,7 @@ namespace TorqueScript
                     StoredValue booleanStored = stack.back();
                     stack.pop_back();
 
-                    if (!booleanStored.toBoolean(state))
+                    if (!booleanStored.toBoolean())
                     {
                         return mOffset;
                     }
@@ -1125,13 +1126,13 @@ namespace TorqueScript
 
                     if (referenced)
                     {
-                        const StringTableEntry stringID = state->mInterpreter->mStringTable.getOrAssign(arrayName);
+                        // const std::string stringData = state->mInterpreter->mStringTable.getOrAssign(arrayName);
 
-                        stack.push_back(StoredValue(referenced, mStringID));
+                        // stack.emplace_back(referenced, mStringID);
                         return 1;
                     }
 
-                    stack.push_back(StoredValue(0));
+                    stack.emplace_back(0);
                     return 1;
                 };
 
@@ -1286,11 +1287,11 @@ namespace TorqueScript
                     const std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(arrayName);
                     if (mGlobal)
                     {
-                        stack.push_back(StoredValue(stringID, StoredValueType::GlobalReference));
+                        stack.emplace_back(state->mInterpreter->getGlobalOrAllocate(stringID));
                     }
                     else
                     {
-                        stack.push_back(StoredValue(stringID, StoredValueType::LocalReference));
+                        stack.emplace_back(state->mExecutionScope.getVariableOrAllocate(stringID));
                     }
                     return 1;
                 };
@@ -1302,11 +1303,12 @@ namespace TorqueScript
                     return out.str();
                 }
 
-                private:
-                    std::string mName;
-                    std::size_t mArgc;
-                    bool mGlobal;
+            private:
+                std::string mName;
+                std::size_t mArgc;
+                bool mGlobal;
         };
+
 
         /**
          *  @brief Calls a function that is bound to an object identified on the stack.
@@ -1338,7 +1340,7 @@ namespace TorqueScript
                     if (!targetObject)
                     {
                         std::ostringstream output;
-                        output << "Cannot find object '" << targetStored.toString(state) << "' to call function '" << mName << "'!";
+                        output << "Cannot find object '" << targetStored.toString() << "' to call function '" << mName << "'!";
                         state->mInterpreter->mConfig.mPlatform->logWarning(output.str());
 
                         stack.push_back(StoredValue(0));
@@ -1389,7 +1391,7 @@ namespace TorqueScript
                     StoredValue objectTypeName = stack.back();
                     stack.pop_back();
 
-                    state->mExecutionScope.pushObjectInstantiation(objectTypeName.toString(state), objectName.toString(state));
+                    state->mExecutionScope.pushObjectInstantiation(objectTypeName.toString(), objectName.toString());
 
                     return 1;
                 };
@@ -1427,7 +1429,7 @@ namespace TorqueScript
                     stack.pop_back();
 
                     std::ostringstream out;
-                    out << fieldBaseName.toString(state);
+                    out << fieldBaseName.toString();
                     for (auto iterator = arrayComponents.rbegin(); iterator != arrayComponents.rend(); ++iterator)
                     {
                         if (iterator != arrayComponents.rbegin())

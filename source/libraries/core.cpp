@@ -104,16 +104,16 @@ namespace TorqueScript
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
-        const StringTableEntry stringID = state->mInterpreter->mStringTable.getOrAssign(state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectName(thisObject));
-        stack.push_back(StoredValue(stringID, StoredValueType::String));
+        const std::string stringData = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectName(thisObject);
+        stack.push_back(StoredValue(stringData.c_str()));
     }
 
     void GetClassNameBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
-        const StringTableEntry stringID = state->mInterpreter->mStringTable.getOrAssign(thisObject->getClassName());
-        stack.push_back(StoredValue(stringID, StoredValueType::String));
+        const std::string stringData = thisObject->getClassName();
+        stack.push_back(StoredValue(stringData.c_str()));
     }
 
     void registerCoreLibrary(Interpreter* interpreter)

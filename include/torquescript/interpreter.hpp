@@ -75,6 +75,8 @@ namespace TorqueScript
              */
             StoredValue* getGlobal(const std::string& name);
 
+            StoredValue* getGlobalOrAllocate(const StringTableEntry name);
+
             /**
              *  @brief Retrieves a global variable by string ID.
              *  @param name The string ID representing the global variable
@@ -148,6 +150,6 @@ namespace TorqueScript
             std::vector<FunctionRegistry> mFunctionRegistries;
 
             //! A mapping of global variable names to their stored value instance.
-            std::unordered_map<StringTableEntry, StoredValue> mGlobalVariables;
+            std::unordered_map<StringTableEntry, StoredValue*> mGlobalVariables;
     };
 }

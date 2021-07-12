@@ -35,8 +35,8 @@ TEST(InterpreterTest, OpOrder)
     TorqueScript::StoredValue* paren = interpreter.getGlobal("paren");
     ASSERT_TRUE(paren);
 
-    ASSERT_EQ(noParen->toInteger(&state), 3);
-    ASSERT_EQ(paren->toInteger(&state), 4);
+    ASSERT_EQ(noParen->toInteger(), 3);
+    ASSERT_EQ(paren->toInteger(), 4);
 }
 
 int main()

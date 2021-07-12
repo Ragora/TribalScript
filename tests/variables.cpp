@@ -35,8 +35,8 @@ TEST(InterpreterTest, Variables)
     TorqueScript::StoredValue* resultGlobalNameSpace = interpreter.getGlobal("global::namespaced");
     ASSERT_TRUE(resultGlobalNameSpace);
 
-    ASSERT_EQ(resultGlobal->toInteger(&state), 50);
-    ASSERT_EQ(resultGlobalNameSpace->toInteger(&state), 123);
+    ASSERT_EQ(resultGlobal->toInteger(), 50);
+    ASSERT_EQ(resultGlobalNameSpace->toInteger(), 123);
 }
 
 int main()

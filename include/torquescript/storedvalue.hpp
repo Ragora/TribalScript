@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <memory>
 #include <string>
+#include <cstring>
 
 #include <torquescript/stringtable.hpp>
 
@@ -33,25 +34,14 @@ namespace TorqueScript
         Integer,
         Float,
         String,
-        LocalReference,
-        GlobalReference,
-        MemoryReference,
         SubfieldReference
-    };
-
-    enum MemoryReferenceType
-    {
-        NullReferenceType,
-        FloatMemory,
-        IntegerMemory,
-        StringMemory
     };
 
     union StoredValueUnion
     {
         int mInteger;
         float mFloat;
-        StringTableEntry mStringID;
+        char* mStringPointer;
 
         StoredValueUnion()
         {
@@ -68,7 +58,7 @@ namespace TorqueScript
 
         }
 
-        StoredValueUnion(const StringTableEntry value) : mStringID(value)
+        StoredValueUnion(char* value) : mStringPointer(value)
         {
 
         }
@@ -80,81 +70,146 @@ namespace TorqueScript
      */
     class StoredValue
     {
-        public:
-            StoredValue(void* memoryLocation, const MemoryReferenceType type) : mType(StoredValueType::MemoryReference), mStorage(), mMemoryReferenceType(type), mMemoryLocation(memoryLocation), mConsoleObject(nullptr)
+    public:
+        StoredValue(void* memoryLocation, const StoredValueType type) : mType(type), mStorage(), mMemoryLocation(memoryLocation), mConsoleObject(nullptr), mReference(nullptr)
+        {
+
+        }
+
+        StoredValue(float* memoryLocation) : mType(StoredValueType::Float), mStorage(), mMemoryLocation(memoryLocation), mConsoleObject(nullptr), mReference(nullptr)
+        {
+
+        }
+
+        StoredValue(int* memoryLocation) : mType(StoredValueType::Integer), mStorage(), mMemoryLocation(memoryLocation), mConsoleObject(nullptr), mReference(nullptr)
+        {
+
+        }
+
+        StoredValue(const int value) : mType(StoredValueType::Integer), mStorage(value), mMemoryLocation(nullptr), mConsoleObject(nullptr), mReference(nullptr)
+        {
+
+        }
+
+        StoredValue(const float value) : mType(StoredValueType::Float), mStorage(value), mMemoryLocation(nullptr), mConsoleObject(nullptr), mReference(nullptr)
+        {
+
+        }
+
+        StoredValue(const char* value, const std::size_t stringLength = 0) : mType(StoredValueType::String), mStorage(), mMemoryLocation(nullptr), mConsoleObject(nullptr), mReference(nullptr)
+        {
+            // Initialize memory
+            const std::size_t valueLength = stringLength ? stringLength : strlen(value);
+
+            mStorage.mStringPointer = new char[valueLength + 1];
+            std::memcpy(mStorage.mStringPointer, value, valueLength);
+            mStorage.mStringPointer[valueLength] = 0x00;
+        }
+
+        //StoredValue(ConsoleObject* object, const std::size_t field) : mType(StoredValueType::SubfieldReference), mStorage(field), mMemoryLocation(nullptr), mConsoleObject(object), mReference(nullptr)
+       // {
+
+       // }
+
+        StoredValue(StoredValue* referenced) : mType(StoredValueType::NullType), mMemoryLocation(nullptr), mConsoleObject(nullptr), mReference(referenced)
+        {
+
+        }
+
+        StoredValue(const StoredValue& copied) : mType(copied.mType), mStorage(copied.mStorage), mMemoryLocation(copied.mMemoryLocation), mConsoleObject(copied.mConsoleObject), mReference(copied.mReference)
+        {
+            if (copied.mType == StoredValueType::String)
             {
+                const std::size_t valueLength = std::strlen(copied.mStorage.mStringPointer);
 
+                mStorage.mStringPointer = new char[valueLength + 1];
+                std::memcpy(mStorage.mStringPointer, copied.mStorage.mStringPointer, valueLength);
+                mStorage.mStringPointer[valueLength] = 0x00;
             }
+        }
 
-            StoredValue(const int value) : mType(StoredValueType::Integer), mStorage(value), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(nullptr)
+        ~StoredValue()
+        {
+            if (mType == StoredValueType::String)
             {
-
+                // delete mStorage.mStringPointer;
             }
+        }
 
-            StoredValue(const float value) : mType(StoredValueType::Float), mStorage(value), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(nullptr)
-            {
+        friend StoredValue operator+(const StoredValue& lhs, const StoredValue& rhs)
+        {
+            // FIXME: For now we normalize to floats
+            return StoredValue(lhs.toFloat() + rhs.toFloat());
+        }
 
-            }
+        friend StoredValue operator-(const StoredValue& lhs, const StoredValue& rhs)
+        {
+            // FIXME: For now we normalize to floats
+            return StoredValue(lhs.toFloat() - rhs.toFloat());
+        }
 
-            StoredValue(const std::size_t value, const StoredValueType type) : mType(type), mStorage(value), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(nullptr)
-            {
+        friend StoredValue operator/(const StoredValue& lhs, const StoredValue& rhs)
+        {
+            // FIXME: For now we normalize to floats
+            return StoredValue(lhs.toFloat() / rhs.toFloat());
+        }
 
-            }
+        friend StoredValue operator*(const StoredValue& lhs, const StoredValue& rhs)
+        {
+            // FIXME: For now we normalize to floats
+            return StoredValue(lhs.toFloat() * rhs.toFloat());
+        }
 
-            StoredValue(ConsoleObject* object, const std::size_t field) : mType(StoredValueType::SubfieldReference), mStorage(field), mMemoryReferenceType(MemoryReferenceType::NullReferenceType), mMemoryLocation(nullptr), mConsoleObject(object)
-            {
+        /// @name Value Retrieval
+        ///
+        /// These functions are used to retrieve the data stored in this object.
+        /// @{
+        ///
 
-            }
+        int toInteger() const;
 
-            /// @name Value Retrieval
-            ///
-            /// These functions are used to retrieve the data stored in this object.
-            /// @{
-            ///
+        /**
+         *  @brief Converts the value in question to a native floating point type.
+         *  @param scope The execution scope within which this conversion is occurring.
+         *  @return A floating point representation of this value.
+         */
+        float toFloat() const;
 
-            int toInteger(ExecutionState* state) const;
+        /**
+         *  @brief Converts the value in question to a native sting type.
+         *  @param scope The execution scope within which this conversion is occurring.
+         *  @return A string representation of this value.
+         */
+        std::string toString();
 
-            /**
-             *  @brief Converts the value in question to a native floating point type.
-             *  @param scope The execution scope within which this conversion is occurring.
-             *  @return A floating point representation of this value.
-             */
-            float toFloat(ExecutionState* state) const;
+        bool toBoolean() const;
 
-            /**
-             *  @brief Converts the value in question to a native sting type.
-             *  @param scope The execution scope within which this conversion is occurring.
-             *  @return A string representation of this value.
-             */
-            std::string toString(ExecutionState* state);
+        ConsoleObject* toConsoleObject(ExecutionState* state);
 
-            bool toBoolean(ExecutionState* state) const;
+        /// @}
 
-            ConsoleObject* toConsoleObject(ExecutionState* state);
+        StoredValue getReferencedValueCopy(ExecutionState* state) const;
 
-            /// @}
+        bool isInteger();
 
-            StoredValue getReferencedValueCopy(ExecutionState* state) const;
+        /**
+         *  @brief Sets the value of this object. Only has an effect if this object
+         *  is a reference to a local or global variable.
+         *  @param newValue The new value to set.
+         *  @param state The execution state this assignment is taking place in.
+         *  @return True if an assignment has taken place. False otherwise.
+         */
+        bool setValue(const StoredValue& newValue);
+        void setValue(const float newValue);
 
-            bool isInteger(ExecutionState* state);
+        std::string getRepresentation();
 
-            /**
-             *  @brief Sets the value of this object. Only has an effect if this object
-             *  is a reference to a local or global variable.
-             *  @param newValue The new value to set.
-             *  @param state The execution state this assignment is taking place in.
-             *  @return True if an assignment has taken place. False otherwise.
-             */
-            bool setValue(const StoredValue& newValue, ExecutionState* state);
+    private:
+        StoredValueType mType;
+        StoredValueUnion mStorage;
 
-            std::string getRepresentation();
-
-        private:
-            StoredValueType mType;
-            StoredValueUnion mStorage;
-            MemoryReferenceType mMemoryReferenceType;
-
-            void* mMemoryLocation;
-            ConsoleObject* mConsoleObject;
+        void* mMemoryLocation;
+        ConsoleObject* mConsoleObject;
+        StoredValue* mReference;
     };
 }

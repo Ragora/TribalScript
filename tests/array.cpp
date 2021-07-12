@@ -34,7 +34,7 @@ TEST(InterpreterTest, Array)
     TorqueScript::StoredValue* result = interpreter.getGlobal("result1_2_3");
     ASSERT_TRUE(result);
 
-    ASSERT_EQ(result->toInteger(&state), 5);
+    ASSERT_EQ(result->toInteger(), 5);
 }
 
 int main()

@@ -287,8 +287,8 @@ namespace TorqueScript
     {
         InstructionSequence result;
 
-        const StringTableEntry stringID = mStringTable->getOrAssign(expandEscapeSequences(value->mValue));
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringID)));
+        const std::string pushedString = expandEscapeSequences(value->mValue);
+        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(pushedString)));
         return result;
     }
 
@@ -736,8 +736,8 @@ namespace TorqueScript
         InstructionSequence out;
 
         // Push base
-        const StringTableEntry stringID = mStringTable->getOrAssign(node->mFieldBaseName);
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringID)));
+        const std::string stringData = node->mFieldBaseName;
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringData)));
 
         // Push all array components
         for (AST::ASTNode* childNode : node->mFieldExpressions)
@@ -772,8 +772,8 @@ namespace TorqueScript
         }
         else
         {
-            const StringTableEntry stringID = mStringTable->getOrAssign("");
-            out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringID)));
+            const std::string stringData = "";
+            out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringData)));
         }
 
         // Push Object

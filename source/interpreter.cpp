@@ -98,7 +98,7 @@ namespace TorqueScript
         auto search = mGlobalVariables.find(stringID);
         if (search != mGlobalVariables.end())
         {
-            return &search->second;
+            return search->second;
         }
         return nullptr;
     }
@@ -108,9 +108,22 @@ namespace TorqueScript
         auto search = mGlobalVariables.find(name);
         if (search != mGlobalVariables.end())
         {
-            return &search->second;
+            return search->second;
         }
         return nullptr;
+    }
+
+    StoredValue* Interpreter::getGlobalOrAllocate(const StringTableEntry name)
+    {
+        auto search = mGlobalVariables.find(name);
+        if (search != mGlobalVariables.end())
+        {
+            return search->second;
+        }
+
+        StoredValue* newValue = new StoredValue(0);
+        mGlobalVariables.insert(std::make_pair(name, newValue));
+        return newValue;
     }
 
     void Interpreter::addFunction(std::shared_ptr<Function> function)
@@ -198,11 +211,11 @@ namespace TorqueScript
         auto search = mGlobalVariables.find(key);
         if (search != mGlobalVariables.end())
         {
-            search->second = value;
+            search->second->setValue(value);
             return;
         }
 
-        mGlobalVariables.emplace(std::make_pair(key, value));
+        mGlobalVariables.emplace(std::make_pair(key, new StoredValue(value)));
     }
 
     void Interpreter::setGlobal(const StringTableEntry name, StoredValue value)
@@ -210,11 +223,11 @@ namespace TorqueScript
         auto search = mGlobalVariables.find(name);
         if (search != mGlobalVariables.end())
         {
-            search->second = value;
+            search->second->setValue(value);
             return;
         }
 
-        mGlobalVariables.emplace(std::make_pair(name, value));
+        mGlobalVariables.emplace(std::make_pair(name, new StoredValue(value)));
     }
 
     FunctionRegistry* Interpreter::findFunctionRegistry(const std::string packageName)
