@@ -24,10 +24,10 @@ namespace TorqueScript
 
         while (instructionIndex < this->size() && instructionIndex >= 0)
         {
-            std::shared_ptr<Instructions::Instruction> nextInstruction = this->at(instructionIndex);
+            Instructions::Instruction& nextInstruction = this->at(instructionIndex);
 
             state->mInstructionPointer = instructionIndex;
-            const AddressOffsetType advance = nextInstruction->execute(state);
+            const AddressOffsetType advance = nextInstruction.mOp(state, &nextInstruction);
             if (advance == 0)
             {
                 break;

@@ -33,6 +33,7 @@ namespace TorqueScript
     {
         std::vector<std::string> result;
 
+        /*
         for (auto&& instruction : mInstructions)
         {
             std::ostringstream out;
@@ -44,6 +45,7 @@ namespace TorqueScript
             }
             result.push_back(out.str());
         }
+        */
         return result;
     }
 }
