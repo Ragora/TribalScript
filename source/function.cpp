@@ -103,7 +103,9 @@ namespace TorqueScript
         for (auto localIterator = newLocals.begin(); localIterator != newLocals.end(); ++localIterator)
         {
             auto currentLocal = *localIterator;
-            state->mExecutionScope.setVariable(currentLocal.first, currentLocal.second);
+
+            // FIXME: Handle parameter passing
+            // state->mExecutionScope.setVariable(currentLocal.first, currentLocal.second);
         }
 
         mInstructions.execute(state);

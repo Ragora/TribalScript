@@ -42,7 +42,7 @@ namespace TorqueScript
 
         typedef std::chrono::duration<float, std::milli> millisecondFloat;
 
-        auto currentTime = std::chrono::high_resolution_clock::now().time_since_epoch();
+        auto currentTime = std::chrono::steady_clock::now().time_since_epoch();
         auto result = std::chrono::duration_cast<millisecondFloat>(currentTime);
 
         stack.push_back(StoredValue(result.count()));

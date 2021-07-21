@@ -154,7 +154,7 @@ namespace TorqueScript
         class PushLocalReferenceInstruction : public Instruction
         {
             public:
-                PushLocalReferenceInstruction(const StringTableEntry value) : mStringID(value)
+                PushLocalReferenceInstruction(const std::size_t value) : mVariableID(value)
                 {
 
                 }
@@ -162,20 +162,20 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.emplace_back(state->mExecutionScope.getVariableOrAllocate(mStringID));
+                    stack.emplace_back(state->mExecutionScope.getVariableOrAllocate(mVariableID));
                     return 1;
                 };
 
                 virtual std::string disassemble() override
                 {
                     std::ostringstream out;
-                    out << "PushLocalReference " << mStringID;
+                    out << "PushLocalReference " << mVariableID;
                     return out.str();
                 }
 
             private:
                 //! The value to push.
-                StringTableEntry mStringID;
+                std::size_t mVariableID;
         };
 
         /**

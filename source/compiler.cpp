@@ -24,7 +24,7 @@
 
 namespace TorqueScript
 {
-    Compiler::Compiler(const InterpreterConfiguration& config) : mConfig(config)
+    Compiler::Compiler(const InterpreterConfiguration& config) : mConfig(config), mLocalVariableCounter(0)
     {
 
     }
@@ -112,6 +112,21 @@ namespace TorqueScript
 
         result.insert(result.end(), next.begin(), next.end());
         return result;
+    }
+
+    std::size_t Compiler::getLocalVariableID(const std::string& name)
+    {
+        const std::string lookupName = toLowerCase(name);
+
+        auto search = mLocalVariableMappings.find(lookupName);
+        if (search != mLocalVariableMappings.end())
+        {
+            return search->second;
+        }
+
+        const std::size_t newID = mLocalVariableCounter++;
+        mLocalVariableMappings[lookupName] = newID;
+        return newID;
     }
 
     /*
@@ -308,8 +323,8 @@ namespace TorqueScript
         // NOTE: For now we collapse the name into a single string for lookup
         std::string lookupName = value->getName();
 
-        const StringTableEntry stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? lookupName : toLowerCase(lookupName));
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLocalReferenceInstruction(stringID)));
+        const std::size_t variableID = this->getLocalVariableID(lookupName);
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLocalReferenceInstruction(variableID)));
         return out;
     }
 
