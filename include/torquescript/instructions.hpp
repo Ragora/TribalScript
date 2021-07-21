@@ -614,9 +614,9 @@ namespace TorqueScript
         class PushLocalReferenceInstruction : public Instruction
         {
         public:
-            PushLocalReferenceInstruction(const StringTableEntry value) : Instruction(PushLocalReferenceInstruction::execute)
+            PushLocalReferenceInstruction(const std::size_t variableID) : Instruction(PushLocalReferenceInstruction::execute)
             {
-                mParameters[0].mStringID = value;
+                mParameters[0].mStringID = variableID;
             }
 
             static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
