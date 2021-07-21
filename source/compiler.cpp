@@ -126,7 +126,7 @@ namespace TorqueScript
             InstructionSequence parameterCode = node->accept(this).as<InstructionSequence>();
             result.insert(result.end(), parameterCode.begin(), parameterCode.end());
         }
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::CallFunctionInstruction(call->mNameSpace, call->mName, call->mParameters.size())));
+        // result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::CallFunctionInstruction(call->mNameSpace, call->mName, call->mParameters.size())));
         return result;
     }
 
@@ -160,7 +160,7 @@ namespace TorqueScript
         }
 
         InstructionSequence result;
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::FunctionDeclarationInstruction(mCurrentPackage, function->mNameSpace, function->mName, parameterNames, functionBody)));
+        // result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::FunctionDeclarationInstruction(mCurrentPackage, function->mNameSpace, function->mName, parameterNames, functionBody)));
         return result;
     }
 
@@ -177,7 +177,7 @@ namespace TorqueScript
             result.insert(result.end(), childInstructions.begin(), childInstructions.end());
         }
 
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::SubReferenceInstruction(stringID, subfield->mIndices.size())));
+        // result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::SubReferenceInstruction(stringID, subfield->mIndices.size())));
         return result;
     }
 
@@ -194,7 +194,7 @@ namespace TorqueScript
             result.insert(result.begin(), parameterCode.begin(), parameterCode.end());
         }
 
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::CallBoundFunctionInstruction(call->mName, call->mParameters.size())));
+        // result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::CallBoundFunctionInstruction(call->mName, call->mParameters.size())));
         return result;
     }
 
@@ -207,7 +207,7 @@ namespace TorqueScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::LogicalOrInstruction()));
+        result.push_back(Instructions::LogicalOrInstruction());
 
         return result;
     }
@@ -221,7 +221,7 @@ namespace TorqueScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::LogicalAndInstruction()));
+        result.push_back(Instructions::LogicalAndInstruction());
 
         return result;
     }
@@ -235,7 +235,7 @@ namespace TorqueScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::AddInstruction()));
+        result.push_back(Instructions::AddInstruction());
 
         return result;
     }
@@ -249,7 +249,7 @@ namespace TorqueScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::MinusInstruction()));
+        result.push_back(Instructions::MinusInstruction());
 
         return result;
     }
@@ -263,7 +263,7 @@ namespace TorqueScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::ModulusInstruction()));
+        result.push_back(Instructions::ModulusInstruction());
 
         return result;
     }
@@ -309,7 +309,7 @@ namespace TorqueScript
         std::string lookupName = value->getName();
 
         const StringTableEntry stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? lookupName : toLowerCase(lookupName));
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLocalReferenceInstruction(stringID)));
+        out.push_back(Instructions::PushLocalReferenceInstruction(stringID));
         return out;
     }
 
@@ -321,7 +321,7 @@ namespace TorqueScript
         std::string lookupName = value->getName();
 
         const StringTableEntry stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? lookupName : toLowerCase(lookupName));
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushGlobalReferenceInstruction(stringID)));
+        out.push_back(Instructions::PushGlobalReferenceInstruction(stringID));
         return out;
     }
 
@@ -334,7 +334,7 @@ namespace TorqueScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::AssignmentInstruction()));
+        result.push_back(Instructions::AssignmentInstruction());
 
         return result;
     }
@@ -412,8 +412,8 @@ namespace TorqueScript
         bodyCode.push_back(Instructions::NOPInstruction());
 
         // Add loop trackers
-        bodyCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopLoopInstruction()));
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLoopInstruction(expressionCode.size() + bodyCode.size())));
+        bodyCode.push_back(Instructions::PopLoopInstruction());
+        out.push_back(Instructions::PushLoopInstruction(expressionCode.size() + bodyCode.size()));
 
         out.insert(out.end(), expressionCode.begin(), expressionCode.end());
         out.insert(out.end(), bodyCode.begin(), bodyCode.end());
@@ -440,18 +440,18 @@ namespace TorqueScript
         forBody.insert(forBody.end(), advanceCode.begin(), advanceCode.end());
 
         // Pop the result of our initializer so it doesn't corrupt the stack
-        initializerCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
+        initializerCode.push_back(Instructions::PopInstruction());
 
         // Our body should return to the expression
         const AddressType jumpTarget = expressionCode.size() + forBody.size();
-        forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(-jumpTarget)));
-        forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
+        forBody.push_back(Instructions::JumpInstruction(-jumpTarget));
+        forBody.push_back(Instructions::NOPInstruction());
 
         // Check if our expression is false
-        expressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction((int)forBody.size())));
+        expressionCode.push_back(Instructions::JumpFalseInstruction((int)forBody.size()));
 
-        forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopLoopInstruction()));
-        initializerCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLoopInstruction(expressionCode.size() + forBody.size())));
+        forBody.push_back(Instructions::PopLoopInstruction());
+        initializerCode.push_back(Instructions::PushLoopInstruction(expressionCode.size() + forBody.size()));
 
         // Output final code
         out.insert(out.end(), initializerCode.begin(), initializerCode.end());
@@ -464,7 +464,7 @@ namespace TorqueScript
     antlrcpp::Any Compiler::visitBreakNode(AST::BreakNode* node)
     {
         InstructionSequence out;
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::BreakInstruction()));
+        //out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::BreakInstruction()));
         return out;
     }
 
@@ -475,7 +475,7 @@ namespace TorqueScript
         {
             out = node->mExpression->accept(this).as<InstructionSequence>();
         }
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::ReturnInstruction()));
+        out.push_back(Instructions::ReturnInstruction());
         return out;
     }
 
@@ -488,13 +488,13 @@ namespace TorqueScript
         InstructionSequence falseValueCode = node->mFalseValue->accept(this).as<InstructionSequence>();
 
         // We add a NOP to the false expressions for a target to jump to
-        falseValueCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
+        falseValueCode.push_back(Instructions::NOPInstruction());
 
         // In the true expression we need to jump over the false expression
-        trueValueCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(falseValueCode.size())));
+        trueValueCode.push_back(Instructions::JumpInstruction(falseValueCode.size()));
 
         // Jump to the false expression if our expression is false
-        expressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(falseValueCode.size() + 1)));
+        expressionCode.push_back(Instructions::JumpFalseInstruction(falseValueCode.size() + 1));
 
         out.insert(out.end(), expressionCode.begin(), expressionCode.end());
         out.insert(out.end(), trueValueCode.begin(), trueValueCode.end());
@@ -511,7 +511,7 @@ namespace TorqueScript
 
         // NOTE: We intentionally process in reverse order due to needing to know how long existing code is to jump over
         // Add a NOP to jump to
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
+        out.push_back(Instructions::NOPInstruction());
 
         InstructionSequence defaultInstructions;
         for (AST::ASTNode* defaultNode : node->mDefaultBody)
@@ -531,7 +531,7 @@ namespace TorqueScript
                 caseBody.insert(caseBody.end(), childInstructions.begin(), childInstructions.end());
             }
             // If we enter this body we should skip over the rest of the instructions
-            caseBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(out.size())));
+            caseBody.push_back(Instructions::JumpInstruction(out.size()));
 
             // Generate a sequence of checks until something comes out to be true
             InstructionSequence caseExpressions;
@@ -542,7 +542,7 @@ namespace TorqueScript
 
                 // Place our expression to check against and then check if equal
                 caseExpressionCode.insert(caseExpressionCode.end(), expressionCode.begin(), expressionCode.end());
-                caseExpressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::EqualsInstruction()));
+                caseExpressionCode.push_back(Instructions::EqualsInstruction());
 
                 if (iterator != caseNode->mCases.begin())
                 {
@@ -638,7 +638,7 @@ namespace TorqueScript
             out.insert(out.end(), childInstructions.begin(), childInstructions.end());
         }
 
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::AccessArrayInstruction(variableName, array->mIndices.size(), globalVariable != nullptr)));
+        // out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::AccessArrayInstruction(variableName, array->mIndices.size(), globalVariable != nullptr)));
         return out;
     }
 
@@ -651,7 +651,7 @@ namespace TorqueScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::EqualsInstruction()));
+        out.push_back(Instructions::EqualsInstruction());
 
         return out;
     }
@@ -665,7 +665,7 @@ namespace TorqueScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NotEqualsInstruction()));
+        out.push_back(Instructions::NotEqualsInstruction());
 
         return out;
     }
@@ -679,7 +679,7 @@ namespace TorqueScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::StringEqualsInstruction()));
+        out.push_back(Instructions::StringEqualsInstruction());
 
         return out;
     }
@@ -693,7 +693,9 @@ namespace TorqueScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::ConcatInstruction(expression->mSeperator)));
+
+        // FIXME: Set seperator
+        out.push_back(Instructions::ConcatInstruction());
 
         return out;
     }
@@ -707,7 +709,7 @@ namespace TorqueScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::DivideInstruction()));
+        out.push_back(Instructions::DivideInstruction());
 
         return out;
     }
@@ -721,7 +723,7 @@ namespace TorqueScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::MultiplyInstruction()));
+        out.push_back(Instructions::MultiplyInstruction());
 
         return out;
     }
@@ -750,7 +752,7 @@ namespace TorqueScript
         InstructionSequence rvalueCode = node->mRight->accept(this).as<InstructionSequence>();
         out.insert(out.end(), rvalueCode.begin(), rvalueCode.end());
 
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushObjectFieldInstruction(node->mFieldExpressions.size())));
+       // out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushObjectFieldInstruction(node->mFieldExpressions.size())));
         return out;
     }
 
@@ -777,7 +779,7 @@ namespace TorqueScript
         }
 
         // Push Object
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushObjectInstantiationInstruction()));
+     //   out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushObjectInstantiationInstruction()));
 
         // ... gen fields
         for (AST::ASTNode* field : object->mFields)
@@ -794,7 +796,7 @@ namespace TorqueScript
         }
 
         // Pop object
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopObjectInstantiationInstruction()));
+        //out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopObjectInstantiationInstruction()));
 
         return out;
     }

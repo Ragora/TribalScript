@@ -19,44 +19,19 @@
 #include <iostream>
 #include <sstream>
 
+#include <torquescript/instruction.hpp>
+#include <torquescript/executionstate.hpp>
 #include <torquescript/function.hpp>
 #include <torquescript/interpreter.hpp>
 #include <torquescript/executionscope.hpp>
 #include <torquescript/storedvalue.hpp>
 #include <torquescript/storedvaluestack.hpp>
-#include <torquescript/executionstate.hpp>
 #include <torquescript/instructionsequence.hpp>
 
 namespace TorqueScript
 {
     namespace Instructions
     {
-        class Instruction;
-
-        typedef AddressOffsetType (*OpcodeResolutionPointer)(ExecutionState* state, Instruction* instruction);
-
-    #define INSTRUCTION_PARAMETER_COUNT 4
-        union InstructionParameters
-        {
-            int mInteger;
-            float mFloat;
-            AddressType mOffset;
-            std::size_t mStringID;
-        };
-
-        class Instruction
-        {
-            public:
-                Instruction(OpcodeResolutionPointer op) : mOp(op)
-                {
-
-                }
-
-                const OpcodeResolutionPointer mOp;
-
-                InstructionParameters mParameters[INSTRUCTION_PARAMETER_COUNT];
-        };
-
         /**
          *  @brief Push integer instruction. This will push an integer value to the system stack
          *  for later use in execution.
@@ -327,5 +302,509 @@ namespace TorqueScript
                 return 1;
             }
         };
+
+        /**
+         *  @brief Performs a logical or of two values on the stack and pushes back the result.
+         */
+        class LogicalOrInstruction : public Instruction
+        {
+        public:
+            LogicalOrInstruction() : Instruction(LogicalOrInstruction::execute)
+            {
+
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                StoredValue rhsStored = stack.back();
+                stack.pop_back();
+                StoredValue lhsStored = stack.back();
+                stack.pop_back();
+
+                const bool lhs = lhsStored.toBoolean();
+                const bool rhs = rhsStored.toBoolean();
+
+                const int result = lhs || rhs ? 1 : 0;
+                stack.push_back(StoredValue(result));
+                return 1;
+            }
+        };
+
+        class LogicalAndInstruction : public Instruction
+        {
+        public:
+            LogicalAndInstruction() : Instruction(LogicalAndInstruction::execute)
+            {
+
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                StoredValue rhsStored = stack.back();
+                stack.pop_back();
+                StoredValue lhsStored = stack.back();
+                stack.pop_back();
+
+                const bool lhs = lhsStored.toBoolean();
+                const bool rhs = rhsStored.toBoolean();
+
+                const int result = lhs && rhs ? 1 : 0;
+                stack.push_back(StoredValue(result));
+                return 1;
+            }
+        };
+
+        /**
+         *  @brief Adds together two values on the stack and pushes the sum.
+         */
+        class AddInstruction : public Instruction
+        {
+        public:
+            AddInstruction() : Instruction(AddInstruction::execute)
+            {
+
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                StoredValue rhsStored = stack.back();
+                stack.pop_back();
+                StoredValue lhsStored = stack.back();
+                stack.pop_back();
+
+                // NOTE: For now we normalize to floats
+                float lhs = lhsStored.toFloat();
+                float rhs = rhsStored.toFloat();
+
+                const float result = lhs + rhs;
+                stack.push_back(StoredValue(result));
+                return 1;
+            }
+        };
+
+        class DivideInstruction : public Instruction
+        {
+        public:
+            DivideInstruction() : Instruction(DivideInstruction::execute)
+            {
+
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                StoredValue rhsStored = stack.back();
+                stack.pop_back();
+                StoredValue lhsStored = stack.back();
+                stack.pop_back();
+
+                // NOTE: For now we normalize to floats
+                float lhs = lhsStored.toFloat();
+                float rhs = rhsStored.toFloat();
+
+                const float result = lhs / rhs;
+                stack.push_back(StoredValue(result));
+                return 1;
+            }
+        };
+
+        class MultiplyInstruction : public Instruction
+        {
+        public:
+            MultiplyInstruction() : Instruction(MultiplyInstruction::execute)
+            {
+
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                StoredValue rhsStored = stack.back();
+                stack.pop_back();
+                StoredValue lhsStored = stack.back();
+                stack.pop_back();
+
+                // NOTE: For now we normalize to floats
+                float lhs = lhsStored.toFloat();
+                float rhs = rhsStored.toFloat();
+
+                const float result = lhs * rhs;
+                stack.push_back(StoredValue(result));
+                return 1;
+            }
+        };
+
+        class MinusInstruction : public Instruction
+        {
+        public:
+            MinusInstruction() : Instruction(MinusInstruction::execute)
+            {
+
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                StoredValue rhsStored = stack.back();
+                stack.pop_back();
+                StoredValue lhsStored = stack.back();
+                stack.pop_back();
+
+                // NOTE: For now we normalize to floats
+                float lhs = lhsStored.toFloat();
+                float rhs = rhsStored.toFloat();
+
+                const float result = lhs - rhs;
+                stack.push_back(StoredValue(result));
+                return 1;
+            }
+        };
+
+        /**
+         *  @brief Adds together two values on the stack and pushes the sum.
+         */
+        class ModulusInstruction : public Instruction
+        {
+        public:
+            ModulusInstruction() : Instruction(ModulusInstruction::execute)
+            {
+
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                StoredValue rhsStored = stack.back();
+                stack.pop_back();
+                StoredValue lhsStored = stack.back();
+                stack.pop_back();
+
+                // NOTE: For now we normalize to floats
+                int lhs = lhsStored.toInteger();
+                int rhs = rhsStored.toInteger();
+
+                const int result = lhs % rhs;
+                stack.push_back(StoredValue(result));
+                return 1;
+            }
+        };
+
+        /**
+         *  @brief Push a reference to a named local variable. The parameter provided here
+         *  should be excluding the '%' prefix.
+         */
+        class PushLocalReferenceInstruction : public Instruction
+        {
+        public:
+            PushLocalReferenceInstruction(const StringTableEntry value) : Instruction(PushLocalReferenceInstruction::execute)
+            {
+                mParameters[0].mStringID = value;
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+                stack.emplace_back(state->mExecutionScope.getVariableOrAllocate(instruction->mParameters[0].mStringID));
+                return 1;
+            };
+        };
+
+        /**
+         *  @brief Push a reference to a named global variable. The parameter provided here
+         *  should be excluding the '$' prefix.
+         */
+        class PushGlobalReferenceInstruction : public Instruction
+        {
+        public:
+            PushGlobalReferenceInstruction(const StringTableEntry value) : Instruction(PushGlobalReferenceInstruction::execute)
+            {
+                mParameters[0].mStringID = value;
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+                stack.push_back(StoredValue(state->mInterpreter->getGlobalOrAllocate(instruction->mParameters[0].mStringID)));
+                return 1;
+            };
+        };
+
+        /**
+         *  @brief Compares two values on the stack using an equality.
+         */
+        class EqualsInstruction : public Instruction
+        {
+        public:
+            EqualsInstruction() : Instruction(EqualsInstruction::execute)
+            {
+
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                StoredValue rhsStored = stack.back();
+                stack.pop_back();
+                StoredValue lhsStored = stack.back();
+                stack.pop_back();
+
+                // NOTE: For now we normalize to floats
+                float lhs = lhsStored.toFloat();
+                float rhs = rhsStored.toFloat();
+
+                const int result = lhs == rhs ? 1 : 0;
+                stack.push_back(StoredValue(result));
+                return 1;
+            }
+        };
+
+        /**
+         *  @brief Compares two values on the stack using an equality.
+         */
+        class NotEqualsInstruction : public Instruction
+        {
+        public:
+            NotEqualsInstruction() : Instruction(NotEqualsInstruction::execute)
+            {
+
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                StoredValue rhsStored = stack.back();
+                stack.pop_back();
+                StoredValue lhsStored = stack.back();
+                stack.pop_back();
+
+                // NOTE: For now we normalize to floats
+                float lhs = lhsStored.toFloat();
+                float rhs = rhsStored.toFloat();
+
+                const int result = lhs != rhs ? 1 : 0;
+                stack.push_back(StoredValue(result));
+                return 1;
+            }
+        };
+
+        /**
+         *  @brief Ends execution in the current function immediately. It will take one
+         *  value from the top of the stack and push it to the parent stack before returning.
+         */
+        class ReturnInstruction : public Instruction
+        {
+        public:
+            ReturnInstruction() : Instruction(ReturnInstruction::execute)
+            {
+
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 1);
+
+                StoredValue targetStored = stack.back();
+                stack.pop_back();
+
+                // For if we return a variable reference, we want to pass back a copy
+                StoredValueStack& returnStack = state->mExecutionScope.getReturnStack();
+                returnStack.push_back(targetStored.getReferencedValueCopy(state));
+                return 0;
+            }
+        };
+
+        /**
+         *  @brief Used to keep track of loops in the virtual instructions. This instruction
+         *  marks the start of a loop control construct.
+         */
+        class PushLoopInstruction : public Instruction
+        {
+        public:
+            PushLoopInstruction(const std::size_t loopSize) : Instruction(PushLoopInstruction::execute)
+            {
+                mParameters[0].mStringID = loopSize;
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                const AddressType loopPosition = state->mInstructionPointer;
+                state->mExecutionScope.pushLoop(loopPosition, instruction->mParameters[0].mStringID);
+                return 1;
+            }
+        };
+
+        /**
+         *  @brief Used to keep track of loops in the virtual instructions. This instruction
+         *  marks the end of a loop control construct.
+         */
+        class PopLoopInstruction : public Instruction
+        {
+        public:
+            PopLoopInstruction() : Instruction(PopLoopInstruction::execute)
+            {
+
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                state->mExecutionScope.popLoop();
+                return 1;
+            }
+        };
+
+        /**
+         *  @brief Pops a value from the stack, discarding it.
+         */
+        class PopInstruction : public Instruction
+        {
+        public:
+            PopInstruction() : Instruction(PopInstruction::execute)
+            {
+
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 1);
+                stack.pop_back();
+
+                return 1;
+            }
+        };
+
+        /**
+         *  @brief Assign to lhs with whatever is on rhs.
+         */
+        class AssignmentInstruction : public Instruction
+        {
+        public:
+            AssignmentInstruction() : Instruction(AssignmentInstruction::execute)
+            {
+
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                // Pull two values off the stack
+                StoredValue rhsStored = stack.back();
+                stack.pop_back();
+                StoredValue lhsStored = stack.back();
+                stack.pop_back();
+
+                if (!lhsStored.setValue(rhsStored))
+                {
+                    state->mInterpreter->mConfig.mPlatform->logError("Attempted to perform no-op assignment!");
+                }
+
+                // In Torque, the result of the assignment is pushed to stack
+                stack.push_back(rhsStored);
+                return 1;
+            }
+        };
+
+        /**
+         *  @brief Compares two values on the stack using an equality.
+         */
+        class StringEqualsInstruction : public Instruction
+        {
+        public:
+            StringEqualsInstruction() : Instruction(StringEqualsInstruction::execute)
+            {
+
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                StoredValue rhsStored = stack.back();
+                stack.pop_back();
+                StoredValue lhsStored = stack.back();
+                stack.pop_back();
+
+                // NOTE: For now we normalize to floats
+                std::string lhs = lhsStored.toString();
+                std::string rhs = rhsStored.toString();
+
+                const int result = lhs == rhs ? 1 : 0;
+                stack.push_back(StoredValue(result));
+                return 1;
+            }
+        };
+
+        /**
+         *  @brief Concatenates two values at the top of the stack and pushes back the
+         *  result.
+         */
+        class ConcatInstruction : public Instruction
+        {
+        public:
+            ConcatInstruction() : Instruction(ConcatInstruction::execute)
+            {
+
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                // Pull two values off the stack
+                StoredValue rhsStored = stack.back();
+                stack.pop_back();
+                StoredValue lhsStored = stack.back();
+                stack.pop_back();
+
+                std::string lhs = lhsStored.toString();
+                std::string rhs = rhsStored.toString();
+
+                // Generate a new string ID
+                const std::string requestedString = lhs + rhs;
+                stack.emplace_back(requestedString.c_str());
+                return 1;
+            }
+        };
+
     }
 }

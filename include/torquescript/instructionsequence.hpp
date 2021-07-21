@@ -18,6 +18,8 @@
 #include <memory>
 #include <string>
 
+#include <torquescript/instruction.hpp>
+
 namespace TorqueScript
 {
     namespace Instructions
@@ -26,10 +28,6 @@ namespace TorqueScript
     }
 
     class ExecutionState;
-
-    //! Typedef for the signed integer type to be used when calculating addresses.
-    typedef long long int AddressType;
-    typedef unsigned long long int AddressOffsetType;
 
     /**
      *  @brief Storage class for a sequence of instructions to be executed. Also implements the
