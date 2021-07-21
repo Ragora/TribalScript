@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstring>
+
 namespace TorqueScript
 {
     //! Typedef for the signed integer type to be used when calculating addresses.

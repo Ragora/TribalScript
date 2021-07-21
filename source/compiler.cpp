@@ -126,7 +126,10 @@ namespace TorqueScript
             InstructionSequence parameterCode = node->accept(this).as<InstructionSequence>();
             result.insert(result.end(), parameterCode.begin(), parameterCode.end());
         }
-        // result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::CallFunctionInstruction(call->mNameSpace, call->mName, call->mParameters.size())));
+
+        const StringTableEntry namespaceName = mStringTable->getOrAssign(call->mNameSpace);
+        const StringTableEntry functionName = mStringTable->getOrAssign(call->mName);
+        result.push_back(Instructions::CallFunctionInstruction(namespaceName, functionName, call->mParameters.size()));
         return result;
     }
 
@@ -288,7 +291,8 @@ namespace TorqueScript
         InstructionSequence result;
 
         const std::string pushedString = expandEscapeSequences(value->mValue);
-       // result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(pushedString)));
+        const StringTableEntry stringID = mStringTable->getOrAssign(pushedString);
+        result.push_back(Instructions::PushStringInstruction(stringID));
         return result;
     }
 

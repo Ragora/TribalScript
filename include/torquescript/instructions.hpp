@@ -53,6 +53,100 @@ namespace TorqueScript
         };
 
         /**
+         *  @brief Push string instruction. This will push a string value to the system stack for later
+         *  use in execution.
+         */
+        class PushStringInstruction : public Instruction
+        {
+            public:
+                PushStringInstruction(const StringTableEntry value) : Instruction(PushStringInstruction::execute)
+                {
+                    mParameters[0].mStringID = value;
+                }
+
+                static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+                {
+                    StoredValueStack& stack = state->mExecutionScope.getStack();
+                    stack.push_back(StoredValue(state->mInterpreter->mStringTable.getString(instruction->mParameters[0].mStringID).c_str()));
+                    return 1;
+                };
+        };
+
+        /**
+         *  @brief Calls a function registered within the current interpreter.
+         */
+        class CallFunctionInstruction : public Instruction
+        {
+            public:
+                /**
+                 *  @brief Constructs a new CallFunctionInstruction instance.
+                 *  @param space The namespace of the function to call.
+                 *  @param name The name of the function to call.
+                 *  @param argc The total number of arguments to pull off the stack for use as parameters.
+                 */
+                CallFunctionInstruction(const StringTableEntry space, const StringTableEntry name, const std::size_t argc) : Instruction(CallFunctionInstruction::execute)
+                {
+                    mParameters[0].mStringID = space;
+                    mParameters[1].mStringID = name;
+                    mParameters[2].mStringID = argc;
+                }
+
+                static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+                {
+                    const std::string namespaceName = state->mInterpreter->mStringTable.getString(instruction->mParameters[0].mStringID);
+                    const std::string functionName = state->mInterpreter->mStringTable.getString(instruction->mParameters[1].mStringID);
+
+                    StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                    // If we're calling a parent function, perform an alternative lookup
+                    if (namespaceName == "parent")
+                    {
+                        Function* currentFunction = state->mExecutionScope.getCurrentFunction();
+                        if (currentFunction == nullptr)
+                        {
+                            state->mInterpreter->mConfig.mPlatform->logError("Attempted to call parent:: function at root!");
+                            stack.push_back(StoredValue(0));
+                            return 1;
+                        }
+
+                        // Once we have a valid function pointer, ask the interpreter to find a super function higher up the chain
+                        std::shared_ptr<Function> parentFunction = state->mInterpreter->getFunctionParent(currentFunction);
+                        if (!parentFunction)
+                        {
+                            std::ostringstream stream;
+
+                            stream << "Could not find parent function '" << functionName << "' for calling! Placing 0 on the stack.";
+                            state->mInterpreter->mConfig.mPlatform->logError(stream.str());
+
+                            stack.push_back(StoredValue(0));
+                            return 1;
+                        }
+
+                        // Otherwise, call it
+                        parentFunction->execute(nullptr, state, instruction->mParameters[2].mStringID);
+
+                        return 1;
+                    }
+
+                    std::shared_ptr<Function> functionLookup = state->mInterpreter->getFunction(namespaceName, functionName);
+                    if (functionLookup)
+                    {
+                        functionLookup->execute(nullptr, state, instruction->mParameters[2].mStringID);
+                    }
+                    else
+                    {
+                        std::ostringstream stream;
+
+                        stream << "Could not find function '" << functionName << "' for calling! Placing 0 on the stack.";
+                        state->mInterpreter->mConfig.mPlatform->logError(stream.str());
+
+                        stack.push_back(StoredValue(0));
+                    }
+                    return 1;
+                }
+        };
+
+        /**
          *  @brief Push float instruction. This will push a floating point value to the system stack
          *  for later use in execution.
          */
