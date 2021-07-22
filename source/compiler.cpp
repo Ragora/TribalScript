@@ -436,6 +436,9 @@ namespace TorqueScript
             forBody.insert(forBody.end(), childInstructions.begin(), childInstructions.end());
         }
 
+        // Pop the result of our advance so it doesn't corrupt the stack
+        advanceCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
+
         // At the end of the loop, run advance
         forBody.insert(forBody.end(), advanceCode.begin(), advanceCode.end());
 
@@ -443,7 +446,7 @@ namespace TorqueScript
         initializerCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
 
         // Our body should return to the expression
-        const AddressType jumpTarget = expressionCode.size() + forBody.size();
+        const AddressType jumpTarget = expressionCode.size() + forBody.size() + 1; // Consider the POP at the end of advance
         forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(-jumpTarget)));
         forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
 
