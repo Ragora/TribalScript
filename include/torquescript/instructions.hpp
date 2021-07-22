@@ -162,7 +162,7 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.emplace_back(state->mExecutionScope.getVariableOrAllocate(mStringID));
+                    stack.push_back(StoredValue(state->mExecutionScope.getVariableOrAllocate(mStringID)));
                     return 1;
                 };
 
@@ -311,7 +311,7 @@ namespace TorqueScript
 
                     // Generate a new string ID
                     const std::string requestedString = lhs + mSeperator + rhs;
-                    stack.emplace_back(requestedString.c_str());
+                    stack.push_back(StoredValue(requestedString.c_str()));
                     return 1;
                 };
 
@@ -647,7 +647,7 @@ namespace TorqueScript
                     StoredValue rhsStored = stack.back();
                     stack.pop_back();
                     StoredValue lhsStored = stack.back();
-                    stack.pop_back();
+                    stack.pop_back(); 
 
                     // NOTE: For now we normalize to floats
                     float lhs = lhsStored.toFloat();
@@ -869,8 +869,6 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-
-                    assert(stack.size() >= 1);
                     stack.pop_back();
 
                     return 1;
@@ -1132,7 +1130,7 @@ namespace TorqueScript
                         return 1;
                     }
 
-                    stack.emplace_back(0);
+                    stack.push_back(StoredValue(0));
                     return 1;
                 };
 
@@ -1287,11 +1285,11 @@ namespace TorqueScript
                     const std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(arrayName);
                     if (mGlobal)
                     {
-                        stack.emplace_back(state->mInterpreter->getGlobalOrAllocate(stringID));
+                        stack.push_back(StoredValue(state->mInterpreter->getGlobalOrAllocate(stringID)));
                     }
                     else
                     {
-                        stack.emplace_back(state->mExecutionScope.getVariableOrAllocate(stringID));
+                        stack.push_back(StoredValue(state->mExecutionScope.getVariableOrAllocate(stringID)));
                     }
                     return 1;
                 };

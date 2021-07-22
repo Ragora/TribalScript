@@ -71,6 +71,11 @@ namespace TorqueScript
     class StoredValue
     {
     public:
+        StoredValue() : StoredValue(0)
+        {
+
+        }
+
         StoredValue(void* memoryLocation, const StoredValueType type) : mType(type), mStorage(), mMemoryLocation(memoryLocation), mConsoleObject(nullptr), mReference(nullptr)
         {
 

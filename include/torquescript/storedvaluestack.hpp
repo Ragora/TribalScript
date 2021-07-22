@@ -20,6 +20,8 @@
 
 #include <torquescript/storedvalue.hpp>
 
+#define STACK_SIZE 256
+
 namespace TorqueScript
 {
     class ExecutionState;
@@ -28,13 +30,28 @@ namespace TorqueScript
      *  @brief Storage class used to keep variable values in-memory of arbitrary data types.
      *  This is the base class and should not be instantiated directly.
      */
-    class StoredValueStack : public std::vector<StoredValue>
+    class StoredValueStack
     {
         public:
+            StoredValueStack();
+
             int popInteger(ExecutionState* state);
             std::string popString(ExecutionState* state);
             float popFloat(ExecutionState* state);
 
             std::vector<std::string> dump();
+
+            bool empty();
+
+            StoredValue& back();
+            void pop_back();
+            std::size_t size();
+
+            void push_back(const StoredValue& newValue);
+
+        private:
+            std::size_t mCurrentIndex;
+
+            StoredValue mStoredValues[STACK_SIZE];
     };
 }
