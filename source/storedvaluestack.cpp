@@ -29,28 +29,9 @@ namespace TorqueScript
         return mCurrentIndex == 0;
     }
 
-    void StoredValueStack::pop_back()
-    {
-        assert(mCurrentIndex > 0 && mCurrentIndex <= STACK_SIZE - 1);
-        --mCurrentIndex;
-        // mStoredValues[mCurrentIndex--] = StoredValue(0);
-    }
-
-    StoredValue& StoredValueStack::back()
-    {
-        assert(mCurrentIndex > 0 && mCurrentIndex <= STACK_SIZE - 1);
-        return mStoredValues[mCurrentIndex - 1];
-    }
-
     std::size_t StoredValueStack::size()
     {
         return mCurrentIndex;
-    }
-
-    void StoredValueStack::push_back(const StoredValue& newValue)
-    {
-        assert(mCurrentIndex <= STACK_SIZE - 1);
-        mStoredValues[mCurrentIndex++] = newValue;
     }
 
     int StoredValueStack::popInteger(ExecutionState* state)
@@ -73,18 +54,6 @@ namespace TorqueScript
         }
         StoredValue& currentValue = this->back();
         std::string result = currentValue.toString();
-        this->pop_back();
-        return result;
-    }
-
-    float StoredValueStack::popFloat(ExecutionState* state)
-    {
-        if (this->empty())
-        {
-            return 0.0f;
-        }
-        StoredValue& currentValue = this->back();
-        float result = currentValue.toFloat();
         this->pop_back();
         return result;
     }

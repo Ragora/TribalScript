@@ -644,17 +644,11 @@ namespace TorqueScript
 
                     assert(stack.size() >= 2);
 
-                    StoredValue rhsStored = stack.back();
-                    stack.pop_back();
-                    StoredValue lhsStored = stack.back();
-                    stack.pop_back(); 
-
-                    // NOTE: For now we normalize to floats
-                    float lhs = lhsStored.toFloat();
-                    float rhs = rhsStored.toFloat();
+                    const float rhs = stack.popFloat(state);
+                    const float lhs = stack.popFloat(state);
 
                     const int result = lhs < rhs ? 1 : 0;
-                    stack.push_back(StoredValue(result));
+                    stack.emplace_back(result);
                     return 1;
                 };
 

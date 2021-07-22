@@ -37,17 +37,48 @@ namespace TorqueScript
 
             int popInteger(ExecutionState* state);
             std::string popString(ExecutionState* state);
-            float popFloat(ExecutionState* state);
 
             std::vector<std::string> dump();
 
             bool empty();
 
-            StoredValue& back();
-            void pop_back();
+            __forceinline float popFloat(ExecutionState* state)
+            {
+                assert(!this->empty());
+
+                StoredValue& currentValue = this->back();
+                const float result = currentValue.toFloat();
+                this->pop_back();
+                return result;
+            }
+
+            __forceinline StoredValue& back()
+            {
+                assert(mCurrentIndex > 0 && mCurrentIndex <= STACK_SIZE - 1);
+                return mStoredValues[mCurrentIndex - 1];
+            }
+
+            __forceinline void pop_back()
+            {
+                assert(mCurrentIndex > 0 && mCurrentIndex <= STACK_SIZE - 1);
+                --mCurrentIndex;
+                // mStoredValues[mCurrentIndex--] = StoredValue(0);
+            }
+
             std::size_t size();
 
-            void push_back(const StoredValue& newValue);
+            __forceinline void push_back(const StoredValue& newValue)
+            {
+                assert(mCurrentIndex <= STACK_SIZE - 1);
+                mStoredValues[mCurrentIndex++] = newValue;
+            }
+
+            template <typename... parameters>
+            __forceinline void emplace_back(parameters... constructorParameters)
+            {
+                assert(mCurrentIndex <= STACK_SIZE - 1);
+                mStoredValues[mCurrentIndex++] = StoredValue(constructorParameters...);
+            }
 
         private:
             std::size_t mCurrentIndex;
