@@ -209,14 +209,9 @@ namespace TorqueScript
 
                 assert(stack.size() >= 2);
 
-                StoredValue rhsStored = stack.back();
-                stack.pop_back();
-                StoredValue lhsStored = stack.back();
-                stack.pop_back();
-
                 // NOTE: For now we normalize to floats
-                float lhs = lhsStored.toFloat();
-                float rhs = rhsStored.toFloat();
+                const float rhs = stack.popFloat(state);
+                const float lhs = stack.popFloat(state);
 
                 const int result = lhs < rhs ? 1 : 0;
                 stack.push_back(StoredValue(result));
@@ -473,14 +468,8 @@ namespace TorqueScript
 
                 assert(stack.size() >= 2);
 
-                StoredValue rhsStored = stack.back();
-                stack.pop_back();
-                StoredValue lhsStored = stack.back();
-                stack.pop_back();
-
-                // NOTE: For now we normalize to floats
-                float lhs = lhsStored.toFloat();
-                float rhs = rhsStored.toFloat();
+                const float rhs = stack.popFloat(state);
+                const float lhs = stack.popFloat(state);
 
                 const float result = lhs + rhs;
                 stack.push_back(StoredValue(result));
@@ -823,10 +812,7 @@ namespace TorqueScript
                 StoredValue lhsStored = stack.back();
                 stack.pop_back();
 
-                if (!lhsStored.setValue(rhsStored))
-                {
-                    state->mInterpreter->mConfig.mPlatform->logError("Attempted to perform no-op assignment!");
-                }
+                lhsStored.setValue(rhsStored);
 
                 // In Torque, the result of the assignment is pushed to stack
                 stack.push_back(rhsStored);
@@ -900,5 +886,14 @@ namespace TorqueScript
             }
         };
 
+        static std::string disassembleInstruction(const Instruction* instruction)
+        {
+            const std::size_t instructionPointer = reinterpret_cast<std::size_t>(instruction->mOp);
+            switch (instructionPointer)
+            {
+            default:
+                return "<Unknown OP>";
+            }
+        }
     }
 }

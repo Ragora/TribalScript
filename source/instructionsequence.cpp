@@ -22,7 +22,8 @@ namespace TorqueScript
     {
         AddressType instructionIndex = 0;
 
-        while (instructionIndex < this->size() && instructionIndex >= 0)
+        const std::size_t instructionCount = this->size();
+        while (instructionIndex < instructionCount && instructionIndex >= 0)
         {
             Instructions::Instruction& nextInstruction = this->at(instructionIndex);
 

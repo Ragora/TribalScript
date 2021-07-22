@@ -33,24 +33,16 @@ namespace TorqueScript
 
     std::string StoredValueStack::popString(ExecutionState* state)
     {
-        if (this->empty())
-        {
-            return "";
-        }
         StoredValue& currentValue = this->back();
-        std::string result = currentValue.toString();
+        const std::string result = currentValue.toString();
         this->pop_back();
         return result;
     }
 
     float StoredValueStack::popFloat(ExecutionState* state)
     {
-        if (this->empty())
-        {
-            return 0.0f;
-        }
         StoredValue& currentValue = this->back();
-        float result = currentValue.toFloat();
+        const float result = currentValue.toFloat();
         this->pop_back();
         return result;
     }

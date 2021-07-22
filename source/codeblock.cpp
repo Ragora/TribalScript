@@ -33,19 +33,17 @@ namespace TorqueScript
     {
         std::vector<std::string> result;
 
-        /*
         for (auto&& instruction : mInstructions)
         {
             std::ostringstream out;
-            out << instruction->disassemble();
+            out << Instructions::disassembleInstruction(&instruction);
 
-            if (instruction->mComment != "")
-            {
-                out << " // " << instruction->mComment;
-            }
+           // if (instruction->mComment != "")
+          // {
+           //     out << " // " << instruction->mComment;
+           // }
             result.push_back(out.str());
         }
-        */
         return result;
     }
 }

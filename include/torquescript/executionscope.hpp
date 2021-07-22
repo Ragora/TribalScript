@@ -73,7 +73,8 @@ namespace TorqueScript
     {
         ExecutionScopeData(Function* function) : mCurrentFunction(function)
         {
-
+            mLoopDescriptors.reserve(32);
+            mStack.reserve(32);
         }
 
         Function* mCurrentFunction;
@@ -113,7 +114,13 @@ namespace TorqueScript
             std::size_t getFrameDepth();
 
             Function* getCurrentFunction();
-            StoredValueStack& getStack();
+
+            __forceinline StoredValueStack& getStack()
+            {
+                ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+                return currentScope.mStack;
+            }
+
             StoredValueStack& getReturnStack();
 
             StoredValue* getVariable(const std::string& name);

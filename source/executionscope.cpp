@@ -18,6 +18,8 @@ namespace TorqueScript
 {
     ExecutionScope::ExecutionScope(const InterpreterConfiguration& config, StringTable* table) : mConfig(config), mStringTable(table)
     {
+        mExecutionScopeData.reserve(32);
+
         this->pushFrame(nullptr);
     }
 
@@ -186,12 +188,6 @@ namespace TorqueScript
 
         ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
         return currentScope.mCurrentFunction;
-    }
-
-    StoredValueStack& ExecutionScope::getStack()
-    {
-        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
-        return currentScope.mStack;
     }
 
     StoredValueStack& ExecutionScope::getReturnStack()
