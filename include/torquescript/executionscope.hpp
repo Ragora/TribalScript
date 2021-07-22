@@ -74,7 +74,6 @@ namespace TorqueScript
         ExecutionScopeData(Function* function) : mCurrentFunction(function)
         {
             mLoopDescriptors.reserve(32);
-            mStack.reserve(32);
         }
 
         Function* mCurrentFunction;

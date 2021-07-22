@@ -19,6 +19,21 @@
 
 namespace TorqueScript
 {
+    StoredValueStack::StoredValueStack() : mCurrentIndex(0)
+    {
+
+    }
+
+    bool StoredValueStack::empty()
+    {
+        return mCurrentIndex == 0;
+    }
+
+    std::size_t StoredValueStack::size()
+    {
+        return mCurrentIndex;
+    }
+
     int StoredValueStack::popInteger(ExecutionState* state)
     {
         if (this->empty())
@@ -39,21 +54,13 @@ namespace TorqueScript
         return result;
     }
 
-    float StoredValueStack::popFloat(ExecutionState* state)
-    {
-        StoredValue& currentValue = this->back();
-        const float result = currentValue.toFloat();
-        this->pop_back();
-        return result;
-    }
-
     std::vector<std::string> StoredValueStack::dump()
     {
         std::vector<std::string> result;
         for (unsigned int iteration = 0; iteration < this->size(); ++iteration)
         {
             std::ostringstream element;
-            element << iteration << ": " << this->at(iteration).getRepresentation();
+            element << iteration << ": " << mStoredValues[iteration].getRepresentation();
 
             result.push_back(element.str());
         }
