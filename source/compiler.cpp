@@ -24,13 +24,16 @@
 
 namespace TorqueScript
 {
-    Compiler::Compiler(const InterpreterConfiguration& config) : mConfig(config), mLocalVariableCounter(0)
+    Compiler::Compiler(const InterpreterConfiguration& config) : mConfig(config)
     {
 
     }
 
     CodeBlock* Compiler::compileStream(std::istream& input, StringTable* stringTable)
     {
+        // Top level scope is file-level
+        this->pushLocalVariableScope();
+
         ParserErrorListener parserErrorListener;
 
         antlr4::ANTLRInputStream antlrStream(input);
@@ -57,7 +60,9 @@ namespace TorqueScript
             InstructionSequence instructions = this->visitProgramNode(tree).as<InstructionSequence>();
             delete tree;
 
-            CodeBlock* result = new CodeBlock(instructions);
+            CodeBlock* result = new CodeBlock(instructions, mFunctionMapping);
+
+            this->popLocalVariableScope();
             return result;
         }
 
@@ -68,6 +73,7 @@ namespace TorqueScript
             std::cerr << message << std::endl;
         }
 
+        this->popLocalVariableScope();
         return nullptr;
     }
 
@@ -116,17 +122,34 @@ namespace TorqueScript
 
     std::size_t Compiler::getLocalVariableID(const std::string& name)
     {
+        std::map<std::string, std::size_t>& currentMapping = getLocalVariableMapping();
+
         const std::string lookupName = toLowerCase(name);
 
-        auto search = mLocalVariableMappings.find(lookupName);
-        if (search != mLocalVariableMappings.end())
+        auto search = currentMapping.find(lookupName);
+        if (search != currentMapping.end())
         {
             return search->second;
         }
 
-        const std::size_t newID = mLocalVariableCounter++;
-        mLocalVariableMappings[lookupName] = newID;
+        const std::size_t newID = currentMapping.size();
+        currentMapping[lookupName] = newID;
         return newID;
+    }
+
+    std::map<std::string, std::size_t>& Compiler::getLocalVariableMapping()
+    {
+        return *mLocalVariableMappings.rbegin();
+    }
+
+    void Compiler::pushLocalVariableScope()
+    {
+        mLocalVariableMappings.push_back(std::map<std::string, std::size_t>());
+    }
+
+    void Compiler::popLocalVariableScope()
+    {
+        mLocalVariableMappings.pop_back();
     }
 
     /*
@@ -160,6 +183,8 @@ namespace TorqueScript
 
     antlrcpp::Any Compiler::visitFunctionDeclarationNode(AST::FunctionDeclarationNode* function)
     {
+        this->pushLocalVariableScope();
+
         InstructionSequence functionBody;
         for (AST::ASTNode* node : function->mBody)
         {
@@ -178,7 +203,16 @@ namespace TorqueScript
         }
 
         InstructionSequence result;
-        // result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::FunctionDeclarationInstruction(mCurrentPackage, function->mNameSpace, function->mName, parameterNames, functionBody)));
+
+        // Allocate the function definition for later load
+        std::shared_ptr<Function> newFunction = std::shared_ptr<Function>(new Function(mCurrentPackage, function->mNameSpace, function->mName, parameterNames));
+        newFunction->addInstructions(functionBody);
+
+        const std::size_t functionID = mFunctionMapping.size();
+        mFunctionMapping.push_back(newFunction);
+        result.push_back(Instructions::FunctionDeclarationInstruction(functionID));
+
+        this->popLocalVariableScope();
         return result;
     }
 

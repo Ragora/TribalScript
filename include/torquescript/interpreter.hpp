@@ -118,6 +118,8 @@ namespace TorqueScript
             void removeFunctionRegistry(const std::string& packageName);
             /// @}
 
+            std::shared_ptr<Function> getAwaitingFunction(const std::size_t id);
+
             //! The string table associated with this interpreter.
             StringTable mStringTable;
 
@@ -143,6 +145,8 @@ namespace TorqueScript
             }
 
         private:
+            std::vector<std::shared_ptr<Function>> mFunctionMapping;
+
             //! Keep a ready instance of the compiler on hand as it is reusable.
             Compiler* mCompiler;
 

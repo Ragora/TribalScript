@@ -66,9 +66,14 @@ namespace TorqueScript
             std::string mCurrentPackage;
             StringTable* mStringTable;
 
-            std::size_t mLocalVariableCounter;
+            std::vector<std::shared_ptr<Function>> mFunctionMapping;
+
             std::size_t getLocalVariableID(const std::string& name);
-            std::map<std::string, std::size_t> mLocalVariableMappings;
+            void pushLocalVariableScope();
+            void popLocalVariableScope();
+            std::map<std::string, std::size_t>& getLocalVariableMapping();
+
+            std::vector<std::map<std::string, std::size_t>> mLocalVariableMappings;
 
             /*
                 Compiler Routines ==============================
