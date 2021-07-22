@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <map>
 #include <memory>
 
 #include "antlr4-runtime.h"
@@ -58,11 +59,16 @@ namespace TorqueScript
             virtual antlrcpp::Any defaultResult() override;
             virtual antlrcpp::Any aggregateResult(antlrcpp::Any& aggregate, antlrcpp::Any& nextResult) override;
 
+
             const InterpreterConfiguration mConfig;
 
         private:
             std::string mCurrentPackage;
             StringTable* mStringTable;
+
+            std::size_t mLocalVariableCounter;
+            std::size_t getLocalVariableID(const std::string& name);
+            std::map<std::string, std::size_t> mLocalVariableMappings;
 
             /*
                 Compiler Routines ==============================

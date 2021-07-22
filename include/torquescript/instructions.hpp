@@ -47,7 +47,7 @@ namespace TorqueScript
             static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
             {
                 StoredValueStack& stack = state->mExecutionScope.getStack();
-                stack.push_back(StoredValue(instruction->mParameters[0].mInteger));
+                stack.emplace_back(instruction->mParameters[0].mInteger);
                 return 1;
             }
         };
@@ -603,7 +603,7 @@ namespace TorqueScript
         class PushLocalReferenceInstruction : public Instruction
         {
         public:
-            PushLocalReferenceInstruction(const StringTableEntry value) : Instruction(PushLocalReferenceInstruction::execute)
+            PushLocalReferenceInstruction(const std::size_t value) : Instruction(PushLocalReferenceInstruction::execute)
             {
                 mParameters[0].mStringID = value;
             }
@@ -613,7 +613,7 @@ namespace TorqueScript
                 StoredValueStack& stack = state->mExecutionScope.getStack();
                 stack.emplace_back(state->mExecutionScope.getVariableOrAllocate(instruction->mParameters[0].mStringID));
                 return 1;
-            };
+            }
         };
 
         /**

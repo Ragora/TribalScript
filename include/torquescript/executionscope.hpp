@@ -86,7 +86,7 @@ namespace TorqueScript
         std::vector<ObjectInstantiationDescriptor> mObjectInstantiations;
 
         std::vector<LoopDescriptor> mLoopDescriptors;
-        std::map<StringTableEntry, StoredValue*> mLocalVariables;
+        std::vector<StoredValue*> mLocalVariables;
     };
 
     /**
@@ -123,12 +123,7 @@ namespace TorqueScript
 
             StoredValueStack& getReturnStack();
 
-            StoredValue* getVariable(const std::string& name);
-            StoredValue* getVariable(const StringTableEntry name);
-            StoredValue* getVariableOrAllocate(const StringTableEntry name);
-
-            void setVariable(const std::string& name, const StoredValue& variable);
-            void setVariable(const StringTableEntry name, const StoredValue& variable);
+            StoredValue* getVariableOrAllocate(const std::size_t variableID);
 
             //! The InterpreterConfiguration associated with this ExecutionScope.
             const InterpreterConfiguration mConfig;

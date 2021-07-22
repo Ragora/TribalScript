@@ -173,7 +173,45 @@ namespace TorqueScript
          *  @param scope The execution scope within which this conversion is occurring.
          *  @return A floating point representation of this value.
          */
-        float toFloat() const;
+        __forceinline float StoredValue::toFloat() const
+        {
+            if (mReference)
+            {
+                return mReference->toFloat();
+            }
+            else if (mMemoryLocation)
+            {
+                switch (mType)
+                {
+                case StoredValueType::Float:
+                    return *reinterpret_cast<float*>(mMemoryLocation);
+                case StoredValueType::Integer:
+                    return static_cast<float>(*reinterpret_cast<int*>(mMemoryLocation));
+                default:
+                    throw std::runtime_error("Unknown Memory Type");
+                }
+            }
+
+            switch (mType)
+            {
+            case StoredValueType::Integer:
+                return (float)mStorage.mInteger;
+            case StoredValueType::Float:
+                return mStorage.mFloat;
+            case StoredValueType::String:
+                try
+                {
+                    return std::stof(mStorage.mStringPointer);
+                }
+                catch (std::invalid_argument exception)
+                {
+                    return 0;
+                }
+            }
+
+            throw std::runtime_error("Unknown Conversion");
+        }
+
 
         /**
          *  @brief Converts the value in question to a native sting type.

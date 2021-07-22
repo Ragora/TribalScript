@@ -190,45 +190,6 @@ namespace TorqueScript
         throw std::runtime_error("Unknown Conversion");
     }
 
-    float StoredValue::toFloat() const
-    {
-        if (mReference)
-        {
-            return mReference->toFloat();
-        }
-        else if (mMemoryLocation)
-        {
-            switch (mType)
-            {
-            case StoredValueType::Float:
-                return *reinterpret_cast<float*>(mMemoryLocation);
-            case StoredValueType::Integer:
-                return static_cast<float>(*reinterpret_cast<int*>(mMemoryLocation));
-            default:
-                throw std::runtime_error("Unknown Memory Type");
-            }
-        }
-
-        switch (mType)
-        {
-        case StoredValueType::Integer:
-            return (float)mStorage.mInteger;
-        case StoredValueType::Float:
-            return mStorage.mFloat;
-        case StoredValueType::String:
-            try
-            {
-                return std::stof(mStorage.mStringPointer);
-            }
-            catch (std::invalid_argument exception)
-            {
-                return 0;
-            }
-        }
-
-        throw std::runtime_error("Unknown Conversion");
-    }
-
     std::string StoredValue::getRepresentation()
     {
         if (mReference)

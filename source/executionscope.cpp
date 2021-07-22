@@ -23,7 +23,7 @@ namespace TorqueScript
         this->pushFrame(nullptr);
     }
 
-    StoredValue* ExecutionScope::getVariable(const StringTableEntry name)
+    StoredValue* ExecutionScope::getVariableOrAllocate(const std::size_t variableID)
     {
         if (mExecutionScopeData.empty())
         {
@@ -32,93 +32,15 @@ namespace TorqueScript
 
         ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
 
-        auto search = currentScope.mLocalVariables.find(name);
-        if (search != currentScope.mLocalVariables.end())
+        // Insert up until all prior slots are filled
+        if (variableID + 1 > currentScope.mLocalVariables.size())
         {
-            return search->second;
+            for (std::size_t iteration  = 0; iteration < (variableID + 1) - currentScope.mLocalVariables.size(); ++iteration)
+            {
+                currentScope.mLocalVariables.push_back(new StoredValue(0));
+            }
         }
-
-        return nullptr;
-    }
-
-    StoredValue* ExecutionScope::getVariableOrAllocate(const StringTableEntry name)
-    {
-        if (mExecutionScopeData.empty())
-        {
-            return nullptr;
-        }
-
-        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
-
-        auto search = currentScope.mLocalVariables.find(name);
-        if (search != currentScope.mLocalVariables.end())
-        {
-            return search->second;
-        }
-
-        StoredValue* newValue = new StoredValue(0);
-        currentScope.mLocalVariables.insert(std::make_pair(name, newValue));
-        return newValue;
-    }
-
-    StoredValue* ExecutionScope::getVariable(const std::string& name)
-    {
-        const StringTableEntry lookup = mStringTable->getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
-
-        if (mExecutionScopeData.empty())
-        {
-            return nullptr;
-        }
-
-        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
-
-        auto search = currentScope.mLocalVariables.find(lookup);
-        if (search != currentScope.mLocalVariables.end())
-        {
-            return search->second;
-        }
-
-        return nullptr;
-    }
-
-    void ExecutionScope::setVariable(const StringTableEntry name, const StoredValue& variable)
-    {
-        // Initialize if necessary
-        if (mExecutionScopeData.empty())
-        {
-            this->pushFrame(nullptr);
-        }
-
-        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
-
-        auto search = currentScope.mLocalVariables.find(name);
-        if (search != currentScope.mLocalVariables.end())
-        {
-            search->second->setValue(variable);
-            return;
-        }
-
-        currentScope.mLocalVariables.insert(std::make_pair(name, new StoredValue(variable)));
-    }
-
-    void ExecutionScope::setVariable(const std::string& name, const StoredValue& variable)
-    {
-        const StringTableEntry key = mStringTable->getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
-
-        // Initialize if necessary
-        if (mExecutionScopeData.empty())
-        {
-            this->pushFrame(nullptr);
-        }
-
-        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
-        auto search = currentScope.mLocalVariables.find(key);
-        if (search != currentScope.mLocalVariables.end())
-        {
-            search->second->setValue(variable);
-            return;
-        }
-        currentScope.mLocalVariables.insert(std::make_pair(key, new StoredValue(variable)));
+        return currentScope.mLocalVariables[variableID];
     }
 
     void ExecutionScope::pushFrame(Function* function)
