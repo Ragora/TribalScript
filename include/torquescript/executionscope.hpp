@@ -114,7 +114,7 @@ namespace TorqueScript
 
             Function* getCurrentFunction();
 
-            __forceinline StoredValueStack& getStack()
+            inline StoredValueStack& getStack()
             {
                 ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
                 return currentScope.mStack;

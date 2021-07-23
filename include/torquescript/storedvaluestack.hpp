@@ -42,7 +42,7 @@ namespace TorqueScript
 
             bool empty();
 
-            __forceinline float popFloat(ExecutionState* state)
+            inline float popFloat(ExecutionState* state)
             {
                 assert(!this->empty());
 
@@ -52,13 +52,13 @@ namespace TorqueScript
                 return result;
             }
 
-            __forceinline StoredValue& back()
+            inline StoredValue& back()
             {
                 assert(mCurrentIndex > 0 && mCurrentIndex <= STACK_SIZE - 1);
                 return mStoredValues[mCurrentIndex - 1];
             }
 
-            __forceinline void pop_back()
+            inline void pop_back()
             {
                 assert(mCurrentIndex > 0 && mCurrentIndex <= STACK_SIZE - 1);
                 --mCurrentIndex;
@@ -67,14 +67,14 @@ namespace TorqueScript
 
             std::size_t size();
 
-            __forceinline void push_back(const StoredValue& newValue)
+            inline void push_back(const StoredValue& newValue)
             {
                 assert(mCurrentIndex <= STACK_SIZE - 1);
                 mStoredValues[mCurrentIndex++] = newValue;
             }
 
             template <typename... parameters>
-            __forceinline void emplace_back(parameters... constructorParameters)
+            inline void emplace_back(parameters... constructorParameters)
             {
                 assert(mCurrentIndex <= STACK_SIZE - 1);
                 mStoredValues[mCurrentIndex++] = StoredValue(constructorParameters...);

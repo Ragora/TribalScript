@@ -178,7 +178,7 @@ namespace TorqueScript
          *  @param scope The execution scope within which this conversion is occurring.
          *  @return A floating point representation of this value.
          */
-        __forceinline float StoredValue::toFloat() const
+        inline float toFloat() const
         {
             if (mReference)
             {
