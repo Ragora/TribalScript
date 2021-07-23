@@ -10,7 +10,7 @@ function localVariableBenchMark(%samples)
 		{
 		}
 		%delta = getRealTime() - %start;
-		
+
 		if (%result $= "")
 		{
 			%result = %delta;
@@ -20,19 +20,19 @@ function localVariableBenchMark(%samples)
 			%result = %result @ "," @ %delta;
 		}
 	}
-	
+
 	echo("localVariableBenchMark: End");
 	return %result;
 }
 
-function benchFunction() 
+function benchFunction()
 {
 }
 
 function functionCallOverhead(%samples)
 {
 	echo("functionCallOverhead: Begin");
-	
+
 	%result = "";
 	for (%sample = 0; %sample < %samples; %sample++)
 	{
@@ -42,7 +42,7 @@ function functionCallOverhead(%samples)
 			benchFunction();
 		}
 		%delta = getRealTime() - %start;
-		
+
 		if (%result $= "")
 		{
 			%result = %delta;
@@ -57,14 +57,14 @@ function functionCallOverhead(%samples)
 	return %result;
 }
 
-function benchFunctionThreeParameter(%a, %b, %c) 
+function benchFunctionThreeParameter(%a, %b, %c)
 {
 }
 
 function functionCallThreeParameterOverhead(%samples)
 {
 	echo("functionCallThreeParameterOverhead: Begin");
-	
+
 	%result = "";
 	for (%sample = 0; %sample < %samples; %sample++)
 	{
@@ -74,7 +74,7 @@ function functionCallThreeParameterOverhead(%samples)
 			benchFunctionThreeParameter(1, 2, 3);
 		}
 		%delta = getRealTime() - %start;
-		
+
 		if (%result $= "")
 		{
 			%result = %delta;
@@ -92,7 +92,7 @@ function functionCallThreeParameterOverhead(%samples)
 function objectOverhead(%samples)
 {
 	echo("objectOverhead: Begin");
-	
+
 	%result = "";
 	for (%sample = 0; %sample < %samples; %sample++)
 	{
@@ -103,7 +103,7 @@ function objectOverhead(%samples)
 			%object.delete();
 		}
 		%delta = getRealTime() - %start;
-		
+
 		if (%result $= "")
 		{
 			%result = %delta;
@@ -121,24 +121,21 @@ function objectOverhead(%samples)
 function arrayOverhead(%samples)
 {
 	echo("arrayOverhead: Begin");
-	
+
 	%result = "";
 	for (%sample = 0; %sample < %samples; %sample++)
 	{
 		%start = getRealTime();
-		
-		for (%x = 0; %x < 666666; %x++)
+
+		for (%x = 0; %x < 1000; %x++)
 		{
-			for (%y = 0; %y < 666666; %y++)
-			{
-				for (%z = 0; %z < 666666; %z++)
-				{
-					%array[%x, %y, %z] = 1;
-				}
-			}
+            for (%y = 0; %y < 1000; %y++)
+            {
+                %array[%x, %y] = 1;
+            }
 		}
 		%delta = getRealTime() - %start;
-		
+
 		if (%result $= "")
 		{
 			%result = %delta;
@@ -148,7 +145,7 @@ function arrayOverhead(%samples)
 			%result = %result @ "," @ %delta;
 		}
 	}
-	
+
 	echo("arrayOverhead: End");
 	return %result;
 }
