@@ -118,6 +118,41 @@ function objectOverhead(%samples)
 	return %result;
 }
 
+function arrayOverhead(%samples)
+{
+	echo("arrayOverhead: Begin");
+	
+	%result = "";
+	for (%sample = 0; %sample < %samples; %sample++)
+	{
+		%start = getRealTime();
+		
+		for (%x = 0; %x < 666666; %x++)
+		{
+			for (%y = 0; %y < 666666; %y++)
+			{
+				for (%z = 0; %z < 666666; %z++)
+				{
+					%array[%x, %y, %z] = 1;
+				}
+			}
+		}
+		%delta = getRealTime() - %start;
+		
+		if (%result $= "")
+		{
+			%result = %delta;
+		}
+		else
+		{
+			%result = %result @ "," @ %delta;
+		}
+	}
+	
+	echo("arrayOverhead: End");
+	return %result;
+}
+
 // Run all tests
 %sampleCount = 10;
 echo("Running benchmarks ...");
@@ -125,6 +160,7 @@ echo("Running benchmarks ...");
 %functionCallOverheadResult = functionCallOverhead(%sampleCount);
 %functionCallThreeParameterOverheadResult = functionCallThreeParameterOverhead(%sampleCount);
 %objectOverheadResult = objectOverhead(%sampleCount);
+%arrayOverheadResult = arrayOverhead(%sampleCount);
 
 // Output to disk
 %handle = new FileObject();
@@ -137,6 +173,7 @@ echo("Running benchmarks ...");
 %handle.write("Function Call Overhead," @ %functionCallOverheadResult NL "");
 %handle.write("Function Call Three Parameter Overhead," @ %functionCallThreeParameterOverheadResult NL "");
 %handle.write("Object Overhead," @ %objectOverheadResult NL "");
+%handle.write("Array Overhead," @ %arrayOverheadResult NL "");
 
 // Finish write
 %handle.close();
