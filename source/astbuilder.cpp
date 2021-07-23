@@ -122,7 +122,12 @@ namespace TorqueScript
             }
 
             // Load body expressions
-            std::vector<AST::ASTNode*> bodyStatements = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
+            std::vector<AST::ASTNode*> bodyStatements;
+            for (TorqueParser::Expression_statementContext* statement : context->expression_statement())
+            {
+                std::vector<AST::ASTNode*> statementNodes = this->visitChildren(statement).as<std::vector<AST::ASTNode*>>();
+                bodyStatements.insert(bodyStatements.end(), statementNodes.begin(), statementNodes.end());
+            }
             AST::FunctionDeclarationNode* function = new AST::FunctionDeclarationNode(functionNameSpace, functionName, parameterNames, bodyStatements);
 
             result.push_back(function);
