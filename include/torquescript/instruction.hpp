@@ -21,6 +21,7 @@ namespace TorqueScript
         {
             int mInteger;
             float mFloat;
+            unsigned char mChar;
             AddressType mOffset;
             std::size_t mStringID;
         };

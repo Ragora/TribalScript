@@ -72,6 +72,177 @@ namespace TorqueScript
                 };
         };
 
+        class PushObjectFieldInstruction : public Instruction
+        {
+        public:
+            PushObjectFieldInstruction(const std::size_t fieldComponentCount) : Instruction(PushObjectFieldInstruction::execute)
+            {
+                mParameters[0].mStringID = fieldComponentCount;
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                StoredValue rvalue = stack.back();
+                stack.pop_back();
+
+                // Load array components
+                std::vector<std::string> arrayComponents;
+                for (unsigned int iteration = 0; iteration < instruction->mParameters[0].mStringID; ++iteration)
+                {
+                    arrayComponents.push_back(stack.popString(state));
+                }
+
+                // Load base name
+                StoredValue fieldBaseName = stack.back();
+                stack.pop_back();
+
+                std::ostringstream out;
+                out << fieldBaseName.toString();
+                for (auto iterator = arrayComponents.rbegin(); iterator != arrayComponents.rend(); ++iterator)
+                {
+                    if (iterator != arrayComponents.rbegin())
+                    {
+                        out << "_";
+                    }
+                    out << *iterator;
+                }
+
+                // Final field assignment
+                ObjectInstantiationDescriptor& descriptor = state->mExecutionScope.currentObjectInstantiation();
+
+                auto search = descriptor.mFieldAssignments.find(out.str());
+                if (search != descriptor.mFieldAssignments.end())
+                {
+                    search->second = rvalue;
+                }
+                else
+                {
+                    descriptor.mFieldAssignments.insert(std::make_pair(out.str(), rvalue));
+                }
+
+                return 1;
+            }
+        };
+
+        /**
+         *  @brief Calls a function that is bound to an object identified on the stack.
+         */
+        class CallBoundFunctionInstruction : public Instruction
+        {
+        public:
+            CallBoundFunctionInstruction(const StringTableEntry name, const std::size_t arg) : Instruction(CallBoundFunctionInstruction::execute)
+            {
+                mParameters[0].mStringID = name;
+                mParameters[1].mStringID = arg;
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                const std::string calledFunctionName = state->mInterpreter->mStringTable.getString(instruction->mParameters[0].mStringID);
+
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 1);
+
+                StoredValue targetStored = stack.back();
+                stack.pop_back();
+
+                // Retrieve the referenced ConsoleObject
+                ConsoleObject* targetObject = targetStored.toConsoleObject(state);
+                if (!targetObject)
+                {
+                    std::ostringstream output;
+                    output << "Cannot find object '" << targetStored.toString() << "' to call function '" << calledFunctionName << "'!";
+                    state->mInterpreter->mConfig.mPlatform->logWarning(output.str());
+
+                    stack.push_back(StoredValue(0));
+                    return 1;
+                }
+
+                // Walk the class hierarchy
+                ConsoleObjectDescriptor* descriptor = sConsoleObjectDescriptors->at(targetObject->getClassName());
+                assert(descriptor->mHierarchy.size() != 0);
+
+                for (const std::string& className : descriptor->mHierarchy)
+                {
+                    // Ask the interpreter to lookup the function
+                    std::shared_ptr<Function> calledFunction = state->mInterpreter->getFunction(className, calledFunctionName);
+                    if (calledFunction)
+                    {
+                        calledFunction->execute(targetObject, state, instruction->mParameters[1].mStringID);
+                        return 1;
+                    }
+                }
+
+                stack.push_back(StoredValue(0));
+                return 1;
+            }
+        };
+
+        class PushObjectInstantiationInstruction : public Instruction
+        {
+        public:
+            PushObjectInstantiationInstruction() : Instruction(PushObjectInstantiationInstruction::execute)
+            {
+
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+                assert(stack.size() >= 2);
+
+                StoredValue objectName = stack.back();
+                stack.pop_back();
+                StoredValue objectTypeName = stack.back();
+                stack.pop_back();
+
+                state->mExecutionScope.pushObjectInstantiation(objectTypeName.toString(), objectName.toString());
+
+                return 1;
+            }
+        };
+
+        class PopObjectInstantiationInstruction : public Instruction
+        {
+        public:
+            PopObjectInstantiationInstruction() : Instruction(PopObjectInstantiationInstruction::execute)
+            {
+
+            }
+
+            static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+                ObjectInstantiationDescriptor descriptor = state->mExecutionScope.popObjectInstantiation();
+
+                // Track parent/child relationships so we can walk the tree later
+                if (state->mExecutionScope.isAwaitingParentInstantiation())
+                {
+                    ObjectInstantiationDescriptor& parentDescriptor = state->mExecutionScope.currentObjectInstantiation();
+                    parentDescriptor.mChildren.push_back(descriptor);
+                }
+                else
+                {
+                    // Ask the interpreter to initialize the resulting tree
+                    ConsoleObject* result = state->mInterpreter->initializeConsoleObjectTree(descriptor);
+
+                    if (result)
+                    {
+                        stack.push_back(StoredValue((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(result)));
+                    }
+                    else
+                    {
+                        stack.push_back(StoredValue(-1));
+                    }
+                }
+
+                return 1;
+            }
+        };
+
         /**
          *  @brief Calls a function registered within the current interpreter.
          */
@@ -904,9 +1075,9 @@ namespace TorqueScript
         class ConcatInstruction : public Instruction
         {
         public:
-            ConcatInstruction() : Instruction(ConcatInstruction::execute)
+            ConcatInstruction(const unsigned char seperator) : Instruction(ConcatInstruction::execute)
             {
-
+                mParameters[0].mChar = seperator;
             }
 
             static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
@@ -925,8 +1096,10 @@ namespace TorqueScript
                 std::string rhs = rhsStored.toString();
 
                 // Generate a new string ID
-                const std::string requestedString = lhs + rhs;
+                const std::string seperator = instruction->mParameters[0].mChar ? std::string(1, instruction->mParameters[0].mChar) : "";
+                const std::string requestedString = lhs + seperator + rhs;
                 stack.emplace_back(requestedString.c_str());
+
                 return 1;
             }
         };

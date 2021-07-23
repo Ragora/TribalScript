@@ -246,7 +246,8 @@ namespace TorqueScript
             result.insert(result.begin(), parameterCode.begin(), parameterCode.end());
         }
 
-        // result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::CallBoundFunctionInstruction(call->mName, call->mParameters.size())));
+        const StringTableEntry calledFunctionName = mStringTable->getOrAssign(call->mName);
+        result.push_back(Instructions::CallBoundFunctionInstruction(calledFunctionName, call->mParameters.size()));
         return result;
     }
 
@@ -750,8 +751,8 @@ namespace TorqueScript
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
 
-        // FIXME: Set seperator
-        out.push_back(Instructions::ConcatInstruction());
+        // NOTE: For now we only suppport single character seperators and this may not change.
+        out.push_back(Instructions::ConcatInstruction(expression->mSeperator.c_str()[0]));
 
         return out;
     }
@@ -794,8 +795,7 @@ namespace TorqueScript
         InstructionSequence out;
 
         // Push base
-        const std::string stringData = node->mFieldBaseName;
-       // out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringData)));
+        out.push_back(Instructions::PushStringInstruction(mStringTable->getOrAssign(node->mFieldBaseName)));
 
         // Push all array components
         for (AST::ASTNode* childNode : node->mFieldExpressions)
@@ -808,7 +808,7 @@ namespace TorqueScript
         InstructionSequence rvalueCode = node->mRight->accept(this).as<InstructionSequence>();
         out.insert(out.end(), rvalueCode.begin(), rvalueCode.end());
 
-       // out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushObjectFieldInstruction(node->mFieldExpressions.size())));
+        out.push_back(Instructions::PushObjectFieldInstruction(node->mFieldExpressions.size()));
         return out;
     }
 
@@ -830,12 +830,12 @@ namespace TorqueScript
         }
         else
         {
-            const std::string stringData = "";
-          //  out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringData)));
+            const StringTableEntry stringID = mStringTable->getOrAssign("");
+            out.push_back(Instructions::PushStringInstruction(stringID));
         }
 
         // Push Object
-     //   out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushObjectInstantiationInstruction()));
+        out.push_back(Instructions::PushObjectInstantiationInstruction());
 
         // ... gen fields
         for (AST::ASTNode* field : object->mFields)
@@ -852,7 +852,7 @@ namespace TorqueScript
         }
 
         // Pop object
-        //out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopObjectInstantiationInstruction()));
+        out.push_back(Instructions::PopObjectInstantiationInstruction());
 
         return out;
     }
