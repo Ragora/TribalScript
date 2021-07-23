@@ -83,8 +83,6 @@ namespace TorqueScript
             }
         }
 
-        std::string variableName;
-
         // Copy over stored data
         if (newValue.mReference)
         {
@@ -121,8 +119,6 @@ namespace TorqueScript
             }
         }
 
-        std::string variableName;
-
         mType = StoredValueType::Float;
         mStorage.mFloat = newValue;
     }
@@ -133,8 +129,6 @@ namespace TorqueScript
         {
             return mReference->toInteger();
         }
-
-        std::string stringValue;
 
         switch (mType)
         {
@@ -163,8 +157,6 @@ namespace TorqueScript
             return mReference->toString();
         }
 
-        std::string stringValue;
-
         switch (mType)
         {
         case StoredValueType::Integer:
@@ -184,9 +176,6 @@ namespace TorqueScript
         {
             return mReference->getReferencedValueCopy(state);
         }
-
-        StoredValue* referenced;
-        std::string stringValue;
 
         switch (mType)
         {
@@ -220,8 +209,6 @@ namespace TorqueScript
             }
         }
 
-        std::string stringValue;
-
         switch (mType)
         {
         case StoredValueType::Integer:
@@ -248,8 +235,6 @@ namespace TorqueScript
         {
             return mReference->getRepresentation();
         }
-
-        std::string stringValue;
 
         switch (mType)
         {
