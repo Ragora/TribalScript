@@ -76,6 +76,9 @@ namespace TorqueScript
             return;
         }
 
+        const std::vector<std::shared_ptr<Function>>& functions = compiled->getFunctions();
+        mFunctionMapping.insert(mFunctionMapping.end(), functions.begin(), functions.end());
+
         if (state)
         {
             compiled->execute(state);
@@ -89,7 +92,13 @@ namespace TorqueScript
 
     CodeBlock* Interpreter::compile(const std::string& input)
     {
-        return mCompiler->compileString(input, &mStringTable);
+        CodeBlock* result = mCompiler->compileString(input, &mStringTable);
+        if (result)
+        {
+            const std::vector<std::shared_ptr<Function>>& functions = result->getFunctions();
+            mFunctionMapping.insert(mFunctionMapping.end(), functions.begin(), functions.end());
+        }
+        return result;
     }
 
     StoredValue* Interpreter::getGlobal(const std::string& name)
@@ -124,6 +133,12 @@ namespace TorqueScript
         StoredValue* newValue = new StoredValue(0);
         mGlobalVariables.insert(std::make_pair(name, newValue));
         return newValue;
+    }
+
+    std::shared_ptr<Function> Interpreter::getAwaitingFunction(const std::size_t id)
+    {
+        assert(id >= 0 && id < mFunctionMapping.size());
+        return mFunctionMapping[id];
     }
 
     void Interpreter::addFunction(std::shared_ptr<Function> function)

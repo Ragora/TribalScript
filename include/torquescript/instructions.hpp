@@ -603,14 +603,15 @@ namespace TorqueScript
         class PushLocalReferenceInstruction : public Instruction
         {
         public:
-            PushLocalReferenceInstruction(const std::size_t value) : Instruction(PushLocalReferenceInstruction::execute)
+            PushLocalReferenceInstruction(const std::size_t variableID) : Instruction(PushLocalReferenceInstruction::execute)
             {
-                mParameters[0].mStringID = value;
+                mParameters[0].mStringID = variableID;
             }
 
             static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
             {
                 StoredValueStack& stack = state->mExecutionScope.getStack();
+
                 stack.emplace_back(state->mExecutionScope.getVariableOrAllocate(instruction->mParameters[0].mStringID));
                 return 1;
             }
@@ -635,6 +636,36 @@ namespace TorqueScript
                 return 1;
             };
         };
+
+        /**
+         *  @brief Registers a callable function to the registry in the current interpreter.
+         */
+        class FunctionDeclarationInstruction : public Instruction
+        {
+            public:
+                /**
+                 *  @brief Constructs a new instance of FunctionDeclarationInstruction.
+                 *  @param package The package this function is defined in.
+                 *  @param space The namespace this function is defined in.
+                 *  @param name The name of this function.
+                 *  @param parameterNames The names of all parameters this function is expecting.
+                 *  @param instructions The instructions that make up the body of this function.
+                 */
+                FunctionDeclarationInstruction(const std::size_t functionID) : Instruction(FunctionDeclarationInstruction::execute)
+                {
+                    mParameters[0].mStringID = functionID;
+                }
+
+                static AddressOffsetType execute(ExecutionState* state, Instruction* instruction)
+                {
+                    // Register the function
+                    std::shared_ptr<Function> newFunction = state->mInterpreter->getAwaitingFunction(instruction->mParameters[0].mStringID);
+                    state->mInterpreter->addFunction(newFunction);
+                    return 1;
+                };
+
+        };
+
 
         /**
          *  @brief Compares two values on the stack using an equality.

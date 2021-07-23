@@ -19,14 +19,20 @@
 
 namespace TorqueScript
 {
-    CodeBlock::CodeBlock(const InstructionSequence& instructions)
+    CodeBlock::CodeBlock(const InstructionSequence& instructions, const std::vector<std::shared_ptr<Function>>& functions)
     {
+        mFunctions.insert(mFunctions.end(), functions.begin(), functions.end());
         mInstructions.insert(mInstructions.end(), instructions.begin(), instructions.end());
     }
 
     void CodeBlock::execute(ExecutionState* state)
     {
         mInstructions.execute(state);
+    }
+
+    const std::vector<std::shared_ptr<Function>>& CodeBlock::getFunctions()
+    {
+        return mFunctions;
     }
 
     std::vector<std::string> CodeBlock::disassemble()

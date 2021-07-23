@@ -36,7 +36,7 @@ namespace TorqueScript
     class CodeBlock
     {
         public:
-            CodeBlock(const InstructionSequence& instructions);
+            CodeBlock(const InstructionSequence& instructions, const std::vector<std::shared_ptr<Function>>& functions);
 
             /**
              *  @brief Executes all instructions contained in mInstructions within the provided context.
@@ -47,6 +47,8 @@ namespace TorqueScript
              *  @brief Produces a disassembly of the CodeBlock code.
              */
             std::vector<std::string> disassemble();
+
+            const std::vector<std::shared_ptr<Function>>& getFunctions();
 
         private:
             //! All functions registered in this codeblock.

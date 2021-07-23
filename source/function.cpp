@@ -100,12 +100,14 @@ namespace TorqueScript
 
         // Push scope once we're done dealing with locals and load in to current scope
         state->mExecutionScope.pushFrame(this);
+
+        std::size_t variableID = 0;
         for (auto localIterator = newLocals.begin(); localIterator != newLocals.end(); ++localIterator)
         {
             auto currentLocal = *localIterator;
 
-            // FIXME: Handle parameter passing
-            // state->mExecutionScope.setVariable(currentLocal.first, currentLocal.second);
+            state->mExecutionScope.getVariableOrAllocate(variableID)->setValue(currentLocal.second);
+            ++variableID;
         }
 
         mInstructions.execute(state);
