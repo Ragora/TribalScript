@@ -25,24 +25,49 @@ namespace TorqueScript
 
     static std::string resolveArrayNameFromStack(StoredValueStack& stack, ExecutionState* state, const std::string& base, const std::size_t argumentCount)
     {
-        std::vector<std::string> variableComponents;
+        // Load array components
+        std::vector<std::string> arrayComponents;
+
+        // First determine the number of bytes to allocate
+        std::size_t totalByteCount = base.size() + 1;
         for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
         {
-            variableComponents.push_back(stack.popString(state));
+            const std::string loadedString = stack.popString(state);
+            totalByteCount += loadedString.size() + 1;
+            arrayComponents.push_back(loadedString);
         }
+        arrayComponents.push_back(base);
 
-        std::ostringstream out;
-        out << base;
-        for (auto iterator = variableComponents.rbegin(); iterator != variableComponents.rend(); ++iterator)
+        // Allocate workspace
+        ++totalByteCount; // Account for NULL terminator
+
+        char* allocatedString = new char[totalByteCount];
+        char* currentStringPointer = allocatedString;
+
+        for (auto iterator = arrayComponents.rbegin(); iterator != arrayComponents.rend(); ++iterator)
         {
-            if (iterator != variableComponents.rbegin())
+            const std::string& currentString = *iterator;
+            const std::size_t currentStringLength = currentString.size();
+
+            // Copy in from source and add seperator if necessary
+            std::memcpy(currentStringPointer, currentString.c_str(), currentStringLength);
+            currentStringPointer += currentStringLength;
+
+            if (iterator != arrayComponents.rend() - 1)
             {
-                out << "_";
+                *currentStringPointer = '_';
+                ++currentStringPointer;
             }
-            out << *iterator;
         }
 
-        return out.str();
+        // Set terminator
+        *currentStringPointer = 0x00;
+
+        const std::size_t stringLength = static_cast<std::size_t>(currentStringPointer - allocatedString);
+        const std::string result(allocatedString, stringLength);
+        delete[] allocatedString;
+
+        return result;
     }
 
     static std::string resolveArrayName(const std::string& base)
