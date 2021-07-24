@@ -25,35 +25,25 @@ namespace TorqueScript
 
     static std::string resolveArrayNameFromStack(StoredValueStack& stack, ExecutionState* state, const std::string& base, const std::size_t argumentCount)
     {
-        // Load array components
-        std::vector<std::string> arrayComponents;
-
-        // First determine the number of bytes to allocate
-        std::size_t totalByteCount = base.size() + 1;
-        for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
-        {
-            const std::string loadedString = stack.popString(state);
-            totalByteCount += loadedString.size() + 1;
-            arrayComponents.push_back(loadedString);
-        }
-        arrayComponents.push_back(base);
-
-        // Allocate workspace
-        ++totalByteCount; // Account for NULL terminator
-
-        char* allocatedString = new char[totalByteCount];
+        // FIXME: For now we only allocate a single buffer with no chance of resizing if things get too big
+        char* allocatedString = new char[256];
         char* currentStringPointer = allocatedString;
 
-        for (auto iterator = arrayComponents.rbegin(); iterator != arrayComponents.rend(); ++iterator)
+        // Copy base
+        std::memcpy(allocatedString, base.c_str(), base.size());
+        currentStringPointer += base.size();
+
+        auto iterator = stack.rbegin();
+        for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
         {
-            const std::string& currentString = *iterator;
-            const std::size_t currentStringLength = currentString.size();
+            const StoredValue& currentValue = *iterator;
+            const std::size_t currentPosition = static_cast<std::size_t>(currentStringPointer - allocatedString);
 
-            // Copy in from source and add seperator if necessary
-            std::memcpy(currentStringPointer, currentString.c_str(), currentStringLength);
-            currentStringPointer += currentStringLength;
+            int bytesWritten = currentValue.toString(currentStringPointer, 256 - currentPosition);
+            currentStringPointer += bytesWritten;
 
-            if (iterator != arrayComponents.rend() - 1)
+            ++iterator;
+            if (iteration < argumentCount - 1)
             {
                 *currentStringPointer = '_';
                 ++currentStringPointer;

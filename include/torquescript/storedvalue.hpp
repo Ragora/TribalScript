@@ -182,6 +182,8 @@ namespace TorqueScript
          */
         std::string toString();
 
+        int toString(char* buffer, std::size_t bufferSize) const;
+
         bool toBoolean() const;
 
         ConsoleObject* toConsoleObject(ExecutionState* state);

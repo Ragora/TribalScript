@@ -170,6 +170,28 @@ namespace TorqueScript
         throw std::runtime_error("Unknown Conversion");
     }
 
+    int StoredValue::toString(char* buffer, std::size_t bufferSize) const
+    {
+        if (mReference)
+        {
+            return mReference->toString(buffer, bufferSize);
+        }
+
+        switch (mType)
+        {
+            case StoredValueType::Integer:
+                return std::snprintf(buffer, bufferSize, "%d", mStorage.mInteger);
+            case StoredValueType::Float:
+                return std::snprintf(buffer, bufferSize, "%f", mStorage.mFloat);
+            case StoredValueType::String:
+                const std::size_t stringLength = strlen(mStorage.mStringPointer);
+                std::memcpy(buffer, mStorage.mStringPointer, stringLength);
+                return stringLength;
+        }
+
+        throw std::runtime_error("Unknown Conversion");
+    }
+
     StoredValue StoredValue::getReferencedValueCopy(ExecutionState* state) const
     {
         if (mReference)
