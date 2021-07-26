@@ -895,7 +895,7 @@ namespace TorqueScript
                  *  @brief Constructs a new JumpInstruction instance.
                  *  @param offset The instruction offset to unconditionally jump to.
                  */
-                JumpInstruction(const AddressType offset) : mOffset(offset)
+                JumpInstruction(const AddressOffsetType offset) : mOffset(offset)
                 {
 
                 }
@@ -914,7 +914,7 @@ namespace TorqueScript
 
             private:
                 //! The unconditional jump offset.
-                AddressType mOffset;
+                AddressOffsetType mOffset;
         };
 
         /**
@@ -929,7 +929,7 @@ namespace TorqueScript
                  *  @brief Constructs a new instance of JumpTrueInstruction.
                  *  @param offset The instruction offset to jump to if the condition is true.
                  */
-                JumpTrueInstruction(const AddressType offset) : mOffset(offset)
+                JumpTrueInstruction(const AddressOffsetType offset) : mOffset(offset)
                 {
 
                 }
@@ -960,7 +960,7 @@ namespace TorqueScript
 
             private:
                 //! The jump offset.
-                AddressType mOffset;
+                AddressOffsetType mOffset;
         };
 
         /**
@@ -975,7 +975,7 @@ namespace TorqueScript
                  *  @brief Constructs a new instance of JumpFalseInstruction.
                  *  @param offset The instruction offset to jump to if the condition is false.
                  */
-                JumpFalseInstruction(const AddressType offset) : mOffset(offset)
+                JumpFalseInstruction(const AddressOffsetType offset) : mOffset(offset)
                 {
 
                 }
@@ -1006,7 +1006,7 @@ namespace TorqueScript
 
             private:
                 //! The jump offset.
-                AddressType mOffset;
+                AddressOffsetType mOffset;
         };
 
         /**

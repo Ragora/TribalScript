@@ -405,7 +405,7 @@ namespace TorqueScript
         expressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(bodyCode.size() + 2)));
 
         // Body should jump back to the expression to reevaluate
-        const int jumpTarget = -((int)(bodyCode.size() + expressionCode.size()));
+        const AddressOffsetType jumpTarget = -((int)(bodyCode.size() + expressionCode.size()));
         bodyCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(jumpTarget)));
 
         // Add a NOP for a jump target
@@ -446,7 +446,7 @@ namespace TorqueScript
         initializerCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
 
         // Our body should return to the expression
-        const AddressType jumpTarget = expressionCode.size() + forBody.size() + 1; // Consider the POP at the end of advance
+        const AddressOffsetType jumpTarget = expressionCode.size() + forBody.size() + 1; // Consider the POP at the end of advance
         forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(-jumpTarget)));
         forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
 
