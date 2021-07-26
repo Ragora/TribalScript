@@ -69,7 +69,7 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.push_back(StoredValue(mParameter));
+                    stack.emplace_back(mParameter);
                     return 1;
                 };
 
@@ -100,7 +100,7 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.push_back(StoredValue(mParameter));
+                    stack.emplace_back(mParameter);
                     return 1;
                 };
 
@@ -131,7 +131,7 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.push_back(StoredValue(mString.c_str()));
+                    stack.emplace_back(mString.c_str());
                     return 1;
                 };
 
@@ -193,7 +193,7 @@ namespace TorqueScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.push_back(StoredValue(state->mInterpreter->getGlobalOrAllocate(mStringID)));
+                    stack.emplace_back(state->mInterpreter->getGlobalOrAllocate(mStringID));
                     return 1;
                 };
 
@@ -222,10 +222,8 @@ namespace TorqueScript
                     assert(stack.size() >= 2);
 
                     // Pull two values off the stack
-                    StoredValue rhsStored = stack.back();
-                    stack.pop_back();
-                    StoredValue lhsStored = stack.back();
-                    stack.pop_back();
+                    StoredValue& rhsStored = *(stack.end() - 1);
+                    StoredValue& lhsStored = *(stack.end() - 2);
 
                     float resultRaw = 0.0f;
                     resultRaw = lhsStored.toFloat();
@@ -236,6 +234,8 @@ namespace TorqueScript
                     {
                         state->mInterpreter->mConfig.mPlatform->logError("Attempted to perform no-op assignment!");
                     }
+
+                    stack.erase(stack.end() - 2, stack.end());
 
                     // In Torque, the result of the assignment is pushed to stack
                     stack.push_back(result);
@@ -261,15 +261,15 @@ namespace TorqueScript
                     assert(stack.size() >= 2);
 
                     // Pull two values off the stack
-                    StoredValue rhsStored = stack.back();
-                    stack.pop_back();
-                    StoredValue lhsStored = stack.back();
-                    stack.pop_back();
+                    StoredValue& rhsStored = *(stack.end() - 1);
+                    StoredValue& lhsStored = *(stack.end() - 2);
 
                     if (!lhsStored.setValue(rhsStored))
                     {
                         state->mInterpreter->mConfig.mPlatform->logError("Attempted to perform no-op assignment!");
                     }
+
+                    stack.erase(stack.end() - 2, stack.end());
 
                     // In Torque, the result of the assignment is pushed to stack
                     stack.push_back(rhsStored);
@@ -301,16 +301,17 @@ namespace TorqueScript
                     assert(stack.size() >= 2);
 
                     // Pull two values off the stack
-                    StoredValue rhsStored = stack.back();
-                    stack.pop_back();
-                    StoredValue lhsStored = stack.back();
-                    stack.pop_back();
+                    StoredValue& rhsStored = *(stack.end() - 1);
+                    StoredValue& lhsStored = *(stack.end() - 2);
 
                     std::string lhs = lhsStored.toString();
                     std::string rhs = rhsStored.toString();
 
                     // Generate a new string ID
                     const std::string requestedString = lhs + mSeperator + rhs;
+
+                    stack.erase(stack.end() - 2, stack.end());
+
                     stack.emplace_back(requestedString.c_str());
                     return 1;
                 };
@@ -340,10 +341,11 @@ namespace TorqueScript
                     assert(stack.size() >= 1);
 
                     // Pull two values off the stack
-                    StoredValue storedTarget = stack.back();
-                    stack.pop_back();
+                    StoredValue& storedTarget = stack.back();
 
-                    stack.push_back(StoredValue(-storedTarget.toFloat()));
+                    const float result = -storedTarget.toFloat();
+                    stack.pop_back();
+                    stack.emplace_back(result);
                     return 1;
                 };
 
@@ -365,11 +367,12 @@ namespace TorqueScript
 
                 assert(stack.size() >= 1);
 
-                // Pull two values off the stack
-                StoredValue storedTarget = stack.back();
-                stack.pop_back();
+                StoredValue& storedTarget = stack.back();
+              
+                const int result = !storedTarget.toBoolean() ? 1 : 0;
 
-                stack.push_back(StoredValue(!storedTarget.toBoolean() ? 1 : 0));
+                stack.pop_back();
+                stack.emplace_back(result);
                 return 1;
             };
 
@@ -486,16 +489,16 @@ namespace TorqueScript
 
                     assert(stack.size() >= 2);
 
-                    StoredValue rhsStored = stack.back();
-                    stack.pop_back();
-                    StoredValue lhsStored = stack.back();
-                    stack.pop_back();
+                    StoredValue& rhsStored = *(stack.end() - 1);
+                    StoredValue& lhsStored = *(stack.end() - 2);
 
                     const bool lhs = lhsStored.toBoolean();
                     const bool rhs = rhsStored.toBoolean();
 
                     const int result = lhs && rhs ? 1 : 0;
-                    stack.push_back(StoredValue(result));
+
+                    stack.erase(stack.end() - 2, stack.end());
+                    stack.emplace_back(result);
                     return 1;
                 };
 
@@ -517,16 +520,16 @@ namespace TorqueScript
 
                     assert(stack.size() >= 2);
 
-                    StoredValue rhsStored = stack.back();
-                    stack.pop_back();
-                    StoredValue lhsStored = stack.back();
-                    stack.pop_back();
+                    StoredValue& rhsStored = *(stack.end() - 1);
+                    StoredValue& lhsStored = *(stack.end() - 2);
 
                     const bool lhs = lhsStored.toBoolean();
                     const bool rhs = rhsStored.toBoolean();
 
                     const int result = lhs || rhs ? 1 : 0;
-                    stack.push_back(StoredValue(result));
+
+                    stack.erase(stack.end() - 2, stack.end());
+                    stack.emplace_back(result);
                     return 1;
                 };
 
@@ -548,17 +551,17 @@ namespace TorqueScript
 
                     assert(stack.size() >= 2);
 
-                    StoredValue rhsStored = stack.back();
-                    stack.pop_back();
-                    StoredValue lhsStored = stack.back();
-                    stack.pop_back();
+                    StoredValue& rhsStored = *(stack.end() - 1);
+                    StoredValue& lhsStored = *(stack.end() - 2);
 
                     // NOTE: For now we normalize to floats
                     float lhs = lhsStored.toFloat();
                     float rhs = rhsStored.toFloat();
 
                     const float result = lhs + rhs;
-                    stack.push_back(StoredValue(result));
+
+                    stack.erase(stack.end() - 2, stack.end());
+                    stack.emplace_back(result);
                     return 1;
                 };
 
@@ -580,17 +583,17 @@ namespace TorqueScript
 
                 assert(stack.size() >= 2);
 
-                StoredValue rhsStored = stack.back();
-                stack.pop_back();
-                StoredValue lhsStored = stack.back();
-                stack.pop_back();
+                StoredValue& rhsStored = *(stack.end() - 1);
+                StoredValue& lhsStored = *(stack.end() - 2);
 
                 // NOTE: For now we normalize to floats
                 float lhs = lhsStored.toFloat();
                 float rhs = rhsStored.toFloat();
 
                 const float result = lhs - rhs;
-                stack.push_back(StoredValue(result));
+
+                stack.erase(stack.end() - 2, stack.end());
+                stack.emplace_back(result);
                 return 1;
             };
 
@@ -612,17 +615,17 @@ namespace TorqueScript
 
                 assert(stack.size() >= 2);
 
-                StoredValue rhsStored = stack.back();
-                stack.pop_back();
-                StoredValue lhsStored = stack.back();
-                stack.pop_back();
+                StoredValue& rhsStored = *(stack.end() - 1);
+                StoredValue& lhsStored = *(stack.end() - 2);
 
                 // NOTE: For now we normalize to floats
                 int lhs = lhsStored.toInteger();
                 int rhs = rhsStored.toInteger();
 
                 const int result = lhs % rhs;
-                stack.push_back(StoredValue(result));
+
+                stack.erase(stack.end() - 2, stack.end());
+                stack.emplace_back(result);
                 return 1;
             };
 
@@ -644,17 +647,17 @@ namespace TorqueScript
 
                     assert(stack.size() >= 2);
 
-                    StoredValue rhsStored = stack.back();
-                    stack.pop_back();
-                    StoredValue lhsStored = stack.back();
-                    stack.pop_back();
+                    StoredValue& rhsStored = *(stack.end() - 1);
+                    StoredValue& lhsStored = *(stack.end() - 2);
 
                     // NOTE: For now we normalize to floats
                     float lhs = lhsStored.toFloat();
                     float rhs = rhsStored.toFloat();
 
                     const int result = lhs < rhs ? 1 : 0;
-                    stack.push_back(StoredValue(result));
+
+                    stack.erase(stack.end() - 2, stack.end());
+                    stack.emplace_back(result);
                     return 1;
                 };
 
@@ -676,17 +679,17 @@ namespace TorqueScript
 
                     assert(stack.size() >= 2);
 
-                    StoredValue rhsStored = stack.back();
-                    stack.pop_back();
-                    StoredValue lhsStored = stack.back();
-                    stack.pop_back();
+                    StoredValue& rhsStored = *(stack.end() - 1);
+                    StoredValue& lhsStored = *(stack.end() - 2);
 
                     // NOTE: For now we normalize to floats
                     float lhs = lhsStored.toFloat();
                     float rhs = rhsStored.toFloat();
 
                     const int result = lhs == rhs ? 1 : 0;
-                    stack.push_back(StoredValue(result));
+
+                    stack.erase(stack.end() - 2, stack.end());
+                    stack.emplace_back(result);
                     return 1;
                 };
 
@@ -708,17 +711,17 @@ namespace TorqueScript
 
                 assert(stack.size() >= 2);
 
-                StoredValue rhsStored = stack.back();
-                stack.pop_back();
-                StoredValue lhsStored = stack.back();
-                stack.pop_back();
+                StoredValue& rhsStored = *(stack.end() - 1);
+                StoredValue& lhsStored = *(stack.end() - 2);
 
                 // NOTE: For now we normalize to floats
                 float lhs = lhsStored.toFloat();
                 float rhs = rhsStored.toFloat();
 
                 const int result = lhs != rhs ? 1 : 0;
-                stack.push_back(StoredValue(result));
+
+                stack.erase(stack.end() - 2, stack.end());
+                stack.emplace_back(result);
                 return 1;
             };
 
@@ -740,17 +743,17 @@ namespace TorqueScript
 
                 assert(stack.size() >= 2);
 
-                StoredValue rhsStored = stack.back();
-                stack.pop_back();
-                StoredValue lhsStored = stack.back();
-                stack.pop_back();
+                StoredValue& rhsStored = *(stack.end() - 1);
+                StoredValue& lhsStored = *(stack.end() - 2);
 
                 // NOTE: For now we normalize to floats
                 std::string lhs = lhsStored.toString();
                 std::string rhs = rhsStored.toString();
 
                 const int result = lhs == rhs ? 1 : 0;
-                stack.push_back(StoredValue(result));
+
+                stack.erase(stack.end() - 2, stack.end());
+                stack.emplace_back(result);
                 return 1;
             };
 
@@ -772,17 +775,17 @@ namespace TorqueScript
 
                     assert(stack.size() >= 2);
 
-                    StoredValue rhsStored = stack.back();
-                    stack.pop_back();
-                    StoredValue lhsStored = stack.back();
-                    stack.pop_back();
+                    StoredValue& rhsStored = *(stack.end() - 1);
+                    StoredValue& lhsStored = *(stack.end() - 2);
 
                     // NOTE: For now we normalize to floats
                     int lhs = lhsStored.toInteger();
                     int rhs = rhsStored.toInteger();
 
                     const int result = lhs & rhs;
-                    stack.push_back(StoredValue(result));
+
+                    stack.erase(stack.end() - 2, stack.end());
+                    stack.emplace_back(result);
                     return 1;
                 };
 
@@ -805,10 +808,8 @@ namespace TorqueScript
 
                     assert(stack.size() >= 2);
 
-                    StoredValue lhsStored = stack.back();
-                    stack.pop_back();
-                    StoredValue rhsStored = stack.back();
-                    stack.pop_back();
+                    StoredValue& rhsStored = *(stack.end() - 1);
+                    StoredValue& lhsStored = *(stack.end() - 2);
 
                     // NOTE: For now we normalize to floats
 
@@ -816,7 +817,9 @@ namespace TorqueScript
                     float rhs = rhsStored.toFloat();
 
                     const float result = lhs * rhs;
-                    stack.push_back(StoredValue(result));
+
+                    stack.erase(stack.end() - 2, stack.end());
+                    stack.emplace_back(result);
                     return 1;
                 };
 
@@ -839,10 +842,8 @@ namespace TorqueScript
 
                     assert(stack.size() >= 2);
 
-                    StoredValue rhsStored = stack.back();
-                    stack.pop_back();
-                    StoredValue lhsStored = stack.back();
-                    stack.pop_back();
+                    StoredValue& rhsStored = *(stack.end() - 1);
+                    StoredValue& lhsStored = *(stack.end() - 2);
 
                     // NOTE: For now we normalize to floats
 
@@ -850,7 +851,9 @@ namespace TorqueScript
                     float rhs = rhsStored.toFloat();
 
                     const float result = lhs / rhs;
-                    stack.push_back(StoredValue(result));
+
+                    stack.erase(stack.end() - 2, stack.end());
+                    stack.emplace_back(result);
                     return 1;
                 };
 
@@ -937,13 +940,14 @@ namespace TorqueScript
 
                     assert(stack.size() >= 1);
 
-                    StoredValue booleanStored = stack.back();
-                    stack.pop_back();
-
+                    StoredValue& booleanStored = stack.back();
                     if (booleanStored.toBoolean())
                     {
+                        stack.pop_back();
                         return mOffset;
                     }
+
+                    stack.pop_back();
                     return 1;
                 };
 
@@ -982,13 +986,14 @@ namespace TorqueScript
 
                     assert(stack.size() >= 1);
 
-                    StoredValue booleanStored = stack.back();
-                    stack.pop_back();
-
+                    StoredValue& booleanStored = stack.back();
                     if (!booleanStored.toBoolean())
                     {
+                        stack.pop_back();
                         return mOffset;
                     }
+
+                    stack.pop_back();
                     return 1;
                 };
 
@@ -1161,12 +1166,13 @@ namespace TorqueScript
 
                     assert(stack.size() >= 1);
 
-                    StoredValue targetStored = stack.back();
-                    stack.pop_back();
+                    StoredValue& targetStored = stack.back();
 
                     // For if we return a variable reference, we want to pass back a copy
                     StoredValueStack& returnStack = state->mExecutionScope.getReturnStack();
                     returnStack.push_back(targetStored.getReferencedValueCopy(state));
+
+                    stack.pop_back();
                     return 0;
                 };
 
@@ -1362,7 +1368,7 @@ namespace TorqueScript
                         }
                     }
 
-                    stack.push_back(StoredValue(0));
+                    stack.emplace_back(0);
                     return 1;
                 };
 
@@ -1487,11 +1493,11 @@ namespace TorqueScript
 
                         if (result)
                         {
-                            stack.push_back(StoredValue((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(result)));
+                            stack.emplace_back((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(result));
                         }
                         else
                         {
-                            stack.push_back(StoredValue(-1));
+                            stack.emplace_back(-1);
                         }
                     }
 
