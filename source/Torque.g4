@@ -61,7 +61,7 @@ return_control : RETURN expression? ;
     Expressions and Statements
 */
 
-expression_statement : primary_expression ';'
+expression_statement : actionable_expression ';'
                      | while_control
                      | for_control
                      | if_control
@@ -77,12 +77,13 @@ statement : function_declaration
 expression_list : expression (',' expression)* ;
 
 functioncall_expression : LABEL '(' expression_list? ')'                        # call
-                        | LABEL '::' LABEL '(' expression_list? ')'             # call
-                        | (lvalue | rvalue) '.' LABEL '(' expression_list? ')'  # subcall ;
+                        | LABEL '::' LABEL '(' expression_list? ')'             # call ;
+
+actionable_expression : primary_expression
+					  | (primary_expression | expression) ('.' (primary_expression | expression))*? '.' primary_expression ;
 
 // Root level expression - because expressions like `1;` are not valid - it must be actionable
 primary_expression : functioncall_expression                                       # callExpression
-                   | primary_expression '.' primary_expression                     # primaryExpressionSubfield
                    | lvalue (op=ASSIGN
                             |op=PLUSASSIGN
                             |op=MINUSASSIGN
@@ -114,13 +115,12 @@ lvalue : (globalvariable | localvariable) '[' expression_list ']'   # array
        | localvariable                                                      # localValue
        | globalvariable                                                     # globalValue
        | rvalue '.' LABEL                                                   # subfield
-       | lvalue '.' LABEL                                                   # subfield ;
+       | lvalue '.' LABEL                                                   # subfield
+       | functioncall_expression '.' LABEL									# callField ;
 
 expression : (op=MINUS
              |op=NOT
              |op=TILDE) expression                                              # unary
-           | primary_expression                                                 # primaryExpressionReference
-           | expression '.' expression                                          # subfieldExpression
            | lvalue                                                             # lvalueExpression
            | '(' expression ')'                                                 # parentheses
            | expression (op=BITWISEXOR
