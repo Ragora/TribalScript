@@ -61,7 +61,7 @@ return_control : RETURN expression? ;
     Expressions and Statements
 */
 
-expression_statement : actionable_expression ';'
+expression_statement : primary_expression ';'
                      | while_control
                      | for_control
                      | if_control
@@ -76,14 +76,19 @@ statement : function_declaration
 
 expression_list : expression (',' expression)* ;
 
-functioncall_expression : LABEL '(' expression_list? ')'                        # call
-                        | LABEL '::' LABEL '(' expression_list? ')'             # call ;
 
-actionable_expression : primary_expression
-					  | (primary_expression | expression) ('.' (primary_expression | expression))*? '.' primary_expression ;
+call_expression : LABEL '(' expression_list? ')'                        # call
+                | LABEL '::' LABEL '(' expression_list? ')'             # call ;
+
+subcall_expression : (lvalue | rvalue | call_expression) ('.' field_component '(' expression_list? ')')+ ;
+
+functioncall_expression : subcall_expression                                    # subcall
+						| call_expression									    # test ;
+
 
 // Root level expression - because expressions like `1;` are not valid - it must be actionable
 primary_expression : functioncall_expression                                       # callExpression
+                   | primary_expression '.' primary_expression                     # primaryExpressionSubfield
                    | lvalue (op=ASSIGN
                             |op=PLUSASSIGN
                             |op=MINUSASSIGN
@@ -109,18 +114,22 @@ rvalue : INT                                                                # va
        | object_declaration                                                 # objectDeclarationRValue ;
 
 // Valid on both the left and right sides of an assignment
+field_component : LABEL
+				| LABEL '[' expression_list ']' ;
+
 lvalue : (globalvariable | localvariable) '[' expression_list ']'   # array
        | lvalue '.' LABEL '[' expression_list ']'                           # subarray
        | rvalue '.' LABEL '[' expression_list ']'                           # subarray
        | localvariable                                                      # localValue
        | globalvariable                                                     # globalValue
        | rvalue '.' LABEL                                                   # subfield
-       | lvalue '.' LABEL                                                   # subfield
-       | functioncall_expression '.' LABEL									# callField ;
+       | lvalue '.' LABEL                                                   # subfield ;
 
 expression : (op=MINUS
              |op=NOT
              |op=TILDE) expression                                              # unary
+           | primary_expression                                                 # primaryExpressionReference
+           | expression '.' expression                                          # subfieldExpression
            | lvalue                                                             # lvalueExpression
            | '(' expression ')'                                                 # parentheses
            | expression (op=BITWISEXOR
