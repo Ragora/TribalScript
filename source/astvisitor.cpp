@@ -246,6 +246,16 @@ namespace TorqueScript
             return this->aggregateResult(result, childResult);
         }
 
+        antlrcpp::Any ASTVisitor::visitGreaterThanNode(AST::GreaterThanNode* expression)
+        {
+            antlrcpp::Any result = this->defaultResult();
+
+            antlrcpp::Any childResult = expression->mLeft->accept(this);
+            result = this->aggregateResult(result, childResult);
+            childResult = expression->mRight->accept(this);
+            return this->aggregateResult(result, childResult);
+        }
+
         antlrcpp::Any ASTVisitor::visitNegateNode(AST::NegateNode* expression)
         {
             antlrcpp::Any result = this->defaultResult();

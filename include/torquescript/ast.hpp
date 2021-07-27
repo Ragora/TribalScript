@@ -472,6 +472,20 @@ namespace TorqueScript
                 }
         };
 
+        class GreaterThanNode : public InfixExpressionNode
+        {
+        public:
+            GreaterThanNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
+            {
+
+            }
+
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
+            {
+                return visitor->visitGreaterThanNode(this);
+            }
+        };
+
         class UnaryNode : public ASTNode
         {
             public:

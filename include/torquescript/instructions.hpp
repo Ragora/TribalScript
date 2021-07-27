@@ -667,6 +667,35 @@ namespace TorqueScript
                 }
         };
 
+        class GreaterThanInstruction : public Instruction
+        {
+        public:
+            virtual AddressOffsetType execute(ExecutionState* state) override
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                StoredValue& rhsStored = *(stack.end() - 1);
+                StoredValue& lhsStored = *(stack.end() - 2);
+
+                // NOTE: For now we normalize to floats
+                float lhs = lhsStored.toFloat();
+                float rhs = rhsStored.toFloat();
+
+                const int result = lhs > rhs ? 1 : 0;
+
+                stack.erase(stack.end() - 2, stack.end());
+                stack.emplace_back(result);
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                return "GreaterThan";
+            }
+        };
+
         /**
          *  @brief Compares two values on the stack using an equality.
          */

@@ -365,6 +365,10 @@ namespace TorqueScript
             {
                 result.push_back(new AST::LessThanNode(left, right));
             }
+            else if (context->GREATERTHAN())
+            {
+                result.push_back(new AST::GreaterThanNode(left, right));
+            }
             else
             {
                 throw std::runtime_error("Unhandled Relational Type!");

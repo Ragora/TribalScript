@@ -85,6 +85,7 @@ namespace TorqueScript
             virtual antlrcpp::Any visitLocalVariableNode(AST::LocalVariableNode* value) override;
             virtual antlrcpp::Any visitGlobalVariableNode(AST::GlobalVariableNode* value) override;
             virtual antlrcpp::Any visitAssignmentNode(AST::AssignmentNode* expression) override;
+            virtual antlrcpp::Any visitGreaterThanNode(AST::GreaterThanNode* expression);
             virtual antlrcpp::Any visitLessThanNode(AST::LessThanNode* expression) override;
             virtual antlrcpp::Any visitNegateNode(AST::NegateNode* expression) override;
             virtual antlrcpp::Any visitNotNode(AST::NotNode* expression) override;
