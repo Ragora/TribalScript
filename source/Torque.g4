@@ -108,7 +108,7 @@ rvalue : INT                                                                # va
        | object_declaration                                                 # objectDeclarationRValue ;
 
 // Valid on both the left and right sides of an assignment
-lvalue : (globalvariable | localvariable | LABEL) '[' expression_list ']'   # array
+lvalue : (globalvariable | localvariable) '[' expression_list ']'   # array
        | lvalue '.' LABEL '[' expression_list ']'                           # subarray
        | rvalue '.' LABEL '[' expression_list ']'                           # subarray
        | localvariable                                                      # localValue
