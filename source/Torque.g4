@@ -222,7 +222,7 @@ STRING : '"' ( ESC | ~[\\"] )*? '"' ;
 TAGGEDSTRING : '\'' ( ESC | ~[\\'] )*? '\'' ;
 
 fragment
-ESC :   '\\' ([A-Za-z0-9|{}])
+ESC :   '\\' ([A-Za-z0-9|{}"'\\])
     |   HEX_ESCAPE
     |   COLOR_ESCAPE
     ;
