@@ -78,7 +78,8 @@ expression_list : expression (',' expression)* ;
 
 functioncall_expression : LABEL '(' expression_list? ')'                        # call
                         | LABEL '::' LABEL '(' expression_list? ')'             # call
-                        | (lvalue | rvalue) '.' LABEL '(' expression_list? ')'  # subcall ;
+                        | (lvalue | rvalue) '.' LABEL '(' expression_list? ')'  # subcall
+                        | functioncall_expression '.' LABEL '(' expression_list? ')' # subcall ;
 
 // Root level expression - because expressions like `1;` are not valid - it must be actionable
 primary_expression : functioncall_expression                                       # callExpression
