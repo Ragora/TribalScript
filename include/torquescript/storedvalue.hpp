@@ -188,7 +188,7 @@ namespace TorqueScript
 
         /// @}
 
-        StoredValue getReferencedValueCopy(ExecutionState* state) const;
+        StoredValue getReferencedValueCopy() const;
 
         bool isInteger();
 

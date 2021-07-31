@@ -153,6 +153,8 @@ namespace TorqueScript
              */
             StoredValue* getTaggedField(const std::string& name);
 
+            StoredValue* getTaggedFieldOrAllocate(const std::string& name);
+
             /**
              *  @brief Sets a tagged field by name on the object.
              *  @param name The tagged field name to set, which is case insensitive.
@@ -172,7 +174,7 @@ namespace TorqueScript
             Interpreter* mInterpreter;
 
             //! A mapping of tagged field names to their stored values.
-            std::unordered_map<std::string, StoredValue> mTaggedFields;
+            std::unordered_map<std::string, StoredValue*> mTaggedFields;
     };
 
     template<>

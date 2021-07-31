@@ -27,7 +27,11 @@ namespace TorqueScript
 
     ConsoleObject::~ConsoleObject()
     {
-
+        // Deallocate fields
+        for (auto iterator = mTaggedFields.begin(); iterator != mTaggedFields.end(); ++iterator)
+        {
+            delete iterator->second;
+        }
     }
 
     StoredValue* ConsoleObject::getTaggedField(const std::string& name)
@@ -37,9 +41,24 @@ namespace TorqueScript
 
         if (search != mTaggedFields.end())
         {
-            return &search->second;
+            return search->second;
         }
         return nullptr;
+    }
+
+    StoredValue* ConsoleObject::getTaggedFieldOrAllocate(const std::string& name)
+    {
+        const std::string searchName = toLowerCase(name);
+        auto search = mTaggedFields.find(searchName);
+
+        if (search != mTaggedFields.end())
+        {
+            return search->second;
+        }
+
+        StoredValue* newValue = new StoredValue(0);
+        mTaggedFields.insert(std::make_pair(name, newValue));
+        return newValue;
     }
 
     void ConsoleObject::setTaggedField(const std::string& name, StoredValue value)
@@ -49,11 +68,11 @@ namespace TorqueScript
         auto search = mTaggedFields.find(setName);
         if (search != mTaggedFields.end())
         {
-            search->second = value;
+            search->second->setValue(value);
         }
         else
         {
-            mTaggedFields.insert(std::make_pair(setName, value));
+            mTaggedFields.insert(std::make_pair(setName, new StoredValue(value)));
         }
     }
 

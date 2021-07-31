@@ -36,7 +36,7 @@ namespace TorqueScript
             return mReference->toConsoleObject(state);
         }
 
-        StoredValue rawValue = this->getReferencedValueCopy(state);
+        StoredValue rawValue = this->getReferencedValueCopy();
 
         // Search by ID first
         if (rawValue.isInteger())
@@ -130,6 +130,8 @@ namespace TorqueScript
             return mReference->toInteger();
         }
 
+        StoredValue* referenced;
+
         switch (mType)
         {
         case StoredValueType::Integer:
@@ -157,6 +159,8 @@ namespace TorqueScript
             return mReference->toString();
         }
 
+        StoredValue* referenced;
+
         switch (mType)
         {
         case StoredValueType::Integer:
@@ -170,11 +174,11 @@ namespace TorqueScript
         throw std::runtime_error("Unknown Conversion");
     }
 
-    StoredValue StoredValue::getReferencedValueCopy(ExecutionState* state) const
+    StoredValue StoredValue::getReferencedValueCopy() const
     {
         if (mReference)
         {
-            return mReference->getReferencedValueCopy(state);
+            return mReference->getReferencedValueCopy();
         }
 
         switch (mType)
@@ -209,8 +213,11 @@ namespace TorqueScript
             }
         }
 
+        StoredValue* referenced;
+
         switch (mType)
         {
+
         case StoredValueType::Integer:
             return (float)mStorage.mInteger;
         case StoredValueType::Float:

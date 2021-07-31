@@ -1156,13 +1156,12 @@ namespace TorqueScript
 
                     StoredValue targetStored = stack.back();
                     stack.pop_back();
-                    ConsoleObject* referenced = targetStored.toConsoleObject(state);
 
+                    ConsoleObject* referenced = targetStored.toConsoleObject(state);
                     if (referenced)
                     {
-                        // const std::string stringData = state->mInterpreter->mStringTable.getOrAssign(arrayName);
-
-                        // stack.emplace_back(referenced, mStringID);
+                        // Obtain a reference to the console object's field
+                        stack.emplace_back(referenced->getTaggedFieldOrAllocate(arrayName));
                         return 1;
                     }
 
@@ -1199,7 +1198,7 @@ namespace TorqueScript
 
                     // For if we return a variable reference, we want to pass back a copy
                     StoredValueStack& returnStack = state->mExecutionScope.getReturnStack();
-                    returnStack.push_back(targetStored.getReferencedValueCopy(state));
+                    returnStack.push_back(targetStored.getReferencedValueCopy());
 
                     stack.pop_back();
                     return 0;
