@@ -792,6 +792,35 @@ namespace TorqueScript
             }
         };
 
+        class StringNotEqualInstruction : public Instruction
+        {
+        public:
+            virtual AddressOffsetType execute(ExecutionState* state) override
+            {
+                StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                assert(stack.size() >= 2);
+
+                StoredValue& rhsStored = *(stack.end() - 1);
+                StoredValue& lhsStored = *(stack.end() - 2);
+
+                // NOTE: For now we normalize to floats
+                std::string lhs = lhsStored.toString();
+                std::string rhs = rhsStored.toString();
+
+                const int result = lhs != rhs ? 1 : 0;
+
+                stack.erase(stack.end() - 2, stack.end());
+                stack.emplace_back(result);
+                return 1;
+            };
+
+            virtual std::string disassemble() override
+            {
+                return "StringNotEqual";
+            }
+        };
+
         /**
          *  @brief Performs a bitwise AND against two values.
          */

@@ -14,7 +14,7 @@
 
 grammar Torque;
 
-program  : statement+ EOF ;
+program  : statement* EOF ;
 
 /*
     Main Blocks
@@ -76,15 +76,39 @@ statement : function_declaration
 
 expression_list : expression (',' expression)* ;
 
-functioncall_expression : LABEL '(' expression_list? ')'                        # call
-                        | LABEL '::' LABEL '(' expression_list? ')'             # call
-                        | (lvalue | rvalue) '.' LABEL '(' expression_list? ')'  # subcall
-                        | functioncall_expression '.' LABEL '(' expression_list? ')' # subcall ;
+qualified_functioncall_expression : LABEL '::' LABEL '(' expression_list? ')'  ;
+functioncall_expression : LABEL '(' expression_list? ')'  ;
+
+chain_start : localvariable
+            | globalvariable 
+            | globalarray
+            | localarray 
+            | rvalue
+            | functioncall_expression
+            | qualified_functioncall_expression
+            | field ;
+
+chain_component : field
+                | fieldarray
+                | functioncall_expression ;
+
+chain_elements : field
+               | fieldarray
+               | functioncall_expression
+               | chain_elements '.' chain_elements ;
+
+chain : chain_start ('.' chain_elements)? ;
+
+assignable_chain : localvariable
+                 | globalvariable
+                 | localarray
+                 | globalarray
+                 | chain_start ('.' chain_elements)? '.' field
+                 | chain_start ('.' chain_elements)? '.' fieldarray ;
 
 // Root level expression - because expressions like `1;` are not valid - it must be actionable
-primary_expression : functioncall_expression                                       # callExpression
-                   | primary_expression '.' primary_expression                     # primaryExpressionSubfield
-                   | lvalue (op=ASSIGN
+primary_expression : chain                                                          # chainPrimaryExpression
+                   | assignable_chain (op=ASSIGN
                             |op=PLUSASSIGN
                             |op=MINUSASSIGN
                             |op=MULTIPLYASSIGN
@@ -92,8 +116,8 @@ primary_expression : functioncall_expression                                    
                             |op=ORASSIGN
                             |op=MODULUSASSIGN
                             |op=ANDASSIGN) expression                               # assign
-                   | lvalue '++'                                                    # increment
-                   | lvalue '--'                                                    # decrement
+                   | assignable_chain '++'                                          # increment
+                   | assignable_chain '--'                                          # decrement
                    | object_declaration                                             # objectDeclarationExpression
                    | datablock_declaration                                          # datablockDeclarationExpression ;
 
@@ -108,21 +132,10 @@ rvalue : INT                                                                # va
        | FALSE                                                              # value
        | object_declaration                                                 # objectDeclarationRValue ;
 
-// Valid on both the left and right sides of an assignment
-lvalue : (globalvariable | localvariable) '[' expression_list ']'   # array
-       | lvalue '.' LABEL '[' expression_list ']'                           # subarray
-       | rvalue '.' LABEL '[' expression_list ']'                           # subarray
-       | localvariable                                                      # localValue
-       | globalvariable                                                     # globalValue
-       | rvalue '.' LABEL                                                   # subfield
-       | lvalue '.' LABEL                                                   # subfield ;
-
 expression : (op=MINUS
              |op=NOT
              |op=TILDE) expression                                              # unary
-           | primary_expression                                                 # primaryExpressionReference
-           | expression '.' expression                                          # subfieldExpression
-           | lvalue                                                             # lvalueExpression
+           | chain                                                              # chainExpression
            | '(' expression ')'                                                 # parentheses
            | expression (op=BITWISEXOR
                         |op=BITWISEOR
@@ -155,6 +168,11 @@ expression : (op=MINUS
 labelwithkeywords : LABEL | PACKAGE | RETURN | WHILE | FALSE | TRUE | FUNCTION | ELSE | IF | DATABLOCK | CASE ;
 localvariable : '%' labelwithkeywords ('::' labelwithkeywords)* ;
 globalvariable : '$' labelwithkeywords ('::' labelwithkeywords)* ;
+
+field : LABEL ;
+fieldarray : LABEL '[' expression_list ']' ;
+localarray : localvariable '[' expression_list ']' ;
+globalarray : globalvariable '[' expression_list ']' ;
 
 /*
     Lexer

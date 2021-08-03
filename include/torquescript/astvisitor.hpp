@@ -67,6 +67,7 @@ namespace TorqueScript
         class ModulusNode;
         class MinusNode;
         class GreaterThanNode;
+        class StringNotEqualNode;
 
         class ASTVisitor
         {
@@ -122,6 +123,7 @@ namespace TorqueScript
                 virtual antlrcpp::Any visitSwitchNode(AST::SwitchNode* node);
                 virtual antlrcpp::Any visitElseIfNode(AST::ElseIfNode* node);
                 virtual antlrcpp::Any visitIfNode(AST::IfNode* node);
+                virtual antlrcpp::Any visitStringNotEqualNode(AST::StringNotEqualNode* expression);
         };
     }
 }

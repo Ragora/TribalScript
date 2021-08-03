@@ -65,6 +65,89 @@ namespace TorqueScript
             return result;
         }
 
+        antlrcpp::Any ASTBuilder::visitLocalarray(TorqueParser::LocalarrayContext* context)
+        {
+            std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
+            assert(parameters.size() >= 1);
+
+            std::vector<ASTNode*> result;
+            ASTNode* parent = parameters[0];
+            parameters.erase(parameters.begin());
+
+            result.push_back(new AST::ArrayNode(parent, parameters));
+            return result;
+        }
+
+        antlrcpp::Any ASTBuilder::visitGlobalarray(TorqueParser::GlobalarrayContext* context)
+        {
+            std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
+            assert(parameters.size() >= 1);
+
+            std::vector<ASTNode*> result;
+            ASTNode* parent = parameters[0];
+            parameters.erase(parameters.begin());
+
+            result.push_back(new AST::ArrayNode(parent, parameters));
+            return result;
+        }
+
+        antlrcpp::Any ASTBuilder::visitQualified_functioncall_expression(TorqueParser::Qualified_functioncall_expressionContext* context)
+        {
+            std::vector<AST::ASTNode*> result;
+
+            // Load function name
+            std::string calledFunctionName = "";
+            std::string calledFunctionNameSpace = "";
+
+            std::vector<antlr4::tree::TerminalNode*> calledFunctionNameComponents = context->LABEL();
+            assert(calledFunctionNameComponents.size() == 2);
+
+            calledFunctionName = calledFunctionNameComponents[1]->getText();
+            calledFunctionNameSpace = calledFunctionNameComponents[0]->getText();
+ 
+            std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
+            AST::FunctionCallNode* call = new AST::FunctionCallNode(calledFunctionNameSpace, calledFunctionName, parameters);
+
+            result.push_back(call);
+            return result;
+        }
+
+        antlrcpp::Any ASTBuilder::visitFunctioncall_expression(TorqueParser::Functioncall_expressionContext* context)
+        {
+            std::vector<AST::ASTNode*> result;
+            std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
+
+            const bool isSubcall = dynamic_cast<TorqueParser::Chain_startContext*>(context->parent) ? false : true;
+
+            if (isSubcall)
+            {
+                result.push_back(new AST::SubFunctionCallNode(context->LABEL()->getText(), parameters));
+            }
+            else
+            {
+                AST::FunctionCallNode* call = new AST::FunctionCallNode("", context->LABEL()->getText(), parameters);
+                result.push_back(call);
+            }
+
+            return result;
+        }
+
+        antlrcpp::Any ASTBuilder::visitField(TorqueParser::FieldContext* context)
+        {
+            std::vector<AST::ASTNode*> result;
+            result.push_back(new AST::SubFieldNode(context->LABEL()->getText(), std::vector<ASTNode*>()));
+            return result;
+        }
+
+        antlrcpp::Any ASTBuilder::visitFieldarray(TorqueParser::FieldarrayContext* context)
+        {
+            std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
+;
+            std::vector<ASTNode*> result;
+            result.push_back(new AST::SubFieldNode(context->LABEL()->getText(), parameters));
+            return result;
+        }
+
         antlrcpp::Any ASTBuilder::visitFunction_declaration(TorqueParser::Function_declarationContext* context)
         {
             std::vector<AST::ASTNode*> result;
@@ -131,85 +214,6 @@ namespace TorqueScript
             AST::FunctionDeclarationNode* function = new AST::FunctionDeclarationNode(functionNameSpace, functionName, parameterNames, bodyStatements);
 
             result.push_back(function);
-            return result;
-        }
-
-        antlrcpp::Any ASTBuilder::visitCall(TorqueParser::CallContext* context)
-        {
-            std::vector<AST::ASTNode*> result;
-
-            // Load function name
-            std::string calledFunctionName = "";
-            std::string calledFunctionNameSpace = "";
-
-            std::vector<antlr4::tree::TerminalNode*> calledFunctionNameComponents = context->LABEL();
-            assert(calledFunctionNameComponents.size() <= 2);
-
-            if (calledFunctionNameComponents.size() == 2)
-            {
-                calledFunctionName = calledFunctionNameComponents[1]->getText();
-                calledFunctionNameSpace = calledFunctionNameComponents[0]->getText();
-            }
-            else
-            {
-                calledFunctionName = calledFunctionNameComponents[0]->getText();
-            }
-
-            std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
-            AST::FunctionCallNode* call = new AST::FunctionCallNode(calledFunctionNameSpace, calledFunctionName, parameters);
-
-            result.push_back(call);
-            return result;
-        }
-
-        antlrcpp::Any ASTBuilder::visitSubfield(TorqueParser::SubfieldContext* context)
-        {
-            std::vector<AST::ASTNode*> parent = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
-            assert(parent.size() == 1);
-
-            std::vector<AST::ASTNode*> result;
-            result.push_back(new AST::SubFieldNode(parent[0], context->LABEL()->getText(), std::vector<ASTNode*>()));
-            return result;
-        }
-
-        antlrcpp::Any ASTBuilder::visitArray(TorqueParser::ArrayContext* context)
-        {
-            std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
-            assert(parameters.size() >= 2);
-
-            std::vector<AST::ASTNode*> result;
-            AST::ASTNode* target = parameters[0];
-            parameters.erase(parameters.begin());
-
-            result.push_back(new AST::ArrayNode(target, parameters));
-            return result;
-        }
-
-        antlrcpp::Any ASTBuilder::visitSubarray(TorqueParser::SubarrayContext* context)
-        {
-            std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
-            assert(parameters.size() >= 1);
-
-            std::vector<ASTNode*> result;
-            ASTNode* parent = parameters[0];
-            parameters.erase(parameters.begin());
-
-            result.push_back(new AST::SubFieldNode(parent, context->LABEL()->getText(), parameters));
-            return result;
-        }
-
-        antlrcpp::Any ASTBuilder::visitSubcall(TorqueParser::SubcallContext* context)
-        {
-            const std::string calledFunctionName = context->LABEL()->getText();
-
-            std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
-            assert(parameters.size() >= 1);
-
-            AST::ASTNode* target = parameters[0];
-            parameters.erase(parameters.begin());
-
-            std::vector<AST::ASTNode*> result;
-            result.push_back(new AST::SubFunctionCallNode(target, calledFunctionName, parameters));
             return result;
         }
 
@@ -398,6 +402,10 @@ namespace TorqueScript
             else if (context->STRINGEQUALS())
             {
                 result.push_back(new AST::StringEqualsNode(left, right));
+            }
+            else if (context->STRINGNOTEQUAL())
+            {
+                result.push_back(new AST::StringNotEqualNode(left, right));
             }
             else
             {

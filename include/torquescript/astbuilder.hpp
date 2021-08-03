@@ -43,8 +43,6 @@ namespace TorqueScript
                 virtual antlrcpp::Any visitProgram(TorqueParser::ProgramContext* context) override;
                 virtual antlrcpp::Any visitPackage_declaration(TorqueParser::Package_declarationContext* context) override;
                 virtual antlrcpp::Any visitFunction_declaration(TorqueParser::Function_declarationContext* context) override;
-                virtual antlrcpp::Any visitCall(TorqueParser::CallContext* context) override;
-                virtual antlrcpp::Any visitSubcall(TorqueParser::SubcallContext* context) override;
                 virtual antlrcpp::Any visitValue(TorqueParser::ValueContext* context) override;
                 virtual antlrcpp::Any visitArithmetic(TorqueParser::ArithmeticContext* context) override;
                 virtual antlrcpp::Any visitLogical(TorqueParser::LogicalContext* context) override;
@@ -60,11 +58,16 @@ namespace TorqueScript
                 virtual antlrcpp::Any visitEquality(TorqueParser::EqualityContext* context) override;
                 virtual antlrcpp::Any visitConcat(TorqueParser::ConcatContext* context) override;
                 virtual antlrcpp::Any visitTernary(TorqueParser::TernaryContext* context) override;
-                virtual antlrcpp::Any visitSubfield(TorqueParser::SubfieldContext* context) override;
-                virtual antlrcpp::Any visitArray(TorqueParser::ArrayContext* context) override;
                 virtual antlrcpp::Any visitRelational(TorqueParser::RelationalContext* context) override;
                 virtual antlrcpp::Any visitSwitch_control(TorqueParser::Switch_controlContext* context) override;
-                virtual antlrcpp::Any visitSubarray(TorqueParser::SubarrayContext* context) override;
+                virtual antlrcpp::Any visitLocalarray(TorqueParser::LocalarrayContext* context) override;
+                virtual antlrcpp::Any visitGlobalarray(TorqueParser::GlobalarrayContext* context) override;
+
+                virtual antlrcpp::Any visitQualified_functioncall_expression(TorqueParser::Qualified_functioncall_expressionContext* context) override;
+                virtual antlrcpp::Any visitFunctioncall_expression(TorqueParser::Functioncall_expressionContext* context) override;
+
+                virtual antlrcpp::Any visitField(TorqueParser::FieldContext* context) override;
+                virtual antlrcpp::Any visitFieldarray(TorqueParser::FieldarrayContext* context) override;
 
                 virtual antlrcpp::Any visitField_assign(TorqueParser::Field_assignContext* context) override;
                 virtual antlrcpp::Any visitDatablock_declaration(TorqueParser::Datablock_declarationContext* context) override;
