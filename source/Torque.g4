@@ -27,13 +27,13 @@ package_declaration : PACKAGE LABEL '{' function_declaration+ '}' ';' ;
 
 datablock_declaration : DATABLOCK LABEL '(' LABEL ')' (':' LABEL)? '{' field_assign+ '}' ;
 
-field_assign : labelwithkeywords '=' expression ';'
-             | labelwithkeywords '[' expression_list ']' '=' expression ';' ;
+field_assign : labelwithkeywords '=' primary_expression_or_expression ';'
+             | labelwithkeywords '[' expression_list ']' '=' primary_expression_or_expression ';' ;
 object_initialization : '{' field_assign* (object_declaration ';')* '}' ;
 
 // NOTE: In T2 it's possible to pass multiple values in the type & name, what do they do exactly?
-object_declaration : NEW LABEL '(' (name=expression)? ')' object_initialization?
-                   | NEW '(' expression ')' '(' (name=expression)? ')' object_initialization? ;
+object_declaration : NEW LABEL '(' (name=primary_expression_or_expression)? ')' object_initialization?
+                   | NEW '(' expression ')' '(' (name=primary_expression_or_expression)? ')' object_initialization? ;
 
 /*
     Control blocks
@@ -46,16 +46,16 @@ while_control : WHILE '(' expression ')' control_statements ;
 for_control : FOR '(' primary_expression_or_expression ';' primary_expression_or_expression ';' primary_expression_or_expression ')' control_statements ;
 
 else_control : ELSE control_statements ;
-elseif_control : ELSE IF '(' expression ')' control_statements ;
-if_control : IF '(' expression ')' control_statements elseif_control* else_control? ;
+elseif_control : ELSE IF '(' primary_expression_or_expression ')' control_statements ;
+if_control : IF '(' primary_expression_or_expression ')' control_statements elseif_control* else_control? ;
 
 default_control : DEFAULT ':' expression_statement* ;
 case_control : CASE expression ('or' expression)* ':' expression_statement* ;
-switch_control : SWITCH '$'? '(' expression ')' '{' case_control+ default_control? '}' ;
+switch_control : SWITCH '$'? '(' primary_expression_or_expression ')' '{' case_control+ default_control? '}' ;
 
 break_control : BREAK ;
 continue_control : CONTINUE ;
-return_control : RETURN expression? ;
+return_control : RETURN primary_expression_or_expression? ;
 
 /*
     Expressions and Statements
@@ -74,7 +74,7 @@ statement : function_declaration
           | package_declaration
           | expression_statement  ;
 
-expression_list : expression (',' expression)* ;
+expression_list : primary_expression_or_expression (',' primary_expression_or_expression)* ;
 
 qualified_functioncall_expression : LABEL '::' LABEL '(' expression_list? ')'  ;
 functioncall_expression : LABEL '(' expression_list? ')'  ;
