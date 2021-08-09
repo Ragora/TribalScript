@@ -30,8 +30,8 @@ TEST(InterpreterTest, Array)
     interpreter.execute("cases/array.cs", &state);
 
     // The assignment performed is: $result[1,2,3] = %value;
-    // However, in Torque Script this is treated as a single variable key $result1_2_3
-    TorqueScript::StoredValue* result = interpreter.getGlobal("result1_2_3");
+    // However, in Torque Script this is treated as a single variable key $result_1_2_3
+    TorqueScript::StoredValue* result = interpreter.getGlobal("result_1_2_3");
     ASSERT_TRUE(result);
 
     ASSERT_EQ(result->toInteger(), 5);

@@ -206,16 +206,14 @@ namespace TorqueScript
         class SubFunctionCallNode : public ASTNode
         {
             public:
-                SubFunctionCallNode(ASTNode* target, const std::string& name, const std::vector<ASTNode*> parameters) :
-                                    mTarget(target), mName(name), mParameters(parameters)
+                SubFunctionCallNode(const std::string& name, const std::vector<ASTNode*> parameters) :
+                                    mName(name), mParameters(parameters)
                 {
 
                 }
 
                 virtual ~SubFunctionCallNode()
                 {
-                    delete mTarget;
-
                     for (ASTNode* parameter : mParameters)
                     {
                         delete parameter;
@@ -227,22 +225,34 @@ namespace TorqueScript
                     return visitor->visitSubFunctionCallNode(this);
                 }
 
-                ASTNode* mTarget;
                 std::string mName;
                 std::vector<ASTNode*> mParameters;
+        };
+
+        class SubreferenceNode : public ASTNode
+        {
+            public:
+                SubreferenceNode(ASTNode* left, ASTNode* target, ASTNode* right) : mLeft(left), mTarget(target), mRight(right)
+                {
+
+                }
+
+                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                {
+                    return visitor->visitSubreferenceNode(this);
+                }
+
+                ASTNode* mLeft;
+                ASTNode* mRight;
+                ASTNode* mTarget;
         };
 
         class SubFieldNode : public ASTNode
         {
             public:
-                SubFieldNode(ASTNode* target, const std::string& name, const std::vector<ASTNode*>& indices) : mTarget(target), mName(name), mIndices(indices)
+                SubFieldNode(const std::string& name, const std::vector<ASTNode*>& indices) : mName(name), mIndices(indices)
                 {
 
-                }
-
-                virtual ~SubFieldNode()
-                {
-                    delete mTarget;
                 }
 
                 virtual antlrcpp::Any accept(ASTVisitor* visitor)
@@ -250,7 +260,6 @@ namespace TorqueScript
                     return visitor->visitSubFieldNode(this);
                 }
 
-                ASTNode* mTarget;
                 std::string mName;
                 std::vector<ASTNode*> mIndices;
         };
@@ -442,6 +451,20 @@ namespace TorqueScript
                 {
                     return visitor->visitStringEqualsNode(this);
                 }
+        };
+
+        class StringNotEqualNode : public InfixExpressionNode
+        {
+        public:
+            StringNotEqualNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
+            {
+
+            }
+
+            virtual antlrcpp::Any accept(ASTVisitor* visitor)
+            {
+                return visitor->visitStringNotEqualNode(this);
+            }
         };
 
         class AssignmentNode : public InfixExpressionNode

@@ -166,7 +166,7 @@ namespace TorqueScript
 
     antlrcpp::Any Compiler::visitSubFieldNode(AST::SubFieldNode* subfield)
     {
-        InstructionSequence result = subfield->mTarget->accept(this).as<InstructionSequence>();
+        InstructionSequence result;
 
         const StringTableEntry stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? subfield->mName : toLowerCase(subfield->mName));
 
@@ -184,10 +184,6 @@ namespace TorqueScript
     antlrcpp::Any Compiler::visitSubFunctionCallNode(AST::SubFunctionCallNode* call)
     {
         InstructionSequence result;
-
-        InstructionSequence targetCode = call->mTarget->accept(this).as<InstructionSequence>();
-        result.insert(result.end(), targetCode.begin(), targetCode.end());
-
         for (AST::ASTNode* node : call->mParameters)
         {
             InstructionSequence parameterCode = node->accept(this).as<InstructionSequence>();
@@ -697,6 +693,20 @@ namespace TorqueScript
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
         out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::StringEqualsInstruction()));
+
+        return out;
+    }
+
+    antlrcpp::Any Compiler::visitStringNotEqualNode(AST::StringNotEqualNode* expression)
+    {
+        InstructionSequence out;
+
+        InstructionSequence lhsCode = expression->mLeft->accept(this).as<InstructionSequence>();
+        InstructionSequence rhsCode = expression->mRight->accept(this).as<InstructionSequence>();
+
+        out.insert(out.end(), lhsCode.begin(), lhsCode.end());
+        out.insert(out.end(), rhsCode.begin(), rhsCode.end());
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::StringNotEqualInstruction()));
 
         return out;
     }

@@ -14,7 +14,7 @@
 
 grammar Torque;
 
-program  : statement+ EOF ;
+program  : statement* EOF ;
 
 /*
     Main Blocks
@@ -27,13 +27,13 @@ package_declaration : PACKAGE LABEL '{' function_declaration+ '}' ';' ;
 
 datablock_declaration : DATABLOCK LABEL '(' LABEL ')' (':' LABEL)? '{' field_assign+ '}' ;
 
-field_assign : labelwithkeywords '=' expression ';'
-             | labelwithkeywords '[' expression_list ']' '=' expression ';' ;
+field_assign : labelwithkeywords '=' primary_expression_or_expression ';'
+             | labelwithkeywords '[' expression_list ']' '=' primary_expression_or_expression ';' ;
 object_initialization : '{' field_assign* (object_declaration ';')* '}' ;
 
 // NOTE: In T2 it's possible to pass multiple values in the type & name, what do they do exactly?
-object_declaration : NEW LABEL '(' (name=expression)? ')' object_initialization?
-                   | NEW '(' expression ')' '(' (name=expression)? ')' object_initialization? ;
+object_declaration : NEW LABEL '(' (name=primary_expression_or_expression)? ')' object_initialization?
+                   | NEW '(' expression ')' '(' (name=primary_expression_or_expression)? ')' object_initialization? ;
 
 /*
     Control blocks
@@ -43,19 +43,19 @@ control_statements : '{' expression_statement* '}'
 
 while_control : WHILE '(' expression ')' control_statements ;
 
-for_control : FOR '(' expression ';' expression ';' expression ')' control_statements ;
+for_control : FOR '(' primary_expression_or_expression ';' primary_expression_or_expression ';' primary_expression_or_expression ')' control_statements ;
 
 else_control : ELSE control_statements ;
-elseif_control : ELSE IF '(' expression ')' control_statements ;
-if_control : IF '(' expression ')' control_statements elseif_control* else_control? ;
+elseif_control : ELSE IF '(' primary_expression_or_expression ')' control_statements ;
+if_control : IF '(' primary_expression_or_expression ')' control_statements elseif_control* else_control? ;
 
 default_control : DEFAULT ':' expression_statement* ;
 case_control : CASE expression ('or' expression)* ':' expression_statement* ;
-switch_control : SWITCH '$'? '(' expression ')' '{' case_control+ default_control? '}' ;
+switch_control : SWITCH '$'? '(' primary_expression_or_expression ')' '{' case_control+ default_control? '}' ;
 
 break_control : BREAK ;
 continue_control : CONTINUE ;
-return_control : RETURN expression? ;
+return_control : RETURN primary_expression_or_expression? ;
 
 /*
     Expressions and Statements
@@ -74,17 +74,48 @@ statement : function_declaration
           | package_declaration
           | expression_statement  ;
 
-expression_list : expression (',' expression)* ;
+expression_list : primary_expression_or_expression (',' primary_expression_or_expression)* ;
 
-functioncall_expression : LABEL '(' expression_list? ')'                        # call
-                        | LABEL '::' LABEL '(' expression_list? ')'             # call
-                        | (lvalue | rvalue) '.' LABEL '(' expression_list? ')'  # subcall
-                        | functioncall_expression '.' LABEL '(' expression_list? ')' # subcall ;
+qualified_functioncall_expression : LABEL '::' LABEL '(' expression_list? ')'  ;
+functioncall_expression : LABEL '(' expression_list? ')'  ;
+
+// A copy of functioncall_expression for easily distinguishing a bound call and not
+subfunctioncall_expression : LABEL '(' expression_list? ')' ;
+
+chain_start : localvariable
+            | globalvariable
+            | globalarray
+            | localarray
+            | rvalue
+            | functioncall_expression
+            | qualified_functioncall_expression
+            | field ;
+
+chain_component : field
+                | fieldarray
+                | subfunctioncall_expression ;
+
+chain_elements : field
+               | fieldarray
+               | subfunctioncall_expression
+               | chain_elements '.' chain_elements ;
+
+chain : chain_start ('.' chain_elements)? ;
+
+assignable_chain : localvariable
+                 | globalvariable
+                 | localarray
+                 | globalarray
+                 | chain_start ('.' chain_elements)? '.' field
+                 | chain_start ('.' chain_elements)? '.' fieldarray ;
+
+primary_chain : functioncall_expression
+              | qualified_functioncall_expression
+              | chain_start ('.' chain_elements)? '.' subfunctioncall_expression ;
 
 // Root level expression - because expressions like `1;` are not valid - it must be actionable
-primary_expression : functioncall_expression                                       # callExpression
-                   | primary_expression '.' primary_expression                     # primaryExpressionSubfield
-                   | lvalue (op=ASSIGN
+primary_expression : primary_chain                                               # chainPrimaryExpression
+                   | assignable_chain (op=ASSIGN
                             |op=PLUSASSIGN
                             |op=MINUSASSIGN
                             |op=MULTIPLYASSIGN
@@ -92,10 +123,13 @@ primary_expression : functioncall_expression                                    
                             |op=ORASSIGN
                             |op=MODULUSASSIGN
                             |op=ANDASSIGN) expression                               # assign
-                   | lvalue '++'                                                    # increment
-                   | lvalue '--'                                                    # decrement
+                   | assignable_chain '++'                                          # increment
+                   | assignable_chain '--'                                          # decrement
                    | object_declaration                                             # objectDeclarationExpression
                    | datablock_declaration                                          # datablockDeclarationExpression ;
+
+primary_expression_or_expression : primary_expression
+                                 | expression ;
 
 // Only valid on the right side of an assignment, however still valid on the left side of a '.'
 rvalue : INT                                                                # value
@@ -108,21 +142,10 @@ rvalue : INT                                                                # va
        | FALSE                                                              # value
        | object_declaration                                                 # objectDeclarationRValue ;
 
-// Valid on both the left and right sides of an assignment
-lvalue : (globalvariable | localvariable) '[' expression_list ']'   # array
-       | lvalue '.' LABEL '[' expression_list ']'                           # subarray
-       | rvalue '.' LABEL '[' expression_list ']'                           # subarray
-       | localvariable                                                      # localValue
-       | globalvariable                                                     # globalValue
-       | rvalue '.' LABEL                                                   # subfield
-       | lvalue '.' LABEL                                                   # subfield ;
-
 expression : (op=MINUS
              |op=NOT
              |op=TILDE) expression                                              # unary
-           | primary_expression                                                 # primaryExpressionReference
-           | expression '.' expression                                          # subfieldExpression
-           | lvalue                                                             # lvalueExpression
+           | chain                                                              # chainExpression
            | '(' expression ')'                                                 # parentheses
            | expression (op=BITWISEXOR
                         |op=BITWISEOR
@@ -155,6 +178,11 @@ expression : (op=MINUS
 labelwithkeywords : LABEL | PACKAGE | RETURN | WHILE | FALSE | TRUE | FUNCTION | ELSE | IF | DATABLOCK | CASE ;
 localvariable : '%' labelwithkeywords ('::' labelwithkeywords)* ;
 globalvariable : '$' labelwithkeywords ('::' labelwithkeywords)* ;
+
+field : LABEL ;
+fieldarray : LABEL '[' expression_list ']' ;
+localarray : localvariable '[' expression_list ']' ;
+globalarray : globalvariable '[' expression_list ']' ;
 
 /*
     Lexer

@@ -33,6 +33,24 @@ namespace TorqueScript
             Visitor Routines =========================
         */
 
+        antlrcpp::Any ASTVisitor::visitSubreferenceNode(AST::SubreferenceNode* reference)
+        {
+            antlrcpp::Any result = this->defaultResult();
+
+            // Don't visit left as it is what triggered into us
+            antlrcpp::Any childResult = reference->mTarget->accept(this);
+            result = this->aggregateResult(result, childResult);
+
+            // Right may be unassigned on rightmost
+            if (reference->mRight)
+            {
+                antlrcpp::Any childResult = reference->mRight->accept(this);
+                result = this->aggregateResult(result, childResult);
+            }
+
+            return result;
+        }
+
         antlrcpp::Any ASTVisitor::visitProgramNode(AST::ProgramNode* program)
         {
             antlrcpp::Any result = this->defaultResult();
@@ -80,9 +98,6 @@ namespace TorqueScript
         antlrcpp::Any ASTVisitor::visitSubFunctionCallNode(AST::SubFunctionCallNode* call)
         {
             antlrcpp::Any result = this->defaultResult();
-            antlrcpp::Any childResult = call->mTarget->accept(this);
-
-            result = this->aggregateResult(result, childResult);
             for (AST::ASTNode* node : call->mParameters)
             {
                 antlrcpp::Any childResult = node->accept(this);
@@ -94,10 +109,6 @@ namespace TorqueScript
         antlrcpp::Any ASTVisitor::visitSubFieldNode(AST::SubFieldNode* subfield)
         {
             antlrcpp::Any result = this->defaultResult();
-            antlrcpp::Any childResult = subfield->mTarget->accept(this);
-
-            // Handle array indices if present
-            result = this->aggregateResult(result, childResult);
             for (ASTNode* index : subfield->mIndices)
             {
                 antlrcpp::Any indexResult = index->accept(this);
@@ -217,6 +228,16 @@ namespace TorqueScript
         }
 
         antlrcpp::Any ASTVisitor::visitStringEqualsNode(AST::StringEqualsNode* expression)
+        {
+            antlrcpp::Any result = this->defaultResult();
+
+            antlrcpp::Any childResult = expression->mLeft->accept(this);
+            result = this->aggregateResult(result, childResult);
+            childResult = expression->mRight->accept(this);
+            return this->aggregateResult(result, childResult);
+        }
+
+        antlrcpp::Any ASTVisitor::visitStringNotEqualNode(AST::StringNotEqualNode* expression)
         {
             antlrcpp::Any result = this->defaultResult();
 
