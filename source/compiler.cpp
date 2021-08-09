@@ -14,15 +14,15 @@
 
 #include <assert.h>
 
-#include <TorqueLexer.h>
-#include <TorqueParser.h>
+#include <Tribes2Lexer.h>
+#include <Tribes2Parser.h>
 
-#include <torquescript/compiler.hpp>
-#include <torquescript/astbuilder.hpp>
-#include <torquescript/instructionsequence.hpp>
-#include <torquescript/parsererrorlistener.hpp>
+#include <tribalscript/compiler.hpp>
+#include <tribalscript/astbuilder.hpp>
+#include <tribalscript/instructionsequence.hpp>
+#include <tribalscript/parsererrorlistener.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     Compiler::Compiler(const InterpreterConfiguration& config) : mConfig(config)
     {
@@ -34,13 +34,13 @@ namespace TorqueScript
         ParserErrorListener parserErrorListener;
 
         antlr4::ANTLRInputStream antlrStream(input);
-        TorqueLexer lexer(&antlrStream);
+        Tribes2Lexer lexer(&antlrStream);
         lexer.removeErrorListeners();
         lexer.addErrorListener(&parserErrorListener);
 
         // Setup our parser
         antlr4::CommonTokenStream stream(&lexer);
-        TorqueParser parser(&stream);
+        Tribes2Parser parser(&stream);
         parser.removeErrorListeners();
 
         parser.addErrorListener(&parserErrorListener);

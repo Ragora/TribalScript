@@ -12,10 +12,10 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/fileobject.hpp>
-#include <torquescript/interpreter.hpp>
+#include <tribalscript/fileobject.hpp>
+#include <tribalscript/interpreter.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     IMPLEMENT_CONSOLE_OBJECT(FileObject, ConsoleObject)
 

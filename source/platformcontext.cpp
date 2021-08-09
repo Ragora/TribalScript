@@ -14,10 +14,10 @@
 
 #include <iostream>
 
-#include <torquescript/platformcontext.hpp>
-#include <torquescript/standardfilehandle.hpp>
+#include <tribalscript/platformcontext.hpp>
+#include <tribalscript/standardfilehandle.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     void PlatformContext::logEcho(const std::string& message)
     {

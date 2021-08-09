@@ -14,13 +14,13 @@
 
 #include <assert.h>
 
-#include <torquescript/interpreter.hpp>
-#include <torquescript/compiler.hpp>
-#include <torquescript/executionscope.hpp>
-#include <torquescript/stringhelpers.hpp>
-#include <torquescript/executionstate.hpp>
+#include <tribalscript/interpreter.hpp>
+#include <tribalscript/compiler.hpp>
+#include <tribalscript/executionscope.hpp>
+#include <tribalscript/stringhelpers.hpp>
+#include <tribalscript/executionstate.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     Interpreter::Interpreter() : Interpreter(InterpreterConfiguration())
     {

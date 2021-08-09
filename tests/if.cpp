@@ -16,27 +16,27 @@
 
 #include "gtest/gtest.h"
 
-#include <torquescript/interpreter.hpp>
-#include <torquescript/storedvalue.hpp>
-#include <torquescript/libraries/libraries.hpp>
-#include <torquescript/executionstate.hpp>
+#include <tribalscript/interpreter.hpp>
+#include <tribalscript/storedvalue.hpp>
+#include <tribalscript/libraries/libraries.hpp>
+#include <tribalscript/executionstate.hpp>
 
 TEST(InterpreterTest, If)
 {
-    TorqueScript::Interpreter interpreter;
-    TorqueScript::registerAllLibraries(&interpreter);
+    TribalScript::Interpreter interpreter;
+    TribalScript::registerAllLibraries(&interpreter);
 
-    TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
+    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
     interpreter.execute("cases/if.cs", &state);
 
     // Here we have three values
-    TorqueScript::StoredValue* resultOne = interpreter.getGlobal("one");
+    TribalScript::StoredValue* resultOne = interpreter.getGlobal("one");
     ASSERT_TRUE(resultOne);
-    TorqueScript::StoredValue* resultTwo = interpreter.getGlobal("two");
+    TribalScript::StoredValue* resultTwo = interpreter.getGlobal("two");
     ASSERT_TRUE(resultTwo);
-    TorqueScript::StoredValue* resultThree = interpreter.getGlobal("three");
+    TribalScript::StoredValue* resultThree = interpreter.getGlobal("three");
     ASSERT_TRUE(resultThree);
-    TorqueScript::StoredValue* resultFour = interpreter.getGlobal("four");
+    TribalScript::StoredValue* resultFour = interpreter.getGlobal("four");
     ASSERT_TRUE(resultFour);
 
     ASSERT_EQ(resultOne->toInteger(), 10);

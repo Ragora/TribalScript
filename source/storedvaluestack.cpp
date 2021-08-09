@@ -14,10 +14,10 @@
 
 #include <sstream>
 
-#include <torquescript/storedvaluestack.hpp>
-#include <torquescript/executionstate.hpp>
+#include <tribalscript/storedvaluestack.hpp>
+#include <tribalscript/executionstate.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     int StoredValueStack::popInteger(ExecutionState* state)
     {

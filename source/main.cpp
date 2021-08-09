@@ -14,26 +14,26 @@
 
 #include <ctime>
 
-#include <torquescript/libraries/libraries.hpp>
-#include <torquescript/interpreter.hpp>
-#include <torquescript/executionscope.hpp>
-#include <torquescript/codeblock.hpp>
-#include <torquescript/executionstate.hpp>
-#include <torquescript/fileobject.hpp>
+#include <tribalscript/libraries/libraries.hpp>
+#include <tribalscript/interpreter.hpp>
+#include <tribalscript/executionscope.hpp>
+#include <tribalscript/codeblock.hpp>
+#include <tribalscript/executionstate.hpp>
+#include <tribalscript/fileobject.hpp>
 
 int main(int argc, char* argv[])
 {
     std::srand(std::time(nullptr));
 
-    TorqueScript::Interpreter interpreter;
-    TorqueScript::registerAllLibraries(&interpreter);
+    TribalScript::Interpreter interpreter;
+    TribalScript::registerAllLibraries(&interpreter);
 
-    std::cout << "Type TorqueScript Program, use EOF (CTRL+D on Unix, CTRL+Z on Windows) to End Input" << std::endl << std::endl;
+    std::cout << "Type TribalScript Program, use EOF (CTRL+D on Unix, CTRL+Z on Windows) to End Input" << std::endl << std::endl;
 
     std::istreambuf_iterator<char> begin(std::cin), end;
     std::string evaluated(begin, end);
 
-    TorqueScript::CodeBlock* compiled = interpreter.compile(evaluated);
+    TribalScript::CodeBlock* compiled = interpreter.compile(evaluated);
 
     if (compiled)
     {
@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
         }
         std::cout << std::endl;
 
-        TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
+        TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
         compiled->execute(&state);
 
         delete compiled;

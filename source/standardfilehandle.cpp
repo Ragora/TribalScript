@@ -16,9 +16,9 @@
 #include <iostream>
 #include <cstdio>
 
-#include <torquescript/standardfilehandle.hpp>
+#include <tribalscript/standardfilehandle.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     StandardFileHandle::StandardFileHandle(const std::string& path) : FileHandleBase(path)
     {

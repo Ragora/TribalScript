@@ -14,13 +14,13 @@
 
 #include <assert.h>
 
-#include <torquescript/standardconsoleobjectregistry.hpp>
-#include <torquescript/compiler.hpp>
-#include <torquescript/executionscope.hpp>
-#include <torquescript/stringhelpers.hpp>
-#include <torquescript/executionstate.hpp>
+#include <tribalscript/standardconsoleobjectregistry.hpp>
+#include <tribalscript/compiler.hpp>
+#include <tribalscript/executionscope.hpp>
+#include <tribalscript/stringhelpers.hpp>
+#include <tribalscript/executionstate.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     StandardConsoleObjectRegistry::StandardConsoleObjectRegistry() : mNextObjectID(0)
     {

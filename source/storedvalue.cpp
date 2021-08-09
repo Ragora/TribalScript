@@ -12,12 +12,12 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/storedvalue.hpp>
-#include <torquescript/interpreter.hpp>
-#include <torquescript/consoleobject.hpp>
-#include <torquescript/executionstate.hpp>
+#include <tribalscript/storedvalue.hpp>
+#include <tribalscript/interpreter.hpp>
+#include <tribalscript/consoleobject.hpp>
+#include <tribalscript/executionstate.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     bool StoredValue::toBoolean() const
     {

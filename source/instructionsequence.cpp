@@ -12,11 +12,11 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/instructionsequence.hpp>
-#include <torquescript/executionstate.hpp>
-#include <torquescript/instructions.hpp>
+#include <tribalscript/instructionsequence.hpp>
+#include <tribalscript/executionstate.hpp>
+#include <tribalscript/instructions.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     void InstructionSequence::execute(ExecutionState* state)
     {

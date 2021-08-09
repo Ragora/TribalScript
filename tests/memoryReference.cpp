@@ -16,26 +16,26 @@
 
 #include "gtest/gtest.h"
 
-#include <torquescript/interpreter.hpp>
-#include <torquescript/storedvalue.hpp>
-#include <torquescript/libraries/libraries.hpp>
-#include <torquescript/executionstate.hpp>
+#include <tribalscript/interpreter.hpp>
+#include <tribalscript/storedvalue.hpp>
+#include <tribalscript/libraries/libraries.hpp>
+#include <tribalscript/executionstate.hpp>
 
 static float aStaticFloat = 3.14f;
 
 TEST(InterpreterTest, MemoryReference)
 {
-    TorqueScript::Interpreter interpreter;
-    TorqueScript::registerAllLibraries(&interpreter);
+    TribalScript::Interpreter interpreter;
+    TribalScript::registerAllLibraries(&interpreter);
 
     // Set memory reference
-    interpreter.setGlobal("pi", TorqueScript::StoredValue(&aStaticFloat));
+    interpreter.setGlobal("pi", TribalScript::StoredValue(&aStaticFloat));
 
-    TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
+    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
     interpreter.execute("cases/memoryReference.cs", &state);
 
     // After execution, the result of $global should be 50
-    TorqueScript::StoredValue* result = interpreter.getGlobal("result");
+    TribalScript::StoredValue* result = interpreter.getGlobal("result");
     ASSERT_TRUE(result);
 
     ASSERT_EQ(result->toFloat(), 6.28f);

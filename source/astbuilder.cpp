@@ -14,18 +14,18 @@
 
 #include <assert.h>
 
-#include <TorqueLexer.h>
-#include <TorqueParser.h>
+#include <Tribes2Lexer.h>
+#include <Tribes2Parser.h>
 
-#include <torquescript/astbuilder.hpp>
-#include <torquescript/instructionsequence.hpp>
-#include <torquescript/parsererrorlistener.hpp>
+#include <tribalscript/astbuilder.hpp>
+#include <tribalscript/instructionsequence.hpp>
+#include <tribalscript/parsererrorlistener.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     namespace AST
     {
-        ASTBuilder::ASTBuilder(StringTable* stringTable) : TorqueBaseVisitor(), mStringTable(stringTable)
+        ASTBuilder::ASTBuilder(StringTable* stringTable) : Tribes2BaseVisitor(), mStringTable(stringTable)
         {
 
         }
@@ -48,13 +48,13 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitProgram(TorqueParser::ProgramContext* context)
+        antlrcpp::Any ASTBuilder::visitProgram(Tribes2Parser::ProgramContext* context)
         {
             std::vector<AST::ASTNode*> children = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
             return new AST::ProgramNode(children);
         }
 
-        antlrcpp::Any ASTBuilder::visitPackage_declaration(TorqueParser::Package_declarationContext* context)
+        antlrcpp::Any ASTBuilder::visitPackage_declaration(Tribes2Parser::Package_declarationContext* context)
         {
             std::vector<AST::ASTNode*> result;
 
@@ -65,7 +65,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitLocalarray(TorqueParser::LocalarrayContext* context)
+        antlrcpp::Any ASTBuilder::visitLocalarray(Tribes2Parser::LocalarrayContext* context)
         {
             std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
             assert(parameters.size() >= 1);
@@ -78,7 +78,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitGlobalarray(TorqueParser::GlobalarrayContext* context)
+        antlrcpp::Any ASTBuilder::visitGlobalarray(Tribes2Parser::GlobalarrayContext* context)
         {
             std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
             assert(parameters.size() >= 1);
@@ -91,7 +91,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitQualified_functioncall_expression(TorqueParser::Qualified_functioncall_expressionContext* context)
+        antlrcpp::Any ASTBuilder::visitQualified_functioncall_expression(Tribes2Parser::Qualified_functioncall_expressionContext* context)
         {
             std::vector<AST::ASTNode*> result;
 
@@ -112,13 +112,13 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitSubfunctioncall_expression(TorqueParser::Subfunctioncall_expressionContext* context)
+        antlrcpp::Any ASTBuilder::visitSubfunctioncall_expression(Tribes2Parser::Subfunctioncall_expressionContext* context)
         {
             std::vector<AST::ASTNode*> result;
             std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
 
-            TorqueParser::Primary_chainContext* primaryChain = dynamic_cast<TorqueParser::Primary_chainContext*>(context->parent);
-            const bool isSubcall = dynamic_cast<TorqueParser::Chain_startContext*>(context->parent) ? false : true;
+            Tribes2Parser::Primary_chainContext* primaryChain = dynamic_cast<Tribes2Parser::Primary_chainContext*>(context->parent);
+            const bool isSubcall = dynamic_cast<Tribes2Parser::Chain_startContext*>(context->parent) ? false : true;
 
             AST::SubFunctionCallNode* call = new AST::SubFunctionCallNode(context->LABEL()->getText(), parameters);
             result.push_back(call);
@@ -126,13 +126,13 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitFunctioncall_expression(TorqueParser::Functioncall_expressionContext* context)
+        antlrcpp::Any ASTBuilder::visitFunctioncall_expression(Tribes2Parser::Functioncall_expressionContext* context)
         {
             std::vector<AST::ASTNode*> result;
             std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
 
-            TorqueParser::Primary_chainContext* primaryChain = dynamic_cast<TorqueParser::Primary_chainContext*>(context->parent);
-            const bool isSubcall = dynamic_cast<TorqueParser::Chain_startContext*>(context->parent) ? false : true;
+            Tribes2Parser::Primary_chainContext* primaryChain = dynamic_cast<Tribes2Parser::Primary_chainContext*>(context->parent);
+            const bool isSubcall = dynamic_cast<Tribes2Parser::Chain_startContext*>(context->parent) ? false : true;
 
             AST::FunctionCallNode* call = new AST::FunctionCallNode("", context->LABEL()->getText(), parameters);
             result.push_back(call);
@@ -140,14 +140,14 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitField(TorqueParser::FieldContext* context)
+        antlrcpp::Any ASTBuilder::visitField(Tribes2Parser::FieldContext* context)
         {
             std::vector<AST::ASTNode*> result;
             result.push_back(new AST::SubFieldNode(context->LABEL()->getText(), std::vector<ASTNode*>()));
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitFieldarray(TorqueParser::FieldarrayContext* context)
+        antlrcpp::Any ASTBuilder::visitFieldarray(Tribes2Parser::FieldarrayContext* context)
         {
             std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
 ;
@@ -156,7 +156,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitFunction_declaration(TorqueParser::Function_declarationContext* context)
+        antlrcpp::Any ASTBuilder::visitFunction_declaration(Tribes2Parser::Function_declarationContext* context)
         {
             std::vector<AST::ASTNode*> result;
 
@@ -166,15 +166,15 @@ namespace TorqueScript
             if (context->function_declaration_parameters())
             {
                 // Function_declaration_parametersContext
-                std::vector<TorqueParser::LocalvariableContext*> parameters = context->function_declaration_parameters()->localvariable();
+                std::vector<Tribes2Parser::LocalvariableContext*> parameters = context->function_declaration_parameters()->localvariable();
 
-                for (TorqueParser::LocalvariableContext* variable : parameters)
+                for (Tribes2Parser::LocalvariableContext* variable : parameters)
                 {
                     std::string currentVariableName = "";
-                    std::vector<TorqueParser::LabelwithkeywordsContext*> variableNameComponents = variable->labelwithkeywords();
+                    std::vector<Tribes2Parser::LabelwithkeywordsContext*> variableNameComponents = variable->labelwithkeywords();
 
                     // NOTE: For now we just combine :: into a single variable name
-                    for (TorqueParser::LabelwithkeywordsContext* variableNameComponent : variableNameComponents)
+                    for (Tribes2Parser::LabelwithkeywordsContext* variableNameComponent : variableNameComponents)
                     {
                         if (currentVariableName == "")
                         {
@@ -214,7 +214,7 @@ namespace TorqueScript
 
             // Load body expressions
             std::vector<AST::ASTNode*> bodyStatements;
-            for (TorqueParser::Expression_statementContext* statement : context->expression_statement())
+            for (Tribes2Parser::Expression_statementContext* statement : context->expression_statement())
             {
                 std::vector<AST::ASTNode*> statementNodes = this->visitChildren(statement).as<std::vector<AST::ASTNode*>>();
                 bodyStatements.insert(bodyStatements.end(), statementNodes.begin(), statementNodes.end());
@@ -225,7 +225,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitValue(TorqueParser::ValueContext* context)
+        antlrcpp::Any ASTBuilder::visitValue(Tribes2Parser::ValueContext* context)
         {
             std::vector<AST::ASTNode*> result;
 
@@ -277,7 +277,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitLogical(TorqueParser::LogicalContext* context)
+        antlrcpp::Any ASTBuilder::visitLogical(Tribes2Parser::LogicalContext* context)
         {
             std::vector<AST::ASTNode*> result = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
             assert(result.size() == 2);
@@ -303,7 +303,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitArithmetic(TorqueParser::ArithmeticContext* context)
+        antlrcpp::Any ASTBuilder::visitArithmetic(Tribes2Parser::ArithmeticContext* context)
         {
             std::vector<AST::ASTNode*> result = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
             assert(result.size() == 2);
@@ -341,7 +341,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitChain(TorqueParser::ChainContext* context)
+        antlrcpp::Any ASTBuilder::visitChain(Tribes2Parser::ChainContext* context)
         {
             std::vector<AST::ASTNode*> result;
             std::vector<AST::ASTNode*> children = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
@@ -371,7 +371,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitAssignable_chain(TorqueParser::Assignable_chainContext* context)
+        antlrcpp::Any ASTBuilder::visitAssignable_chain(Tribes2Parser::Assignable_chainContext* context)
         {
             std::vector<AST::ASTNode*> result;
             std::vector<AST::ASTNode*> children = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
@@ -401,7 +401,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitAssign(TorqueParser::AssignContext* context)
+        antlrcpp::Any ASTBuilder::visitAssign(Tribes2Parser::AssignContext* context)
         {
             std::vector<AST::ASTNode*> result = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
             assert(result.size() == 2);
@@ -423,7 +423,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitRelational(TorqueParser::RelationalContext* context)
+        antlrcpp::Any ASTBuilder::visitRelational(Tribes2Parser::RelationalContext* context)
         {
             std::vector<AST::ASTNode*> result = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
             assert(result.size() == 2);
@@ -449,7 +449,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitEquality(TorqueParser::EqualityContext* context)
+        antlrcpp::Any ASTBuilder::visitEquality(Tribes2Parser::EqualityContext* context)
         {
             std::vector<AST::ASTNode*> result = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
             assert(result.size() == 2);
@@ -483,7 +483,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitConcat(TorqueParser::ConcatContext* context)
+        antlrcpp::Any ASTBuilder::visitConcat(Tribes2Parser::ConcatContext* context)
         {
             std::vector<AST::ASTNode*> result = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
             assert(result.size() == 2);
@@ -517,7 +517,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitUnary(TorqueParser::UnaryContext* context)
+        antlrcpp::Any ASTBuilder::visitUnary(Tribes2Parser::UnaryContext* context)
         {
             std::vector<AST::ASTNode*> result = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
             assert(result.size() == 1);
@@ -541,7 +541,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitIncrement(TorqueParser::IncrementContext* context)
+        antlrcpp::Any ASTBuilder::visitIncrement(Tribes2Parser::IncrementContext* context)
         {
             std::vector<AST::ASTNode*> result = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
             assert(result.size() == 1);
@@ -553,7 +553,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitWhile_control(TorqueParser::While_controlContext* context)
+        antlrcpp::Any ASTBuilder::visitWhile_control(Tribes2Parser::While_controlContext* context)
         {
             std::vector<AST::ASTNode*> result;
             std::vector<AST::ASTNode*> whileContent = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
@@ -565,7 +565,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitIf_control(TorqueParser::If_controlContext* context)
+        antlrcpp::Any ASTBuilder::visitIf_control(Tribes2Parser::If_controlContext* context)
         {
             std::vector<AST::ASTNode*> ifContent = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
 
@@ -589,10 +589,10 @@ namespace TorqueScript
 
             // Handle all else ifs
             std::vector<AST::ElseIfNode*> elseIfs;
-            std::vector<TorqueParser::Elseif_controlContext*> elseIfControl = context->elseif_control();
-            for (TorqueParser::Elseif_controlContext* elseIf : elseIfControl)
+            std::vector<Tribes2Parser::Elseif_controlContext*> elseIfControl = context->elseif_control();
+            for (Tribes2Parser::Elseif_controlContext* elseIf : elseIfControl)
             {
-                TorqueParser::Control_statementsContext* elseIfControlStatements = elseIf->control_statements();
+                Tribes2Parser::Control_statementsContext* elseIfControlStatements = elseIf->control_statements();
 
                 std::vector<AST::ASTNode*> elseIfBody;
                 if (elseIfControlStatements)
@@ -640,7 +640,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitSwitch_control(TorqueParser::Switch_controlContext* context)
+        antlrcpp::Any ASTBuilder::visitSwitch_control(Tribes2Parser::Switch_controlContext* context)
         {
             std::vector<AST::ASTNode*> switchContent = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
 
@@ -664,10 +664,10 @@ namespace TorqueScript
 
             // Load all switch statements
             std::vector<AST::SwitchCaseNode*> switchCases;
-            std::vector<TorqueParser::Case_controlContext*> switchCaseControl = context->case_control();
+            std::vector<Tribes2Parser::Case_controlContext*> switchCaseControl = context->case_control();
             for (auto iterator = switchCaseControl.rbegin(); iterator != switchCaseControl.rend(); ++iterator)
             {
-                TorqueParser::Case_controlContext* caseContext = *iterator;
+                Tribes2Parser::Case_controlContext* caseContext = *iterator;
 
                 const std::size_t caseStatementCount = caseContext->expression_statement().size();
                 const std::size_t caseExpressionCount = caseContext->expression().size();
@@ -702,7 +702,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitFor_control(TorqueParser::For_controlContext* context)
+        antlrcpp::Any ASTBuilder::visitFor_control(Tribes2Parser::For_controlContext* context)
         {
             std::vector<AST::ASTNode*> forContent = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
             assert(forContent.size() >= 3);
@@ -720,7 +720,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitTernary(TorqueParser::TernaryContext* context)
+        antlrcpp::Any ASTBuilder::visitTernary(Tribes2Parser::TernaryContext* context)
         {
             std::vector<AST::ASTNode*> ternaryContent = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
             assert(ternaryContent.size() == 3);
@@ -730,13 +730,13 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitLocalvariable(TorqueParser::LocalvariableContext* context)
+        antlrcpp::Any ASTBuilder::visitLocalvariable(Tribes2Parser::LocalvariableContext* context)
         {
             std::vector<std::string> variableName;
             std::vector<AST::ASTNode*> result;
-            std::vector<TorqueParser::LabelwithkeywordsContext*> variableNameComponents = context->labelwithkeywords();
+            std::vector<Tribes2Parser::LabelwithkeywordsContext*> variableNameComponents = context->labelwithkeywords();
 
-            for (TorqueParser::LabelwithkeywordsContext* component : variableNameComponents)
+            for (Tribes2Parser::LabelwithkeywordsContext* component : variableNameComponents)
             {
                 variableName.push_back(component->getText());
             }
@@ -745,13 +745,13 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitGlobalvariable(TorqueParser::GlobalvariableContext* context)
+        antlrcpp::Any ASTBuilder::visitGlobalvariable(Tribes2Parser::GlobalvariableContext* context)
         {
             std::vector<std::string> variableName;
             std::vector<AST::ASTNode*> result;
-            std::vector<TorqueParser::LabelwithkeywordsContext*> variableNameComponents = context->labelwithkeywords();
+            std::vector<Tribes2Parser::LabelwithkeywordsContext*> variableNameComponents = context->labelwithkeywords();
 
-            for (TorqueParser::LabelwithkeywordsContext* component : variableNameComponents)
+            for (Tribes2Parser::LabelwithkeywordsContext* component : variableNameComponents)
             {
                 variableName.push_back(component->getText());
             }
@@ -760,7 +760,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitReturn_control(TorqueParser::Return_controlContext* context)
+        antlrcpp::Any ASTBuilder::visitReturn_control(Tribes2Parser::Return_controlContext* context)
         {
             std::vector<AST::ASTNode*> result = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
             assert(result.size() <= 1);
@@ -776,7 +776,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitField_assign(TorqueParser::Field_assignContext* context)
+        antlrcpp::Any ASTBuilder::visitField_assign(Tribes2Parser::Field_assignContext* context)
         {
             std::vector<AST::ASTNode*> fieldExpressions = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
             assert(fieldExpressions.size() >= 1);
@@ -792,7 +792,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitDatablock_declaration(TorqueParser::Datablock_declarationContext* context)
+        antlrcpp::Any ASTBuilder::visitDatablock_declaration(Tribes2Parser::Datablock_declarationContext* context)
         {
             std::vector<AST::ASTNode*> result;
             std::vector<AST::ASTNode*> fields = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
@@ -814,7 +814,7 @@ namespace TorqueScript
             return result;
         }
 
-        antlrcpp::Any ASTBuilder::visitObject_declaration(TorqueParser::Object_declarationContext* context)
+        antlrcpp::Any ASTBuilder::visitObject_declaration(Tribes2Parser::Object_declarationContext* context)
         {
             std::vector<AST::ASTNode*> result;
             std::vector<AST::ASTNode*> objectContent = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();

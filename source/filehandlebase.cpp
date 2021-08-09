@@ -14,9 +14,9 @@
 
 #include <iostream>
 
-#include <torquescript/filehandlebase.hpp>
+#include <tribalscript/filehandlebase.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     FileHandleBase::FileHandleBase(const std::string& path) : mPath(path)
     {

@@ -12,11 +12,11 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/consoleobject.hpp>
-#include <torquescript/stringhelpers.hpp>
-#include <torquescript/interpreter.hpp>
+#include <tribalscript/consoleobject.hpp>
+#include <tribalscript/stringhelpers.hpp>
+#include <tribalscript/interpreter.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     std::unordered_map<std::string, ConsoleObjectDescriptor*>* sConsoleObjectDescriptors = nullptr;
 

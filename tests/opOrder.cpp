@@ -16,23 +16,23 @@
 
 #include "gtest/gtest.h"
 
-#include <torquescript/interpreter.hpp>
-#include <torquescript/storedvalue.hpp>
-#include <torquescript/libraries/libraries.hpp>
-#include <torquescript/executionstate.hpp>
+#include <tribalscript/interpreter.hpp>
+#include <tribalscript/storedvalue.hpp>
+#include <tribalscript/libraries/libraries.hpp>
+#include <tribalscript/executionstate.hpp>
 
 TEST(InterpreterTest, OpOrder)
 {
-    TorqueScript::Interpreter interpreter;
-    TorqueScript::registerAllLibraries(&interpreter);
+    TribalScript::Interpreter interpreter;
+    TribalScript::registerAllLibraries(&interpreter);
 
-    TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
+    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
     interpreter.execute("cases/opOrder.cs", &state);
 
     // After execution, the result of $global should be 50
-    TorqueScript::StoredValue* noParen = interpreter.getGlobal("noParen");
+    TribalScript::StoredValue* noParen = interpreter.getGlobal("noParen");
     ASSERT_TRUE(noParen);
-    TorqueScript::StoredValue* paren = interpreter.getGlobal("paren");
+    TribalScript::StoredValue* paren = interpreter.getGlobal("paren");
     ASSERT_TRUE(paren);
 
     ASSERT_EQ(noParen->toInteger(), 3);

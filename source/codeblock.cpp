@@ -12,12 +12,12 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/codeblock.hpp>
-#include <torquescript/instructions.hpp>
-#include <torquescript/stringhelpers.hpp>
-#include <torquescript/instructionsequence.hpp>
+#include <tribalscript/codeblock.hpp>
+#include <tribalscript/instructions.hpp>
+#include <tribalscript/stringhelpers.hpp>
+#include <tribalscript/instructionsequence.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     CodeBlock::CodeBlock(const InstructionSequence& instructions)
     {

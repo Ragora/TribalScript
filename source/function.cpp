@@ -12,12 +12,12 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/function.hpp>
-#include <torquescript/instructions.hpp>
-#include <torquescript/stringhelpers.hpp>
-#include <torquescript/storedvaluestack.hpp>
+#include <tribalscript/function.hpp>
+#include <tribalscript/instructions.hpp>
+#include <tribalscript/stringhelpers.hpp>
+#include <tribalscript/storedvaluestack.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     Function::Function(const std::string& package, const std::string& space, const std::string& name) : mPackage(toLowerCase(package)), mNameSpace(toLowerCase(space)), mName(toLowerCase(name))
     {

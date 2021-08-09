@@ -16,21 +16,21 @@
 
 #include "gtest/gtest.h"
 
-#include <torquescript/interpreter.hpp>
-#include <torquescript/storedvalue.hpp>
-#include <torquescript/libraries/libraries.hpp>
-#include <torquescript/executionstate.hpp>
+#include <tribalscript/interpreter.hpp>
+#include <tribalscript/storedvalue.hpp>
+#include <tribalscript/libraries/libraries.hpp>
+#include <tribalscript/executionstate.hpp>
 
 TEST(InterpreterTest, Combined)
 {
-    TorqueScript::Interpreter interpreter;
-    TorqueScript::registerAllLibraries(&interpreter);
+    TribalScript::Interpreter interpreter;
+    TribalScript::registerAllLibraries(&interpreter);
 
-    TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
+    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
     interpreter.execute("cases/combined.cs", &state);
 
     // We have several globals here
-    TorqueScript::StoredValue* result = interpreter.getGlobal("result");
+    TribalScript::StoredValue* result = interpreter.getGlobal("result");
     ASSERT_TRUE(result);
 
     ASSERT_EQ(result->toInteger(), 120);

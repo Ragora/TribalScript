@@ -17,9 +17,9 @@
 #include <iostream>
 #include <algorithm>
 
-#include <torquescript/stringhelpers.hpp>
+#include <tribalscript/stringhelpers.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     std::string toLowerCase(const std::string& in)
     {

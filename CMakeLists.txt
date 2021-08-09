@@ -26,7 +26,7 @@ if (POLICY CMP0042)
     cmake_policy(SET CMP0042 NEW)
 endif (POLICY CMP0042)
 
-project(TorqueScript VERSION 0.2 LANGUAGES CXX)
+project(TribalScript VERSION 0.2 LANGUAGES CXX)
 
 cmake_minimum_required (VERSION 3.16.3)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -60,7 +60,7 @@ if (${DOXYGEN_FOUND})
     set(DOXYGEN_EXAMPLE_PATH ${PROJECT_SOURCE_DIR}/examples)
 
     doxygen_add_docs(
-        TorqueCompilerDocs
+        TribalScriptDocs
         ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/source/doxymain.h
         COMMENT "Generate Documentation for the Compiler"

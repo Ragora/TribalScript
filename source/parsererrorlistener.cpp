@@ -15,9 +15,9 @@
 #include <vector>
 #include <string>
 
-#include <torquescript/parsererrorlistener.hpp>
+#include <tribalscript/parsererrorlistener.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     void ParserErrorListener::syntaxError(antlr4::Recognizer* recognizer, antlr4::Token* offendingSymbol, size_t line, size_t charPositionInLine, const std::string& msg, std::exception_ptr e)
     {
@@ -31,7 +31,7 @@ namespace TorqueScript
         {
             out << "Syntax Error on Line " << line << " Character " << charPositionInLine << std::endl;
         }
-       
+
         out << msg << std::endl;
         mErrors.push_back(out.str());
     }

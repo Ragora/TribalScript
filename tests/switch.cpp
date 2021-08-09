@@ -16,26 +16,26 @@
 
 #include "gtest/gtest.h"
 
-#include <torquescript/interpreter.hpp>
-#include <torquescript/storedvalue.hpp>
-#include <torquescript/libraries/libraries.hpp>
-#include <torquescript/executionstate.hpp>
+#include <tribalscript/interpreter.hpp>
+#include <tribalscript/storedvalue.hpp>
+#include <tribalscript/libraries/libraries.hpp>
+#include <tribalscript/executionstate.hpp>
 
 TEST(InterpreterTest, Switch)
 {
-    TorqueScript::Interpreter interpreter;
-    TorqueScript::registerAllLibraries(&interpreter);
+    TribalScript::Interpreter interpreter;
+    TribalScript::registerAllLibraries(&interpreter);
 
-    TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
+    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
     interpreter.execute("cases/switch.cs", &state);
 
-    TorqueScript::StoredValue* resultOne = interpreter.getGlobal("global::one");
+    TribalScript::StoredValue* resultOne = interpreter.getGlobal("global::one");
     ASSERT_TRUE(resultOne);
-    TorqueScript::StoredValue* resultTwo = interpreter.getGlobal("global::two");
+    TribalScript::StoredValue* resultTwo = interpreter.getGlobal("global::two");
     ASSERT_TRUE(resultTwo);
-    TorqueScript::StoredValue* resultThree = interpreter.getGlobal("global::three");
+    TribalScript::StoredValue* resultThree = interpreter.getGlobal("global::three");
     ASSERT_TRUE(resultThree);
-    TorqueScript::StoredValue* resultFour = interpreter.getGlobal("global::four");
+    TribalScript::StoredValue* resultFour = interpreter.getGlobal("global::four");
     ASSERT_TRUE(resultFour);
 
     ASSERT_EQ(resultOne->toInteger(), 5);

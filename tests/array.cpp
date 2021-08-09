@@ -16,22 +16,22 @@
 
 #include "gtest/gtest.h"
 
-#include <torquescript/interpreter.hpp>
-#include <torquescript/storedvalue.hpp>
-#include <torquescript/libraries/libraries.hpp>
-#include <torquescript/executionstate.hpp>
+#include <tribalscript/interpreter.hpp>
+#include <tribalscript/storedvalue.hpp>
+#include <tribalscript/libraries/libraries.hpp>
+#include <tribalscript/executionstate.hpp>
 
 TEST(InterpreterTest, Array)
 {
-    TorqueScript::Interpreter interpreter;
-    TorqueScript::registerAllLibraries(&interpreter);
+    TribalScript::Interpreter interpreter;
+    TribalScript::registerAllLibraries(&interpreter);
 
-    TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
+    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
     interpreter.execute("cases/array.cs", &state);
 
     // The assignment performed is: $result[1,2,3] = %value;
     // However, in Torque Script this is treated as a single variable key $result_1_2_3
-    TorqueScript::StoredValue* result = interpreter.getGlobal("result_1_2_3");
+    TribalScript::StoredValue* result = interpreter.getGlobal("result_1_2_3");
     ASSERT_TRUE(result);
 
     ASSERT_EQ(result->toInteger(), 5);

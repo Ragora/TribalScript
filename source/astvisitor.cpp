@@ -12,10 +12,10 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/astvisitor.hpp>
-#include <torquescript/ast.hpp>
+#include <tribalscript/astvisitor.hpp>
+#include <tribalscript/ast.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     namespace AST
     {

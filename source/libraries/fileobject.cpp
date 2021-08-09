@@ -14,9 +14,9 @@
 
 #include <assert.h>
 
-#include <torquescript/libraries/fileobject.hpp>
+#include <tribalscript/libraries/fileobject.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     void OpenForWriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
     {

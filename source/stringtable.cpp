@@ -12,9 +12,9 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/stringtable.hpp>
+#include <tribalscript/stringtable.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     StringTableEntry StringTable::getOrAssign(const std::string& string)
     {

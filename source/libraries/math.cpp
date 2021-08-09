@@ -14,9 +14,9 @@
 
 #include <assert.h>
 
-#include <torquescript/libraries/math.hpp>
+#include <tribalscript/libraries/math.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     void GetRandomBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
     {

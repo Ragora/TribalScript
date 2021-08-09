@@ -12,12 +12,12 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/nativefunction.hpp>
-#include <torquescript/instructions.hpp>
-#include <torquescript/stringhelpers.hpp>
-#include <torquescript/storedvaluestack.hpp>
+#include <tribalscript/nativefunction.hpp>
+#include <tribalscript/instructions.hpp>
+#include <tribalscript/stringhelpers.hpp>
+#include <tribalscript/storedvaluestack.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     NativeFunction::NativeFunction(NativeFunctionPointer native, const std::string& package, const std::string& space, const std::string& name) : mNativeFunction(native), Function(package, space, name)
     {

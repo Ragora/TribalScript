@@ -16,25 +16,25 @@
 
 #include "gtest/gtest.h"
 
-#include <torquescript/interpreter.hpp>
-#include <torquescript/storedvalue.hpp>
-#include <torquescript/libraries/libraries.hpp>
-#include <torquescript/executionstate.hpp>
+#include <tribalscript/interpreter.hpp>
+#include <tribalscript/storedvalue.hpp>
+#include <tribalscript/libraries/libraries.hpp>
+#include <tribalscript/executionstate.hpp>
 
 TEST(InterpreterTest, Array)
 {
-    TorqueScript::InterpreterConfiguration config;
+    TribalScript::InterpreterConfiguration config;
     config.mCaseSensitive = true;
 
-    TorqueScript::Interpreter interpreter(config);
-    TorqueScript::registerAllLibraries(&interpreter);
+    TribalScript::Interpreter interpreter(config);
+    TribalScript::registerAllLibraries(&interpreter);
 
-    TorqueScript::ExecutionState state = TorqueScript::ExecutionState(&interpreter);
+    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
     interpreter.execute("cases/caseSensitive.cs", &state);
 
-    TorqueScript::StoredValue* resultLower = interpreter.getGlobal("result");
+    TribalScript::StoredValue* resultLower = interpreter.getGlobal("result");
     ASSERT_TRUE(resultLower);
-    TorqueScript::StoredValue* resultUpper = interpreter.getGlobal("RESULT");
+    TribalScript::StoredValue* resultUpper = interpreter.getGlobal("RESULT");
     ASSERT_TRUE(resultUpper);
 
     ASSERT_EQ(resultLower->toFloat(), 2.0f);

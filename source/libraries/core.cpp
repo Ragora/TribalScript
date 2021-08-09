@@ -15,9 +15,9 @@
 #include <assert.h>
 #include <chrono>
 
-#include <torquescript/libraries/core.hpp>
+#include <tribalscript/libraries/core.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     void EchoBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
     {

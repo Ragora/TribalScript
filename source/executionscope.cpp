@@ -12,9 +12,9 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <torquescript/executionscope.hpp>
+#include <tribalscript/executionscope.hpp>
 
-namespace TorqueScript
+namespace TribalScript
 {
     ExecutionScope::ExecutionScope(const InterpreterConfiguration& config, StringTable* table) : mConfig(config), mStringTable(table)
     {
