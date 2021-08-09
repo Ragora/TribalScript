@@ -43,7 +43,7 @@ control_statements : '{' expression_statement* '}'
 
 while_control : WHILE '(' expression ')' control_statements ;
 
-for_control : FOR '(' expression ';' expression ';' expression ')' control_statements ;
+for_control : FOR '(' primary_expression_or_expression ';' primary_expression_or_expression ';' primary_expression_or_expression ')' control_statements ;
 
 else_control : ELSE control_statements ;
 elseif_control : ELSE IF '(' expression ')' control_statements ;
@@ -80,9 +80,9 @@ qualified_functioncall_expression : LABEL '::' LABEL '(' expression_list? ')'  ;
 functioncall_expression : LABEL '(' expression_list? ')'  ;
 
 chain_start : localvariable
-            | globalvariable 
+            | globalvariable
             | globalarray
-            | localarray 
+            | localarray
             | rvalue
             | functioncall_expression
             | qualified_functioncall_expression
@@ -120,6 +120,9 @@ primary_expression : chain                                                      
                    | assignable_chain '--'                                          # decrement
                    | object_declaration                                             # objectDeclarationExpression
                    | datablock_declaration                                          # datablockDeclarationExpression ;
+
+primary_expression_or_expression : primary_expression
+                                 | expression ;
 
 // Only valid on the right side of an assignment, however still valid on the left side of a '.'
 rvalue : INT                                                                # value

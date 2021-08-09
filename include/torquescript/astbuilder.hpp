@@ -47,7 +47,9 @@ namespace TorqueScript
                 virtual antlrcpp::Any visitArithmetic(TorqueParser::ArithmeticContext* context) override;
                 virtual antlrcpp::Any visitLogical(TorqueParser::LogicalContext* context) override;
                 virtual antlrcpp::Any visitAssign(TorqueParser::AssignContext* context) override;
+                virtual antlrcpp::Any visitAssignable_chain(TorqueParser::Assignable_chainContext* context) override;
                 virtual antlrcpp::Any visitUnary(TorqueParser::UnaryContext* context) override;
+                virtual antlrcpp::Any visitChain(TorqueParser::ChainContext* context) override;
                 virtual antlrcpp::Any visitWhile_control(TorqueParser::While_controlContext* context) override;
                 virtual antlrcpp::Any visitIf_control(TorqueParser::If_controlContext* context) override;
                 virtual antlrcpp::Any visitFor_control(TorqueParser::For_controlContext* context) override;

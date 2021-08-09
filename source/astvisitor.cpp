@@ -33,6 +33,24 @@ namespace TorqueScript
             Visitor Routines =========================
         */
 
+        antlrcpp::Any ASTVisitor::visitSubreferenceNode(AST::SubreferenceNode* reference)
+        {
+            antlrcpp::Any result = this->defaultResult();
+
+            // Don't visit left as it is what triggered into us
+            antlrcpp::Any childResult = reference->mTarget->accept(this);
+            result = this->aggregateResult(result, childResult);
+
+            // Right may be unassigned on rightmost
+            if (reference->mRight)
+            {
+                antlrcpp::Any childResult = reference->mRight->accept(this);
+                result = this->aggregateResult(result, childResult);
+            }
+
+            return result;
+        }
+
         antlrcpp::Any ASTVisitor::visitProgramNode(AST::ProgramNode* program)
         {
             antlrcpp::Any result = this->defaultResult();

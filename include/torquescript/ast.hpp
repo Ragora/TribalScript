@@ -229,6 +229,24 @@ namespace TorqueScript
                 std::vector<ASTNode*> mParameters;
         };
 
+        class SubreferenceNode : public ASTNode
+        {
+            public:
+                SubreferenceNode(ASTNode* left, ASTNode* target, ASTNode* right) : mLeft(left), mTarget(target), mRight(right)
+                {
+
+                }
+
+                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                {
+                    return visitor->visitSubreferenceNode(this);
+                }
+
+                ASTNode* mLeft;
+                ASTNode* mRight;
+                ASTNode* mTarget;
+        };
+
         class SubFieldNode : public ASTNode
         {
             public:
