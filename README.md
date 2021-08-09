@@ -1,4 +1,4 @@
-# TorqueScript
+# TribalScript
 
 This repository is a reimplementation of the Torque Script scripting language (version used in Tribes 2). The intent is to be able to use the scripting
 language in an easily embeddable manner outside of Torque Game Engine.
@@ -29,5 +29,5 @@ ctest
 After CMake has generated the makefiles, you may use the following to build the doxygen documentation:
 
 ```
-make TorqueCompilerDocs
+make TribalScriptDocs
 ```
