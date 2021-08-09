@@ -79,6 +79,9 @@ expression_list : expression (',' expression)* ;
 qualified_functioncall_expression : LABEL '::' LABEL '(' expression_list? ')'  ;
 functioncall_expression : LABEL '(' expression_list? ')'  ;
 
+// A copy of functioncall_expression for easily distinguishing a bound call and not
+subfunctioncall_expression : LABEL '(' expression_list? ')' ;
+
 chain_start : localvariable
             | globalvariable
             | globalarray
@@ -90,11 +93,11 @@ chain_start : localvariable
 
 chain_component : field
                 | fieldarray
-                | functioncall_expression ;
+                | subfunctioncall_expression ;
 
 chain_elements : field
                | fieldarray
-               | functioncall_expression
+               | subfunctioncall_expression
                | chain_elements '.' chain_elements ;
 
 chain : chain_start ('.' chain_elements)? ;
@@ -106,8 +109,12 @@ assignable_chain : localvariable
                  | chain_start ('.' chain_elements)? '.' field
                  | chain_start ('.' chain_elements)? '.' fieldarray ;
 
+primary_chain : functioncall_expression
+              | qualified_functioncall_expression
+              | chain_start ('.' chain_elements)? '.' subfunctioncall_expression ;
+
 // Root level expression - because expressions like `1;` are not valid - it must be actionable
-primary_expression : chain                                                          # chainPrimaryExpression
+primary_expression : primary_chain                                               # chainPrimaryExpression
                    | assignable_chain (op=ASSIGN
                             |op=PLUSASSIGN
                             |op=MINUSASSIGN

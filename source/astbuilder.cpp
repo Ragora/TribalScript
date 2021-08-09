@@ -112,22 +112,30 @@ namespace TorqueScript
             return result;
         }
 
+        antlrcpp::Any ASTBuilder::visitSubfunctioncall_expression(TorqueParser::Subfunctioncall_expressionContext* context)
+        {
+            std::vector<AST::ASTNode*> result;
+            std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
+
+            TorqueParser::Primary_chainContext* primaryChain = dynamic_cast<TorqueParser::Primary_chainContext*>(context->parent);
+            const bool isSubcall = dynamic_cast<TorqueParser::Chain_startContext*>(context->parent) ? false : true;
+
+            AST::SubFunctionCallNode* call = new AST::SubFunctionCallNode(context->LABEL()->getText(), parameters);
+            result.push_back(call);
+
+            return result;
+        }
+
         antlrcpp::Any ASTBuilder::visitFunctioncall_expression(TorqueParser::Functioncall_expressionContext* context)
         {
             std::vector<AST::ASTNode*> result;
             std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
 
+            TorqueParser::Primary_chainContext* primaryChain = dynamic_cast<TorqueParser::Primary_chainContext*>(context->parent);
             const bool isSubcall = dynamic_cast<TorqueParser::Chain_startContext*>(context->parent) ? false : true;
 
-            if (isSubcall)
-            {
-                result.push_back(new AST::SubFunctionCallNode(context->LABEL()->getText(), parameters));
-            }
-            else
-            {
-                AST::FunctionCallNode* call = new AST::FunctionCallNode("", context->LABEL()->getText(), parameters);
-                result.push_back(call);
-            }
+            AST::FunctionCallNode* call = new AST::FunctionCallNode("", context->LABEL()->getText(), parameters);
+            result.push_back(call);
 
             return result;
         }

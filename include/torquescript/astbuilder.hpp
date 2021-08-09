@@ -68,6 +68,8 @@ namespace TorqueScript
                 virtual antlrcpp::Any visitQualified_functioncall_expression(TorqueParser::Qualified_functioncall_expressionContext* context) override;
                 virtual antlrcpp::Any visitFunctioncall_expression(TorqueParser::Functioncall_expressionContext* context) override;
 
+
+                virtual antlrcpp::Any visitSubfunctioncall_expression(TorqueParser::Subfunctioncall_expressionContext* context) override;
                 virtual antlrcpp::Any visitField(TorqueParser::FieldContext* context) override;
                 virtual antlrcpp::Any visitFieldarray(TorqueParser::FieldarrayContext* context) override;
 
