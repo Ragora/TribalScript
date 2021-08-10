@@ -141,54 +141,25 @@ namespace TribalScript
             template <typename classType>
             void registerConsoleObjectType(const std::string& typeName, const std::string& superTypeName)
             {
-                // Ensure descriptors are initialized
-                assert(mConsoleObjectDescriptors.find(typeName) == mConsoleObjectDescriptors.end());
+                const std::string chosenTypeName = mConfig.mCaseSensitive ? typeName : toLowerCase(typeName);
+                const std::string chosenSuperTypeName = mConfig.mCaseSensitive ? superTypeName : toLowerCase(superTypeName);
 
-                ConsoleObjectDescriptor* descriptor = new ConsoleObjectDescriptor(typeName, superTypeName, classType::instantiateFromDescriptor);
-                mConsoleObjectDescriptors.insert(std::make_pair(typeName, descriptor));
+                // Ensure descriptors are initialized
+                assert(mConsoleObjectDescriptors.find(chosenTypeName) == mConsoleObjectDescriptors.end());
+
+                ConsoleObjectDescriptor* descriptor = new ConsoleObjectDescriptor(chosenTypeName, chosenSuperTypeName, classType::instantiateFromDescriptor);
+                mConsoleObjectDescriptors.insert(std::make_pair(chosenTypeName, descriptor));
 
                 classType::initializeMemberFields(descriptor);
             }
 
-            std::vector<std::string> relinkNamespace(const std::string& space)
-            {
-                auto search = mConsoleObjectDescriptors.find(space);
-                if (search == mConsoleObjectDescriptors.end())
-                {
-                    throw std::runtime_error("Fatal error in relink namespaces!");
-                }
+            std::vector<std::string> relinkNamespace(const std::string& space);
 
-                ConsoleObjectDescriptor* currentDescriptor = search->second;
+            void relinkNamespaces();
 
-                std::vector<std::string> result;
-                result.push_back(currentDescriptor->mParentName);
+            ConsoleObjectDescriptor* lookupDescriptor(const std::string& objectTypeName);
 
-                // ConsoleObject won't have an entry
-                if (currentDescriptor->mParentName == "ConsoleObject")
-                {
-                    return result;
-                }
-
-                std::vector<std::string> children = relinkNamespace(currentDescriptor->mParentName);
-                result.insert(result.end(), children.begin(), children.end());
-                return result;
-            }
-
-            void relinkNamespaces()
-            {
-                for (auto&& entry : mConsoleObjectDescriptors)
-                {
-                    // Reset the hierarchy of this namespace
-                    entry.second->mHierarchy = relinkNamespace(entry.second->mName);
-                    entry.second->mHierarchy.insert(entry.second->mHierarchy.begin(), entry.second->mName);
-                }
-            }
-
-            std::unordered_map<std::string, ConsoleObjectDescriptor*>& getConsoleObjectDescriptors()
-            {
-                return mConsoleObjectDescriptors;
-            }
-
+            std::unordered_map<std::string, ConsoleObjectDescriptor*>& getConsoleObjectDescriptors();
 
         private:
             //! Keep a ready instance of the compiler on hand as it is reusable.
