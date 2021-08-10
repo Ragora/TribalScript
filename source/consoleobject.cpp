@@ -18,8 +18,6 @@
 
 namespace TribalScript
 {
-    std::unordered_map<std::string, ConsoleObjectDescriptor*>* sConsoleObjectDescriptors = nullptr;
-
     ConsoleObject::ConsoleObject(Interpreter* interpreter) : mInterpreter(interpreter)
     {
 

@@ -30,6 +30,9 @@
 #define NAMESPACE_EMPTY ""
 #define PACKAGE_EMPTY ""
 
+#define INTERPRETER_REGISTER_CONSOLEOBJECT_TYPE(interpreter, type, super) \
+    interpreter->registerConsoleObjectType<type>(#type, #super);
+
 namespace TribalScript
 {
     //! Forward declaration to deal with circular dependencies.
@@ -136,15 +139,33 @@ namespace TribalScript
             ConsoleObject* initializeConsoleObjectTree(ObjectInstantiationDescriptor& descriptor);
 
             template <typename classType>
-            void registerConsoleObjectType()
+            void registerConsoleObjectType(const std::string& typeName, const std::string& superTypeName)
             {
+                const std::string chosenTypeName = mConfig.mCaseSensitive ? typeName : toLowerCase(typeName);
+                const std::string chosenSuperTypeName = mConfig.mCaseSensitive ? superTypeName : toLowerCase(superTypeName);
+
                 // Ensure descriptors are initialized
-                classType::initializeMemberFields(TypeInformation<classType>::Descriptor);
+                assert(mConsoleObjectDescriptors.find(chosenTypeName) == mConsoleObjectDescriptors.end());
+
+                ConsoleObjectDescriptor* descriptor = new ConsoleObjectDescriptor(chosenTypeName, chosenSuperTypeName, classType::instantiateFromDescriptor);
+                mConsoleObjectDescriptors.insert(std::make_pair(chosenTypeName, descriptor));
+
+                classType::initializeMemberFields(descriptor);
             }
+
+            std::vector<std::string> relinkNamespace(const std::string& space);
+
+            void relinkNamespaces();
+
+            ConsoleObjectDescriptor* lookupDescriptor(const std::string& objectTypeName);
+
+            std::unordered_map<std::string, ConsoleObjectDescriptor*>& getConsoleObjectDescriptors();
 
         private:
             //! Keep a ready instance of the compiler on hand as it is reusable.
             Compiler* mCompiler;
+
+            std::unordered_map<std::string, ConsoleObjectDescriptor*> mConsoleObjectDescriptors;
 
             //! A mapping of function namespaces to a mapping of function names to the function object.
             std::vector<FunctionRegistry> mFunctionRegistries;

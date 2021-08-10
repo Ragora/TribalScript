@@ -138,6 +138,7 @@ namespace TribalScript
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(IsFileBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "isFile")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(DeleteFileBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "deleteFile")));
 
-        interpreter->registerConsoleObjectType<FileObject>();
+        INTERPRETER_REGISTER_CONSOLEOBJECT_TYPE(interpreter, FileObject, ConsoleObject);
+        //interpreter->registerConsoleObjectType<FileObject>();
     }
 }

@@ -307,11 +307,63 @@ namespace TribalScript
         deactivated->mActive = false;
     }
 
+    void Interpreter::relinkNamespaces()
+    {
+        for (auto&& entry : mConsoleObjectDescriptors)
+        {
+            // Reset the hierarchy of this namespace
+            entry.second->mHierarchy = relinkNamespace(entry.second->mName);
+            entry.second->mHierarchy.insert(entry.second->mHierarchy.begin(), entry.second->mName);
+        }
+    }
+
+    ConsoleObjectDescriptor* Interpreter::lookupDescriptor(const std::string& objectTypeName)
+    {
+        const std::string chosenTypeName = mConfig.mCaseSensitive ? objectTypeName : toLowerCase(objectTypeName);
+
+        auto lookup = mConsoleObjectDescriptors.find(chosenTypeName);
+
+        if (lookup != mConsoleObjectDescriptors.end())
+        {
+            return lookup->second;
+        }
+        return nullptr;
+    }
+
+    std::unordered_map<std::string, ConsoleObjectDescriptor*>& Interpreter::getConsoleObjectDescriptors()
+    {
+        return mConsoleObjectDescriptors;
+    }
+
+    std::vector<std::string> Interpreter::relinkNamespace(const std::string& space)
+    {
+        auto search = mConsoleObjectDescriptors.find(space);
+        if (search == mConsoleObjectDescriptors.end())
+        {
+            throw std::runtime_error("Fatal error in relink namespaces!");
+        }
+
+        ConsoleObjectDescriptor* currentDescriptor = search->second;
+
+        std::vector<std::string> result;
+        result.push_back(currentDescriptor->mParentName);
+
+        // ConsoleObject won't have an entry
+        if (currentDescriptor->mParentName == "ConsoleObject")
+        {
+            return result;
+        }
+
+        std::vector<std::string> children = relinkNamespace(currentDescriptor->mParentName);
+        result.insert(result.end(), children.begin(), children.end());
+        return result;
+    }
+
     ConsoleObject* Interpreter::initializeConsoleObjectTree(ObjectInstantiationDescriptor& descriptor)
     {
         // Lookup console object descriptor
-        auto search = sConsoleObjectDescriptors->find(descriptor.mTypeName);
-        if (search == sConsoleObjectDescriptors->end())
+        ConsoleObjectDescriptor* objectDescriptor = this->lookupDescriptor(descriptor.mTypeName);
+        if (!objectDescriptor)
         {
             std::ostringstream errorStream;
             errorStream << "Cannot instantiate non-console object type '" << descriptor.mTypeName << "'!";
@@ -322,7 +374,6 @@ namespace TribalScript
             return nullptr;
         }
 
-        ConsoleObjectDescriptor* objectDescriptor = search->second;
         ConsoleObject* initialized = objectDescriptor->mInitializePointer(this, descriptor);
 
         // Register to interpreter
