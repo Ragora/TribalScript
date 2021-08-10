@@ -24,7 +24,7 @@ namespace TribalScript
 {
     Interpreter::Interpreter() : Interpreter(InterpreterConfiguration())
     {
-        relinkNamespaces();
+
     }
 
     Interpreter::Interpreter(const InterpreterConfiguration& config) : mConfig(config)
@@ -340,7 +340,9 @@ namespace TribalScript
         auto search = mConsoleObjectDescriptors.find(space);
         if (search == mConsoleObjectDescriptors.end())
         {
-            throw std::runtime_error("Fatal error in relink namespaces!");
+            std::ostringstream out;
+            out << "Fatal error in relink namespaces: " << space;
+            throw std::runtime_error(out.str());
         }
 
         ConsoleObjectDescriptor* currentDescriptor = search->second;
@@ -349,7 +351,8 @@ namespace TribalScript
         result.push_back(currentDescriptor->mParentName);
 
         // ConsoleObject won't have an entry
-        if (currentDescriptor->mParentName == "ConsoleObject")
+        // FIXME: Is there a more appropriate way to handle this?
+        if (toLowerCase(currentDescriptor->mParentName) == "consoleobject")
         {
             return result;
         }

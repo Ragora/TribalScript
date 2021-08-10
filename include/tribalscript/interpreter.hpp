@@ -151,6 +151,9 @@ namespace TribalScript
                 mConsoleObjectDescriptors.insert(std::make_pair(chosenTypeName, descriptor));
 
                 classType::initializeMemberFields(descriptor);
+
+                // Ensure namespaces are setup correctly
+                this->relinkNamespaces();
             }
 
             std::vector<std::string> relinkNamespace(const std::string& space);
