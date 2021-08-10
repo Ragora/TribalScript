@@ -310,8 +310,8 @@ namespace TribalScript
     ConsoleObject* Interpreter::initializeConsoleObjectTree(ObjectInstantiationDescriptor& descriptor)
     {
         // Lookup console object descriptor
-        auto search = sConsoleObjectDescriptors->find(descriptor.mTypeName);
-        if (search == sConsoleObjectDescriptors->end())
+        auto search = mConsoleObjectDescriptors.find(descriptor.mTypeName);
+        if (search == mConsoleObjectDescriptors.end())
         {
             std::ostringstream errorStream;
             errorStream << "Cannot instantiate non-console object type '" << descriptor.mTypeName << "'!";

@@ -30,6 +30,9 @@
 #define NAMESPACE_EMPTY ""
 #define PACKAGE_EMPTY ""
 
+#define INTERPRETER_REGISTER_CONSOLEOBJECT_TYPE(interpreter, type, super) \
+    interpreter->registerConsoleObjectType<type>(#type, #super);
+
 namespace TribalScript
 {
     //! Forward declaration to deal with circular dependencies.
@@ -136,15 +139,62 @@ namespace TribalScript
             ConsoleObject* initializeConsoleObjectTree(ObjectInstantiationDescriptor& descriptor);
 
             template <typename classType>
-            void registerConsoleObjectType()
+            void registerConsoleObjectType(const std::string& typeName, const std::string& superTypeName)
             {
                 // Ensure descriptors are initialized
-                classType::initializeMemberFields(TypeInformation<classType>::Descriptor);
+                assert(mConsoleObjectDescriptors.find(typeName) == mConsoleObjectDescriptors.end());
+
+                ConsoleObjectDescriptor* descriptor = new ConsoleObjectDescriptor(typeName, superTypeName, classType::instantiateFromDescriptor);
+                mConsoleObjectDescriptors.insert(std::make_pair(typeName, descriptor));
+
+                classType::initializeMemberFields(descriptor);
             }
+
+            std::vector<std::string> relinkNamespace(const std::string& space)
+            {
+                auto search = mConsoleObjectDescriptors.find(space);
+                if (search == mConsoleObjectDescriptors.end())
+                {
+                    throw std::runtime_error("Fatal error in relink namespaces!");
+                }
+
+                ConsoleObjectDescriptor* currentDescriptor = search->second;
+
+                std::vector<std::string> result;
+                result.push_back(currentDescriptor->mParentName);
+
+                // ConsoleObject won't have an entry
+                if (currentDescriptor->mParentName == "ConsoleObject")
+                {
+                    return result;
+                }
+
+                std::vector<std::string> children = relinkNamespace(currentDescriptor->mParentName);
+                result.insert(result.end(), children.begin(), children.end());
+                return result;
+            }
+
+            void relinkNamespaces()
+            {
+                for (auto&& entry : mConsoleObjectDescriptors)
+                {
+                    // Reset the hierarchy of this namespace
+                    entry.second->mHierarchy = relinkNamespace(entry.second->mName);
+                    entry.second->mHierarchy.insert(entry.second->mHierarchy.begin(), entry.second->mName);
+                }
+            }
+
+            std::unordered_map<std::string, ConsoleObjectDescriptor*>& getConsoleObjectDescriptors()
+            {
+                return mConsoleObjectDescriptors;
+            }
+
 
         private:
             //! Keep a ready instance of the compiler on hand as it is reusable.
             Compiler* mCompiler;
+
+            std::unordered_map<std::string, ConsoleObjectDescriptor*> mConsoleObjectDescriptors;
 
             //! A mapping of function namespaces to a mapping of function names to the function object.
             std::vector<FunctionRegistry> mFunctionRegistries;

@@ -1411,7 +1411,7 @@ namespace TribalScript
                     }
 
                     // Walk the class hierarchy
-                    ConsoleObjectDescriptor* descriptor = sConsoleObjectDescriptors->at(targetObject->getClassName());
+                    ConsoleObjectDescriptor* descriptor = state->mInterpreter->getConsoleObjectDescriptors().at(targetObject->getClassName());
                     assert(descriptor->mHierarchy.size() != 0);
 
                     for (const std::string& className : descriptor->mHierarchy)

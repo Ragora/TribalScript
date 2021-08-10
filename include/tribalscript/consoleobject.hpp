@@ -31,25 +31,12 @@ namespace TribalScript
 
     typedef ConsoleObject* (*InitializeConsoleObjectFromDescriptorPointer)(Interpreter* interpreter, struct ObjectInstantiationDescriptor& descriptor);
 
-    extern std::unordered_map<std::string, ConsoleObjectDescriptor*>* sConsoleObjectDescriptors;
-    static std::unordered_map<std::string, ConsoleObjectDescriptor*>* getConsoleObjectDescriptors()
-    {
-        if (sConsoleObjectDescriptors)
-        {
-            return sConsoleObjectDescriptors;
-        }
-        return sConsoleObjectDescriptors = new std::unordered_map<std::string, ConsoleObjectDescriptor*>();
-    }
-
     class ConsoleObjectDescriptor
     {
         public:
             ConsoleObjectDescriptor(const std::string& name, const std::string& parentName, InitializeConsoleObjectFromDescriptorPointer initializePointer) : mName(name), mParentName(parentName), mInitializePointer(initializePointer)
             {
-                std::unordered_map<std::string, ConsoleObjectDescriptor*>* descriptors = getConsoleObjectDescriptors();
 
-                assert(descriptors->find(name) == descriptors->end());
-                descriptors->insert(std::make_pair(name, this));
             }
 
             std::string mName;
@@ -57,44 +44,6 @@ namespace TribalScript
             std::vector<std::string> mHierarchy;
             InitializeConsoleObjectFromDescriptorPointer mInitializePointer;
     };
-
-    static std::vector<std::string> relinkNamespace(const std::string& space)
-    {
-        std::unordered_map<std::string, ConsoleObjectDescriptor*>* descriptors = getConsoleObjectDescriptors();
-
-        auto search = descriptors->find(space);
-        if (search == descriptors->end())
-        {
-            throw std::runtime_error("Fatal error in relink namespaces!");
-        }
-
-        ConsoleObjectDescriptor* currentDescriptor = search->second;
-
-        std::vector<std::string> result;
-        result.push_back(currentDescriptor->mParentName);
-
-        // ConsoleObject won't have an entry
-        if (currentDescriptor->mParentName == "ConsoleObject")
-        {
-            return result;
-        }
-
-        std::vector<std::string> children = relinkNamespace(currentDescriptor->mParentName);
-        result.insert(result.end(), children.begin(), children.end());
-        return result;
-    }
-
-    static void relinkNamespaces()
-    {
-        std::unordered_map<std::string, ConsoleObjectDescriptor*>* descriptors = getConsoleObjectDescriptors();
-
-        for (auto&& entry : *descriptors)
-        {
-            // Reset the hierarchy of this namespace
-            entry.second->mHierarchy = relinkNamespace(entry.second->mName);
-            entry.second->mHierarchy.insert(entry.second->mHierarchy.begin(), entry.second->mName);
-        }
-    }
 
     template <typename classType>
     struct TypeInformation
@@ -120,7 +69,6 @@ namespace TribalScript
                 result.insert(result.end(), upper.begin(), upper.end());                \
                 return result;                                                          \
             }                                                                           \
-            static ConsoleObjectDescriptor* Descriptor;                                 \
         };
 
     #define DECLARE_CONSOLE_OBJECT_BODY()                                               \
@@ -128,7 +76,6 @@ namespace TribalScript
             virtual std::string getClassName() override;                                \
 
     #define IMPLEMENT_CONSOLE_OBJECT(type, super)                                                                   \
-        ConsoleObjectDescriptor* TypeInformation<type>::Descriptor = new ConsoleObjectDescriptor(#type, #super, type::instantiateFromDescriptor);    \
         std::string type::getClassName()                                                                            \
         {                                                                                                           \
             return #type;                                                                                           \
