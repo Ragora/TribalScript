@@ -64,6 +64,7 @@ namespace TribalScript
                 virtual antlrcpp::Any visitSwitch_control(Tribes2Parser::Switch_controlContext* context) override;
                 virtual antlrcpp::Any visitLocalarray(Tribes2Parser::LocalarrayContext* context) override;
                 virtual antlrcpp::Any visitGlobalarray(Tribes2Parser::GlobalarrayContext* context) override;
+                virtual antlrcpp::Any visitPrimary_chain(Tribes2Parser::Primary_chainContext* context) override;
 
                 virtual antlrcpp::Any visitQualified_functioncall_expression(Tribes2Parser::Qualified_functioncall_expressionContext* context) override;
                 virtual antlrcpp::Any visitFunctioncall_expression(Tribes2Parser::Functioncall_expressionContext* context) override;

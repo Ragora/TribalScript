@@ -341,6 +341,36 @@ namespace TribalScript
             return result;
         }
 
+        antlrcpp::Any ASTBuilder::visitPrimary_chain(Tribes2Parser::Primary_chainContext* context)
+        {
+            std::vector<AST::ASTNode*> result;
+            std::vector<AST::ASTNode*> children = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
+
+            if (children.size() == 1)
+            {
+                return children;
+            }
+
+            // Every pair of items should have a subreference
+            AST::SubreferenceNode* currentLeft = nullptr;
+            for (auto iterator = children.begin(); iterator != children.end(); ++iterator)
+            {
+                AST::SubreferenceNode* newNode = new AST::SubreferenceNode(currentLeft, *iterator, nullptr);
+
+                if (currentLeft)
+                {
+                    currentLeft->mRight = newNode;
+                    currentLeft = newNode;
+                }
+                else
+                {
+                    currentLeft = newNode;
+                    result.push_back(newNode);
+                }
+            }
+            return result;
+        }
+
         antlrcpp::Any ASTBuilder::visitChain(Tribes2Parser::ChainContext* context)
         {
             std::vector<AST::ASTNode*> result;
