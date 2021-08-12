@@ -33,7 +33,7 @@ namespace TribalScript
         DECLARE_CONSOLE_OBJECT_BODY()
 
         public:
-            FileObject(Interpreter* interpreter);
+            explicit FileObject(Interpreter* interpreter);
 
             /**
              *  @brief Opens a file at the specified path in write-only mode.

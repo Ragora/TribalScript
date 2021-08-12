@@ -14,8 +14,8 @@
 
 #pragma once
 
+#include <cassert>
 #include <iostream>
-#include <assert.h>
 #include <memory>
 #include <string>
 #include <cstring>
@@ -48,17 +48,17 @@ namespace TribalScript
 
         }
 
-        StoredValueUnion(const int value) : mInteger(value)
+        explicit StoredValueUnion(const int value) : mInteger(value)
         {
 
         }
 
-        StoredValueUnion(const float value) : mFloat(value)
+        explicit StoredValueUnion(const float value) : mFloat(value)
         {
 
         }
 
-        StoredValueUnion(char* value) : mStringPointer(value)
+        explicit StoredValueUnion(char* value) : mStringPointer(value)
         {
 
         }
@@ -76,27 +76,27 @@ namespace TribalScript
 
         }
 
-        StoredValue(float* memoryLocation) : mType(StoredValueType::Float), mStorage(), mMemoryLocation(memoryLocation), mConsoleObject(nullptr), mReference(nullptr)
+        explicit StoredValue(float* memoryLocation) : mType(StoredValueType::Float), mStorage(), mMemoryLocation(memoryLocation), mConsoleObject(nullptr), mReference(nullptr)
         {
 
         }
 
-        StoredValue(int* memoryLocation) : mType(StoredValueType::Integer), mStorage(), mMemoryLocation(memoryLocation), mConsoleObject(nullptr), mReference(nullptr)
+        explicit StoredValue(int* memoryLocation) : mType(StoredValueType::Integer), mStorage(), mMemoryLocation(memoryLocation), mConsoleObject(nullptr), mReference(nullptr)
         {
 
         }
 
-        StoredValue(const int value) : mType(StoredValueType::Integer), mStorage(value), mMemoryLocation(nullptr), mConsoleObject(nullptr), mReference(nullptr)
+        explicit StoredValue(const int value) : mType(StoredValueType::Integer), mStorage(value), mMemoryLocation(nullptr), mConsoleObject(nullptr), mReference(nullptr)
         {
 
         }
 
-        StoredValue(const float value) : mType(StoredValueType::Float), mStorage(value), mMemoryLocation(nullptr), mConsoleObject(nullptr), mReference(nullptr)
+        explicit StoredValue(const float value) : mType(StoredValueType::Float), mStorage(value), mMemoryLocation(nullptr), mConsoleObject(nullptr), mReference(nullptr)
         {
 
         }
 
-        StoredValue(const char* value, const std::size_t stringLength = 0) : mType(StoredValueType::String), mStorage(), mMemoryLocation(nullptr), mConsoleObject(nullptr), mReference(nullptr)
+        explicit StoredValue(const char* value, const std::size_t stringLength = 0) : mType(StoredValueType::String), mStorage(), mMemoryLocation(nullptr), mConsoleObject(nullptr), mReference(nullptr)
         {
             // Initialize memory
             const std::size_t valueLength = stringLength ? stringLength : strlen(value);
@@ -111,7 +111,7 @@ namespace TribalScript
 
        // }
 
-        StoredValue(StoredValue* referenced) : mType(StoredValueType::NullType), mMemoryLocation(nullptr), mConsoleObject(nullptr), mReference(referenced)
+        explicit StoredValue(StoredValue* referenced) : mType(StoredValueType::NullType), mMemoryLocation(nullptr), mConsoleObject(nullptr), mReference(referenced)
         {
 
         }

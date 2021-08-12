@@ -29,7 +29,7 @@ namespace TribalScript
     class ExecutionState
     {
         public:
-            ExecutionState(Interpreter* interpreter) : mInterpreter(interpreter), mExecutionScope(interpreter->mConfig, &interpreter->mStringTable)
+            explicit ExecutionState(Interpreter* interpreter) : mInstructionPointer(0), mInterpreter(interpreter), mExecutionScope(interpreter->mConfig, &interpreter->mStringTable)
             {
 
             }

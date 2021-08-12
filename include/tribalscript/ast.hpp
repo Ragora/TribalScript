@@ -35,10 +35,7 @@ namespace TribalScript
         class ASTNode
         {
             public:
-                virtual ~ASTNode()
-                {
-
-                }
+                virtual ~ASTNode() = default;
 
                 virtual antlrcpp::Any accept(ASTVisitor* visitor) = 0;
         };
@@ -46,7 +43,7 @@ namespace TribalScript
         class ProgramNode
         {
             public:
-                ProgramNode(const std::vector<ASTNode*>& nodes) : mNodes(nodes)
+                explicit ProgramNode(std::vector<ASTNode*> nodes) : mNodes(std::move(nodes))
                 {
 
                 }
@@ -70,13 +67,13 @@ namespace TribalScript
         class FunctionDeclarationNode : public ASTNode
         {
             public:
-                FunctionDeclarationNode(const std::string space, const std::string& name, const std::vector<std::string>& parameterNames, const std::vector<ASTNode*> body) :
-                                        mNameSpace(space), mName(name), mParameterNames(parameterNames), mBody(body)
+                FunctionDeclarationNode(std::string space, std::string name, std::vector<std::string> parameterNames, std::vector<ASTNode*> body) :
+                                        mNameSpace(std::move(space)), mName(std::move(name)), mParameterNames(std::move(parameterNames)), mBody(std::move(body))
                 {
 
                 }
 
-                virtual ~FunctionDeclarationNode()
+                ~FunctionDeclarationNode() override
                 {
                     for (ASTNode* node : mBody)
                     {
@@ -84,7 +81,7 @@ namespace TribalScript
                     }
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitFunctionDeclarationNode(this);
                 }
@@ -98,12 +95,12 @@ namespace TribalScript
         class PackageDeclarationNode : public ASTNode
         {
             public:
-                PackageDeclarationNode(const std::string& name, const std::vector<ASTNode*>& functions) : mName(name), mFunctions(functions)
+                PackageDeclarationNode(std::string name, std::vector<ASTNode*> functions) : mName(std::move(name)), mFunctions(std::move(functions))
                 {
 
                 }
 
-                virtual ~PackageDeclarationNode()
+                ~PackageDeclarationNode() override
                 {
                     for (ASTNode* function : mFunctions)
                     {
@@ -111,7 +108,7 @@ namespace TribalScript
                     }
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitPackageDeclarationNode(this);
                 }
@@ -123,12 +120,13 @@ namespace TribalScript
         class FieldAssignNode : public ASTNode
         {
             public:
-                FieldAssignNode(const std::string& fieldBaseName, const std::vector<ASTNode*>& fieldExpressions, ASTNode* right) : mFieldBaseName(fieldBaseName), mFieldExpressions(fieldExpressions), mRight(right)
+                FieldAssignNode(std::string fieldBaseName, std::vector<ASTNode*> fieldExpressions, ASTNode* right) :
+                                mFieldBaseName(std::move(fieldBaseName)), mFieldExpressions(std::move(fieldExpressions)), mRight(right)
                 {
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitFieldAssignNode(this);
                 }
@@ -141,11 +139,12 @@ namespace TribalScript
         class ObjectDeclarationNode : public ASTNode
         {
             public:
-                ObjectDeclarationNode(ASTNode* name, ASTNode* type, const std::vector<ObjectDeclarationNode*>& children, const std::vector<ASTNode*>& fields) : mName(name), mType(type), mChildren(children), mFields(fields)
+                ObjectDeclarationNode(ASTNode* name, ASTNode* type, std::vector<ObjectDeclarationNode*> children, std::vector<ASTNode*> fields) :
+                                      mName(name), mType(type), mChildren(std::move(children)), mFields(std::move(fields))
                 {
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitObjectDeclarationNode(this);
                 }
@@ -160,11 +159,12 @@ namespace TribalScript
         class DatablockDeclarationNode : public ASTNode
         {
             public:
-                DatablockDeclarationNode(const std::string& name, const std::string& type, const std::string& parentName, const std::vector<ASTNode*>& fields) : mName(name), mType(type), mParentName(parentName), mFields(fields)
+                DatablockDeclarationNode(std::string name, std::string type, std::string parentName, std::vector<ASTNode*> fields) :
+                                        mName(std::move(name)), mType(std::move(type)), mParentName(std::move(parentName)), mFields(std::move(fields))
                 {
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitDatablockDeclarationNode(this);
                 }
@@ -179,13 +179,13 @@ namespace TribalScript
         class FunctionCallNode : public ASTNode
         {
             public:
-                FunctionCallNode(const std::string& space, const std::string& name, const std::vector<ASTNode*> parameters) :
-                                mNameSpace(space), mName(name), mParameters(parameters)
+                FunctionCallNode(std::string space, std::string name, std::vector<ASTNode*> parameters) :
+                                mNameSpace(std::move(space)), mName(std::move(name)), mParameters(std::move(parameters))
                 {
 
                 }
 
-                virtual ~FunctionCallNode()
+                ~FunctionCallNode() override
                 {
                     for (ASTNode* parameter : mParameters)
                     {
@@ -193,7 +193,7 @@ namespace TribalScript
                     }
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitFunctionCallNode(this);
                 }
@@ -206,13 +206,13 @@ namespace TribalScript
         class SubFunctionCallNode : public ASTNode
         {
             public:
-                SubFunctionCallNode(const std::string& name, const std::vector<ASTNode*> parameters) :
-                                    mName(name), mParameters(parameters)
+                SubFunctionCallNode(std::string name, std::vector<ASTNode*> parameters) :
+                                    mName(std::move(name)), mParameters(std::move(parameters))
                 {
 
                 }
 
-                virtual ~SubFunctionCallNode()
+                ~SubFunctionCallNode() override
                 {
                     for (ASTNode* parameter : mParameters)
                     {
@@ -220,7 +220,7 @@ namespace TribalScript
                     }
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitSubFunctionCallNode(this);
                 }
@@ -237,7 +237,7 @@ namespace TribalScript
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitSubreferenceNode(this);
                 }
@@ -250,12 +250,12 @@ namespace TribalScript
         class SubFieldNode : public ASTNode
         {
             public:
-                SubFieldNode(const std::string& name, const std::vector<ASTNode*>& indices) : mName(name), mIndices(indices)
+                SubFieldNode(std::string name, std::vector<ASTNode*> indices) : mName(std::move(name)), mIndices(std::move(indices))
                 {
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitSubFieldNode(this);
                 }
@@ -272,7 +272,7 @@ namespace TribalScript
 
                 }
 
-                virtual ~InfixExpressionNode()
+                ~InfixExpressionNode() override
                 {
                     delete mLeft;
                     delete mRight;
@@ -291,7 +291,7 @@ namespace TribalScript
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitLogicalAndNode(this);
                 }
@@ -305,7 +305,7 @@ namespace TribalScript
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitLogicalOrNode(this);
                 }
@@ -319,7 +319,7 @@ namespace TribalScript
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitAddNode(this);
                 }
@@ -333,7 +333,7 @@ namespace TribalScript
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitMinusNode(this);
                 }
@@ -347,7 +347,7 @@ namespace TribalScript
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitModulusNode(this);
                 }
@@ -361,7 +361,7 @@ namespace TribalScript
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitSubtractNode(this);
                 }
@@ -375,7 +375,7 @@ namespace TribalScript
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitMultiplyNode(this);
                 }
@@ -389,7 +389,7 @@ namespace TribalScript
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitDivideNode(this);
                 }
@@ -398,12 +398,12 @@ namespace TribalScript
         class ConcatNode : public InfixExpressionNode
         {
             public:
-                ConcatNode(ASTNode* left, ASTNode* right, const std::string& seperator) : InfixExpressionNode(left, right), mSeperator(seperator)
+                ConcatNode(ASTNode* left, ASTNode* right, std::string seperator) : InfixExpressionNode(left, right), mSeperator(std::move(seperator))
                 {
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitConcatNode(this);
                 }
@@ -419,7 +419,7 @@ namespace TribalScript
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitEqualsNode(this);
                 }
@@ -433,7 +433,7 @@ namespace TribalScript
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitNotEqualsNode(this);
                 }
@@ -447,7 +447,7 @@ namespace TribalScript
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitStringEqualsNode(this);
                 }
@@ -461,7 +461,7 @@ namespace TribalScript
 
             }
 
-            virtual antlrcpp::Any accept(ASTVisitor* visitor)
+            antlrcpp::Any accept(ASTVisitor* visitor) override
             {
                 return visitor->visitStringNotEqualNode(this);
             }
@@ -475,7 +475,7 @@ namespace TribalScript
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitAssignmentNode(this);
                 }
@@ -489,7 +489,7 @@ namespace TribalScript
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitLessThanNode(this);
                 }
@@ -503,7 +503,7 @@ namespace TribalScript
 
             }
 
-            virtual antlrcpp::Any accept(ASTVisitor* visitor)
+            antlrcpp::Any accept(ASTVisitor* visitor) override
             {
                 return visitor->visitGreaterThanNode(this);
             }
@@ -512,12 +512,12 @@ namespace TribalScript
         class UnaryNode : public ASTNode
         {
             public:
-                UnaryNode(ASTNode* inner) : mInner(inner)
+                explicit UnaryNode(ASTNode* inner) : mInner(inner)
                 {
 
                 }
 
-                virtual ~UnaryNode()
+                ~UnaryNode() override
                 {
                     delete mInner;
                 }
@@ -528,12 +528,12 @@ namespace TribalScript
         class NegateNode : public UnaryNode
         {
             public:
-                NegateNode(ASTNode* inner) : UnaryNode(inner)
+                explicit NegateNode(ASTNode* inner) : UnaryNode(inner)
                 {
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitNegateNode(this);
                 }
@@ -542,12 +542,12 @@ namespace TribalScript
         class NotNode : public UnaryNode
         {
             public:
-                NotNode(ASTNode* inner) : UnaryNode(inner)
+                explicit NotNode(ASTNode* inner) : UnaryNode(inner)
                 {
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitNotNode(this);
                 }
@@ -556,12 +556,12 @@ namespace TribalScript
         class IncrementNode : public UnaryNode
         {
             public:
-                IncrementNode(ASTNode* inner) : UnaryNode(inner)
+                explicit IncrementNode(ASTNode* inner) : UnaryNode(inner)
                 {
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitIncrementNode(this);
                 }
@@ -570,12 +570,12 @@ namespace TribalScript
         class DecrementNode : public UnaryNode
         {
             public:
-                DecrementNode(ASTNode* inner) : UnaryNode(inner)
+                explicit DecrementNode(ASTNode* inner) : UnaryNode(inner)
                 {
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitDecrementNode(this);
                 }
@@ -589,12 +589,12 @@ namespace TribalScript
         class IntegerNode : public ValueNode
         {
             public:
-                IntegerNode(const int value) : mValue(value)
+                explicit IntegerNode(const int value) : mValue(value)
                 {
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitIntegerNode(this);
                 }
@@ -605,12 +605,12 @@ namespace TribalScript
         class FloatNode : public ValueNode
         {
             public:
-                FloatNode(const float value) : mValue(value)
+                explicit FloatNode(const float value) : mValue(value)
                 {
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitFloatNode(this);
                 }
@@ -621,12 +621,12 @@ namespace TribalScript
         class StringNode : public ValueNode
         {
             public:
-                StringNode(const std::string& value) : mValue(value)
+                explicit StringNode(std::string value) : mValue(std::move(value))
                 {
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitStringNode(this);
                 }
@@ -637,12 +637,12 @@ namespace TribalScript
         class TaggedStringNode : public ValueNode
         {
             public:
-                TaggedStringNode(const std::string& value) : mValue(value)
+                explicit TaggedStringNode(std::string value) : mValue(std::move(value))
                 {
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitTaggedStringNode(this);
                 }
@@ -653,17 +653,17 @@ namespace TribalScript
         class LocalVariableNode : public ValueNode
         {
             public:
-                LocalVariableNode(const std::vector<std::string>& name) : mName(name)
+                explicit LocalVariableNode(std::vector<std::string> name) : mName(std::move(name))
                 {
 
                 }
 
                 std::string getName()
                 {
-                    std::string result = "";
+                    std::string result;
                     for (const std::string& component : mName)
                     {
-                        if (result.size() == 0)
+                        if (result.empty())
                         {
                             result = component;
                         }
@@ -675,7 +675,7 @@ namespace TribalScript
                     return result;
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitLocalVariableNode(this);
                 }
@@ -686,17 +686,17 @@ namespace TribalScript
         class GlobalVariableNode : public ValueNode
         {
             public:
-                GlobalVariableNode(const std::vector<std::string>& name) : mName(name)
+                explicit GlobalVariableNode(std::vector<std::string> name) : mName(std::move(name))
                 {
 
                 }
 
                 std::string getName()
                 {
-                    std::string result = "";
+                    std::string result;
                     for (const std::string& component : mName)
                     {
-                        if (result.size() == 0)
+                        if (result.empty())
                         {
                             result = component;
                         }
@@ -708,7 +708,7 @@ namespace TribalScript
                     return result;
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitGlobalVariableNode(this);
                 }
@@ -719,13 +719,13 @@ namespace TribalScript
         class ArrayNode : public ASTNode
         {
             public:
-                ArrayNode(ASTNode* target, const std::vector<ASTNode*>& indices) :
-                         mTarget(target), mIndices(indices)
+                ArrayNode(ASTNode* target, std::vector<ASTNode*> indices) :
+                         mTarget(target), mIndices(std::move(indices))
                 {
 
                 }
 
-                virtual ~ArrayNode()
+                ~ArrayNode() override
                 {
                     delete mTarget;
 
@@ -735,7 +735,7 @@ namespace TribalScript
                     }
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitArrayNode(this);
                 }
@@ -747,12 +747,12 @@ namespace TribalScript
         class WhileNode : public ASTNode
         {
             public:
-                WhileNode(ASTNode* expression, const std::vector<ASTNode*>& body) : mExpression(expression), mBody(body)
+                WhileNode(ASTNode* expression, std::vector<ASTNode*> body) : mExpression(expression), mBody(std::move(body))
                 {
 
                 }
 
-                virtual ~WhileNode()
+                ~WhileNode() override
                 {
                     delete mExpression;
 
@@ -762,7 +762,7 @@ namespace TribalScript
                     }
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitWhileNode(this);
                 }
@@ -774,13 +774,13 @@ namespace TribalScript
         class ForNode : public ASTNode
         {
             public:
-                ForNode(ASTNode* initializer, ASTNode* expression, ASTNode* advance, const std::vector<ASTNode*>& body) :
-                        mInitializer(initializer), mExpression(expression), mAdvance(advance), mBody(body)
+                ForNode(ASTNode* initializer, ASTNode* expression, ASTNode* advance, std::vector<ASTNode*> body) :
+                        mInitializer(initializer), mExpression(expression), mAdvance(advance), mBody(std::move(body))
                 {
 
                 }
 
-                virtual ~ForNode()
+                ~ForNode() override
                 {
                     delete mInitializer;
                     delete mExpression;
@@ -792,7 +792,7 @@ namespace TribalScript
                     }
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitForNode(this);
                 }
@@ -806,20 +806,17 @@ namespace TribalScript
         class ReturnNode : public ASTNode
         {
             public:
-                ReturnNode(ASTNode* expression) : mExpression(expression)
+                explicit ReturnNode(ASTNode* expression) : mExpression(expression)
                 {
 
                 }
 
-                virtual ~ReturnNode()
+                ~ReturnNode() override
                 {
-                    if (mExpression)
-                    {
-                        delete mExpression;
-                    }
+                    delete mExpression;
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitReturnNode(this);
                 }
@@ -830,12 +827,9 @@ namespace TribalScript
         class BreakNode : public ASTNode
         {
             public:
-                BreakNode()
-                {
+                BreakNode() = default;
 
-                }
-
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitBreakNode(this);
                 }
@@ -850,14 +844,14 @@ namespace TribalScript
 
                 }
 
-                virtual ~TernaryNode()
+                ~TernaryNode() override
                 {
                     delete mExpression;
                     delete mTrueValue;
                     delete mFalseValue;
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitTernaryNode(this);
                 }
@@ -870,12 +864,12 @@ namespace TribalScript
         class SwitchCaseNode : public ASTNode
         {
             public:
-                SwitchCaseNode(const std::vector<ASTNode*> cases, const std::vector<ASTNode*> body) : mCases(cases), mBody(body)
+                SwitchCaseNode(std::vector<ASTNode*> cases, std::vector<ASTNode*> body) : mCases(std::move(cases)), mBody(std::move(body))
                 {
 
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitSwitchCaseNode(this);
                 }
@@ -887,13 +881,13 @@ namespace TribalScript
         class SwitchNode : public ASTNode
         {
             public:
-                SwitchNode(ASTNode* expression, const std::vector<SwitchCaseNode*> cases, const std::vector<ASTNode*> defaultBody) :
-                          mExpression(expression), mCases(cases), mDefaultBody(defaultBody)
+                SwitchNode(ASTNode* expression, std::vector<SwitchCaseNode*> cases, std::vector<ASTNode*> defaultBody) :
+                          mExpression(expression), mCases(std::move(cases)), mDefaultBody(std::move(defaultBody))
                 {
 
                 }
 
-                virtual ~SwitchNode()
+                ~SwitchNode() override
                 {
                     delete mExpression;
 
@@ -908,7 +902,7 @@ namespace TribalScript
                     }
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitSwitchNode(this);
                 }
@@ -921,12 +915,12 @@ namespace TribalScript
         class ElseIfNode : public ASTNode
         {
             public:
-                ElseIfNode(ASTNode* expression, std::vector<ASTNode*> body) : mExpression(expression), mBody(body)
+                ElseIfNode(ASTNode* expression, std::vector<ASTNode*> body) : mExpression(expression), mBody(std::move(body))
                 {
 
                 }
 
-                virtual ~ElseIfNode()
+                ~ElseIfNode() override
                 {
                     delete mExpression;
 
@@ -936,7 +930,7 @@ namespace TribalScript
                     }
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitElseIfNode(this);
                 }
@@ -948,13 +942,13 @@ namespace TribalScript
         class IfNode : public ASTNode
         {
             public:
-                IfNode(ASTNode* expression, const std::vector<ASTNode*>& body, const std::vector<ElseIfNode*>& elseIfs, const std::vector<ASTNode*>& elseBody) :
-                      mExpression(expression), mBody(body), mElseIfs(elseIfs), mElseBody(elseBody)
+                IfNode(ASTNode* expression, std::vector<ASTNode*> body, std::vector<ElseIfNode*> elseIfs, std::vector<ASTNode*> elseBody) :
+                      mExpression(expression), mBody(std::move(body)), mElseIfs(std::move(elseIfs)), mElseBody(std::move(elseBody))
                 {
 
                 }
 
-                virtual ~IfNode()
+                ~IfNode() override
                 {
                     delete mExpression;
 
@@ -974,7 +968,7 @@ namespace TribalScript
                     }
                 }
 
-                virtual antlrcpp::Any accept(ASTVisitor* visitor)
+                antlrcpp::Any accept(ASTVisitor* visitor) override
                 {
                     return visitor->visitIfNode(this);
                 }

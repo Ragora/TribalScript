@@ -12,6 +12,7 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+
 #include <tribalscript/executionscope.hpp>
 
 namespace TribalScript

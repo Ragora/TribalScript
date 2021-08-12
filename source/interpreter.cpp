@@ -12,7 +12,7 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <assert.h>
+#include <cassert>
 
 #include <tribalscript/interpreter.hpp>
 #include <tribalscript/compiler.hpp>
@@ -230,7 +230,7 @@ namespace TribalScript
         mGlobalVariables.emplace(std::make_pair(name, new StoredValue(value)));
     }
 
-    FunctionRegistry* Interpreter::findFunctionRegistry(const std::string packageName)
+    FunctionRegistry* Interpreter::findFunctionRegistry(const std::string& packageName)
     {
         std::string searchedName = toLowerCase(packageName);
         for (FunctionRegistry& registry : mFunctionRegistries)
@@ -269,7 +269,7 @@ namespace TribalScript
             return;
         }
 
-        mFunctionRegistries.push_back(FunctionRegistry(packageName));
+        mFunctionRegistries.emplace_back(packageName);
     }
 
     void Interpreter::activateFunctionRegistry(const std::string& packageName)

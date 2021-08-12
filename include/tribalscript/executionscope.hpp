@@ -71,7 +71,7 @@ namespace TribalScript
 
     struct ExecutionScopeData
     {
-        ExecutionScopeData(Function* function) : mCurrentFunction(function)
+        explicit ExecutionScopeData(Function* function) : mCurrentFunction(function)
         {
 
         }

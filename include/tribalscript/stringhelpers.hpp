@@ -63,8 +63,8 @@ namespace TribalScript
         // Set terminator
         *currentStringPointer = 0x00;
 
-        const std::size_t stringLength = static_cast<std::size_t>(currentStringPointer - allocatedString);
-        const std::string result(allocatedString, stringLength);
+        auto stringLength = static_cast<std::size_t>(currentStringPointer - allocatedString);
+        std::string result(allocatedString, stringLength);
         delete[] allocatedString;
 
         return result;

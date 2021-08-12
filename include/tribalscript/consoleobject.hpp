@@ -89,7 +89,7 @@ namespace TribalScript
     class ConsoleObject
     {
         public:
-            ConsoleObject(Interpreter* interpreter);
+            explicit ConsoleObject(Interpreter* interpreter);
             virtual ~ConsoleObject();
 
             /**

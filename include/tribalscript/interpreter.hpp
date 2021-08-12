@@ -58,7 +58,7 @@ namespace TribalScript
              *  @brief Constructs a new interpreter with the specified configuration.
              *  @param config The configuration to initialize a new interpreter with.
              */
-            Interpreter(const InterpreterConfiguration& config);
+            explicit Interpreter(const InterpreterConfiguration& config);
             ~Interpreter();
 
             /// @name Global Variables
@@ -114,7 +114,7 @@ namespace TribalScript
             std::shared_ptr<Function> getFunction(const std::string& space, const std::string& name);
             std::shared_ptr<Function> getFunctionParent(Function* function);
 
-            FunctionRegistry* findFunctionRegistry(const std::string packageName);
+            FunctionRegistry* findFunctionRegistry(const std::string& packageName);
             void addFunctionRegistry(const std::string& packageName);
             void activateFunctionRegistry(const std::string& packageName);
             void deactivateFunctionRegistry(const std::string& packageName);

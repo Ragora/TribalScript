@@ -25,7 +25,7 @@ namespace TribalScript
      */
     struct InterpreterConfiguration
     {
-        InterpreterConfiguration(PlatformContext* platform = new PlatformContext(), ConsoleObjectRegistryBase* registry = new StandardConsoleObjectRegistry()) :
+        explicit InterpreterConfiguration(PlatformContext* platform = new PlatformContext(), ConsoleObjectRegistryBase* registry = new StandardConsoleObjectRegistry()) :
                                  mPlatform(platform), mConsoleObjectRegistry(registry), mMaxRecursionDepth(1024), mCaseSensitive(false)
         {
 

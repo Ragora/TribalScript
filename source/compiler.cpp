@@ -12,7 +12,7 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <assert.h>
+#include <cassert>
 
 #include <Tribes2Lexer.h>
 #include <Tribes2Parser.h>
@@ -595,9 +595,9 @@ namespace TribalScript
         {
             InstructionSequence elseIfBody;
 
-            for (AST::ASTNode* node : elseIf->mBody)
+            for (AST::ASTNode* bodyNode : elseIf->mBody)
             {
-                InstructionSequence childInstructions = node->accept(this).as<InstructionSequence>();
+                InstructionSequence childInstructions = bodyNode->accept(this).as<InstructionSequence>();
                 elseIfBody.insert(elseIfBody.end(), childInstructions.begin(), childInstructions.end());
             }
 

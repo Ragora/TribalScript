@@ -38,7 +38,7 @@ namespace TribalScript
             std::ostringstream out;
             out << instruction->disassemble();
 
-            if (instruction->mComment != "")
+            if (!instruction->mComment.empty())
             {
                 out << " // " << instruction->mComment;
             }

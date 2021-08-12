@@ -37,17 +37,17 @@ namespace TribalScript
         public:
             StandardConsoleObjectRegistry();
 
-            virtual void setConsoleObject(const std::string& name, ConsoleObject* value);
-            virtual ConsoleObject* getConsoleObject(const std::string& name);
-            virtual ConsoleObject* getConsoleObject(const unsigned int id);
+            void setConsoleObject(const std::string& name, ConsoleObject* value) override;
+            ConsoleObject* getConsoleObject(const std::string& name) override;
+            ConsoleObject* getConsoleObject(const unsigned int id) override;
 
-            virtual std::string getConsoleObjectName(ConsoleObject* target);
-            virtual unsigned int getConsoleObjectID(ConsoleObject* target);
+            std::string getConsoleObjectName(ConsoleObject* target) override;
+            unsigned int getConsoleObjectID(ConsoleObject* target) override;
 
-            virtual unsigned int addConsoleObject(ConsoleObject* value);
+            unsigned int addConsoleObject(ConsoleObject* value) override;
 
-            virtual void removeConsoleObject(const std::string& name);
-            virtual void removeConsoleObject(ConsoleObject* target);
+            void removeConsoleObject(const std::string& name) override;
+            void removeConsoleObject(ConsoleObject* target) override;
 
         private:
             unsigned int mNextObjectID;

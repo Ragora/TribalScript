@@ -34,7 +34,7 @@ namespace TribalScript
     class Compiler : public AST::ASTVisitor
     {
         public:
-            Compiler(const InterpreterConfiguration& config);
+            explicit Compiler(const InterpreterConfiguration& config);
 
             /**
              *  @brief Ask the compiler to generate a codeblock from the provided stream.

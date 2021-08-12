@@ -23,27 +23,27 @@ namespace TribalScript
     class StandardFileHandle : public FileHandleBase
     {
         public:
-            StandardFileHandle(const std::string& path);
+            explicit StandardFileHandle(const std::string& path);
 
-            virtual bool isOpen();
+            bool isOpen() override;
 
-            virtual void seek(const std::streampos& position);
-            virtual void seek(const std::streampos& offset, std::ios_base::seekdir way);
+            void seek(const std::streampos& position) override;
+            void seek(const std::streampos& offset, std::ios_base::seekdir way) override;
 
-            virtual bool isEOF();
-            virtual std::streampos tell();
-            virtual void read(char* out, const std::size_t size);
-            virtual void close();
-            virtual void write(const char* buffer, const std::size_t size);
+            bool isEOF() override;
+            std::streampos tell() override;
+            void read(char* out, const std::size_t size) override;
+            void close() override;
+            void write(const char* buffer, const std::size_t size) override;
 
-            virtual void openForWrite();
-            virtual void openForRead();
-            virtual void openForReadAndWrite();
+            void openForWrite() override;
+            void openForRead() override;
+            void openForReadAndWrite() override;
 
-            virtual bool exists();
-            virtual bool deleteFile();
+            bool exists() override;
+            bool deleteFile() override;
 
-            virtual std::string readLine();
+            std::string readLine() override;
 
         private:
             std::fstream mFileHandle;

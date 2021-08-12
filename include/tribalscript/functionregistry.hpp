@@ -35,7 +35,7 @@ namespace TribalScript
          *  @brief Constructs a new FunctionRegistry instance.
          *  @param package The name of the package this registry is associated with.
          */
-        FunctionRegistry(const std::string& package) : mPackageName(package), mActive(false)
+        explicit FunctionRegistry(const std::string& package) : mPackageName(package), mActive(false)
         {
 
         }

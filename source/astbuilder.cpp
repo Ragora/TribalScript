@@ -12,14 +12,13 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <assert.h>
+#include <cassert>
 
 #include <Tribes2Lexer.h>
 #include <Tribes2Parser.h>
 
 #include <tribalscript/astbuilder.hpp>
 #include <tribalscript/instructionsequence.hpp>
-#include <tribalscript/parsererrorlistener.hpp>
 
 namespace TribalScript
 {
@@ -59,7 +58,7 @@ namespace TribalScript
             std::vector<AST::ASTNode*> result;
 
             std::vector<AST::ASTNode*> children = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
-            AST::PackageDeclarationNode* package = new AST::PackageDeclarationNode(context->LABEL()->getText(), children);
+            auto package = new AST::PackageDeclarationNode(context->LABEL()->getText(), children);
 
             result.push_back(package);
             return result;
@@ -68,7 +67,7 @@ namespace TribalScript
         antlrcpp::Any ASTBuilder::visitLocalarray(Tribes2Parser::LocalarrayContext* context)
         {
             std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
-            assert(parameters.size() >= 1);
+            assert(!parameters.empty());
 
             std::vector<ASTNode*> result;
             ASTNode* parent = parameters[0];
@@ -81,7 +80,7 @@ namespace TribalScript
         antlrcpp::Any ASTBuilder::visitGlobalarray(Tribes2Parser::GlobalarrayContext* context)
         {
             std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
-            assert(parameters.size() >= 1);
+            assert(!parameters.empty());
 
             std::vector<ASTNode*> result;
             ASTNode* parent = parameters[0];
@@ -96,8 +95,8 @@ namespace TribalScript
             std::vector<AST::ASTNode*> result;
 
             // Load function name
-            std::string calledFunctionName = "";
-            std::string calledFunctionNameSpace = "";
+            std::string calledFunctionName;
+            std::string calledFunctionNameSpace;
 
             std::vector<antlr4::tree::TerminalNode*> calledFunctionNameComponents = context->LABEL();
             assert(calledFunctionNameComponents.size() == 2);
@@ -106,7 +105,7 @@ namespace TribalScript
             calledFunctionNameSpace = calledFunctionNameComponents[0]->getText();
 
             std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
-            AST::FunctionCallNode* call = new AST::FunctionCallNode(calledFunctionNameSpace, calledFunctionName, parameters);
+            auto call = new AST::FunctionCallNode(calledFunctionNameSpace, calledFunctionName, parameters);
 
             result.push_back(call);
             return result;
@@ -117,10 +116,10 @@ namespace TribalScript
             std::vector<AST::ASTNode*> result;
             std::vector<AST::ASTNode*> parameters = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
 
-            Tribes2Parser::Primary_chainContext* primaryChain = dynamic_cast<Tribes2Parser::Primary_chainContext*>(context->parent);
+            auto primaryChain = dynamic_cast<Tribes2Parser::Primary_chainContext*>(context->parent);
             const bool isSubcall = dynamic_cast<Tribes2Parser::Chain_startContext*>(context->parent) ? false : true;
 
-            AST::SubFunctionCallNode* call = new AST::SubFunctionCallNode(context->LABEL()->getText(), parameters);
+            auto call = new AST::SubFunctionCallNode(context->LABEL()->getText(), parameters);
             result.push_back(call);
 
             return result;
@@ -170,13 +169,13 @@ namespace TribalScript
 
                 for (Tribes2Parser::LocalvariableContext* variable : parameters)
                 {
-                    std::string currentVariableName = "";
+                    std::string currentVariableName;
                     std::vector<Tribes2Parser::LabelwithkeywordsContext*> variableNameComponents = variable->labelwithkeywords();
 
                     // NOTE: For now we just combine :: into a single variable name
                     for (Tribes2Parser::LabelwithkeywordsContext* variableNameComponent : variableNameComponents)
                     {
-                        if (currentVariableName == "")
+                        if (currentVariableName.empty())
                         {
                             currentVariableName += variableNameComponent->getText();
                         }
@@ -191,8 +190,8 @@ namespace TribalScript
             }
 
             // Determine function name
-            std::string functionName = "";
-            std::string functionNameSpace = "";
+            std::string functionName;
+            std::string functionNameSpace;
 
             std::vector<antlr4::tree::TerminalNode*> functionNameComponents = context->LABEL();
             assert(functionNameComponents.size() <= 2);
@@ -675,7 +674,7 @@ namespace TribalScript
             std::vector<AST::ASTNode*> switchContent = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
 
             // Should be at least one entry
-            assert(switchContent.size() >= 1);
+            assert(!switchContent.empty());
 
             // Load default body if present
             std::vector<AST::ASTNode*> defaultBody;
@@ -766,6 +765,7 @@ namespace TribalScript
             std::vector<AST::ASTNode*> result;
             std::vector<Tribes2Parser::LabelwithkeywordsContext*> variableNameComponents = context->labelwithkeywords();
 
+            variableName.reserve(variableNameComponents.size());
             for (Tribes2Parser::LabelwithkeywordsContext* component : variableNameComponents)
             {
                 variableName.push_back(component->getText());
@@ -781,6 +781,7 @@ namespace TribalScript
             std::vector<AST::ASTNode*> result;
             std::vector<Tribes2Parser::LabelwithkeywordsContext*> variableNameComponents = context->labelwithkeywords();
 
+            variableName.reserve(variableNameComponents.size());
             for (Tribes2Parser::LabelwithkeywordsContext* component : variableNameComponents)
             {
                 variableName.push_back(component->getText());
@@ -809,7 +810,7 @@ namespace TribalScript
         antlrcpp::Any ASTBuilder::visitField_assign(Tribes2Parser::Field_assignContext* context)
         {
             std::vector<AST::ASTNode*> fieldExpressions = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
-            assert(fieldExpressions.size() >= 1);
+            assert(!fieldExpressions.empty());
 
             // Back is rhs of expression
             AST::ASTNode* fieldValue = fieldExpressions.back();
@@ -827,9 +828,9 @@ namespace TribalScript
             std::vector<AST::ASTNode*> result;
             std::vector<AST::ASTNode*> fields = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
 
-            std::string name = "";
-            std::string typeName = "";
-            std::string parentName = "";
+            std::string name;
+            std::string typeName;
+            std::string parentName;
             std::vector<antlr4::tree::TerminalNode*> labels = context->LABEL();
 
             // If there's a third element, we have our parent
@@ -874,7 +875,7 @@ namespace TribalScript
 
             for (AST::ASTNode* component : objectContent)
             {
-                AST::ObjectDeclarationNode* child = dynamic_cast<AST::ObjectDeclarationNode*>(component);
+                auto child = dynamic_cast<AST::ObjectDeclarationNode*>(component);
 
                 if (child)
                 {

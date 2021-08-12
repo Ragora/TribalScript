@@ -47,7 +47,7 @@ namespace TribalScript
         std::map<std::string, StoredValue> newLocals;
 
         // If thisObject is non-null, we always provide this as the first parameter
-        if (thisObject && parameterNames.size() >= 1)
+        if (thisObject && !parameterNames.empty())
         {
             const std::string thisParameterName = parameterNames[0];
             parameterNames.erase(parameterNames.begin());

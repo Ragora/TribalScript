@@ -45,7 +45,7 @@ namespace TribalScript
             void addInstructions(const InstructionSequence& instructions);
 
             /**
-             *  @brief Default implementation will execute virtual instructions but can be overriden to implement native
+             *  @brief Default implementation will execute virtual instructions but can be overridden to implement native
              *  functions.
              */
             virtual void execute(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);

@@ -15,7 +15,7 @@
 #pragma once
 
 #include <vector>
-#include <assert.h>
+#include <cassert>
 #include <iostream>
 #include <sstream>
 
@@ -365,7 +365,7 @@ namespace TribalScript
             {
                 StoredValueStack& stack = state->mExecutionScope.getStack();
 
-                assert(stack.size() >= 1);
+                assert(!stack.empty());
 
                 StoredValue& storedTarget = stack.back();
 
@@ -394,7 +394,7 @@ namespace TribalScript
                  *  @param name The name of the function to call.
                  *  @param argc The total number of arguments to pull off the stack for use as parameters.
                  */
-                CallFunctionInstruction(const std::string& space, const std::string& name, const std::size_t argc) : mNameSpace(space), mName(name), mArgc(argc)
+                CallFunctionInstruction(std::string space, std::string name, const std::size_t argc) : mNameSpace(std::move(space)), mName(std::move(name)), mArgc(argc)
                 {
 
                 }
@@ -408,7 +408,7 @@ namespace TribalScript
                     if (namespaceName == "parent")
                     {
                         Function* currentFunction = state->mExecutionScope.getCurrentFunction();
-                        if (currentFunction == nullptr)
+                        if (!currentFunction)
                         {
                             state->mInterpreter->mConfig.mPlatform->logError("Attempted to call parent:: function at root!");
                             stack.push_back(StoredValue(0));
