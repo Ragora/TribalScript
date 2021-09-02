@@ -73,3 +73,11 @@ add_test(NAME FunctionTest COMMAND FunctionTest WORKING_DIRECTORY ${PROJECT_SOUR
 add_executable(ChainingTest chaining.cpp)
 target_link_libraries(ChainingTest TribalScript gtest_main)
 add_test(NAME ChainingTest COMMAND ChainingTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+
+add_executable(BreakTest break.cpp)
+target_link_libraries(BreakTest TribalScript gtest_main)
+add_test(NAME BreakTest COMMAND BreakTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+
+add_executable(ContinueTest continue.cpp)
+target_link_libraries(ContinueTest TribalScript gtest_main)
+add_test(NAME ContinueTest COMMAND ContinueTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
