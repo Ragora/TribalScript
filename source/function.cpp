@@ -37,7 +37,7 @@ namespace TribalScript
         }
     }
 
-    void Function::execute(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void Function::execute(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -57,17 +57,17 @@ namespace TribalScript
 
         // Calculate expected versus provided to determine what parameters should be left empty
         const std::size_t expectedParameterCount = parameterNames.size();
-        const std::size_t emptyParameters = expectedParameterCount > argumentCount ? expectedParameterCount - argumentCount : 0;
+        const std::size_t emptyParameters = expectedParameterCount > parameters.size() ? expectedParameterCount - parameters.size() : 0;
 
-        // If we have too many parameters, just lop them off
-        std::size_t adjustedArgumentCount = argumentCount;
-        if (argumentCount > expectedParameterCount)
+        // If we have too many parameters, just remove them
+        std::size_t adjustedArgumentCount = parameters.size();
+        if (parameters.size() > expectedParameterCount)
         {
-            const std::size_t removedParameters = argumentCount - expectedParameterCount;
+            const std::size_t removedParameters = parameters.size() - expectedParameterCount;
 
             for (std::size_t iteration = 0; iteration < removedParameters; ++iteration)
             {
-                stack.pop_back();
+                parameters.pop_back();
             }
             adjustedArgumentCount -= removedParameters;
         }
@@ -80,14 +80,14 @@ namespace TribalScript
             auto search = newLocals.find(nextParameterName);
             if (search != newLocals.end())
             {
-                search->second = stack.back().getReferencedValueCopy();
+                search->second = parameters.back().getReferencedValueCopy();
             }
             else
             {
-                newLocals.insert(std::make_pair(nextParameterName, stack.back().getReferencedValueCopy()));
+                newLocals.insert(std::make_pair(nextParameterName, parameters.back().getReferencedValueCopy()));
             }
 
-            stack.pop_back();
+            parameters.pop_back();
         }
 
         // Once we've cleared the stack, check if we're at max recursion depth

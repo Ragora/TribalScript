@@ -19,16 +19,18 @@
 
 namespace TribalScript
 {
-    void EchoBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void EchoBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
         std::string outputString = "";
 
-        for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
+        for (unsigned int iteration = 0; iteration < parameters.size(); ++iteration)
         {
             // Parameters will flow right to left so we build the string considering this
-            std::string printedPayload = stack.popString(state);
+            std::string printedPayload = parameters.back().toString();
+            parameters.pop_back();
+
             outputString = printedPayload + outputString;
         }
 
@@ -36,7 +38,7 @@ namespace TribalScript
         stack.push_back(StoredValue(0));
     }
 
-    void GetRealTimeBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void GetRealTimeBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -48,13 +50,14 @@ namespace TribalScript
         stack.push_back(StoredValue(result.count()));
     }
 
-    void ExecBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void ExecBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
-        for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
+        for (unsigned int iteration = 0; iteration < parameters.size(); ++iteration)
         {
-            std::string executedFile = stack.popString(state);
+            std::string executedFile = parameters.back().toString();
+            parameters.pop_back();
 
             std::ostringstream output;
             output << "Executing " << executedFile << " ...";
@@ -66,33 +69,35 @@ namespace TribalScript
         stack.push_back(StoredValue(0));
     }
 
-    void ActivatePackageBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void ActivatePackageBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
-        for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
+        for (unsigned int iteration = 0; iteration < parameters.size(); ++iteration)
         {
-            std::string activatedPackage = stack.popString(state);
+            std::string activatedPackage = parameters.back().toString();
             state->mInterpreter->activateFunctionRegistry(activatedPackage);
+            parameters.pop_back();
         }
 
         stack.push_back(StoredValue(0));
     }
 
-    void DeactivatePackageBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void DeactivatePackageBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
-        for (unsigned int iteration = 0; iteration < argumentCount; ++iteration)
+        for (unsigned int iteration = 0; iteration < parameters.size(); ++iteration)
         {
-            std::string deactivatedPackage = stack.popString(state);
+            std::string deactivatedPackage = parameters.back().toString();
             state->mInterpreter->deactivateFunctionRegistry(deactivatedPackage);
+            parameters.pop_back();
         }
 
         stack.push_back(StoredValue(0));
     }
 
-    void DeleteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void DeleteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -100,7 +105,7 @@ namespace TribalScript
         stack.push_back(StoredValue(0));
     }
 
-    void GetNameBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void GetNameBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -108,7 +113,7 @@ namespace TribalScript
         stack.push_back(StoredValue(stringData.c_str()));
     }
 
-    void GetClassNameBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void GetClassNameBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 

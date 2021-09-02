@@ -404,6 +404,17 @@ namespace TribalScript
                     const std::string namespaceName = toLowerCase(mNameSpace);
                     StoredValueStack& stack = state->mExecutionScope.getStack();
 
+                    // FIXME: At the moment we're loading parameters like this which is incurring unnecessary copies
+                    std::vector<StoredValue> parameters;
+                    auto parametersStart = stack.end() - mArgc;
+
+                    for (std::size_t iteration = 0; iteration < mArgc; ++iteration)
+                    {
+                        auto iterator = parametersStart + iteration;
+                        parameters.push_back(*iterator);
+                    }
+                    stack.erase(parametersStart, stack.end());
+
                     // If we're calling a parent function, perform an alternative lookup
                     if (namespaceName == "parent")
                     {
@@ -429,7 +440,7 @@ namespace TribalScript
                         }
 
                         // Otherwise, call it
-                        parentFunction->execute(nullptr, state, mArgc);
+                        parentFunction->execute(nullptr, state, parameters);
 
                         return 1;
                     }
@@ -437,7 +448,7 @@ namespace TribalScript
                     std::shared_ptr<Function> functionLookup = state->mInterpreter->getFunction(mNameSpace, mName);
                     if (functionLookup)
                     {
-                        functionLookup->execute(nullptr, state, mArgc);
+                        functionLookup->execute(nullptr, state, parameters);
                     }
                     else
                     {
@@ -1395,6 +1406,18 @@ namespace TribalScript
 
                     assert(stack.size() >= 1);
 
+                    // FIXME: At the moment, parameters for bound functions are *after* the target object on the stack
+                    std::vector<StoredValue> parameters;
+                    auto parametersStart = stack.end() - mArgc;
+
+                    for (std::size_t iteration = 0; iteration < mArgc; ++iteration)
+                    {
+                        auto iterator = parametersStart + iteration;
+                        parameters.push_back(*iterator);
+                    }
+                    stack.erase(parametersStart, stack.end());
+
+                    // Next load the target
                     StoredValue targetStored = stack.back();
                     stack.pop_back();
 
@@ -1421,7 +1444,7 @@ namespace TribalScript
                         std::shared_ptr<Function> calledFunction = state->mInterpreter->getFunction(className, mName);
                         if (calledFunction)
                         {
-                            calledFunction->execute(targetObject, state, mArgc);
+                            calledFunction->execute(targetObject, state, parameters);
                             return 1;
                         }
                     }

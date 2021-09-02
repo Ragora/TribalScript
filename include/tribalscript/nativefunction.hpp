@@ -22,7 +22,7 @@
 
 namespace TribalScript
 {
-    typedef void (*NativeFunctionPointer)(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+    typedef void (*NativeFunctionPointer)(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
     /**
      *  @brief A NativeFunction is a specialization of Function that allows native C++ programming to be called from within the
@@ -36,7 +36,7 @@ namespace TribalScript
             /**
              *  @brief Executes the native function provided to the interpreter.
              */
-            virtual void execute(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount) override;
+            virtual void execute(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters) override;
 
         private:
             //! The pointer to the native function to call.

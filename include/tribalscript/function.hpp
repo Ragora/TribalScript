@@ -48,7 +48,7 @@ namespace TribalScript
              *  @brief Default implementation will execute virtual instructions but can be overridden to implement native
              *  functions.
              */
-            virtual void execute(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+            virtual void execute(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
             /**
              *  @brief Retrieves the declared name of this function.

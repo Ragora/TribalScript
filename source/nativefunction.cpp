@@ -24,8 +24,8 @@ namespace TribalScript
 
     }
 
-    void NativeFunction::execute(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void NativeFunction::execute(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
-        this->mNativeFunction(thisObject, state, argumentCount);
+        this->mNativeFunction(thisObject, state, parameters);
     }
 }

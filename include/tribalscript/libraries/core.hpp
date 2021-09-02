@@ -29,20 +29,20 @@
 
 namespace TribalScript
 {
-    void EchoBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+    void EchoBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
-    void ExecBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
-    void ActivatePackageBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+    void ExecBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
+    void ActivatePackageBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
-    void DeactivatePackageBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+    void DeactivatePackageBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
-    void DeleteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+    void DeleteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
-    void GetNameBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+    void GetNameBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
-    void GetRealTimeBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+    void GetRealTimeBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
-    void GetClassNameBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+    void GetClassNameBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
     void registerCoreLibrary(Interpreter* interpreter);
 }

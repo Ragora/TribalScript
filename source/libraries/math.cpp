@@ -18,7 +18,7 @@
 
 namespace TribalScript
 {
-    void GetRandomBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void GetRandomBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 

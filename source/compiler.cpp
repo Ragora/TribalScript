@@ -187,7 +187,7 @@ namespace TribalScript
         for (AST::ASTNode* node : call->mParameters)
         {
             InstructionSequence parameterCode = node->accept(this).as<InstructionSequence>();
-            result.insert(result.begin(), parameterCode.begin(), parameterCode.end());
+            result.insert(result.end(), parameterCode.begin(), parameterCode.end());
         }
 
         result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::CallBoundFunctionInstruction(call->mName, call->mParameters.size())));

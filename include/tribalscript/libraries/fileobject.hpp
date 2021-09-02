@@ -28,21 +28,21 @@
 
 namespace TribalScript
 {
-    void OpenForWriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+    void OpenForWriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
-    void OpenForReadBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+    void OpenForReadBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
-    void WriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+    void WriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
-    void CloseBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+    void CloseBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
-    void IsEOFBuiltin(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+    void IsEOFBuiltin(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
-    void ReadLineBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+    void ReadLineBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
-    void IsFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+    void IsFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
-    void DeleteFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount);
+    void DeleteFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
     void registerFileObjectLibrary(Interpreter* interpreter);
 }

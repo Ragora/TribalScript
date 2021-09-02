@@ -18,10 +18,10 @@
 
 namespace TribalScript
 {
-    void OpenForWriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void OpenForWriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
-        std::string path = stack.popString(state);
+        std::string path = parameters.back().toString();
 
         // Open the handle
         assert(thisObject);
@@ -37,10 +37,10 @@ namespace TribalScript
         stack.push_back(StoredValue(-1));
     }
 
-    void OpenForReadBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void OpenForReadBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
-        std::string path = stack.popString(state);
+        std::string path = parameters.back().toString();
 
         // Open the handle
         assert(thisObject);
@@ -56,10 +56,10 @@ namespace TribalScript
         stack.push_back(StoredValue(-1));
     }
 
-    void WriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void WriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
-        std::string written = stack.popString(state);
+        std::string written = parameters.back().toString();
 
         // Open the handle
         assert(thisObject);
@@ -70,7 +70,7 @@ namespace TribalScript
         stack.push_back(StoredValue(0));
     }
 
-    void CloseBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void CloseBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -83,7 +83,7 @@ namespace TribalScript
         stack.push_back(StoredValue(0));
     }
 
-    void IsEOFBuiltin(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void IsEOFBuiltin(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -95,7 +95,7 @@ namespace TribalScript
         stack.push_back(StoredValue(fileObject->isEOF() ? 1 : 0));
     }
 
-    void ReadLineBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void ReadLineBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -108,19 +108,19 @@ namespace TribalScript
         stack.push_back(StoredValue(stringData.c_str()));
     }
 
-    void IsFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void IsFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
-        std::string path = stack.popString(state);
+        std::string path = parameters.back().toString();
 
         std::unique_ptr<FileHandleBase> handle = state->mInterpreter->mConfig.mPlatform->getFileHandle(path);
         stack.push_back(StoredValue(handle->exists() ? 1 : 0));
     }
 
-    void DeleteFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, const std::size_t argumentCount)
+    void DeleteFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
-        std::string path = stack.popString(state);
+        std::string path = parameters.back().toString();
 
         std::unique_ptr<FileHandleBase> handle = state->mInterpreter->mConfig.mPlatform->getFileHandle(path);
         stack.push_back(StoredValue(handle->deleteFile()));
