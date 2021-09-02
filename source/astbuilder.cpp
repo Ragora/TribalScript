@@ -470,6 +470,10 @@ namespace TribalScript
             {
                 result.push_back(new AST::GreaterThanNode(left, right));
             }
+			else if (context->GREATERTHANOREQUAL())
+			{
+				result.push_back(new AST::GreaterThanOrEqualNode(left, right));
+			}
             else
             {
                 throw std::runtime_error("Unhandled Relational Type!");

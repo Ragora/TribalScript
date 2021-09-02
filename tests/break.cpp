@@ -21,7 +21,7 @@
 #include <tribalscript/libraries/libraries.hpp>
 #include <tribalscript/executionstate.hpp>
 
-TEST(InterpreterTest, Continue)
+TEST(InterpreterTest, Break)
 {
     TribalScript::Interpreter interpreter;
     TribalScript::registerAllLibraries(&interpreter);

@@ -21,19 +21,19 @@
 #include <tribalscript/libraries/libraries.hpp>
 #include <tribalscript/executionstate.hpp>
 
-TEST(InterpreterTest, Break)
+TEST(InterpreterTest, NestedContinue)
 {
     TribalScript::Interpreter interpreter;
     TribalScript::registerAllLibraries(&interpreter);
 
     TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
-    interpreter.execute("cases/continue.cs", &state);
+    interpreter.execute("cases/nestedContinue.cs", &state);
 
     // After execution, the result of $global should be 50
     TribalScript::StoredValue* result = interpreter.getGlobal("result::continue");
     ASSERT_TRUE(result);
 
-    ASSERT_EQ(result->toInteger(), 10);
+    ASSERT_EQ(result->toInteger(), 5500);
 }
 
 int main()

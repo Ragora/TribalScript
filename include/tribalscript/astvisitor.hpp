@@ -70,6 +70,7 @@ namespace TribalScript
         class StringNotEqualNode;
         class SubreferenceNode;
         class ContinueNode;
+		class GreaterThanOrEqualNode;
 
         class ASTVisitor
         {
@@ -128,6 +129,7 @@ namespace TribalScript
                 virtual antlrcpp::Any visitIfNode(AST::IfNode* node);
                 virtual antlrcpp::Any visitContinueNode(AST::ContinueNode* expression);
                 virtual antlrcpp::Any visitStringNotEqualNode(AST::StringNotEqualNode* expression);
+				virtual antlrcpp::Any visitGreaterThanOrEqualNode(AST::GreaterThanOrEqualNode* expression);
         };
     }
 }

@@ -497,17 +497,31 @@ namespace TribalScript
 
         class GreaterThanNode : public InfixExpressionNode
         {
-        public:
-            GreaterThanNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
-            {
+	        public:
+	            GreaterThanNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
+	            {
 
-            }
+	            }
 
-            antlrcpp::Any accept(ASTVisitor* visitor) override
-            {
-                return visitor->visitGreaterThanNode(this);
-            }
+	            antlrcpp::Any accept(ASTVisitor* visitor) override
+	            {
+	                return visitor->visitGreaterThanNode(this);
+	            }
         };
+
+		class GreaterThanOrEqualNode : public InfixExpressionNode
+		{
+			public:
+				GreaterThanOrEqualNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
+				{
+
+				}
+
+				antlrcpp::Any accept(ASTVisitor* visitor) override
+				{
+					return visitor->visitGreaterThanOrEqualNode(this);
+				}
+		};
 
         class UnaryNode : public ASTNode
         {

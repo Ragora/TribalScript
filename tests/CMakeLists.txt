@@ -81,3 +81,11 @@ add_test(NAME BreakTest COMMAND BreakTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR
 add_executable(ContinueTest continue.cpp)
 target_link_libraries(ContinueTest TribalScript gtest_main)
 add_test(NAME ContinueTest COMMAND ContinueTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+
+add_executable(NestedBreakTest nestedBreak.cpp)
+target_link_libraries(NestedBreakTest TribalScript gtest_main)
+add_test(NAME NestedBreakTest COMMAND NestedBreakTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+
+add_executable(NestedContinueTest nestedContinue.cpp)
+target_link_libraries(NestedContinueTest TribalScript gtest_main)
+add_test(NAME NestedContinueTest COMMAND NestedContinueTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)

@@ -267,6 +267,16 @@ namespace TribalScript
             return this->aggregateResult(result, childResult);
         }
 
+		antlrcpp::Any ASTVisitor::visitGreaterThanOrEqualNode(AST::GreaterThanOrEqualNode* expression)
+		{
+			antlrcpp::Any result = this->defaultResult();
+
+            antlrcpp::Any childResult = expression->mLeft->accept(this);
+            result = this->aggregateResult(result, childResult);
+            childResult = expression->mRight->accept(this);
+            return this->aggregateResult(result, childResult);
+		}
+
         antlrcpp::Any ASTVisitor::visitGreaterThanNode(AST::GreaterThanNode* expression)
         {
             antlrcpp::Any result = this->defaultResult();

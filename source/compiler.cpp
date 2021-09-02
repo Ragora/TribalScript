@@ -335,6 +335,20 @@ namespace TribalScript
         return result;
     }
 
+	antlrcpp::Any Compiler::visitGreaterThanOrEqualNode(AST::GreaterThanOrEqualNode* expression)
+	{
+		InstructionSequence result;
+
+		InstructionSequence lhsCode = expression->mLeft->accept(this).as<InstructionSequence>();
+		InstructionSequence rhsCode = expression->mRight->accept(this).as<InstructionSequence>();
+
+		result.insert(result.end(), lhsCode.begin(), lhsCode.end());
+		result.insert(result.end(), rhsCode.begin(), rhsCode.end());
+		result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::GreaterThanOrEqualInstruction()));
+
+		return result;
+	}
+
     antlrcpp::Any Compiler::visitGreaterThanNode(AST::GreaterThanNode* expression)
     {
         InstructionSequence result;
