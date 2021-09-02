@@ -1253,59 +1253,6 @@ namespace TribalScript
         };
 
         /**
-         *  @brief Used to keep track of loops in the virtual instructions. This instruction
-         *  marks the start of a loop control construct.
-         */
-        class PushLoopInstruction : public Instruction
-        {
-            public:
-                /**
-                 *  @brief Constructs a new instance of PushLoopInstruction.
-                 *  @param loopSize The number of instructions contained in this loop.
-                 */
-                PushLoopInstruction(const std::size_t loopSize) : mLoopSize(loopSize)
-                {
-
-                }
-
-                virtual AddressOffsetType execute(ExecutionState* state) override
-                {
-                    const AddressType loopPosition = state->mInstructionPointer;
-                    state->mExecutionScope.pushLoop(loopPosition, mLoopSize);
-                    return 1;
-                };
-
-                virtual std::string disassemble() override
-                {
-                    std::ostringstream out;
-                    out << "PushLoop " << mLoopSize;
-                    return out.str();
-                }
-
-            private:
-                std::size_t mLoopSize;
-        };
-
-        /**
-         *  @brief Used to keep track of loops in the virtual instructions. This instruction
-         *  marks the end of a loop control construct.
-         */
-        class PopLoopInstruction : public Instruction
-        {
-            public:
-                virtual AddressOffsetType execute(ExecutionState* state) override
-                {
-                    state->mExecutionScope.popLoop();
-                    return 1;
-                };
-
-                virtual std::string disassemble() override
-                {
-                    return "PopLoop";
-                }
-        };
-
-        /**
          *  @brief Breaks out of the current loop, ending all possible loop iterations immediately.
          */
         class BreakInstruction : public Instruction
@@ -1313,21 +1260,33 @@ namespace TribalScript
             public:
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
-                    if (state->mExecutionScope.isLoopStackEmpty())
-                    {
-                        state->mInterpreter->mConfig.mPlatform->logWarning("Break outside of loop, ignoring ...");
-                        return 1;
-                    }
-
-                    LoopDescriptor descriptor = state->mExecutionScope.currentLoopDescriptor();
-                    // This should lead to a PopLoop instruction so we don't pop here
-                    const AddressType loopProgress = state->mInstructionPointer - descriptor.mInstructionPointer;
-                    return descriptor.mLoopSize - loopProgress;
+                    // This is a placeholder instruction for the compiler
+                    state->mInterpreter->mConfig.mPlatform->logWarning("Break outside of loop, ignoring ...");
+                    return 1;
                 };
 
                 virtual std::string disassemble() override
                 {
                     return "Break";
+                }
+        };
+
+        /**
+         *  @brief Moves to the next iteration of the current loop.
+         */
+        class ContinueInstruction : public Instruction
+        {
+            public:
+                virtual AddressOffsetType execute(ExecutionState* state) override
+                {
+                    // This is a placeholder instruction for the compiler
+                    state->mInterpreter->mConfig.mPlatform->logWarning("Continue outside of loop, ignoring ...");
+                    return 1;
+                };
+
+                virtual std::string disassemble() override
+                {
+                    return "Continue";
                 }
         };
 

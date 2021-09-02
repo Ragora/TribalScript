@@ -421,11 +421,29 @@ namespace TribalScript
         // Add a NOP for a jump target
         bodyCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
 
-        // Add loop trackers
-        bodyCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopLoopInstruction()));
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLoopInstruction(expressionCode.size() + bodyCode.size())));
-
         out.insert(out.end(), expressionCode.begin(), expressionCode.end());
+
+        for (std::size_t iteration = 0; iteration < bodyCode.size(); ++iteration)
+        {
+            std::shared_ptr<Instructions::ContinueInstruction> continueInstruction = std::dynamic_pointer_cast<Instructions::ContinueInstruction>(bodyCode[iteration]);
+            std::shared_ptr<Instructions::BreakInstruction> breakInstruction = std::dynamic_pointer_cast<Instructions::BreakInstruction>(bodyCode[iteration]);
+
+            if (continueInstruction)
+            {
+                // Replace instruction with jump end
+                const AddressType continueTarget = bodyCode.size() - expressionCode.size() - 1; // -1 to account for the jump and NOP added at the end of body
+                const AddressOffsetType continueRelative = continueTarget - iteration;
+                bodyCode[iteration] = std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(continueRelative));
+            }
+            else if (breakInstruction)
+            {
+                // Replace instruction with pointer to NOP
+                const AddressType breakTarget = bodyCode.size();
+                const AddressOffsetType breakRelative = breakTarget - iteration - 1; // -1 to account for POP at the end
+                bodyCode[iteration] = std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(breakRelative));
+            }
+        }
+
         out.insert(out.end(), bodyCode.begin(), bodyCode.end());
 
 
@@ -463,12 +481,31 @@ namespace TribalScript
         // Check if our expression is false
         expressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction((int)forBody.size())));
 
-        forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopLoopInstruction()));
-        initializerCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLoopInstruction(expressionCode.size() + forBody.size())));
-
-        // Output final code
+        // Output final code, also resolve break/continue instructions
         out.insert(out.end(), initializerCode.begin(), initializerCode.end());
         out.insert(out.end(), expressionCode.begin(), expressionCode.end());
+
+        for (std::size_t iteration = 0; iteration < forBody.size(); ++iteration)
+        {
+            std::shared_ptr<Instructions::ContinueInstruction> continueInstruction = std::dynamic_pointer_cast<Instructions::ContinueInstruction>(forBody[iteration]);
+            std::shared_ptr<Instructions::BreakInstruction> breakInstruction = std::dynamic_pointer_cast<Instructions::BreakInstruction>(forBody[iteration]);
+
+            if (continueInstruction)
+            {
+                // Replace instruction with jump end
+                const AddressType continueTarget = forBody.size() - advanceCode.size() - 2; // -2 to account for the jump and NOP added at the end of body
+                const AddressOffsetType continueRelative = continueTarget - iteration;
+                forBody[iteration] = std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(continueRelative));
+            }
+            else if (breakInstruction)
+            {
+                // Replace instruction with pointer to NOP
+                const AddressType breakTarget = forBody.size();
+                const AddressOffsetType breakRelative = breakTarget - iteration - 1; // -1 to account for POP at the end
+                forBody[iteration] = std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(breakRelative));
+            }
+        }
+
         out.insert(out.end(), forBody.begin(), forBody.end());
 
         return out;
@@ -478,6 +515,13 @@ namespace TribalScript
     {
         InstructionSequence out;
         out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::BreakInstruction()));
+        return out;
+    }
+
+    antlrcpp::Any Compiler::visitContinueNode(AST::ContinueNode* node)
+    {
+        InstructionSequence out;
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::ContinueInstruction()));
         return out;
     }
 

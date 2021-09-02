@@ -93,6 +93,7 @@ namespace TribalScript
             virtual antlrcpp::Any visitWhileNode(AST::WhileNode* node) override;
             virtual antlrcpp::Any visitForNode(AST::ForNode* node) override;
             virtual antlrcpp::Any visitBreakNode(AST::BreakNode* node) override;
+            virtual antlrcpp::Any visitContinueNode(AST::ContinueNode* node) override;
             virtual antlrcpp::Any visitReturnNode(AST::ReturnNode* node) override;
             virtual antlrcpp::Any visitTernaryNode(AST::TernaryNode* node) override;
             virtual antlrcpp::Any visitSwitchNode(AST::SwitchNode* node) override;

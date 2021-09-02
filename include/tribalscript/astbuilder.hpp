@@ -69,7 +69,6 @@ namespace TribalScript
                 virtual antlrcpp::Any visitQualified_functioncall_expression(Tribes2Parser::Qualified_functioncall_expressionContext* context) override;
                 virtual antlrcpp::Any visitFunctioncall_expression(Tribes2Parser::Functioncall_expressionContext* context) override;
 
-
                 virtual antlrcpp::Any visitSubfunctioncall_expression(Tribes2Parser::Subfunctioncall_expressionContext* context) override;
                 virtual antlrcpp::Any visitField(Tribes2Parser::FieldContext* context) override;
                 virtual antlrcpp::Any visitFieldarray(Tribes2Parser::FieldarrayContext* context) override;
@@ -77,6 +76,9 @@ namespace TribalScript
                 virtual antlrcpp::Any visitField_assign(Tribes2Parser::Field_assignContext* context) override;
                 virtual antlrcpp::Any visitDatablock_declaration(Tribes2Parser::Datablock_declarationContext* context) override;
                 virtual antlrcpp::Any visitObject_declaration(Tribes2Parser::Object_declarationContext* context) override;
+
+                virtual antlrcpp::Any visitBreak_control(Tribes2Parser::Break_controlContext* context) override;
+                virtual antlrcpp::Any visitContinue_control(Tribes2Parser::Continue_controlContext* context) override;
 
             private:
                 StringTable* mStringTable;

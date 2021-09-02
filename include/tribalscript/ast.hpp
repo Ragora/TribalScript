@@ -835,6 +835,17 @@ namespace TribalScript
                 }
         };
 
+        class ContinueNode : public ASTNode
+        {
+            public:
+                ContinueNode() = default;
+
+                antlrcpp::Any accept(ASTVisitor* visitor) override
+                {
+                    return visitor->visitContinueNode(this);
+                }
+        };
+
         class TernaryNode : public ASTNode
         {
             public:

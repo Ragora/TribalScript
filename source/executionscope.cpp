@@ -130,49 +130,6 @@ namespace TribalScript
         mExecutionScopeData.pop_back();
     }
 
-    void ExecutionScope::pushLoop(const AddressType pointer, const std::size_t depth)
-    {
-        // Initialize if necessary
-        if (mExecutionScopeData.empty())
-        {
-            this->pushFrame(nullptr);
-        }
-
-        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
-        currentScope.mLoopDescriptors.push_back(LoopDescriptor(pointer, depth));
-    }
-
-    LoopDescriptor ExecutionScope::popLoop()
-    {
-        LoopDescriptor result = this->currentLoopDescriptor();
-
-        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
-        currentScope.mLoopDescriptors.pop_back();
-        return result;
-    }
-
-    LoopDescriptor ExecutionScope::currentLoopDescriptor()
-    {
-        assert(!mExecutionScopeData.empty());
-
-        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
-
-        assert(!currentScope.mLoopDescriptors.empty());
-
-        return currentScope.mLoopDescriptors.back();
-    }
-
-    bool ExecutionScope::isLoopStackEmpty()
-    {
-        if (mExecutionScopeData.empty())
-        {
-            return true;
-        }
-
-        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
-        return currentScope.mLoopDescriptors.empty();
-    }
-
     std::size_t ExecutionScope::getFrameDepth()
     {
         return mExecutionScopeData.size();

@@ -791,6 +791,22 @@ namespace TribalScript
             return result;
         }
 
+        antlrcpp::Any ASTBuilder::visitBreak_control(Tribes2Parser::Break_controlContext* context)
+        {
+            std::vector<AST::ASTNode*> result;
+            result.push_back(new AST::BreakNode());
+
+            return result;
+        }
+
+        antlrcpp::Any ASTBuilder::visitContinue_control(Tribes2Parser::Continue_controlContext* context)
+        {
+            std::vector<AST::ASTNode*> result;
+            result.push_back(new AST::ContinueNode());
+
+            return result;
+        }
+
         antlrcpp::Any ASTBuilder::visitReturn_control(Tribes2Parser::Return_controlContext* context)
         {
             std::vector<AST::ASTNode*> result = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();

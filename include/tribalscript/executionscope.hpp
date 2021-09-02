@@ -30,17 +30,6 @@
 
 namespace TribalScript
 {
-    struct LoopDescriptor
-    {
-        LoopDescriptor(const AddressType pointer, const std::size_t size) : mInstructionPointer(pointer), mLoopSize(size)
-        {
-
-        }
-
-        AddressType mInstructionPointer;
-        std::size_t mLoopSize;
-    };
-
     /**
      *  @brief Struct describing a tree of console object initializations.
      */
@@ -84,7 +73,6 @@ namespace TribalScript
         //! Awaiting root-level object instantiations.
         std::vector<ObjectInstantiationDescriptor> mObjectInstantiations;
 
-        std::vector<LoopDescriptor> mLoopDescriptors;
         std::map<StringTableEntry, StoredValue*> mLocalVariables;
     };
 
@@ -100,16 +88,11 @@ namespace TribalScript
             void pushFrame(Function* function);
             void popFrame();
 
-            void pushLoop(const AddressType pointer, const std::size_t depth);
-            LoopDescriptor popLoop();
-            LoopDescriptor currentLoopDescriptor();
-
             bool isAwaitingParentInstantiation();
             void pushObjectInstantiation(const std::string& typeName, const std::string& name);
             ObjectInstantiationDescriptor popObjectInstantiation();
             ObjectInstantiationDescriptor& currentObjectInstantiation();
 
-            bool isLoopStackEmpty();
             std::size_t getFrameDepth();
 
             Function* getCurrentFunction();

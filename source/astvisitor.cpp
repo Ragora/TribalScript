@@ -398,6 +398,11 @@ namespace TribalScript
             return this->defaultResult();
         }
 
+        antlrcpp::Any ASTVisitor::visitContinueNode(AST::ContinueNode* node)
+        {
+            return this->defaultResult();
+        }
+
         antlrcpp::Any ASTVisitor::visitTernaryNode(AST::TernaryNode* node)
         {
             antlrcpp::Any result = this->defaultResult();
