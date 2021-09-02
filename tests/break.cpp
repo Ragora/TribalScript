@@ -27,13 +27,13 @@ TEST(InterpreterTest, Continue)
     TribalScript::registerAllLibraries(&interpreter);
 
     TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
-    interpreter.execute("cases/continue.cs", &state);
+    interpreter.execute("cases/break.cs", &state);
 
     // After execution, the result of $global should be 50
-    TribalScript::StoredValue* result = interpreter.getGlobal("result::continue");
+    TribalScript::StoredValue* result = interpreter.getGlobal("result::break");
     ASSERT_TRUE(result);
 
-    ASSERT_EQ(result->toInteger(), 17);
+    ASSERT_EQ(result->toInteger(), 15);
 }
 
 int main()

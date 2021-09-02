@@ -175,7 +175,7 @@ expression : (op=MINUS
            | rvalue                                                             # rvalueExpression ;
 
 // For the grammar to work correctly, we need to explicitly allow these keywords to be used in variable names
-labelwithkeywords : LABEL | PACKAGE | RETURN | WHILE | FALSE | TRUE | FUNCTION | ELSE | IF | DATABLOCK | CASE ;
+labelwithkeywords : LABEL | PACKAGE | RETURN | BREAK | CONTINUE | WHILE | FALSE | TRUE | FUNCTION | ELSE | IF | DATABLOCK | CASE ;
 localvariable : '%' labelwithkeywords ('::' labelwithkeywords)* ;
 globalvariable : '$' labelwithkeywords ('::' labelwithkeywords)* ;
 

@@ -33,7 +33,7 @@ TEST(InterpreterTest, Break)
     TribalScript::StoredValue* result = interpreter.getGlobal("result::break");
     ASSERT_TRUE(result);
 
-    ASSERT_EQ(result->toInteger(), 17);
+    ASSERT_EQ(result->toInteger(), 15);
 }
 
 int main()
