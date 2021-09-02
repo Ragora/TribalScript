@@ -40,6 +40,8 @@ namespace TribalScript
 
     void GetNameBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
+    void GetIDBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
+
     void GetRealTimeBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
     void GetClassNameBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);

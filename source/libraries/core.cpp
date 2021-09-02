@@ -121,6 +121,14 @@ namespace TribalScript
         stack.push_back(StoredValue(stringData.c_str()));
     }
 
+    void GetIDBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    {
+        StoredValueStack& stack = state->mExecutionScope.getStack();
+
+        const int objectID = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(thisObject);
+        stack.push_back(StoredValue(objectID));
+    }
+
     void registerCoreLibrary(Interpreter* interpreter)
     {
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(EchoBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "echo")));
@@ -131,6 +139,7 @@ namespace TribalScript
 
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetClassNameBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "getClassName")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetNameBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "getName")));
+		interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetIDBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "getID")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(DeleteBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "delete")));
     }
 }

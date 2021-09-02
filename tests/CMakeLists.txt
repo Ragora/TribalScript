@@ -69,3 +69,7 @@ add_test(NAME MemoryReferenceTest COMMAND MemoryReferenceTest WORKING_DIRECTORY 
 add_executable(FunctionTest function.cpp)
 target_link_libraries(FunctionTest TribalScript gtest_main)
 add_test(NAME FunctionTest COMMAND FunctionTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+
+add_executable(ChainingTest chaining.cpp)
+target_link_libraries(ChainingTest TribalScript gtest_main)
+add_test(NAME ChainingTest COMMAND ChainingTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
