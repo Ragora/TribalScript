@@ -865,7 +865,7 @@ namespace TribalScript
         }
 
         // Pop object
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopObjectInstantiationInstruction()));
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopObjectInstantiationInstruction(object->mChildren.size())));
 
         return out;
     }

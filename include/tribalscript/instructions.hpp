@@ -1459,6 +1459,7 @@ namespace TribalScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
+                    assert(stack.size() >= 2);
 
                     StoredValue rvalue = stack.back();
                     stack.pop_back();
@@ -1515,32 +1516,37 @@ namespace TribalScript
         class PopObjectInstantiationInstruction : public Instruction
         {
             public:
+                PopObjectInstantiationInstruction(std::size_t childrenCount) : mChildrenCount(childrenCount)
+                {
+
+                }
+
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
                     ObjectInstantiationDescriptor descriptor = state->mExecutionScope.popObjectInstantiation();
 
-                    // Track parent/child relationships so we can walk the tree later
-                    if (state->mExecutionScope.isAwaitingParentInstantiation())
+                    // Ask the interpreter to initialize the resulting tree
+                    ConsoleObject* result = state->mInterpreter->initializeConsoleObjectTree(descriptor);
+
+                    if (result)
                     {
-                        ObjectInstantiationDescriptor& parentDescriptor = state->mExecutionScope.currentObjectInstantiation();
-                        parentDescriptor.mChildren.push_back(descriptor);
+                        // Append children
+                        for (std::size_t iteration = 0; iteration < mChildrenCount; ++iteration)
+                        {
+                            StoredValue nextChildID = stack.back();
+                            stack.pop_back();
+
+                            ConsoleObject* nextChild = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(nextChildID.toInteger());
+                            result->addChild(nextChild);
+                        }
+
+                        stack.emplace_back((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(result));
                     }
                     else
                     {
-                        // Ask the interpreter to initialize the resulting tree
-                        ConsoleObject* result = state->mInterpreter->initializeConsoleObjectTree(descriptor);
-
-                        if (result)
-                        {
-                            stack.emplace_back((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(result));
-                        }
-                        else
-                        {
-                            stack.emplace_back(-1);
-                        }
+                        stack.emplace_back(-1);
                     }
-
 
                     return 1;
                 };
@@ -1549,6 +1555,9 @@ namespace TribalScript
                 {
                     return "PopObjectInstantiation";
                 }
+
+                private:
+                    std::size_t mChildrenCount;
         };
     }
 }
