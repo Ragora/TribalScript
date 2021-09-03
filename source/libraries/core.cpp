@@ -19,7 +19,7 @@
 
 namespace TribalScript
 {
-    void EchoBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue EchoBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -35,10 +35,10 @@ namespace TribalScript
         }
 
         state->mInterpreter->mConfig.mPlatform->logEcho(outputString);
-        stack.push_back(StoredValue(0));
+        return StoredValue(0);
     }
 
-    void GetRealTimeBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue GetRealTimeBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -47,10 +47,10 @@ namespace TribalScript
         auto currentTime = std::chrono::steady_clock::now().time_since_epoch();
         auto result = std::chrono::duration_cast<millisecondFloat>(currentTime);
 
-        stack.push_back(StoredValue(result.count()));
+        return StoredValue(result.count());
     }
 
-    void ExecBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue ExecBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -66,10 +66,10 @@ namespace TribalScript
             state->mInterpreter->execute(executedFile, nullptr);
         }
 
-        stack.push_back(StoredValue(0));
+        return StoredValue(0);
     }
 
-    void ActivatePackageBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue ActivatePackageBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -80,10 +80,10 @@ namespace TribalScript
             parameters.pop_back();
         }
 
-        stack.push_back(StoredValue(0));
+        return StoredValue(0);
     }
 
-    void DeactivatePackageBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue DeactivatePackageBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -94,39 +94,39 @@ namespace TribalScript
             parameters.pop_back();
         }
 
-        stack.push_back(StoredValue(0));
+        return StoredValue(0);
     }
 
-    void DeleteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue DeleteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
         state->mInterpreter->mConfig.mConsoleObjectRegistry->removeConsoleObject(thisObject);
-        stack.push_back(StoredValue(0));
+        return StoredValue(0);
     }
 
-    void GetNameBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue GetNameBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
         const std::string stringData = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectName(thisObject);
-        stack.push_back(StoredValue(stringData.c_str()));
+        return StoredValue(stringData.c_str());
     }
 
-    void GetClassNameBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue GetClassNameBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
         const std::string stringData = thisObject->getClassName();
-        stack.push_back(StoredValue(stringData.c_str()));
+        return StoredValue(stringData.c_str());
     }
 
-    void GetIDBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue GetIDBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
         const int objectID = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(thisObject);
-        stack.push_back(StoredValue(objectID));
+        return StoredValue(objectID);
     }
 
     void registerCoreLibrary(Interpreter* interpreter)

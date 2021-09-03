@@ -28,7 +28,7 @@
 
 namespace TribalScript
 {
-    void GetRandomBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
+    StoredValue GetRandomBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
     void registerMathLibrary(Interpreter* interpreter);
 }

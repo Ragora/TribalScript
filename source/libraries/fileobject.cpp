@@ -18,7 +18,7 @@
 
 namespace TribalScript
 {
-    void OpenForWriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue OpenForWriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string path = parameters.back().toString();
@@ -30,14 +30,13 @@ namespace TribalScript
 
         if (fileObject->openForWrite(path))
         {
-            stack.push_back(StoredValue(0));
-            return;
+            return StoredValue(0);
         }
 
-        stack.push_back(StoredValue(-1));
+        return StoredValue(-1);
     }
 
-    void OpenForReadBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue OpenForReadBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string path = parameters.back().toString();
@@ -49,14 +48,13 @@ namespace TribalScript
 
         if (fileObject->openForRead(path))
         {
-            stack.push_back(StoredValue(0));
-            return;
+            return StoredValue(0);
         }
 
-        stack.push_back(StoredValue(-1));
+        return StoredValue(-1);
     }
 
-    void WriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue WriteBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string written = parameters.back().toString();
@@ -67,10 +65,10 @@ namespace TribalScript
         assert(fileObject);
 
         fileObject->write(written);
-        stack.push_back(StoredValue(0));
+        return StoredValue(0);
     }
 
-    void CloseBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue CloseBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -80,10 +78,10 @@ namespace TribalScript
         assert(fileObject);
 
         fileObject->close();
-        stack.push_back(StoredValue(0));
+        return StoredValue(0);
     }
 
-    void IsEOFBuiltin(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue IsEOFBuiltin(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -92,10 +90,10 @@ namespace TribalScript
         FileObject* fileObject = reinterpret_cast<FileObject*>(thisObject);
         assert(fileObject);
 
-        stack.push_back(StoredValue(fileObject->isEOF() ? 1 : 0));
+        return StoredValue(fileObject->isEOF() ? 1 : 0);
     }
 
-    void ReadLineBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue ReadLineBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
@@ -105,25 +103,25 @@ namespace TribalScript
         assert(fileObject);
 
         const std::string stringData = fileObject->readLine();
-        stack.push_back(StoredValue(stringData.c_str()));
+        return StoredValue(stringData.c_str());
     }
 
-    void IsFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue IsFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string path = parameters.back().toString();
 
         std::unique_ptr<FileHandleBase> handle = state->mInterpreter->mConfig.mPlatform->getFileHandle(path);
-        stack.push_back(StoredValue(handle->exists() ? 1 : 0));
+        return StoredValue(handle->exists() ? 1 : 0);
     }
 
-    void DeleteFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue DeleteFileBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
         std::string path = parameters.back().toString();
 
         std::unique_ptr<FileHandleBase> handle = state->mInterpreter->mConfig.mPlatform->getFileHandle(path);
-        stack.push_back(StoredValue(handle->deleteFile()));
+        return StoredValue(handle->deleteFile());
     }
 
     void registerFileObjectLibrary(Interpreter* interpreter)

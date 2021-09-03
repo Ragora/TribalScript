@@ -22,7 +22,7 @@
 
 namespace TribalScript
 {
-    typedef void (*NativeFunctionPointer)(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
+    typedef StoredValue (*NativeFunctionPointer)(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters);
 
     /**
      *  @brief A NativeFunction is a specialization of Function that allows native C++ programming to be called from within the

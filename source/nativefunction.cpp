@@ -26,6 +26,6 @@ namespace TribalScript
 
     void NativeFunction::execute(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
-        this->mNativeFunction(thisObject, state, parameters);
+        state->mExecutionScope.getStack().push_back(mNativeFunction(thisObject, state, parameters));
     }
 }

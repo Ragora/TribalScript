@@ -18,13 +18,13 @@
 
 namespace TribalScript
 {
-    void GetRandomBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    StoredValue GetRandomBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
         // FIXME: If argC == 1, generate int between 0 and value, if argC == 2, generate int between min and max
         const float result = (float)std::rand() / RAND_MAX;
-        stack.push_back(StoredValue(result));
+        return StoredValue(result);
     }
 
     void registerMathLibrary(Interpreter* interpreter)
