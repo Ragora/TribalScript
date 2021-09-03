@@ -591,6 +591,8 @@ namespace TribalScript
             std::vector<AST::ASTNode*> result;
             std::vector<AST::ASTNode*> whileContent = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
 
+            assert(whileContent.size() >= 1);
+
             AST::ASTNode* whileExpression = whileContent.front();
             whileContent.erase(whileContent.begin());
 

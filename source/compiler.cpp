@@ -45,13 +45,16 @@ namespace TribalScript
 
         parser.addErrorListener(&parserErrorListener);
 
-        // Instantiate the program and go
-        AST::ASTBuilder visitor(stringTable);
-        AST::ProgramNode* tree = visitor.visitProgram(parser.program()).as<AST::ProgramNode*>();
+        // Parse the program
+        Tribes2Parser::ProgramContext* program = parser.program();
 
         // Did we receive any errors?
         if (parserErrorListener.getErrors().empty())
         {
+            // Instantiate the program and go
+            AST::ASTBuilder visitor(stringTable);
+            AST::ProgramNode* tree = visitor.visitProgram(program).as<AST::ProgramNode*>();
+
             // Used for generation of instructions
             mStringTable = stringTable;
             InstructionSequence instructions = this->visitProgramNode(tree).as<InstructionSequence>();
@@ -60,8 +63,6 @@ namespace TribalScript
             CodeBlock* result = new CodeBlock(instructions);
             return result;
         }
-
-        delete tree;
 
         for (const std::string& message : parserErrorListener.getErrors())
         {
