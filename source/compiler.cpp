@@ -66,7 +66,7 @@ namespace TribalScript
 
         for (const std::string& message : parserErrorListener.getErrors())
         {
-            std::cerr << message << std::endl;
+            mConfig.mPlatform->logError(message);
         }
 
         return nullptr;
