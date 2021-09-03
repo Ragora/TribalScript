@@ -27,7 +27,7 @@ TEST(InterpreterTest, Break)
     TribalScript::registerAllLibraries(&interpreter);
 
     TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
-    interpreter.execute("cases/break.cs", &state);
+    interpreter.execute("cases/breakFor.cs", &state);
 
     // After execution, the result of $global should be 50
     TribalScript::StoredValue* result = interpreter.getGlobal("result::break");

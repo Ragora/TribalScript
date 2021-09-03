@@ -74,18 +74,36 @@ add_executable(ChainingTest chaining.cpp)
 target_link_libraries(ChainingTest TribalScript gtest_main)
 add_test(NAME ChainingTest COMMAND ChainingTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
 
-add_executable(BreakTest break.cpp)
-target_link_libraries(BreakTest TribalScript gtest_main)
-add_test(NAME BreakTest COMMAND BreakTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+# Handle for loop control tests
+add_executable(BreakForTest breakFor.cpp)
+target_link_libraries(BreakForTest TribalScript gtest_main)
+add_test(NAME BreakForTest COMMAND BreakForTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
 
-add_executable(ContinueTest continue.cpp)
-target_link_libraries(ContinueTest TribalScript gtest_main)
-add_test(NAME ContinueTest COMMAND ContinueTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+add_executable(ContinueForTest continueFor.cpp)
+target_link_libraries(ContinueForTest TribalScript gtest_main)
+add_test(NAME ContinueForTest COMMAND ContinueForTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
 
-add_executable(NestedBreakTest nestedBreak.cpp)
-target_link_libraries(NestedBreakTest TribalScript gtest_main)
-add_test(NAME NestedBreakTest COMMAND NestedBreakTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+add_executable(NestedBreakForTest nestedBreakFor.cpp)
+target_link_libraries(NestedBreakForTest TribalScript gtest_main)
+add_test(NAME NestedBreakForTest COMMAND NestedBreakForTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
 
-add_executable(NestedContinueTest nestedContinue.cpp)
-target_link_libraries(NestedContinueTest TribalScript gtest_main)
-add_test(NAME NestedContinueTest COMMAND NestedContinueTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+add_executable(NestedContinueForTest nestedContinueFor.cpp)
+target_link_libraries(NestedContinueForTest TribalScript gtest_main)
+add_test(NAME NestedContinueForTest COMMAND NestedContinueForTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+
+# Handle while loop control tests
+add_executable(BreakWhileTest breakWhile.cpp)
+target_link_libraries(BreakWhileTest TribalScript gtest_main)
+add_test(NAME BreakWhileTest COMMAND BreakWhileTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+
+add_executable(ContinueWhileTest continueWhile.cpp)
+target_link_libraries(ContinueWhileTest TribalScript gtest_main)
+add_test(NAME ContinueWhileTest COMMAND ContinueWhileTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+
+add_executable(NestedBreakWhileTest nestedBreakWhile.cpp)
+target_link_libraries(NestedBreakWhileTest TribalScript gtest_main)
+add_test(NAME NestedBreakWhileTest COMMAND NestedBreakWhileTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+
+add_executable(NestedContinueWhileTest nestedContinueWhile.cpp)
+target_link_libraries(NestedContinueWhileTest TribalScript gtest_main)
+add_test(NAME NestedContinueWhileTest COMMAND NestedContinueWhileTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)

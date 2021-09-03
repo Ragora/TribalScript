@@ -27,7 +27,7 @@ TEST(InterpreterTest, NestedContinue)
     TribalScript::registerAllLibraries(&interpreter);
 
     TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
-    interpreter.execute("cases/nestedContinue.cs", &state);
+    interpreter.execute("cases/nestedContinueFor.cs", &state);
 
     // After execution, the result of $global should be 50
     TribalScript::StoredValue* result = interpreter.getGlobal("result::continue");
