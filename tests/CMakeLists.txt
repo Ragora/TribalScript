@@ -74,7 +74,11 @@ add_executable(ChainingTest chaining.cpp)
 target_link_libraries(ChainingTest TribalScript gtest_main)
 add_test(NAME ChainingTest COMMAND ChainingTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
 
-# Handle for loop control tests
+add_executable(StringHelpersTest stringhelpers.cpp)
+target_link_libraries(StringHelpersTest TribalScript gtest_main)
+add_test(NAME StringHelpersTest COMMAND StringHelpersTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+
+# Handle for tests for continue/while for loops
 add_executable(BreakForTest breakFor.cpp)
 target_link_libraries(BreakForTest TribalScript gtest_main)
 add_test(NAME BreakForTest COMMAND BreakForTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
@@ -91,7 +95,7 @@ add_executable(NestedContinueForTest nestedContinueFor.cpp)
 target_link_libraries(NestedContinueForTest TribalScript gtest_main)
 add_test(NAME NestedContinueForTest COMMAND NestedContinueForTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
 
-# Handle while loop control tests
+# Handle for tests for continue/while for while loops
 add_executable(BreakWhileTest breakWhile.cpp)
 target_link_libraries(BreakWhileTest TribalScript gtest_main)
 add_test(NAME BreakWhileTest COMMAND BreakWhileTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)

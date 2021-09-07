@@ -14,6 +14,7 @@
 
 #include <regex>
 #include <string>
+#include <vector>
 #include <iostream>
 #include <algorithm>
 
@@ -21,6 +22,47 @@
 
 namespace TribalScript
 {
+    std::vector<std::string> getStringComponents(const std::string& in, const unsigned char delineator, const std::size_t startComponent, const std::size_t count)
+    {
+        std::vector<std::string> result;
+        result.reserve(count);
+        std::vector<std::pair<std::size_t, std::size_t>> dataLocations;
+        dataLocations.reserve(count);
+
+        // Search for the delineators that we need
+        std::size_t currentDataStart = 0;
+        std::size_t currentDelineatorCount = 0;
+        for (std::size_t iteration = 0; iteration < in.size(); ++iteration)
+        {
+            unsigned char character = in[iteration];
+
+            // Increment delineator count
+            if (currentDelineatorCount >= startComponent && (character == delineator || iteration == in.size() - 1))
+            {
+                const std::size_t dataEnd = iteration;
+
+                if (currentDelineatorCount >= startComponent)
+                {
+                    dataLocations.push_back(std::make_pair(currentDataStart, dataEnd));
+                }
+
+                // Set next start
+                currentDataStart = iteration + 1;
+                ++currentDelineatorCount;
+            }
+        }
+
+        // Process all pairs now
+        for (auto&& dataPair : dataLocations)
+        {
+            const std::size_t dataStart = dataPair.first;
+            const std::size_t dataEnd = dataPair.second;
+
+            result.push_back(in.substr(dataStart, dataEnd - dataStart));
+        }
+        return result;
+    }
+
     std::string toLowerCase(const std::string& in)
     {
         std::string result = in;
