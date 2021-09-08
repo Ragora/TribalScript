@@ -22,10 +22,8 @@
 
 namespace TribalScript
 {
-    std::vector<std::string> getStringComponents(const std::string& in, const unsigned char delineator, const std::size_t startComponent, const std::size_t count)
+    std::vector<std::pair<std::size_t, std::size_t>> getDelineatorData(const std::string& in, const unsigned char delineator, const std::size_t startComponent, const std::size_t count)
     {
-        std::vector<std::string> result;
-        result.reserve(count);
         std::vector<std::pair<std::size_t, std::size_t>> dataLocations;
         dataLocations.reserve(count);
 
@@ -39,7 +37,7 @@ namespace TribalScript
             // Increment delineator count
             if (currentDelineatorCount >= startComponent && (character == delineator || iteration == in.size() - 1))
             {
-                const std::size_t dataEnd = iteration;
+                const std::size_t dataEnd = iteration == in.size() - 1 ? iteration + 1 : iteration;
 
                 if (currentDelineatorCount >= startComponent)
                 {
@@ -52,6 +50,15 @@ namespace TribalScript
             }
         }
 
+        return dataLocations;
+    }
+
+    std::vector<std::string> getStringComponents(const std::string& in, const unsigned char delineator, const std::size_t startComponent, const std::size_t count)
+    {
+        std::vector<std::string> result;
+        result.reserve(count);
+        std::vector<std::pair<std::size_t, std::size_t>> dataLocations = getDelineatorData(in, delineator, startComponent, count);
+
         // Process all pairs now
         for (auto&& dataPair : dataLocations)
         {
@@ -61,6 +68,38 @@ namespace TribalScript
             result.push_back(in.substr(dataStart, dataEnd - dataStart));
         }
         return result;
+    }
+
+    std::string setStringComponents(const std::string& in, const unsigned char delineator, const std::size_t startComponent, const std::vector<std::string>& newComponents)
+    {
+        std::vector<std::pair<std::size_t, std::size_t>> delineatorData = getDelineatorData(in, delineator, startComponent, newComponents.size());
+
+        // If the delineator data is not equal to our component count then some of the data needs appended (with the delineator in between)
+        const std::size_t appendedCount = (startComponent + newComponents.size()) - delineatorData.size();
+
+        const std::string leftHalf = in.substr(0,delineatorData[0].first);
+        const std::string rightHalf = in.substr(delineatorData[delineatorData.size() - 1].second, in.size() );
+
+        // Set everything in between now ...
+        std::ostringstream stream;
+        stream << leftHalf;
+
+        for (std::size_t iteration = 0; iteration < delineatorData.size(); ++iteration)
+        {
+            const std::pair<std::size_t, std::size_t>& dataPair = delineatorData[iteration];
+            const std::string nextField = iteration < startComponent || iteration > startComponent + newComponents.size() - 1 ? in.substr(dataPair.first, dataPair.second - dataPair.first) : newComponents[iteration - startComponent];
+            if (iteration == 0)
+            {
+                stream << nextField;
+            }
+            else
+            {
+                stream << delineator << nextField;
+            }
+        }
+
+        stream << rightHalf;
+        return stream.str();
     }
 
     std::string toLowerCase(const std::string& in)

@@ -20,14 +20,43 @@
 
 TEST(StringHelpers, GetStringComponents)
 {
-    // std::vector<std::string> getStringComponents(const std::string& in, const unsigned char delineator, const std::size_t startComponent, const std::size_t count)
     std::vector<std::string> result = TribalScript::getStringComponents("A^B^C^D", '^', 0, 4);
-
     ASSERT_EQ(result.size(), 4);
     ASSERT_EQ(result[0], "A");
     ASSERT_EQ(result[1], "B");
     ASSERT_EQ(result[2], "C");
     ASSERT_EQ(result[3], "D");
+
+    result = TribalScript::getStringComponents("A^B^C^D", '^', 0, 8);
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result[0], "A");
+    ASSERT_EQ(result[1], "B");
+    ASSERT_EQ(result[2], "C");
+    ASSERT_EQ(result[3], "D");
+
+    result = TribalScript::getStringComponents("A^B^C^D", '^', 6, 4);
+    ASSERT_EQ(result.size(), 0);
+
+    result = TribalScript::getStringComponents("A^B^C^D", ' ', 0, 4);
+    ASSERT_EQ(result.size(), 1);
+    ASSERT_EQ(result[0], "A^B^C^D");
+}
+
+TEST(StringHelpers, SetStringComponents)
+{
+    std::string result = TribalScript::setStringComponents("A^B^C^D", '^', 0, {
+        "X",
+        "Y",
+        "Z"
+    });
+
+    ASSERT_EQ(result, "X^Y^Z^D");
+
+    result = TribalScript::setStringComponents("A^B^C^D", '^', 0, {
+        "X",
+    });
+
+    ASSERT_EQ(result, "X^B^C^D");
 }
 
 int main()
