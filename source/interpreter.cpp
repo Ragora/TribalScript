@@ -380,8 +380,8 @@ namespace TribalScript
         ConsoleObject* initialized = objectDescriptor->mInitializePointer(this, descriptor);
 
         // Register to interpreter
-        mConfig.mConsoleObjectRegistry->addConsoleObject(initialized);
-        mConfig.mConsoleObjectRegistry->setConsoleObject(descriptor.mName, initialized);
+        mConfig.mConsoleObjectRegistry->addConsoleObject(this, initialized);
+        mConfig.mConsoleObjectRegistry->setConsoleObject(this, descriptor.mName, initialized);
 
         // Handle child init
         for (ObjectInstantiationDescriptor& childDescriptor : descriptor.mChildren)

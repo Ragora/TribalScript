@@ -41,7 +41,7 @@ namespace TribalScript
         // Search by ID first
         if (rawValue.isInteger())
         {
-            ConsoleObject* idLookup = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(rawValue.toInteger());
+            ConsoleObject* idLookup = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(state->mInterpreter, rawValue.toInteger());
             if (idLookup)
             {
                 return idLookup;
@@ -49,7 +49,7 @@ namespace TribalScript
         }
 
         const std::string lookupName = rawValue.toString();
-        return state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(lookupName);
+        return state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(state->mInterpreter, lookupName);
     }
 
     bool StoredValue::isInteger()

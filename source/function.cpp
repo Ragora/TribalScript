@@ -52,7 +52,7 @@ namespace TribalScript
             const std::string thisParameterName = parameterNames[0];
             parameterNames.erase(parameterNames.begin());
 
-            newLocals.emplace(std::make_pair(thisParameterName, (int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(thisObject)));
+            newLocals.emplace(std::make_pair(thisParameterName, (int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(state->mInterpreter, thisObject)));
         }
 
         // Calculate expected versus provided to determine what parameters should be left empty

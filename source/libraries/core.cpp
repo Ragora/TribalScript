@@ -101,7 +101,7 @@ namespace TribalScript
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
-        state->mInterpreter->mConfig.mConsoleObjectRegistry->removeConsoleObject(thisObject);
+        state->mInterpreter->mConfig.mConsoleObjectRegistry->removeConsoleObject(state->mInterpreter, thisObject);
         return StoredValue(0);
     }
 
@@ -109,7 +109,7 @@ namespace TribalScript
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
-        const std::string stringData = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectName(thisObject);
+        const std::string stringData = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectName(state->mInterpreter, thisObject);
         return StoredValue(stringData.c_str());
     }
 
@@ -125,7 +125,7 @@ namespace TribalScript
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
-        const int objectID = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(thisObject);
+        const int objectID = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(state->mInterpreter, thisObject);
         return StoredValue(objectID);
     }
 

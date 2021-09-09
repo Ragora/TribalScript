@@ -27,16 +27,16 @@ namespace TribalScript
 
     }
 
-    void StandardConsoleObjectRegistry::setConsoleObject(const std::string& name, ConsoleObject* value)
+    void StandardConsoleObjectRegistry::setConsoleObject(Interpreter* interpreter, const std::string& name, ConsoleObject* value)
     {
         const std::string setName = toLowerCase(name);
         mConsoleObjectsByName[setName] = value;
 
         // Ensure an ID mapping exists
-        this->addConsoleObject(value);
+        this->addConsoleObject(interpreter, value);
     }
 
-    ConsoleObject* StandardConsoleObjectRegistry::getConsoleObject(const std::string& name)
+    ConsoleObject* StandardConsoleObjectRegistry::getConsoleObject(Interpreter* interpreter, const std::string& name)
     {
         const std::string searchedName = toLowerCase(name);
         auto search = mConsoleObjectsByName.find(searchedName);
@@ -48,7 +48,7 @@ namespace TribalScript
         return nullptr;
     }
 
-    ConsoleObject* StandardConsoleObjectRegistry::getConsoleObject(const unsigned int id)
+    ConsoleObject* StandardConsoleObjectRegistry::getConsoleObject(Interpreter* interpreter, const unsigned int id)
     {
         auto search = mConsoleObjectsByID.find(id);
 
@@ -60,7 +60,7 @@ namespace TribalScript
         return nullptr;
     }
 
-    void StandardConsoleObjectRegistry::removeConsoleObject(const std::string& name)
+    void StandardConsoleObjectRegistry::removeConsoleObject(Interpreter* interpreter, const std::string& name)
     {
         const std::string removedName = toLowerCase(name);
 
@@ -71,7 +71,7 @@ namespace TribalScript
         }
     }
 
-    void StandardConsoleObjectRegistry::removeConsoleObject(ConsoleObject* target)
+    void StandardConsoleObjectRegistry::removeConsoleObject(Interpreter* interpreter, ConsoleObject* target)
     {
         // Remove from name mapping & ID mapping
         for (auto iterator = mConsoleObjectsByName.begin(); iterator != mConsoleObjectsByName.end(); ++iterator)
@@ -93,7 +93,7 @@ namespace TribalScript
         }
     }
 
-    unsigned int StandardConsoleObjectRegistry::addConsoleObject(ConsoleObject* value)
+    unsigned int StandardConsoleObjectRegistry::addConsoleObject(Interpreter* interpreter, ConsoleObject* value)
     {
         // Check if it exists already in our ID mapping
         for (auto iterator = mConsoleObjectsByID.begin(); iterator != mConsoleObjectsByID.end(); ++iterator)
@@ -110,7 +110,7 @@ namespace TribalScript
         return result;
     }
 
-    std::string StandardConsoleObjectRegistry::getConsoleObjectName(ConsoleObject* target)
+    std::string StandardConsoleObjectRegistry::getConsoleObjectName(Interpreter* interpreter, ConsoleObject* target)
     {
         // Search name set
         for (auto iterator = mConsoleObjectsByName.begin(); iterator != mConsoleObjectsByName.end(); ++iterator)
@@ -123,7 +123,7 @@ namespace TribalScript
         return "";
     }
 
-    unsigned int StandardConsoleObjectRegistry::getConsoleObjectID(ConsoleObject* target)
+    unsigned int StandardConsoleObjectRegistry::getConsoleObjectID(Interpreter* interpreter, ConsoleObject* target)
     {
         for (auto iterator = mConsoleObjectsByID.begin(); iterator != mConsoleObjectsByID.end(); ++iterator)
         {

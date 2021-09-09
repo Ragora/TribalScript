@@ -37,16 +37,16 @@ namespace TribalScript
     class ConsoleObjectRegistryBase
     {
         public:
-            virtual void setConsoleObject(const std::string& name, ConsoleObject* value) = 0;
-            virtual ConsoleObject* getConsoleObject(const std::string& name) = 0;
-            virtual ConsoleObject* getConsoleObject(const unsigned int id) = 0;
+            virtual void setConsoleObject(Interpreter* interpreter, const std::string& name, ConsoleObject* value) = 0;
+            virtual ConsoleObject* getConsoleObject(Interpreter* interpreter, const std::string& name) = 0;
+            virtual ConsoleObject* getConsoleObject(Interpreter* interpreter, const unsigned int id) = 0;
 
-            virtual std::string getConsoleObjectName(ConsoleObject* target) = 0;
-            virtual unsigned int getConsoleObjectID(ConsoleObject* target) = 0;
+            virtual std::string getConsoleObjectName(Interpreter* interpreter, ConsoleObject* target) = 0;
+            virtual unsigned int getConsoleObjectID(Interpreter* interpreter, ConsoleObject* target) = 0;
 
-            virtual unsigned int addConsoleObject(ConsoleObject* value) = 0;
+            virtual unsigned int addConsoleObject(Interpreter* interpreter, ConsoleObject* value) = 0;
 
-            virtual void removeConsoleObject(const std::string& name) = 0;
-            virtual void removeConsoleObject(ConsoleObject* target) = 0;
+            virtual void removeConsoleObject(Interpreter* interpreter, const std::string& name) = 0;
+            virtual void removeConsoleObject(Interpreter* interpreter, ConsoleObject* target) = 0;
     };
 }

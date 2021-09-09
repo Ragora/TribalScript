@@ -1566,11 +1566,11 @@ namespace TribalScript
                             StoredValue nextChildID = stack.back();
                             stack.pop_back();
 
-                            ConsoleObject* nextChild = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(nextChildID.toInteger());
+                            ConsoleObject* nextChild = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(state->mInterpreter, nextChildID.toInteger());
                             result->addChild(nextChild);
                         }
 
-                        stack.emplace_back((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(result));
+                        stack.emplace_back((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(state->mInterpreter, result));
                     }
                     else
                     {
