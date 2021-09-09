@@ -95,6 +95,7 @@ namespace TribalScript
             std::string fileContent(fileSize, ' ');
             handle->read(&fileContent[0], fileSize);
 
+            handle->close();
             return this->compileString(fileContent, stringTable);
         }
 
