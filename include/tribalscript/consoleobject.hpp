@@ -53,7 +53,7 @@ namespace TribalScript
 
     #define DECLARE_CONSOLE_OBJECT(type, super)                                         \
         template<>                                                                      \
-        struct TypeInformation<type>                                                    \
+        struct TribalScript::TypeInformation<type>                                      \
         {                                                                               \
             typedef TypeInformation<super> ParentInfo;                                  \
             static std::string getName()                                                \
