@@ -51,25 +51,28 @@ namespace TribalScript
 
     };
 
-    #define DECLARE_CONSOLE_OBJECT(type, super)                                         \
-        template<>                                                                      \
-        struct TribalScript::TypeInformation<type>                                      \
-        {                                                                               \
-            typedef TypeInformation<super> ParentInfo;                                  \
-            static std::string getName()                                                \
-            {                                                                           \
-                return #type;                                                           \
-            }                                                                           \
-            static std::vector<std::string> getHierarchy()                              \
-            {                                                                           \
-                const std::string current = #type;                                      \
-                std::vector<std::string> result;                                        \
-                result.push_back(current);                                              \
-                const std::vector<std::string> upper = ParentInfo::getHierarchy();      \
-                result.insert(result.end(), upper.begin(), upper.end());                \
-                return result;                                                          \
-            }                                                                           \
-        };
+    #define DECLARE_CONSOLE_OBJECT(type, super)                                        		\
+		namespace TribalScript                                                         	 	\
+		{																					\
+	        template<>                                                                      \
+	        struct TypeInformation<type>                                     				\
+	        {                                                                               \
+	            typedef TypeInformation<super> ParentInfo;                                  \
+	            static std::string getName()                                                \
+	            {                                                                           \
+	                return #type;                                                           \
+	            }                                                                           \
+	            static std::vector<std::string> getHierarchy()                              \
+	            {                                                                           \
+	                const std::string current = #type;                                      \
+	                std::vector<std::string> result;                                        \
+	                result.push_back(current);                                              \
+	                const std::vector<std::string> upper = ParentInfo::getHierarchy();      \
+	                result.insert(result.end(), upper.begin(), upper.end());                \
+	                return result;                                                          \
+	            }                                                                           \
+	        };																				\
+		}
 
     #define DECLARE_CONSOLE_OBJECT_BODY()                                               \
         public:                                                                         \

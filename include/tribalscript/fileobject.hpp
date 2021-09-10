@@ -63,6 +63,6 @@ namespace TribalScript
         private:
             std::unique_ptr<FileHandleBase> mHandle;
     };
-
-    DECLARE_CONSOLE_OBJECT(FileObject, ConsoleObject)
 }
+
+DECLARE_CONSOLE_OBJECT(FileObject, ConsoleObject)
