@@ -112,6 +112,8 @@ namespace TribalScript
              */
             void setTaggedField(const std::string& name, StoredValue value);
 
+			void associateWithParent(ConsoleObject* parent);
+
             /**
              *  @brief Retrieves the class name of this ConsoleObject instance.
              *  @return A string representing the class name of this ConsoleObject.
@@ -120,8 +122,15 @@ namespace TribalScript
 
             virtual bool addChild(ConsoleObject* child);
 
+			virtual bool destroy();
+
+			virtual bool removeChild(ConsoleObject* child);
+
         protected:
             Interpreter* mInterpreter;
+
+			std::vector<ConsoleObject*> mChildren;
+			std::vector<ConsoleObject*> mParents;
 
             //! A mapping of tagged field names to their stored values.
             std::unordered_map<std::string, StoredValue*> mTaggedFields;

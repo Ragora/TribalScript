@@ -12,20 +12,33 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <assert.h>
 
-#include <tribalscript/libraries/math.hpp>
-#include <tribalscript/libraries/core.hpp>
 #include <tribalscript/libraries/simset.hpp>
-#include <tribalscript/libraries/fileobject.hpp>
 
 namespace TribalScript
 {
-    static void registerAllLibraries(Interpreter* interpreter)
+    StoredValue GetCountBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
-        registerMathLibrary(interpreter);
-        registerCoreLibrary(interpreter);
-		registerSimSetLibrary(interpreter);
-        registerFileObjectLibrary(interpreter);
+        SimSet* set = reinterpret_cast<SimSet*>(thisObject);
+
+        return StoredValue((int)set->getCount());
+    }
+
+	StoredValue GetObjectBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+	{
+		SimSet* set = reinterpret_cast<SimSet*>(thisObject);
+
+		int index = parameters[0].toInteger();
+
+		return StoredValue((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(state->mInterpreter, set->getObject(index)));
+	}
+
+    void registerSimSetLibrary(Interpreter* interpreter)
+    {
+		interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetCountBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "getCount")));
+
+        INTERPRETER_REGISTER_CONSOLEOBJECT_TYPE(interpreter, SimSet, ConsoleObject);
+        //interpreter->registerConsoleObjectType<FileObject>();
     }
 }

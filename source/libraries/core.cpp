@@ -101,7 +101,11 @@ namespace TribalScript
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
-        state->mInterpreter->mConfig.mConsoleObjectRegistry->removeConsoleObject(state->mInterpreter, thisObject);
+		if (thisObject->destroy())
+		{
+			state->mInterpreter->mConfig.mConsoleObjectRegistry->removeConsoleObject(state->mInterpreter, thisObject);
+		}
+
         return StoredValue(0);
     }
 

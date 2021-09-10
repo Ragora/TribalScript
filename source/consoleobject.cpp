@@ -78,4 +78,32 @@ namespace TribalScript
     {
         return false;
     }
+
+	bool ConsoleObject::destroy()
+	{
+		for (ConsoleObject* parent : mParents)
+		{
+			parent->removeChild(this);
+		}
+		return true;
+	}
+
+	bool ConsoleObject::removeChild(ConsoleObject* child)
+	{
+		for (auto iterator = mChildren.begin(); iterator != mChildren.end(); ++iterator)
+		{
+			if (*iterator == child)
+			{
+				mChildren.erase(iterator);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void ConsoleObject::associateWithParent(ConsoleObject* parent)
+	{
+		parent->mChildren.push_back(this);
+		mParents.push_back(parent);
+	}
 }

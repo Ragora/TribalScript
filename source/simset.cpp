@@ -12,20 +12,41 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-
-#include <tribalscript/libraries/math.hpp>
-#include <tribalscript/libraries/core.hpp>
-#include <tribalscript/libraries/simset.hpp>
-#include <tribalscript/libraries/fileobject.hpp>
+#include <tribalscript/simset.hpp>
+#include <tribalscript/interpreter.hpp>
 
 namespace TribalScript
 {
-    static void registerAllLibraries(Interpreter* interpreter)
+    IMPLEMENT_CONSOLE_OBJECT(SimSet, ConsoleObject)
+
+    SimSet::SimSet(Interpreter* interpreter) : ConsoleObject(interpreter)
     {
-        registerMathLibrary(interpreter);
-        registerCoreLibrary(interpreter);
-		registerSimSetLibrary(interpreter);
-        registerFileObjectLibrary(interpreter);
+
+    }
+
+	bool SimSet::addChild(ConsoleObject* child)
+	{
+		child->associateWithParent(this);
+		return true;
+	}
+
+	std::size_t SimSet::getCount()
+	{
+		return mChildren.size();
+	}
+
+	ConsoleObject* SimSet::getObject(std::size_t index)
+	{
+		return mChildren[index];
+	}
+
+    ConsoleObject* SimSet::instantiateFromDescriptor(Interpreter* interpreter, ObjectInstantiationDescriptor& descriptor)
+    {
+        return new SimSet(interpreter);
+    }
+
+    void SimSet::initializeMemberFields(ConsoleObjectDescriptor* descriptor)
+    {
+
     }
 }
