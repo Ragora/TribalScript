@@ -1564,6 +1564,9 @@ namespace TribalScript
 
                     if (result)
                     {
+                        // Assign fields -- any construction fields should have been pulled out of the descriptor at this point
+                        descriptor.copyFieldsToConsoleObject(result);
+
                         // Append children
                         for (std::size_t iteration = 0; iteration < mChildrenCount; ++iteration)
                         {
@@ -1578,6 +1581,7 @@ namespace TribalScript
                     }
                     else
                     {
+                        state->mInterpreter->mConfig.mPlatform->logError("Failed to instantiate object!");
                         stack.emplace_back(-1);
                     }
 

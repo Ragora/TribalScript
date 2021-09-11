@@ -45,6 +45,14 @@ namespace TribalScript
 
         }
 
+        void copyFieldsToConsoleObject(ConsoleObject* target)
+        {
+            for (auto&& assignment : mFieldAssignments)
+            {
+                target->setTaggedField(assignment.first, assignment.second);
+            }
+        }
+
         //! The name to assign the new console object.
         std::string mName;
 
