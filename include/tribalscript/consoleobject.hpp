@@ -112,7 +112,7 @@ namespace TribalScript
              */
             void setTaggedField(const std::string& name, StoredValue value);
 
-			void associateWithParent(ConsoleObject* parent);
+			virtual void associateWithParent(ConsoleObject* parent);
 
             /**
              *  @brief Retrieves the class name of this ConsoleObject instance.

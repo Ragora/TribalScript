@@ -34,9 +34,24 @@ namespace TribalScript
 		return StoredValue((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(state->mInterpreter, set->getObject(index)));
 	}
 
+	StoredValue AddObjectBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+	{
+		SimSet* set = reinterpret_cast<SimSet*>(thisObject);
+
+		for (const StoredValue& value : parameters)
+		{
+			ConsoleObject* newChild = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(state->mInterpreter, value.toInteger());
+			set->addChild(newChild);
+		}
+
+		return StoredValue(0);
+	}
+
     void registerSimSetLibrary(Interpreter* interpreter)
     {
 		interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetCountBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "getCount")));
+		interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetObjectBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "getObject")));
+		interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(AddObjectBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "add")));
 
         INTERPRETER_REGISTER_CONSOLEOBJECT_TYPE(interpreter, SimSet, ConsoleObject);
         //interpreter->registerConsoleObjectType<FileObject>();

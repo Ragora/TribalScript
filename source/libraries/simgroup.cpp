@@ -12,22 +12,14 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <assert.h>
 
-#include <tribalscript/libraries/math.hpp>
-#include <tribalscript/libraries/core.hpp>
-#include <tribalscript/libraries/simset.hpp>
 #include <tribalscript/libraries/simgroup.hpp>
-#include <tribalscript/libraries/fileobject.hpp>
 
 namespace TribalScript
 {
-    static void registerAllLibraries(Interpreter* interpreter)
+    void registerSimGroupLibrary(Interpreter* interpreter)
     {
-        registerMathLibrary(interpreter);
-        registerCoreLibrary(interpreter);
-		registerSimSetLibrary(interpreter);
-		registerSimGroupLibrary(interpreter);
-        registerFileObjectLibrary(interpreter);
+        INTERPRETER_REGISTER_CONSOLEOBJECT_TYPE(interpreter, SimGroup, SimSet);
     }
 }

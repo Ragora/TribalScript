@@ -14,20 +14,32 @@
 
 #pragma once
 
-#include <tribalscript/libraries/math.hpp>
-#include <tribalscript/libraries/core.hpp>
-#include <tribalscript/libraries/simset.hpp>
-#include <tribalscript/libraries/simgroup.hpp>
-#include <tribalscript/libraries/fileobject.hpp>
+#include <string>
+#include <memory>
+#include <unordered_map>
+
+#include <tribalscript/simset.hpp>
+#include <tribalscript/executionscope.hpp>
 
 namespace TribalScript
 {
-    static void registerAllLibraries(Interpreter* interpreter)
+    /**
+     *  @brief A FileObject is a class that may be used to interact with the filesystem
+     *  provided by the PlatformContext configured with the interpreter.
+     */
+    class SimGroup : public SimSet
     {
-        registerMathLibrary(interpreter);
-        registerCoreLibrary(interpreter);
-		registerSimSetLibrary(interpreter);
-		registerSimGroupLibrary(interpreter);
-        registerFileObjectLibrary(interpreter);
-    }
+        DECLARE_CONSOLE_OBJECT_BODY()
+
+        public:
+            explicit SimGroup(Interpreter* interpreter);
+
+			void associateWithParent(ConsoleObject* parent) override;
+
+            static void initializeMemberFields(ConsoleObjectDescriptor* descriptor);
+
+            static ConsoleObject* instantiateFromDescriptor(Interpreter* interpreter, ObjectInstantiationDescriptor& descriptor);
+    };
 }
+
+DECLARE_CONSOLE_OBJECT(SimGroup, SimSet)

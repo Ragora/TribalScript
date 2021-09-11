@@ -1437,6 +1437,10 @@ namespace TribalScript
                         }
                     }
 
+                    std::ostringstream output;
+                    output << "Cannot find function  '" << mName << "' on object '" << targetStored.toString() << "'!";
+                    state->mInterpreter->mConfig.mPlatform->logWarning(output.str());
+
                     stack.emplace_back(0);
                     return 1;
                 };
