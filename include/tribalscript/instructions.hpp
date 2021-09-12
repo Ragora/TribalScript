@@ -1507,11 +1507,12 @@ namespace TribalScript
                     StoredValue fieldBaseName = stack.back();
                     stack.pop_back();
 
+                    // FIXME: This should be using the resolveArrayNameFromStack helper function
                     std::ostringstream out;
                     out << fieldBaseName.toString();
                     for (auto iterator = arrayComponents.rbegin(); iterator != arrayComponents.rend(); ++iterator)
                     {
-                        if (iterator != arrayComponents.rbegin())
+                        if (iterator != arrayComponents.rend())
                         {
                             out << "_";
                         }

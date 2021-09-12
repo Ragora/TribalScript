@@ -49,6 +49,11 @@ TEST(InterpreterTest, TreeInitialization)
     ASSERT_TRUE(result);
 
     ASSERT_EQ(result->toString(), "child");
+
+    result = interpreter.getGlobal("root::childArray");
+    ASSERT_TRUE(result);
+
+    ASSERT_EQ(result->toString(), "childarrayfield");
 }
 
 int main()
