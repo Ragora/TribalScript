@@ -110,6 +110,7 @@ namespace TribalScript
             StoredValue* getVariable(const std::string& name);
             StoredValue* getVariable(const StringTableEntry name);
             StoredValue* getVariableOrAllocate(const StringTableEntry name);
+            StoredValue* getVariableOrAllocate(const std::string& name);
 
             void setVariable(const std::string& name, const StoredValue& variable);
             void setVariable(const StringTableEntry name, const StoredValue& variable);

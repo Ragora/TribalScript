@@ -126,6 +126,20 @@ namespace TribalScript
         return newValue;
     }
 
+    StoredValue* Interpreter::getGlobalOrAllocate(const std::string& name)
+    {
+        const StringTableEntry stringEntry = mStringTable.getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
+        auto search = mGlobalVariables.find(stringEntry);
+        if (search != mGlobalVariables.end())
+        {
+            return search->second;
+        }
+
+        StoredValue* newValue = new StoredValue(0);
+        mGlobalVariables.insert(std::make_pair(stringEntry, newValue));
+        return newValue;
+    }
+
     void Interpreter::addFunction(std::shared_ptr<Function> function)
     {
         // Make sure the registry exists - if it already does this does nothing

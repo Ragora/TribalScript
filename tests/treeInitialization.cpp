@@ -16,56 +16,40 @@
 
 #include "gtest/gtest.h"
 
+#include <tribalscript/interpreter.hpp>
+#include <tribalscript/storedvalue.hpp>
 #include <tribalscript/stringhelpers.hpp>
+#include <tribalscript/libraries/libraries.hpp>
+#include <tribalscript/executionstate.hpp>
 
-TEST(StringHelpers, GetStringComponents)
+TEST(InterpreterTest, TreeInitialization)
 {
-    std::vector<std::string> result = TribalScript::getStringComponents("A^B^C^D", '^', 0, 4);
-    ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result[0], "A");
-    ASSERT_EQ(result[1], "B");
-    ASSERT_EQ(result[2], "C");
-    ASSERT_EQ(result[3], "D");
+    TribalScript::Interpreter interpreter;
+    TribalScript::registerAllLibraries(&interpreter);
 
-    result = TribalScript::getStringComponents("A^B^C^D", '^', 0, 8);
-    ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result[0], "A");
-    ASSERT_EQ(result[1], "B");
-    ASSERT_EQ(result[2], "C");
-    ASSERT_EQ(result[3], "D");
+    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
+    interpreter.execute("cases/treeInitialization.cs", &state);
 
-    result = TribalScript::getStringComponents("A^B^C^D", '^', 6, 4);
-    ASSERT_EQ(result.size(), 0);
+    TribalScript::StoredValue* result = interpreter.getGlobal("root::field");
+    ASSERT_TRUE(result);
 
-    result = TribalScript::getStringComponents("A^B^C^D", ' ', 0, 4);
-    ASSERT_EQ(result.size(), 1);
-    ASSERT_EQ(result[0], "A^B^C^D");
+    ASSERT_EQ(result->toString(), "field");
+
+    result = interpreter.getGlobal("root::ChildRoot");
+    ASSERT_TRUE(result);
+
+    ASSERT_EQ(result->toString(), "childroot");
+
+    result = interpreter.getGlobal("root::childField");
+    ASSERT_TRUE(result);
+
+    ASSERT_EQ(result->toString(), "childfield");
+
+    result = interpreter.getGlobal("root::child");
+    ASSERT_TRUE(result);
+
+    ASSERT_EQ(result->toString(), "child");
 }
-
-TEST(StringHelpers, SetStringComponents)
-{
-    std::string result = TribalScript::setStringComponents("A^B^C^D", '^', 0, {
-        "X",
-        "Y",
-        "Z"
-    });
-
-    ASSERT_EQ(result, "X^Y^Z^D");
-
-    result = TribalScript::setStringComponents("A^B^C^D", '^', 0, {
-        "X",
-    });
-
-    ASSERT_EQ(result, "X^B^C^D");
-}
-
-TEST(StringHelpers, ResolveArrayName)
-{
-    std::string result = TribalScript::resolveArrayName("result::Root", 1, 0);
-
-    ASSERT_EQ(result, "result::Root_1_0");
-}
-
 
 int main()
 {

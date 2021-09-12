@@ -80,6 +80,9 @@ namespace TribalScript
 
             StoredValue* getGlobalOrAllocate(const StringTableEntry name);
 
+            StoredValue* getGlobalOrAllocate(const std::string& name);
+
+
             /**
              *  @brief Retrieves a global variable by string ID.
              *  @param name The string ID representing the global variable

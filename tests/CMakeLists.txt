@@ -95,6 +95,14 @@ add_executable(NestedContinueForTest nestedContinueFor.cpp)
 target_link_libraries(NestedContinueForTest TribalScript gtest_main)
 add_test(NAME NestedContinueForTest COMMAND NestedContinueForTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
 
+add_executable(SimGroupTest simGroup.cpp)
+target_link_libraries(SimGroupTest TribalScript gtest_main)
+add_test(NAME SimGroupTest COMMAND SimGroupTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+
+add_executable(TreeInitializationTest treeInitialization.cpp)
+target_link_libraries(TreeInitializationTest TribalScript gtest_main)
+add_test(NAME TreeInitializationTest COMMAND TreeInitializationTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+
 # Handle for tests for continue/while for while loops
 add_executable(BreakWhileTest breakWhile.cpp)
 target_link_libraries(BreakWhileTest TribalScript gtest_main)

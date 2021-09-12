@@ -60,6 +60,27 @@ namespace TribalScript
         return newValue;
     }
 
+    StoredValue* ExecutionScope::getVariableOrAllocate(const std::string& name)
+    {
+        if (mExecutionScopeData.empty())
+        {
+            return nullptr;
+        }
+
+        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+
+        const StringTableEntry nameEntry = mStringTable->getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));
+        auto search = currentScope.mLocalVariables.find(nameEntry);
+        if (search != currentScope.mLocalVariables.end())
+        {
+            return search->second;
+        }
+
+        StoredValue* newValue = new StoredValue(0);
+        currentScope.mLocalVariables.insert(std::make_pair(nameEntry, newValue));
+        return newValue;
+    }
+
     StoredValue* ExecutionScope::getVariable(const std::string& name)
     {
         const StringTableEntry lookup = mStringTable->getOrAssign(mConfig.mCaseSensitive ? name : toLowerCase(name));

@@ -1346,14 +1346,13 @@ namespace TribalScript
 
                     const std::string arrayName = resolveArrayNameFromStack(stack, state, mName, mArgc);
 
-                    const std::size_t stringID = state->mInterpreter->mStringTable.getOrAssign(arrayName);
                     if (mGlobal)
                     {
-                        stack.emplace_back(state->mInterpreter->getGlobalOrAllocate(stringID));
+                        stack.emplace_back(state->mInterpreter->getGlobalOrAllocate(arrayName));
                     }
                     else
                     {
-                        stack.emplace_back(state->mExecutionScope.getVariableOrAllocate(stringID));
+                        stack.emplace_back(state->mExecutionScope.getVariableOrAllocate(arrayName));
                     }
                     return 1;
                 };

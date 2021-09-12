@@ -18,24 +18,50 @@
 
 #include <tribalscript/interpreter.hpp>
 #include <tribalscript/storedvalue.hpp>
-#include <tribalscript/libraries/libraries.hpp>
 #include <tribalscript/stringhelpers.hpp>
+#include <tribalscript/libraries/libraries.hpp>
 #include <tribalscript/executionstate.hpp>
 
-TEST(InterpreterTest, Array)
+TEST(InterpreterTest, SimGroup)
 {
     TribalScript::Interpreter interpreter;
     TribalScript::registerAllLibraries(&interpreter);
 
     TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
-    interpreter.execute("cases/array.cs", &state);
+    interpreter.execute("cases/simGroup.cs", &state);
 
-    // The assignment performed is: $result[1,2,3] = %value;
-    // However, in Torque Script this is treated as a single variable key $result_1_2_3
-    TribalScript::StoredValue* result = interpreter.getGlobal(TribalScript::resolveArrayName("result", 1, 2, 3));
+    // Before we do anything
+    TribalScript::StoredValue* result = interpreter.getGlobal(TribalScript::resolveArrayName("result::Root", 1, 0));
     ASSERT_TRUE(result);
 
-    ASSERT_EQ(result->toInteger(), 5);
+    ASSERT_EQ(result->toInteger(), 0);
+
+    result = interpreter.getGlobal(TribalScript::resolveArrayName("result::Root", 2, 0));
+    ASSERT_TRUE(result);
+
+    ASSERT_EQ(result->toInteger(), 0);
+
+    // Added to root1
+    result = interpreter.getGlobal(TribalScript::resolveArrayName("result::Root", 1, 1));
+    ASSERT_TRUE(result);
+
+    ASSERT_EQ(result->toInteger(), 1);
+
+    result = interpreter.getGlobal(TribalScript::resolveArrayName("result::Root", 2, 1));
+    ASSERT_TRUE(result);
+
+    ASSERT_EQ(result->toInteger(), 0);
+
+    // Added to root2
+    result = interpreter.getGlobal(TribalScript::resolveArrayName("result::Root", 1, 2));
+    ASSERT_TRUE(result);
+
+    ASSERT_EQ(result->toInteger(), 0);
+
+    result = interpreter.getGlobal(TribalScript::resolveArrayName("result::Root", 2, 2));
+    ASSERT_TRUE(result);
+
+    ASSERT_EQ(result->toInteger(), 1);
 }
 
 int main()
