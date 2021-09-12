@@ -34,7 +34,7 @@ namespace TribalScript
         public:
             explicit SimGroup(Interpreter* interpreter);
 
-			void associateWithParent(ConsoleObject* parent) override;
+            void associateWithParent(ConsoleObject* parent) override;
 
             static void initializeMemberFields(ConsoleObjectDescriptor* descriptor);
 

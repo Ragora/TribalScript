@@ -36,8 +36,8 @@ namespace TribalScript
 
 			bool addChild(ConsoleObject* child) override;
 
-			std::size_t getCount();
-			ConsoleObject* getObject(std::size_t index);
+            virtual std::size_t getCount();
+            virtual ConsoleObject* getObject(std::size_t index);
 
             static void initializeMemberFields(ConsoleObjectDescriptor* descriptor);
 
