@@ -22,7 +22,7 @@ namespace TribalScript
 {
     std::string toLowerCase(const std::string& in);
     std::string expandEscapeSequences(const std::string& in);
-    std::vector<std::pair<std::size_t, std::size_t>> getDelineatorData(const std::string& in, const unsigned char delineator, const std::size_t startComponent, const std::size_t count);
+    std::vector<std::pair<std::size_t, std::size_t>> getDelineatorData(const std::string& in, const unsigned char delineator, const std::size_t startComponent, const std::size_t count, std::size_t& realDelineatorCount);
     std::vector<std::string> getStringComponents(const std::string& in, const unsigned char delineator, const std::size_t startComponent, const std::size_t count);
     std::string getStringComponentsJoined(const std::string& in, const unsigned char delineator, const std::size_t startComponent, const std::size_t count);
 

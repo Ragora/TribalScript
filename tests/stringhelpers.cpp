@@ -57,6 +57,24 @@ TEST(StringHelpers, SetStringComponents)
     });
 
     ASSERT_EQ(result, "X^B^C^D");
+
+    // Now start out of bounds - pure append
+    result = TribalScript::setStringComponents("A^B^C^D", '^', 4, {
+        "X",
+        "Y",
+        "Z"
+    });
+
+    ASSERT_EQ(result, "A^B^C^D^X^Y^Z");
+
+    // Start even further beyond out of bounds - causes insertion of blank delineators
+    result = TribalScript::setStringComponents("A^B^C^D", '^', 6, {
+        "X",
+        "Y",
+        "Z"
+    });
+
+    ASSERT_EQ(result, "A^B^C^D^^^X^Y^Z");
 }
 
 TEST(StringHelpers, ResolveArrayName)
@@ -65,7 +83,6 @@ TEST(StringHelpers, ResolveArrayName)
 
     ASSERT_EQ(result, "result::Root_1_0");
 }
-
 
 int main()
 {
