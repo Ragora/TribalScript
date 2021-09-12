@@ -24,6 +24,8 @@ namespace TribalScript
     std::string expandEscapeSequences(const std::string& in);
     std::vector<std::pair<std::size_t, std::size_t>> getDelineatorData(const std::string& in, const unsigned char delineator, const std::size_t startComponent, const std::size_t count);
     std::vector<std::string> getStringComponents(const std::string& in, const unsigned char delineator, const std::size_t startComponent, const std::size_t count);
+    std::string getStringComponentsJoined(const std::string& in, const unsigned char delineator, const std::size_t startComponent, const std::size_t count);
+
     std::string setStringComponents(const std::string& in, const unsigned char delineator, const std::size_t startComponent, const std::vector<std::string>& newComponents);
     static std::string resolveArrayNameFromStack(StoredValueStack& stack, ExecutionState* state, const std::string& base, const std::size_t argumentCount)
     {

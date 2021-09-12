@@ -47,6 +47,16 @@ namespace TribalScript
                 // Set next start
                 currentDataStart = iteration + 1;
                 ++currentDelineatorCount;
+
+                if (currentDelineatorCount >= count + startComponent)
+                {
+                    break;
+                }
+            }
+            else if (character == delineator)
+            {
+                currentDataStart = iteration + 1;
+                ++currentDelineatorCount;
             }
         }
 
@@ -70,13 +80,33 @@ namespace TribalScript
         return result;
     }
 
+    std::string getStringComponentsJoined(const std::string& in, const unsigned char delineator, const std::size_t startComponent, const std::size_t count)
+    {
+        const std::vector<std::string> components = getStringComponents(in, delineator, startComponent, count);
+
+        std::ostringstream result;
+        for (std::size_t iteration = 0; iteration < components.size(); ++iteration)
+        {
+            if (iteration != components.size() - 1)
+            {
+                result << components[iteration] << delineator;
+            }
+            else
+            {
+                result << components[iteration];
+            }
+        }
+
+        return result.str();
+    }
+
     std::string setStringComponents(const std::string& in, const unsigned char delineator, const std::size_t startComponent, const std::vector<std::string>& newComponents)
     {
         std::vector<std::pair<std::size_t, std::size_t>> delineatorData = getDelineatorData(in, delineator, startComponent, newComponents.size());
 
         // If the delineator data is not equal to our component count then some of the data needs appended (with the delineator in between)
         const std::size_t appendedCount = (startComponent + newComponents.size()) - delineatorData.size();
-
+        
         const std::string leftHalf = in.substr(0,delineatorData[0].first);
         const std::string rightHalf = in.substr(delineatorData[delineatorData.size() - 1].second, in.size() );
 
@@ -87,7 +117,9 @@ namespace TribalScript
         for (std::size_t iteration = 0; iteration < delineatorData.size(); ++iteration)
         {
             const std::pair<std::size_t, std::size_t>& dataPair = delineatorData[iteration];
-            const std::string nextField = iteration < startComponent || iteration > startComponent + newComponents.size() - 1 ? in.substr(dataPair.first, dataPair.second - dataPair.first) : newComponents[iteration - startComponent];
+            //const std::string nextField = iteration < startComponent || iteration > startComponent + newComponents.size() - 1 ? in.substr(dataPair.first, dataPair.second - dataPair.first) : newComponents[iteration - startComponent];
+            const std::string nextField = iteration < newComponents.size() ? newComponents[iteration] : in.substr(dataPair.first, dataPair.second - dataPair.first);
+
             if (iteration == 0)
             {
                 stream << nextField;
