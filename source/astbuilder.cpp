@@ -340,6 +340,28 @@ namespace TribalScript
             return result;
         }
 
+        antlrcpp::Any ASTBuilder::visitBitwise(Tribes2Parser::BitwiseContext* context)
+        {
+            std::vector<AST::ASTNode*> result = this->visitChildren(context).as<std::vector<AST::ASTNode*>>();
+            assert(result.size() == 2);
+
+            AST::ASTNode* right = result.back();
+            result.pop_back();
+            AST::ASTNode* left = result.back();
+            result.pop_back();
+
+            if (context->BITWISEOR())
+            {
+                result.push_back(new AST::BitwiseOrNode(left, right));
+            }
+            else
+            {
+                throw std::runtime_error("Unhandled bitwise type!");
+            }
+
+            return result;
+        }
+
         antlrcpp::Any ASTBuilder::visitPrimary_chain(Tribes2Parser::Primary_chainContext* context)
         {
             std::vector<AST::ASTNode*> result;

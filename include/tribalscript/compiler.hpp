@@ -74,6 +74,7 @@ namespace TribalScript
             virtual antlrcpp::Any visitSubFunctionCallNode(AST::SubFunctionCallNode* call) override;
             virtual antlrcpp::Any visitSubFieldNode(AST::SubFieldNode* subfield) override;
             virtual antlrcpp::Any visitAddNode(AST::AddNode* expression) override;
+            virtual antlrcpp::Any visitBitwiseOrNode(AST::BitwiseOrNode* expression) override;
             virtual antlrcpp::Any visitMinusNode(AST::MinusNode* expression) override;
             virtual antlrcpp::Any visitModulusNode(AST::ModulusNode* expression) override;
             virtual antlrcpp::Any visitLogicalOrNode(AST::LogicalOrNode* expression) override;

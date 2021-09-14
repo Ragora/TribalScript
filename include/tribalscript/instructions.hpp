@@ -893,6 +893,35 @@ namespace TribalScript
                 }
         };
 
+        class BitwiseOrInstruction : public Instruction
+        {
+            public:
+                virtual AddressOffsetType execute(ExecutionState* state) override
+                {
+                    StoredValueStack& stack = state->mExecutionScope.getStack();
+
+                    assert(stack.size() >= 2);
+
+                    StoredValue& rhsStored = *(stack.end() - 1);
+                    StoredValue& lhsStored = *(stack.end() - 2);
+
+                    // NOTE: For now we normalize to floats
+                    int lhs = lhsStored.toInteger();
+                    int rhs = rhsStored.toInteger();
+
+                    const int result = lhs | rhs;
+
+                    stack.erase(stack.end() - 2, stack.end());
+                    stack.emplace_back(result);
+                    return 1;
+                };
+
+                virtual std::string disassemble() override
+                {
+                    return "BitwiseOr";
+                }
+        };
+
         /**
          *  @brief Multiplies together two values on the stack and pushes the result back
          *  to the stack.

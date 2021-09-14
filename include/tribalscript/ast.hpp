@@ -325,6 +325,20 @@ namespace TribalScript
                 }
         };
 
+        class BitwiseOrNode : public InfixExpressionNode
+        {
+            public:
+                BitwiseOrNode(ASTNode* left, ASTNode* right) : InfixExpressionNode(left, right)
+                {
+
+                }
+
+                antlrcpp::Any accept(ASTVisitor* visitor) override
+                {
+                    return visitor->visitBitwiseOrNode(this);
+                }
+        };
+
         class MinusNode : public InfixExpressionNode
         {
             public:

@@ -71,6 +71,7 @@ namespace TribalScript
         class SubreferenceNode;
         class ContinueNode;
 		class GreaterThanOrEqualNode;
+        class BitwiseOrNode;
 
         class ASTVisitor
         {
@@ -92,6 +93,7 @@ namespace TribalScript
                 virtual antlrcpp::Any visitSubFunctionCallNode(AST::SubFunctionCallNode* call);
                 virtual antlrcpp::Any visitSubFieldNode(AST::SubFieldNode* subfield);
                 virtual antlrcpp::Any visitAddNode(AST::AddNode* expression);
+                virtual antlrcpp::Any visitBitwiseOrNode(AST::BitwiseOrNode* expression);
                 virtual antlrcpp::Any visitMinusNode(AST::MinusNode* expression);
                 virtual antlrcpp::Any visitModulusNode(AST::ModulusNode* expression);
                 virtual antlrcpp::Any visitLogicalAndNode(AST::LogicalAndNode* expression);

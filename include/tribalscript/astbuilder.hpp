@@ -45,6 +45,7 @@ namespace TribalScript
                 virtual antlrcpp::Any visitFunction_declaration(Tribes2Parser::Function_declarationContext* context) override;
                 virtual antlrcpp::Any visitValue(Tribes2Parser::ValueContext* context) override;
                 virtual antlrcpp::Any visitArithmetic(Tribes2Parser::ArithmeticContext* context) override;
+                virtual antlrcpp::Any visitBitwise(Tribes2Parser::BitwiseContext* context) override;
                 virtual antlrcpp::Any visitLogical(Tribes2Parser::LogicalContext* context) override;
                 virtual antlrcpp::Any visitAssign(Tribes2Parser::AssignContext* context) override;
                 virtual antlrcpp::Any visitAssignable_chain(Tribes2Parser::Assignable_chainContext* context) override;
