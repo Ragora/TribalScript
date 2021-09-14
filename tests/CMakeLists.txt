@@ -78,6 +78,10 @@ add_executable(StringHelpersTest stringhelpers.cpp)
 target_link_libraries(StringHelpersTest TribalScript gtest_main)
 add_test(NAME StringHelpersTest COMMAND StringHelpersTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
 
+add_executable(ScriptObjectTest scriptObject.cpp)
+target_link_libraries(ScriptObjectTest TribalScript gtest_main)
+add_test(NAME ScriptObjectTest COMMAND ScriptObjectTest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+
 # Handle for tests for continue/while for loops
 add_executable(BreakForTest breakFor.cpp)
 target_link_libraries(BreakForTest TribalScript gtest_main)

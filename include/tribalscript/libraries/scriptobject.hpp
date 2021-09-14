@@ -14,24 +14,19 @@
 
 #pragma once
 
-#include <tribalscript/libraries/string.hpp>
-#include <tribalscript/libraries/math.hpp>
-#include <tribalscript/libraries/core.hpp>
-#include <tribalscript/libraries/simset.hpp>
-#include <tribalscript/libraries/simgroup.hpp>
-#include <tribalscript/libraries/scriptobject.hpp>
-#include <tribalscript/libraries/fileobject.hpp>
+#include <memory>
+#include <iostream>
+#include <stdexcept>
+
+#include <tribalscript/nativefunction.hpp>
+#include <tribalscript/executionscope.hpp>
+#include <tribalscript/interpreter.hpp>
+#include <tribalscript/executionstate.hpp>
+#include <tribalscript/storedvaluestack.hpp>
+#include <tribalscript/consoleobject.hpp>
+#include <tribalscript/scriptobject.hpp>
 
 namespace TribalScript
 {
-    static void registerAllLibraries(Interpreter* interpreter)
-    {
-        registerStringLibrary(interpreter);
-        registerMathLibrary(interpreter);
-        registerCoreLibrary(interpreter);
-		registerSimSetLibrary(interpreter);
-		registerSimGroupLibrary(interpreter);
-        registerScriptObjectLibrary(interpreter);
-        registerFileObjectLibrary(interpreter);
-    }
+    void registerScriptObjectLibrary(Interpreter* interpreter);
 }

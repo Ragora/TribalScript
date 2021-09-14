@@ -14,24 +14,35 @@
 
 #pragma once
 
-#include <tribalscript/libraries/string.hpp>
-#include <tribalscript/libraries/math.hpp>
-#include <tribalscript/libraries/core.hpp>
-#include <tribalscript/libraries/simset.hpp>
-#include <tribalscript/libraries/simgroup.hpp>
-#include <tribalscript/libraries/scriptobject.hpp>
-#include <tribalscript/libraries/fileobject.hpp>
+#include <string>
+#include <memory>
+#include <unordered_map>
+
+#include <tribalscript/consoleobject.hpp>
+#include <tribalscript/executionscope.hpp>
 
 namespace TribalScript
 {
-    static void registerAllLibraries(Interpreter* interpreter)
+    /**
+     *  @brief A FileObject is a class that may be used to interact with the filesystem
+     *  provided by the PlatformContext configured with the interpreter.
+     */
+    class ScriptObject : public ConsoleObject
     {
-        registerStringLibrary(interpreter);
-        registerMathLibrary(interpreter);
-        registerCoreLibrary(interpreter);
-		registerSimSetLibrary(interpreter);
-		registerSimGroupLibrary(interpreter);
-        registerScriptObjectLibrary(interpreter);
-        registerFileObjectLibrary(interpreter);
-    }
+        DECLARE_CONSOLE_OBJECT_BODY()
+
+        public:
+            explicit ScriptObject(Interpreter* interpreter, const std::string& className);
+
+            std::string getVirtualClassName() override;
+
+            static void initializeMemberFields(ConsoleObjectDescriptor* descriptor);
+
+            static ConsoleObject* instantiateFromDescriptor(Interpreter* interpreter, ObjectInstantiationDescriptor& descriptor);
+
+        protected:
+            std::string mClassName;
+    };
 }
+
+DECLARE_CONSOLE_OBJECT(ScriptObject, ConsoleObject)

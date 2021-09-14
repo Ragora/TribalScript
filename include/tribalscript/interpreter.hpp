@@ -147,16 +147,25 @@ namespace TribalScript
                 const std::string chosenTypeName = mConfig.mCaseSensitive ? typeName : toLowerCase(typeName);
                 const std::string chosenSuperTypeName = mConfig.mCaseSensitive ? superTypeName : toLowerCase(superTypeName);
 
-                // Ensure descriptors are initialized
-                assert(mConsoleObjectDescriptors.find(chosenTypeName) == mConsoleObjectDescriptors.end());
-
-                ConsoleObjectDescriptor* descriptor = new ConsoleObjectDescriptor(chosenTypeName, chosenSuperTypeName, classType::instantiateFromDescriptor);
-                mConsoleObjectDescriptors.insert(std::make_pair(chosenTypeName, descriptor));
-
+                ConsoleObjectDescriptor* descriptor = this->registerConsoleObjectDescriptor(chosenTypeName, chosenSuperTypeName, classType::instantiateFromDescriptor);
                 classType::initializeMemberFields(descriptor);
+            }
+
+            ConsoleObjectDescriptor* registerConsoleObjectDescriptor(const std::string& typeName, const std::string& superTypeName, InitializeConsoleObjectFromDescriptorPointer initializationFunction)
+            {
+                const std::string chosenTypeName = mConfig.mCaseSensitive ? typeName : toLowerCase(typeName);
+                const std::string chosenSuperTypeName = mConfig.mCaseSensitive ? superTypeName : toLowerCase(superTypeName);
+
+                // Ensure descriptors are initialized
+                assert(mConsoleObjectDescriptors.find(typeName) == mConsoleObjectDescriptors.end());
+
+                ConsoleObjectDescriptor* descriptor = new ConsoleObjectDescriptor(chosenTypeName, chosenSuperTypeName, initializationFunction);
+                mConsoleObjectDescriptors.insert(std::make_pair(chosenTypeName, descriptor));
 
                 // Ensure namespaces are setup correctly
                 this->relinkNamespaces();
+
+                return descriptor;
             }
 
             std::vector<std::string> relinkNamespace(const std::string& space);

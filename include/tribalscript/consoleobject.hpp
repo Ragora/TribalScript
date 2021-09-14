@@ -120,6 +120,8 @@ namespace TribalScript
              */
             virtual std::string getClassName() = 0;
 
+            virtual std::string getVirtualClassName();
+
             virtual bool addChild(ConsoleObject* child);
 
 			virtual bool destroy();

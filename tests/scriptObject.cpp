@@ -12,26 +12,31 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <memory>
 
-#include <tribalscript/libraries/string.hpp>
-#include <tribalscript/libraries/math.hpp>
-#include <tribalscript/libraries/core.hpp>
-#include <tribalscript/libraries/simset.hpp>
-#include <tribalscript/libraries/simgroup.hpp>
-#include <tribalscript/libraries/scriptobject.hpp>
-#include <tribalscript/libraries/fileobject.hpp>
+#include "gtest/gtest.h"
 
-namespace TribalScript
+#include <tribalscript/interpreter.hpp>
+#include <tribalscript/storedvalue.hpp>
+#include <tribalscript/libraries/libraries.hpp>
+#include <tribalscript/executionstate.hpp>
+
+TEST(InterpreterTest, Switch)
 {
-    static void registerAllLibraries(Interpreter* interpreter)
-    {
-        registerStringLibrary(interpreter);
-        registerMathLibrary(interpreter);
-        registerCoreLibrary(interpreter);
-		registerSimSetLibrary(interpreter);
-		registerSimGroupLibrary(interpreter);
-        registerScriptObjectLibrary(interpreter);
-        registerFileObjectLibrary(interpreter);
-    }
+    TribalScript::Interpreter interpreter;
+    TribalScript::registerAllLibraries(&interpreter);
+
+    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
+    interpreter.execute("cases/scriptObject.cs", &state);
+
+    TribalScript::StoredValue* result = interpreter.getGlobal("result");
+    ASSERT_TRUE(result);
+
+    ASSERT_EQ(result->toInteger(), 32);
+}
+
+int main()
+{
+    testing::InitGoogleTest();
+    return RUN_ALL_TESTS();
 }

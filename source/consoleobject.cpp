@@ -101,6 +101,11 @@ namespace TribalScript
 		return false;
 	}
 
+    std::string ConsoleObject::getVirtualClassName()
+    {
+        return this->getClassName();
+    }
+
 	void ConsoleObject::associateWithParent(ConsoleObject* parent)
 	{
 		parent->mChildren.push_back(this);

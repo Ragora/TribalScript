@@ -1421,7 +1421,7 @@ namespace TribalScript
                     }
 
                     // Walk the class hierarchy
-                    ConsoleObjectDescriptor* descriptor = state->mInterpreter->lookupDescriptor(targetObject->getClassName());
+                    ConsoleObjectDescriptor* descriptor = state->mInterpreter->lookupDescriptor(targetObject->getVirtualClassName());
                     assert(descriptor);
                     assert(descriptor->mHierarchy.size() != 0);
 
@@ -1522,14 +1522,15 @@ namespace TribalScript
                     // Final field assignment
                     ObjectInstantiationDescriptor& descriptor = state->mExecutionScope.currentObjectInstantiation();
 
-                    auto search = descriptor.mFieldAssignments.find(out.str());
+                    const std::string chosenFieldName = state->mInterpreter->mConfig.mCaseSensitive ? out.str() : toLowerCase(out.str());
+                    auto search = descriptor.mFieldAssignments.find(chosenFieldName);
                     if (search != descriptor.mFieldAssignments.end())
                     {
                         search->second = rvalue;
                     }
                     else
                     {
-                        descriptor.mFieldAssignments.insert(std::make_pair(out.str(), rvalue));
+                        descriptor.mFieldAssignments.insert(std::make_pair(chosenFieldName, rvalue));
                     }
 
                     return 1;
