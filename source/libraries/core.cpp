@@ -50,6 +50,50 @@ namespace TribalScript
         return StoredValue(result.count());
     }
 
+    // Precision timer storage
+    typedef std::chrono::duration<float, std::milli> millisecondFloat;
+    static std::vector<millisecondFloat> sPrecisionTimers;
+    static std::vector<size_t> sAvailablePrecisionTimerIndices;
+    StoredValue StartPrecisionTimerBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    {
+        // Retrieve a previously used index first, if available
+        bool newPrecisionTimer = true;
+        size_t nextIndex = sPrecisionTimers.size();
+
+        if (sAvailablePrecisionTimerIndices.size())
+        {
+            newPrecisionTimer = false;
+            nextIndex = sAvailablePrecisionTimerIndices.back();
+            sAvailablePrecisionTimerIndices.pop_back();
+        }
+
+        // Store starting time
+        auto currentTime = std::chrono::steady_clock::now().time_since_epoch();
+        if (newPrecisionTimer)
+        {
+            sPrecisionTimers.push_back(currentTime);
+        }
+        else
+        {
+            sPrecisionTimers[nextIndex] = currentTime;
+        }
+
+        return StoredValue((int)nextIndex);
+    }
+
+    StoredValue StopPrecisionTimerBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
+    {
+        int precisionTimerID = parameters[0].toInteger();
+        const millisecondFloat& startTime = sPrecisionTimers[precisionTimerID];
+
+        // Load end time as the current time
+        auto currentTime = std::chrono::steady_clock::now().time_since_epoch();
+        auto result = std::chrono::duration_cast<millisecondFloat>(currentTime);
+
+        auto deltaTime = result - startTime;
+        return StoredValue(deltaTime.count());
+    }
+
     StoredValue ExecBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
@@ -141,9 +185,12 @@ namespace TribalScript
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(DeactivatePackageBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "deactivatePackage")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetRealTimeBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "getRealTime")));
 
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(StartPrecisionTimerBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "startPrecisionTimer")));
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(StopPrecisionTimerBuiltIn, PACKAGE_EMPTY, NAMESPACE_EMPTY, "stopPrecisionTimer")));
+
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetClassNameBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "getClassName")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetNameBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "getName")));
-		interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetIDBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "getID")));
+        interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(GetIDBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "getID")));
         interpreter->addFunction(std::shared_ptr<Function>(new NativeFunction(DeleteBuiltIn, PACKAGE_EMPTY, "ConsoleObject", "delete")));
     }
 }
