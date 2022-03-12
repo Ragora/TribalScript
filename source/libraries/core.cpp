@@ -44,14 +44,14 @@ namespace TribalScript
 
         typedef std::chrono::duration<float, std::milli> millisecondFloat;
 
-        auto currentTime = std::chrono::steady_clock::now().time_since_epoch();
+        auto currentTime = std::chrono::high_resolution_clock::now().time_since_epoch();
         auto result = std::chrono::duration_cast<millisecondFloat>(currentTime);
 
         return StoredValue(result.count());
     }
 
     // Precision timer storage
-    typedef std::chrono::duration<float, std::milli> millisecondFloat;
+    typedef std::chrono::duration<double, std::milli> millisecondFloat;
     static std::vector<millisecondFloat> sPrecisionTimers;
     static std::vector<size_t> sAvailablePrecisionTimerIndices;
     StoredValue StartPrecisionTimerBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
@@ -68,7 +68,7 @@ namespace TribalScript
         }
 
         // Store starting time
-        auto currentTime = std::chrono::steady_clock::now().time_since_epoch();
+        auto currentTime = std::chrono::high_resolution_clock::now().time_since_epoch();
         if (newPrecisionTimer)
         {
             sPrecisionTimers.push_back(currentTime);
@@ -87,11 +87,13 @@ namespace TribalScript
         const millisecondFloat& startTime = sPrecisionTimers[precisionTimerID];
 
         // Load end time as the current time
-        auto currentTime = std::chrono::steady_clock::now().time_since_epoch();
-        auto result = std::chrono::duration_cast<millisecondFloat>(currentTime);
+        auto currentTime = std::chrono::high_resolution_clock::now().time_since_epoch();
 
-        auto deltaTime = result - startTime;
-        return StoredValue(deltaTime.count());
+        auto deltaTime = currentTime - startTime;
+        auto result = std::chrono::duration_cast<millisecondFloat>(deltaTime);
+
+        // FIXME: We downcast as a float for now
+        return StoredValue((float)result.count());
     }
 
     StoredValue ExecBuiltIn(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
@@ -145,10 +147,10 @@ namespace TribalScript
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
 
-		if (thisObject->destroy())
-		{
-			state->mInterpreter->mConfig.mConsoleObjectRegistry->removeConsoleObject(state->mInterpreter, thisObject);
-		}
+        if (thisObject->destroy())
+        {
+            state->mInterpreter->mConfig.mConsoleObjectRegistry->removeConsoleObject(state->mInterpreter, thisObject);
+        }
 
         return StoredValue(0);
     }

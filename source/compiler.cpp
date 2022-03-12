@@ -172,7 +172,7 @@ namespace TribalScript
             InstructionSequence parameterCode = node->accept(this).as<InstructionSequence>();
             result.insert(result.end(), parameterCode.begin(), parameterCode.end());
         }
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::CallFunctionInstruction(call->mNameSpace, call->mName, call->mParameters.size())));
+        result.push_back(new Instructions::CallFunctionInstruction(call->mNameSpace, call->mName, call->mParameters.size()));
         return result;
     }
 
@@ -196,7 +196,7 @@ namespace TribalScript
             InstructionSequence nodeInstructions = node->accept(this).as<InstructionSequence>();
             functionBody.insert(functionBody.end(), nodeInstructions.begin(), nodeInstructions.end());
         }
-        functionBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushIntegerInstruction(0))); // Add an empty return if we hit end of control but nothing returned
+        functionBody.push_back(new Instructions::PushIntegerInstruction(0)); // Add an empty return if we hit end of control but nothing returned
 
         std::vector<std::string> parameterNames = function->mParameterNames;
         if (!mConfig.mCaseSensitive)
@@ -208,7 +208,7 @@ namespace TribalScript
         }
 
         InstructionSequence result;
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::FunctionDeclarationInstruction(mCurrentPackage, function->mNameSpace, function->mName, parameterNames, functionBody)));
+        result.push_back(new Instructions::FunctionDeclarationInstruction(mCurrentPackage, function->mNameSpace, function->mName, parameterNames, functionBody));
 
         popRegisterLookupTable();
         return result;
@@ -227,7 +227,7 @@ namespace TribalScript
             result.insert(result.end(), childInstructions.begin(), childInstructions.end());
         }
 
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::SubReferenceInstruction(stringID, subfield->mIndices.size())));
+        result.push_back(new Instructions::SubReferenceInstruction(stringID, subfield->mIndices.size()));
         return result;
     }
 
@@ -240,7 +240,7 @@ namespace TribalScript
             result.insert(result.end(), parameterCode.begin(), parameterCode.end());
         }
 
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::CallBoundFunctionInstruction(call->mName, call->mParameters.size())));
+        result.push_back(new Instructions::CallBoundFunctionInstruction(call->mName, call->mParameters.size()));
         return result;
     }
 
@@ -253,7 +253,7 @@ namespace TribalScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::LogicalOrInstruction()));
+        result.push_back(new Instructions::LogicalOrInstruction());
 
         return result;
     }
@@ -267,7 +267,7 @@ namespace TribalScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::LogicalAndInstruction()));
+        result.push_back(new Instructions::LogicalAndInstruction());
 
         return result;
     }
@@ -281,7 +281,7 @@ namespace TribalScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::AddInstruction()));
+        result.push_back(new Instructions::AddInstruction());
 
         return result;
     }
@@ -295,7 +295,7 @@ namespace TribalScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::BitwiseOrInstruction()));
+        result.push_back(new Instructions::BitwiseOrInstruction());
 
         return result;
     }
@@ -309,7 +309,7 @@ namespace TribalScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::MinusInstruction()));
+        result.push_back(new Instructions::MinusInstruction());
 
         return result;
     }
@@ -323,7 +323,7 @@ namespace TribalScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::ModulusInstruction()));
+        result.push_back(new Instructions::ModulusInstruction());
 
         return result;
     }
@@ -331,7 +331,7 @@ namespace TribalScript
     antlrcpp::Any Compiler::visitIntegerNode(AST::IntegerNode* value)
     {
         InstructionSequence result;
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushIntegerInstruction(value->mValue)));
+        result.push_back(new Instructions::PushIntegerInstruction(value->mValue));
         return result;
     }
 
@@ -339,7 +339,7 @@ namespace TribalScript
     {
         InstructionSequence result;
 
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushFloatInstruction(value->mValue)));
+        result.push_back(new Instructions::PushFloatInstruction(value->mValue));
         return result;
     }
 
@@ -348,7 +348,7 @@ namespace TribalScript
         InstructionSequence result;
 
         const std::string pushedString = expandEscapeSequences(value->mValue);
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(pushedString)));
+        result.push_back(new Instructions::PushStringInstruction(pushedString));
         return result;
     }
 
@@ -357,7 +357,7 @@ namespace TribalScript
         InstructionSequence result;
 
         const StringTableEntry stringID = mStringTable->getOrAssign(expandEscapeSequences(value->mValue));
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushIntegerInstruction((int)stringID)));
+        result.push_back(new Instructions::PushIntegerInstruction((int)stringID));
         return result;
     }
 
@@ -371,7 +371,7 @@ namespace TribalScript
         const StringTableEntry stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? lookupName : toLowerCase(lookupName));
         const std::size_t registerID = getOrAssignRegister(stringID);
 
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLocalReferenceInstruction(registerID)));
+        out.push_back(new Instructions::PushLocalReferenceInstruction(registerID));
         return out;
     }
 
@@ -383,7 +383,7 @@ namespace TribalScript
         std::string lookupName = value->getName();
 
         const StringTableEntry stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? lookupName : toLowerCase(lookupName));
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushGlobalReferenceInstruction(stringID)));
+        out.push_back(new Instructions::PushGlobalReferenceInstruction(stringID));
         return out;
     }
 
@@ -396,7 +396,7 @@ namespace TribalScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::AssignmentInstruction()));
+        result.push_back(new Instructions::AssignmentInstruction());
 
         return result;
     }
@@ -410,7 +410,7 @@ namespace TribalScript
 
 		result.insert(result.end(), lhsCode.begin(), lhsCode.end());
 		result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-		result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::GreaterThanOrEqualInstruction()));
+		result.push_back(new Instructions::GreaterThanOrEqualInstruction());
 
 		return result;
 	}
@@ -424,7 +424,7 @@ namespace TribalScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::GreaterThanInstruction()));
+        result.push_back(new Instructions::GreaterThanInstruction());
 
         return result;
     }
@@ -438,7 +438,7 @@ namespace TribalScript
 
         result.insert(result.end(), lhsCode.begin(), lhsCode.end());
         result.insert(result.end(), rhsCode.begin(), rhsCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::LessThanInstruction()));
+        result.push_back(new Instructions::LessThanInstruction());
 
         return result;
     }
@@ -450,7 +450,7 @@ namespace TribalScript
         InstructionSequence innerCode = expression->mInner->accept(this).as<InstructionSequence>();
 
         result.insert(result.end(), innerCode.begin(), innerCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NegateInstruction()));
+        result.push_back(new Instructions::NegateInstruction());
 
         return result;
     }
@@ -462,7 +462,7 @@ namespace TribalScript
         InstructionSequence innerCode = expression->mInner->accept(this).as<InstructionSequence>();
 
         result.insert(result.end(), innerCode.begin(), innerCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NotInstruction()));
+        result.push_back(new Instructions::NotInstruction());
 
         return result;
     }
@@ -473,8 +473,8 @@ namespace TribalScript
         InstructionSequence innerCode = expression->mInner->accept(this).as<InstructionSequence>();
 
         result.insert(result.end(), innerCode.begin(), innerCode.end());
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushIntegerInstruction(1)));
-        result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::AddAssignmentInstruction()));
+        result.push_back(new Instructions::PushIntegerInstruction(1));
+        result.push_back(new Instructions::AddAssignmentInstruction());
 
         return result;
     }
@@ -492,35 +492,35 @@ namespace TribalScript
         }
 
         // Expression should jump over body if false (+2 added for the NOP and jump below)
-        expressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(bodyCode.size() + 2)));
+        expressionCode.push_back(new Instructions::JumpFalseInstruction(bodyCode.size() + 2));
 
         // Body should jump back to the expression to reevaluate
         const AddressOffsetType jumpTarget = -((int)(bodyCode.size() + expressionCode.size()));
-        bodyCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(jumpTarget)));
+        bodyCode.push_back(new Instructions::JumpInstruction(jumpTarget));
 
         // Add a NOP for a jump target
-        bodyCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
+        bodyCode.push_back(new Instructions::NOPInstruction());
 
         out.insert(out.end(), expressionCode.begin(), expressionCode.end());
 
         for (std::size_t iteration = 0; iteration < bodyCode.size(); ++iteration)
         {
-            std::shared_ptr<Instructions::ContinueInstruction> continueInstruction = std::dynamic_pointer_cast<Instructions::ContinueInstruction>(bodyCode[iteration]);
-            std::shared_ptr<Instructions::BreakInstruction> breakInstruction = std::dynamic_pointer_cast<Instructions::BreakInstruction>(bodyCode[iteration]);
+            Instructions::ContinueInstruction* continueInstruction = dynamic_cast<Instructions::ContinueInstruction*>(bodyCode[iteration]);
+            Instructions::BreakInstruction* breakInstruction = dynamic_cast<Instructions::BreakInstruction*>(bodyCode[iteration]);
 
             if (continueInstruction)
             {
                 // Replace instruction with jump end
                 const AddressType continueTarget = bodyCode.size() - expressionCode.size() - 1; // -1 to account for the jump and NOP added at the end of body
                 const AddressOffsetType continueRelative = continueTarget - iteration;
-                bodyCode[iteration] = std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(continueRelative));
+                bodyCode[iteration] = new Instructions::JumpInstruction(continueRelative);
             }
             else if (breakInstruction)
             {
                 // Replace instruction with pointer to NOP
                 const AddressType breakTarget = bodyCode.size();
                 const AddressOffsetType breakRelative = breakTarget - iteration - 1; // -1 to account for POP at the end
-                bodyCode[iteration] = std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(breakRelative));
+                bodyCode[iteration] = new Instructions::JumpInstruction(breakRelative);
             }
         }
 
@@ -545,21 +545,21 @@ namespace TribalScript
         }
 
         // Pop the result of our advance so it doesn't corrupt the stack
-        advanceCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
+        advanceCode.push_back(new Instructions::PopInstruction());
 
         // At the end of the loop, run advance
         forBody.insert(forBody.end(), advanceCode.begin(), advanceCode.end());
 
         // Pop the result of our initializer so it doesn't corrupt the stack
-        initializerCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopInstruction()));
+        initializerCode.push_back(new Instructions::PopInstruction());
 
         // Our body should return to the expression
         const AddressOffsetType jumpTarget = expressionCode.size() + forBody.size() + 1; // Consider the POP at the end of advance
-        forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(-jumpTarget)));
-        forBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
+        forBody.push_back(new Instructions::JumpInstruction(-jumpTarget));
+        forBody.push_back(new Instructions::NOPInstruction());
 
         // Check if our expression is false
-        expressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction((int)forBody.size())));
+        expressionCode.push_back(new Instructions::JumpFalseInstruction((int)forBody.size()));
 
         // Output final code, also resolve break/continue instructions
         out.insert(out.end(), initializerCode.begin(), initializerCode.end());
@@ -567,22 +567,22 @@ namespace TribalScript
 
         for (std::size_t iteration = 0; iteration < forBody.size(); ++iteration)
         {
-            std::shared_ptr<Instructions::ContinueInstruction> continueInstruction = std::dynamic_pointer_cast<Instructions::ContinueInstruction>(forBody[iteration]);
-            std::shared_ptr<Instructions::BreakInstruction> breakInstruction = std::dynamic_pointer_cast<Instructions::BreakInstruction>(forBody[iteration]);
+            Instructions::ContinueInstruction* continueInstruction = dynamic_cast<Instructions::ContinueInstruction*>(forBody[iteration]);
+            Instructions::BreakInstruction* breakInstruction = dynamic_cast<Instructions::BreakInstruction*>(forBody[iteration]);
 
             if (continueInstruction)
             {
                 // Replace instruction with jump end
                 const AddressType continueTarget = forBody.size() - advanceCode.size() - 2; // -2 to account for the jump and NOP added at the end of body
                 const AddressOffsetType continueRelative = continueTarget - iteration;
-                forBody[iteration] = std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(continueRelative));
+                forBody[iteration] = new Instructions::JumpInstruction(continueRelative);
             }
             else if (breakInstruction)
             {
                 // Replace instruction with pointer to NOP
                 const AddressType breakTarget = forBody.size();
                 const AddressOffsetType breakRelative = breakTarget - iteration - 1; // -1 to account for POP at the end
-                forBody[iteration] = std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(breakRelative));
+                forBody[iteration] = new Instructions::JumpInstruction(breakRelative);
             }
         }
 
@@ -594,14 +594,14 @@ namespace TribalScript
     antlrcpp::Any Compiler::visitBreakNode(AST::BreakNode* node)
     {
         InstructionSequence out;
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::BreakInstruction()));
+        out.push_back(new Instructions::BreakInstruction());
         return out;
     }
 
     antlrcpp::Any Compiler::visitContinueNode(AST::ContinueNode* node)
     {
         InstructionSequence out;
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::ContinueInstruction()));
+        out.push_back(new Instructions::ContinueInstruction());
         return out;
     }
 
@@ -612,7 +612,7 @@ namespace TribalScript
         {
             out = node->mExpression->accept(this).as<InstructionSequence>();
         }
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::ReturnInstruction()));
+        out.push_back(new Instructions::ReturnInstruction());
         return out;
     }
 
@@ -625,13 +625,13 @@ namespace TribalScript
         InstructionSequence falseValueCode = node->mFalseValue->accept(this).as<InstructionSequence>();
 
         // We add a NOP to the false expressions for a target to jump to
-        falseValueCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
+        falseValueCode.push_back(new Instructions::NOPInstruction());
 
         // In the true expression we need to jump over the false expression
-        trueValueCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(falseValueCode.size())));
+        trueValueCode.push_back(new Instructions::JumpInstruction(falseValueCode.size()));
 
         // Jump to the false expression if our expression is false
-        expressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(falseValueCode.size() + 1)));
+        expressionCode.push_back(new Instructions::JumpFalseInstruction(falseValueCode.size() + 1));
 
         out.insert(out.end(), expressionCode.begin(), expressionCode.end());
         out.insert(out.end(), trueValueCode.begin(), trueValueCode.end());
@@ -648,7 +648,7 @@ namespace TribalScript
 
         // NOTE: We intentionally process in reverse order due to needing to know how long existing code is to jump over
         // Add a NOP to jump to
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction()));
+        out.push_back(new Instructions::NOPInstruction());
 
         InstructionSequence defaultInstructions;
         for (AST::ASTNode* defaultNode : node->mDefaultBody)
@@ -668,7 +668,7 @@ namespace TribalScript
                 caseBody.insert(caseBody.end(), childInstructions.begin(), childInstructions.end());
             }
             // If we enter this body we should skip over the rest of the instructions
-            caseBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(out.size())));
+            caseBody.push_back(new Instructions::JumpInstruction(out.size()));
 
             // Generate a sequence of checks until something comes out to be true
             InstructionSequence caseExpressions;
@@ -679,15 +679,15 @@ namespace TribalScript
 
                 // Place our expression to check against and then check if equal
                 caseExpressionCode.insert(caseExpressionCode.end(), expressionCode.begin(), expressionCode.end());
-                caseExpressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::EqualsInstruction()));
+                caseExpressionCode.push_back(new Instructions::EqualsInstruction());
 
                 if (iterator != caseNode->mCases.begin())
                 {
-                    caseExpressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpTrueInstruction(caseExpressions.size() + 1)));
+                    caseExpressionCode.push_back(new Instructions::JumpTrueInstruction(caseExpressions.size() + 1));
                 }
                 else
                 {
-                    caseExpressionCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(caseBody.size() + 1)));
+                    caseExpressionCode.push_back(new Instructions::JumpFalseInstruction(caseBody.size() + 1));
                 }
 
                 caseExpressions.insert(caseExpressions.begin(), caseExpressionCode.begin(), caseExpressionCode.end());
@@ -711,7 +711,7 @@ namespace TribalScript
             InstructionSequence childInstructions = bodyNode->accept(this).as<InstructionSequence>();
             elseCode.insert(elseCode.end(), childInstructions.begin(), childInstructions.end());
         }
-        elseCode.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NOPInstruction())); // Add a NOP for jump targets
+        elseCode.push_back(new Instructions::NOPInstruction()); // Add a NOP for jump targets
         out.insert(out.end(), elseCode.begin(), elseCode.end());
 
         // Generate all else if's
@@ -728,10 +728,10 @@ namespace TribalScript
             InstructionSequence elseIfExpression = elseIf->mExpression->accept(this).as<InstructionSequence>();
 
             // The expression must jump over our body if false
-            elseIfExpression.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(elseIfBody.size() + 2)));
+            elseIfExpression.push_back(new Instructions::JumpFalseInstruction(elseIfBody.size() + 2));
 
             // The body, when done, must jump over the remaining code
-            elseIfBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(out.size())));
+            elseIfBody.push_back(new Instructions::JumpInstruction(out.size()));
 
             out.insert(out.begin(), elseIfBody.begin(), elseIfBody.end());
             out.insert(out.begin(), elseIfExpression.begin(), elseIfExpression.end());
@@ -748,10 +748,10 @@ namespace TribalScript
         }
 
         // The expression must jump over our body if false
-        ifExpression.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpFalseInstruction(ifBody.size() + 2)));
+        ifExpression.push_back(new Instructions::JumpFalseInstruction(ifBody.size() + 2));
 
         // The body, when done, must jump over the remaining code
-        ifBody.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::JumpInstruction(out.size())));
+        ifBody.push_back(new Instructions::JumpInstruction(out.size()));
 
         out.insert(out.begin(), ifBody.begin(), ifBody.end());
         out.insert(out.begin(), ifExpression.begin(), ifExpression.end());
@@ -775,7 +775,7 @@ namespace TribalScript
             out.insert(out.end(), childInstructions.begin(), childInstructions.end());
         }
 
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::AccessArrayInstruction(variableName, array->mIndices.size(), globalVariable != nullptr)));
+        out.push_back(new Instructions::AccessArrayInstruction(variableName, array->mIndices.size(), globalVariable != nullptr));
         return out;
     }
 
@@ -788,7 +788,7 @@ namespace TribalScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::EqualsInstruction()));
+        out.push_back(new Instructions::EqualsInstruction());
 
         return out;
     }
@@ -802,7 +802,7 @@ namespace TribalScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::NotEqualsInstruction()));
+        out.push_back(new Instructions::NotEqualsInstruction());
 
         return out;
     }
@@ -816,7 +816,7 @@ namespace TribalScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::StringEqualsInstruction()));
+        out.push_back(new Instructions::StringEqualsInstruction());
 
         return out;
     }
@@ -830,7 +830,7 @@ namespace TribalScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::StringNotEqualInstruction()));
+        out.push_back(new Instructions::StringNotEqualInstruction());
 
         return out;
     }
@@ -844,7 +844,7 @@ namespace TribalScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::ConcatInstruction(expression->mSeperator)));
+        out.push_back(new Instructions::ConcatInstruction(expression->mSeperator));
 
         return out;
     }
@@ -858,7 +858,7 @@ namespace TribalScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::DivideInstruction()));
+        out.push_back(new Instructions::DivideInstruction());
 
         return out;
     }
@@ -872,7 +872,7 @@ namespace TribalScript
 
         out.insert(out.end(), lhsCode.begin(), lhsCode.end());
         out.insert(out.end(), rhsCode.begin(), rhsCode.end());
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::MultiplyInstruction()));
+        out.push_back(new Instructions::MultiplyInstruction());
 
         return out;
     }
@@ -888,7 +888,7 @@ namespace TribalScript
 
         // Push base
         const std::string stringData = node->mFieldBaseName;
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringData)));
+        out.push_back(new Instructions::PushStringInstruction(stringData));
 
         // Push all array components
         for (AST::ASTNode* childNode : node->mFieldExpressions)
@@ -901,7 +901,7 @@ namespace TribalScript
         InstructionSequence rvalueCode = node->mRight->accept(this).as<InstructionSequence>();
         out.insert(out.end(), rvalueCode.begin(), rvalueCode.end());
 
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushObjectFieldInstruction(node->mFieldExpressions.size())));
+        out.push_back(new Instructions::PushObjectFieldInstruction(node->mFieldExpressions.size()));
         return out;
     }
 
@@ -924,11 +924,11 @@ namespace TribalScript
         else
         {
             const std::string stringData = "";
-            out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushStringInstruction(stringData)));
+            out.push_back(new Instructions::PushStringInstruction(stringData));
         }
 
         // Push Object
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushObjectInstantiationInstruction()));
+        out.push_back(new Instructions::PushObjectInstantiationInstruction());
 
         // ... gen fields
         for (AST::ASTNode* field : object->mFields)
@@ -945,7 +945,7 @@ namespace TribalScript
         }
 
         // Pop object
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PopObjectInstantiationInstruction(object->mChildren.size())));
+        out.push_back(new Instructions::PopObjectInstantiationInstruction(object->mChildren.size()));
 
         return out;
     }

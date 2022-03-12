@@ -25,7 +25,7 @@ namespace TribalScript
         const std::size_t instructionCount = this->size();
         while (instructionIndex < instructionCount && instructionIndex >= 0)
         {
-            std::shared_ptr<Instructions::Instruction>& nextInstruction = this->at(instructionIndex);
+            Instructions::Instruction* nextInstruction = this->at(instructionIndex);
 
             state->mInstructionPointer = instructionIndex;
             const AddressOffsetType advance = nextInstruction->execute(state);
