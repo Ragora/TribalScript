@@ -154,7 +154,7 @@ namespace TribalScript
         class PushLocalReferenceInstruction : public Instruction
         {
             public:
-                PushLocalReferenceInstruction(const StringTableEntry value) : mStringID(value)
+                PushLocalReferenceInstruction(const std::size_t registerID) : mRegisterID(registerID)
                 {
 
                 }
@@ -162,20 +162,20 @@ namespace TribalScript
                 virtual AddressOffsetType execute(ExecutionState* state) override
                 {
                     StoredValueStack& stack = state->mExecutionScope.getStack();
-                    stack.emplace_back(state->mExecutionScope.getVariableOrAllocate(mStringID));
+                    stack.emplace_back(state->mExecutionScope.getRegisterOrAllocate(mRegisterID));
                     return 1;
                 };
 
                 virtual std::string disassemble() override
                 {
                     std::ostringstream out;
-                    out << "PushLocalReference " << mStringID;
+                    out << "PushLocalReference " << mRegisterID;
                     return out.str();
                 }
 
             private:
                 //! The value to push.
-                StringTableEntry mStringID;
+                std::size_t mRegisterID;
         };
 
         /**
@@ -1381,7 +1381,8 @@ namespace TribalScript
                     }
                     else
                     {
-                        stack.emplace_back(state->mExecutionScope.getVariableOrAllocate(arrayName));
+                        // FIXME: Handle local arrays
+                   //     stack.emplace_back(state->mExecutionScope.getVariableOrAllocate(arrayName));
                     }
                     return 1;
                 };

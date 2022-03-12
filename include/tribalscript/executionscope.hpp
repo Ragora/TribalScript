@@ -81,7 +81,7 @@ namespace TribalScript
         //! Awaiting root-level object instantiations.
         std::vector<ObjectInstantiationDescriptor> mObjectInstantiations;
 
-        std::map<StringTableEntry, StoredValue*> mLocalVariables;
+        std::vector<StoredValue*> mRegisters;
     };
 
     /**
@@ -107,13 +107,10 @@ namespace TribalScript
             StoredValueStack& getStack();
             StoredValueStack& getReturnStack();
 
-            StoredValue* getVariable(const std::string& name);
-            StoredValue* getVariable(const StringTableEntry name);
-            StoredValue* getVariableOrAllocate(const StringTableEntry name);
-            StoredValue* getVariableOrAllocate(const std::string& name);
+            StoredValue* getRegister(const std::size_t registerID);
+            StoredValue* getRegisterOrAllocate(const std::size_t registerID);
 
-            void setVariable(const std::string& name, const StoredValue& variable);
-            void setVariable(const StringTableEntry name, const StoredValue& variable);
+            void setRegister(const std::size_t registerID, const StoredValue& variable);
 
             //! The InterpreterConfiguration associated with this ExecutionScope.
             const InterpreterConfiguration mConfig;

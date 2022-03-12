@@ -102,8 +102,9 @@ namespace TribalScript
         state->mExecutionScope.pushFrame(this);
         for (auto localIterator = newLocals.begin(); localIterator != newLocals.end(); ++localIterator)
         {
-            auto currentLocal = *localIterator;
-            state->mExecutionScope.setVariable(currentLocal.first, currentLocal.second);
+            // FIXME: Fix 'this' passing for registers
+           // auto currentLocal = *localIterator;
+           // state->mExecutionScope.setRegister(currentLocal.first, currentLocal.second);
         }
 
         mInstructions.execute(state);

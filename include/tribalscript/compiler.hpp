@@ -15,6 +15,8 @@
 #pragma once
 
 #include <memory>
+#include <vector>
+#include <unordered_map>
 
 #include "antlr4-runtime.h"
 
@@ -61,11 +63,27 @@ namespace TribalScript
             const InterpreterConfiguration mConfig;
 
         private:
+            struct RegisterLookupTable
+            {
+                std::size_t mCurrentIndex;
+                std::unordered_map<StringTableEntry, std::size_t> mLookup;
+            };
+
             std::string mCurrentPackage;
             StringTable* mStringTable;
 
+            std::vector<RegisterLookupTable> mRegisterLookup;
+
             /*
-                Compiler Routines ==============================
+                Compiler Helper Routines ==============================
+            */
+            void pushRegisterLookupTable();
+            void popRegisterLookupTable();
+            std::size_t getOrAssignRegister(const StringTableEntry stringID);
+            RegisterLookupTable& getCurrentRegisterTable();
+
+            /*
+                Compiler Visitor Routines ==============================
             */
 
             virtual antlrcpp::Any visitPackageDeclarationNode(AST::PackageDeclarationNode* package) override;

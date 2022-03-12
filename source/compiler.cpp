@@ -33,6 +33,10 @@ namespace TribalScript
     {
         ParserErrorListener parserErrorListener;
 
+        // Reset register lookup table state - uppermost represents file level table
+        mRegisterLookup.clear();
+        pushRegisterLookupTable();
+
         antlr4::ANTLRInputStream antlrStream(input);
         Tribes2Lexer lexer(&antlrStream);
         lexer.removeErrorListeners();
@@ -117,7 +121,47 @@ namespace TribalScript
     }
 
     /*
-        Compiler Routines ====================
+        Compiler Helper Routines ==============================
+    */
+    void Compiler::pushRegisterLookupTable()
+    {
+        RegisterLookupTable newTable =
+        {
+            0, std::unordered_map<std::size_t, std::size_t>()
+        };
+
+        mRegisterLookup.push_back(newTable);
+    }
+
+    void Compiler::popRegisterLookupTable()
+    {
+        mRegisterLookup.pop_back();
+        assert(mRegisterLookup.size() >= 1);
+    }
+
+    Compiler::RegisterLookupTable& Compiler::getCurrentRegisterTable()
+    {
+        assert(mRegisterLookup.size() >= 1);
+        return mRegisterLookup.back();
+    }
+
+    std::size_t Compiler::getOrAssignRegister(const StringTableEntry stringID)
+    {
+        Compiler::RegisterLookupTable& currentTable = getCurrentRegisterTable();
+
+        auto search = currentTable.mLookup.find(stringID);
+        if (search == currentTable.mLookup.end())
+        {
+            std::size_t assignedIndex = currentTable.mCurrentIndex++;
+            currentTable.mLookup[stringID] = assignedIndex;
+            return assignedIndex;
+        }
+
+        return search->second;
+    }
+
+    /*
+        Compiler Visitor Routines ====================
     */
     antlrcpp::Any Compiler::visitFunctionCallNode(AST::FunctionCallNode* call)
     {
@@ -144,6 +188,8 @@ namespace TribalScript
 
     antlrcpp::Any Compiler::visitFunctionDeclarationNode(AST::FunctionDeclarationNode* function)
     {
+        pushRegisterLookupTable();
+
         InstructionSequence functionBody;
         for (AST::ASTNode* node : function->mBody)
         {
@@ -163,6 +209,8 @@ namespace TribalScript
 
         InstructionSequence result;
         result.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::FunctionDeclarationInstruction(mCurrentPackage, function->mNameSpace, function->mName, parameterNames, functionBody)));
+
+        popRegisterLookupTable();
         return result;
     }
 
@@ -321,7 +369,9 @@ namespace TribalScript
         std::string lookupName = value->getName();
 
         const StringTableEntry stringID = mStringTable->getOrAssign(mConfig.mCaseSensitive ? lookupName : toLowerCase(lookupName));
-        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLocalReferenceInstruction(stringID)));
+        const std::size_t registerID = getOrAssignRegister(stringID);
+
+        out.push_back(std::shared_ptr<Instructions::Instruction>(new Instructions::PushLocalReferenceInstruction(registerID)));
         return out;
     }
 
