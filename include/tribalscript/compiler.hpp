@@ -74,6 +74,8 @@ namespace TribalScript
 
             std::vector<RegisterLookupTable> mRegisterLookup;
 
+            std::vector<std::shared_ptr<Function>> mGeneratedFunctions;
+
             /*
                 Compiler Helper Routines ==============================
             */

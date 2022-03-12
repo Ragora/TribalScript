@@ -29,7 +29,7 @@ TEST(InterpreterTest, Array)
     TribalScript::Interpreter interpreter(config);
     TribalScript::registerAllLibraries(&interpreter);
 
-    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
+    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter, nullptr);
     interpreter.execute("cases/caseSensitive.cs", &state);
 
     TribalScript::StoredValue* resultLower = interpreter.getGlobal("result");

@@ -27,7 +27,7 @@ TEST(InterpreterTest, Array)
     TribalScript::Interpreter interpreter;
     TribalScript::registerAllLibraries(&interpreter);
 
-    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
+    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter, nullptr);
     interpreter.execute("cases/array.cs", &state);
 
     // The assignment performed is: $result[1,2,3] = %value;

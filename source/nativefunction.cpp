@@ -16,6 +16,7 @@
 #include <tribalscript/instructions.hpp>
 #include <tribalscript/stringhelpers.hpp>
 #include <tribalscript/storedvaluestack.hpp>
+#include <tribalscript/executionstate.hpp>
 
 namespace TribalScript
 {

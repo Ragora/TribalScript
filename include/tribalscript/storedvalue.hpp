@@ -37,7 +37,7 @@ namespace TribalScript
         SubfieldReference
     };
 
-    union StoredValueUnion
+    struct StoredValueUnion
     {
         int mInteger;
         float mFloat;
@@ -71,6 +71,11 @@ namespace TribalScript
     class StoredValue
     {
     public:
+        StoredValue() : mType(StoredValueType::Integer), mStorage(0), mMemoryLocation(nullptr), mConsoleObject(nullptr), mReference(nullptr)
+        {
+
+        }
+
         StoredValue(void* memoryLocation, const StoredValueType type) : mType(type), mStorage(), mMemoryLocation(memoryLocation), mConsoleObject(nullptr), mReference(nullptr)
         {
 
@@ -104,6 +109,11 @@ namespace TribalScript
             mStorage.mStringPointer = new char[valueLength + 1];
             std::memcpy(mStorage.mStringPointer, value, valueLength);
             mStorage.mStringPointer[valueLength] = 0x00;
+        }
+
+        explicit StoredValue(const std::string& value) : StoredValue(value.c_str(), value.length())
+        {
+ 
         }
 
         //StoredValue(ConsoleObject* object, const std::size_t field) : mType(StoredValueType::SubfieldReference), mStorage(field), mMemoryLocation(nullptr), mConsoleObject(object), mReference(nullptr)
@@ -142,7 +152,7 @@ namespace TribalScript
             return StoredValue(lhs.toFloat() + rhs.toFloat());
         }
 
-        friend StoredValue operator-(const StoredValue& lhs, const StoredValue& rhs)
+        friend  StoredValue operator-(const StoredValue& lhs, const StoredValue& rhs)
         {
             // FIXME: For now we normalize to floats
             return StoredValue(lhs.toFloat() - rhs.toFloat());
@@ -166,14 +176,58 @@ namespace TribalScript
         /// @{
         ///
 
-        int toInteger() const;
+        __forceinline int toInteger() const
+        {
+            if (mReference)
+            {
+                return mReference->toInteger();
+            }
+
+
+
+            return mStorage.mInteger;
+        }
+
+        __forceinline std::string toString() const
+        {
+            return mStorage.mStringPointer;
+        }
 
         /**
          *  @brief Converts the value in question to a native floating point type.
          *  @param scope The execution scope within which this conversion is occurring.
          *  @return A floating point representation of this value.
          */
-        float toFloat() const;
+        __forceinline float toFloat() const
+        {
+            if (mReference)
+            {
+                return mReference->toFloat();
+            }
+            else if (mMemoryLocation)
+            {
+                switch (mType)
+                {
+                case StoredValueType::Float:
+                    return *reinterpret_cast<float*>(mMemoryLocation);
+                case StoredValueType::Integer:
+                    return static_cast<float>(*reinterpret_cast<int*>(mMemoryLocation));
+                }
+            }
+
+            StoredValue* referenced;
+
+            switch (mType)
+            {
+
+            case StoredValueType::Integer:
+                return (float)mStorage.mInteger;
+            case StoredValueType::Float:
+                return mStorage.mFloat;
+            case StoredValueType::String:
+                return std::stof(mStorage.mStringPointer);
+            }
+        }
 
         /**
          *  @brief Converts the value in question to a native sting type.
@@ -199,8 +253,64 @@ namespace TribalScript
          *  @param state The execution state this assignment is taking place in.
          *  @return True if an assignment has taken place. False otherwise.
          */
-        bool setValue(const StoredValue& newValue);
+        __forceinline bool setValue(const StoredValue& newValue)
+        {
+            if (mReference)
+            {
+                return mReference->setValue(newValue);
+            }
+            else if (mMemoryLocation)
+            {
+                switch (mType)
+                {
+                case StoredValueType::Float:
+                    *reinterpret_cast<float*>(mMemoryLocation) = newValue.toFloat();
+                    return true;
+                case StoredValueType::Integer:
+                    *reinterpret_cast<int*>(mMemoryLocation) = newValue.toInteger();
+                    return true;
+                }
+            }
+
+            // Copy over stored data
+            if (newValue.mReference)
+            {
+                mType = newValue.mReference->mType;
+                mStorage = newValue.mReference->mStorage;
+            }
+            else
+            {
+                mType = newValue.mType;
+                mStorage = newValue.mStorage;
+            }
+
+            return true;
+        }
+
         void setValue(const float newValue);
+
+        __forceinline void setValue(const int newValue)
+        {
+            if (mReference)
+            {
+                return mReference->setValue(newValue);
+            }
+            else if (mMemoryLocation)
+            {
+                switch (mType)
+                {
+                case StoredValueType::Float:
+                    *reinterpret_cast<float*>(mMemoryLocation) = newValue;
+                    return;
+                case StoredValueType::Integer:
+                    *reinterpret_cast<int*>(mMemoryLocation) = static_cast<int>(newValue);
+                    return;
+                }
+            }
+
+            mType = StoredValueType::Integer;
+            mStorage.mInteger = newValue;
+        }
 
         std::string getRepresentation();
 

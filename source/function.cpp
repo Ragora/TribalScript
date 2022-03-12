@@ -16,6 +16,7 @@
 #include <tribalscript/instructions.hpp>
 #include <tribalscript/stringhelpers.hpp>
 #include <tribalscript/storedvaluestack.hpp>
+#include <tribalscript/executionstate.hpp>
 
 namespace TribalScript
 {
@@ -107,7 +108,8 @@ namespace TribalScript
            // state->mExecutionScope.setRegister(currentLocal.first, currentLocal.second);
         }
 
-        mInstructions.execute(state);
+        // FIXME: Resolve codeblock to this function
+        mInstructions.execute(state->mRootCodeBlock, state);
 
         state->mExecutionScope.popFrame();
     }

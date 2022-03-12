@@ -62,42 +62,6 @@ namespace TribalScript
         return mType == StoredValueType::Integer;
     }
 
-    bool StoredValue::setValue(const StoredValue& newValue)
-    {
-        if (mReference)
-        {
-            return mReference->setValue(newValue);
-        }
-        else if (mMemoryLocation)
-        {
-            switch (mType)
-            {
-            case StoredValueType::Float:
-                *reinterpret_cast<float*>(mMemoryLocation) = newValue.toFloat();
-                return true;
-            case StoredValueType::Integer:
-                *reinterpret_cast<int*>(mMemoryLocation) = newValue.toInteger();
-                return true;
-            default:
-                throw std::runtime_error("Unknown Memory Type");
-            }
-        }
-
-        // Copy over stored data
-        if (newValue.mReference)
-        {
-            mType = newValue.mReference->mType;
-            mStorage = newValue.mReference->mStorage;
-        }
-        else
-        {
-            mType = newValue.mType;
-            mStorage = newValue.mStorage;
-        }
-
-        return true;
-    }
-
     void StoredValue::setValue(const float newValue)
     {
         if (mReference)
@@ -114,42 +78,11 @@ namespace TribalScript
             case StoredValueType::Integer:
                 *reinterpret_cast<int*>(mMemoryLocation) = static_cast<int>(newValue);
                 return;
-            default:
-                throw std::runtime_error("Unknown Memory Type");
             }
         }
 
         mType = StoredValueType::Float;
         mStorage.mFloat = newValue;
-    }
-
-    int StoredValue::toInteger() const
-    {
-        if (mReference)
-        {
-            return mReference->toInteger();
-        }
-
-        StoredValue* referenced;
-
-        switch (mType)
-        {
-        case StoredValueType::Integer:
-            return mStorage.mInteger;
-        case StoredValueType::Float:
-            return (int)mStorage.mFloat;
-        case StoredValueType::String:
-            try
-            {
-                return std::stoi(mStorage.mStringPointer);
-            }
-            catch (std::invalid_argument exception)
-            {
-                return 0;
-            }
-        }
-
-        throw std::runtime_error("Unknown Conversion");
     }
 
     std::string StoredValue::toString()
@@ -170,8 +103,6 @@ namespace TribalScript
         case StoredValueType::String:
             return mStorage.mStringPointer;
         }
-
-        throw std::runtime_error("Unknown Conversion");
     }
 
     StoredValue StoredValue::getReferencedValueCopy() const
@@ -190,50 +121,6 @@ namespace TribalScript
         case StoredValueType::String:
             return StoredValue(mStorage.mStringPointer);
         }
-
-        throw std::runtime_error("Unknown Conversion");
-    }
-
-    float StoredValue::toFloat() const
-    {
-        if (mReference)
-        {
-            return mReference->toFloat();
-        }
-        else if (mMemoryLocation)
-        {
-            switch (mType)
-            {
-            case StoredValueType::Float:
-                return *reinterpret_cast<float*>(mMemoryLocation);
-            case StoredValueType::Integer:
-                return static_cast<float>(*reinterpret_cast<int*>(mMemoryLocation));
-            default:
-                throw std::runtime_error("Unknown Memory Type");
-            }
-        }
-
-        StoredValue* referenced;
-
-        switch (mType)
-        {
-
-        case StoredValueType::Integer:
-            return (float)mStorage.mInteger;
-        case StoredValueType::Float:
-            return mStorage.mFloat;
-        case StoredValueType::String:
-            try
-            {
-                return std::stof(mStorage.mStringPointer);
-            }
-            catch (std::invalid_argument exception)
-            {
-                return 0;
-            }
-        }
-
-        throw std::runtime_error("Unknown Conversion");
     }
 
     std::string StoredValue::getRepresentation()
@@ -252,7 +139,5 @@ namespace TribalScript
         case StoredValueType::String:
             return mStorage.mStringPointer;
         }
-
-        throw std::runtime_error("Unknown Conversion");
     }
 }

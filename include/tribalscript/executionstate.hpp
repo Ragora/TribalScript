@@ -29,7 +29,7 @@ namespace TribalScript
     class ExecutionState
     {
         public:
-            explicit ExecutionState(Interpreter* interpreter) : mInstructionPointer(0), mInterpreter(interpreter), mExecutionScope(interpreter->mConfig, &interpreter->mStringTable)
+            explicit ExecutionState(Interpreter* interpreter, CodeBlock* block) : mInstructionPointer(0), mInterpreter(interpreter), mExecutionScope(interpreter->mConfig, &interpreter->mStringTable), mRootCodeBlock(block)
             {
 
             }
@@ -42,5 +42,8 @@ namespace TribalScript
 
             //! The execution scope used for managing local variables & for loop structures.
             ExecutionScope mExecutionScope;
+
+            //! The root codeblock that triggered this execution path.
+            CodeBlock* mRootCodeBlock;
     };
 }

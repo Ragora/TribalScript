@@ -26,7 +26,7 @@ TEST(InterpreterTest, ContinueWhile)
     TribalScript::Interpreter interpreter;
     TribalScript::registerAllLibraries(&interpreter);
 
-    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
+    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter, nullptr);
     interpreter.execute("cases/continueWhile.cs", &state);
 
     // After execution, the result of $global should be 50

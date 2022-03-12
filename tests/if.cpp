@@ -26,7 +26,7 @@ TEST(InterpreterTest, If)
     TribalScript::Interpreter interpreter;
     TribalScript::registerAllLibraries(&interpreter);
 
-    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
+    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter, nullptr);
     interpreter.execute("cases/if.cs", &state);
 
     // Here we have three values

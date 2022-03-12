@@ -168,6 +168,7 @@ namespace TribalScript
     std::string toLowerCase(const std::string& in)
     {
         std::string result = in;
+
         std::transform(result.begin(), result.end(), result.begin(), [](unsigned char character) { return std::tolower(character); });
         return result;
     }

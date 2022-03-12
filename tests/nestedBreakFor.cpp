@@ -26,7 +26,7 @@ TEST(InterpreterTest, NestedBreak)
     TribalScript::Interpreter interpreter;
     TribalScript::registerAllLibraries(&interpreter);
 
-    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
+    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter, nullptr);
     interpreter.execute("cases/nestedBreakFor.cs", &state);
 
     // After execution, the result of $global should be 50

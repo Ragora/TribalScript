@@ -70,7 +70,8 @@ namespace TribalScript
     {
         explicit ExecutionScopeData(Function* function) : mCurrentFunction(function)
         {
-
+            mStack.reserve(64);
+            mRegisters.reserve(32);
         }
 
         Function* mCurrentFunction;
@@ -81,7 +82,7 @@ namespace TribalScript
         //! Awaiting root-level object instantiations.
         std::vector<ObjectInstantiationDescriptor> mObjectInstantiations;
 
-        std::vector<StoredValue*> mRegisters;
+        std::vector<StoredValue> mRegisters;
     };
 
     /**
@@ -107,8 +108,37 @@ namespace TribalScript
             StoredValueStack& getStack();
             StoredValueStack& getReturnStack();
 
-            StoredValue* getRegister(const std::size_t registerID);
-            StoredValue* getRegisterOrAllocate(const std::size_t registerID);
+            __forceinline StoredValue* getRegister(const std::size_t registerID)
+            {
+                ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+
+                if (registerID >= currentScope.mRegisters.size())
+                {
+                    return nullptr;
+                }
+
+                return &currentScope.mRegisters[registerID];
+            }
+
+            __forceinline StoredValue* getRegisterOrAllocate(const std::size_t registerID)
+            {
+                StoredValue* result = getRegister(registerID);
+                ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
+
+                if (!result)
+                {
+                    // Allocate empty registers between where we are now and where we want to go
+                    for (std::size_t iteration = currentScope.mRegisters.size(); iteration < registerID + 1; ++iteration)
+                    {
+                        currentScope.mRegisters.emplace_back(0);
+                    }
+
+                    assert(registerID < currentScope.mRegisters.size());
+                    result = &currentScope.mRegisters[registerID];
+                }
+
+                return result;
+            }
 
             void setRegister(const std::size_t registerID, const StoredValue& variable);
 

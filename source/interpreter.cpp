@@ -57,11 +57,12 @@ namespace TribalScript
 
         if (state)
         {
+            state->mRootCodeBlock = compiled;
             compiled->execute(state);
         }
         else
         {
-            ExecutionState localState = ExecutionState(this);
+            ExecutionState localState = ExecutionState(this, compiled);
             compiled->execute(&localState);
         }
     }
@@ -78,11 +79,12 @@ namespace TribalScript
 
         if (state)
         {
+            state->mRootCodeBlock = compiled;
             compiled->execute(state);
         }
         else
         {
-            ExecutionState localState = ExecutionState(this);
+            ExecutionState localState = ExecutionState(this, compiled);
             compiled->execute(&localState);
         }
     }

@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
         }
         std::cout << std::endl;
 
-        TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
+        TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter, nullptr);
         compiled->execute(&state);
 
         delete compiled;

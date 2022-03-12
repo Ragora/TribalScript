@@ -19,20 +19,26 @@
 
 namespace TribalScript
 {
-    CodeBlock::CodeBlock(const InstructionSequence& instructions)
+    CodeBlock::CodeBlock(const InstructionSequence& instructions, const std::vector<std::shared_ptr<Function>>& functions) : mFunctions(functions)
     {
         mInstructions.insert(mInstructions.end(), instructions.begin(), instructions.end());
     }
 
     void CodeBlock::execute(ExecutionState* state)
     {
-        mInstructions.execute(state);
+        mInstructions.execute(this, state);
+    }
+
+    std::shared_ptr<Function> CodeBlock::getFunction(const std::size_t functionNumber)
+    {
+        return mFunctions[functionNumber];
     }
 
     std::vector<std::string> CodeBlock::disassemble()
     {
         std::vector<std::string> result;
 
+        /*
         for (auto&& instruction : mInstructions)
         {
             std::ostringstream out;
@@ -44,6 +50,8 @@ namespace TribalScript
             }
             result.push_back(out.str());
         }
+        */
+
         return result;
     }
 }

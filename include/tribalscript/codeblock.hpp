@@ -20,14 +20,13 @@
 #include <memory>
 
 #include <tribalscript/stringtable.hpp>
+#include <tribalscript/function.hpp>
 #include <tribalscript/instructionsequence.hpp>
 
 namespace TribalScript
 {
-    class InstructionSequence;
     class StringTable;
     class ExecutionState;
-    class Function;
 
     /**
      *  @brief A CodeBlock defines a piece of executable code generated from a single input (Ie. a file).
@@ -36,7 +35,7 @@ namespace TribalScript
     class CodeBlock
     {
         public:
-            CodeBlock(const InstructionSequence& instructions);
+            CodeBlock(const InstructionSequence& instructions, const std::vector<std::shared_ptr<Function>>& functions);
 
             /**
              *  @brief Executes all instructions contained in mInstructions within the provided context.
@@ -47,6 +46,8 @@ namespace TribalScript
              *  @brief Produces a disassembly of the CodeBlock code.
              */
             std::vector<std::string> disassemble();
+
+            std::shared_ptr<Function> getFunction(const std::size_t functionNumber);
 
         private:
             //! All functions registered in this codeblock.

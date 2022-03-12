@@ -26,7 +26,7 @@ TEST(InterpreterTest, Variables)
     TribalScript::Interpreter interpreter;
     TribalScript::registerAllLibraries(&interpreter);
 
-    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter);
+    TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter, nullptr);
     interpreter.execute("cases/variables.cs", &state);
 
     // We have a global and a global value within a namespace

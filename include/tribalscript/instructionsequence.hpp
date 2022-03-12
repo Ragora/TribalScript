@@ -18,13 +18,11 @@
 #include <memory>
 #include <string>
 
+#include <tribalscript/instructions.hpp>
+
 namespace TribalScript
 {
-    namespace Instructions
-    {
-        class Instruction;
-    }
-
+    class CodeBlock;
     class ExecutionState;
 
     //! Typedef for the signed integer type to be used when calculating addresses.
@@ -35,9 +33,9 @@ namespace TribalScript
      *  @brief Storage class for a sequence of instructions to be executed. Also implements the
      *  primary execution code for running Torque Script virtual instructions.
      */
-    class InstructionSequence : public std::vector<Instructions::Instruction*>
+    class InstructionSequence : public std::vector<Instructions::Instruction>
     {
         public:
-            void execute(ExecutionState* state);
+            void execute(TribalScript::CodeBlock* block, ExecutionState* state);
     };
 }

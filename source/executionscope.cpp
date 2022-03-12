@@ -22,38 +22,6 @@ namespace TribalScript
         this->pushFrame(nullptr);
     }
 
-    StoredValue* ExecutionScope::getRegister(const std::size_t registerID)
-    {
-        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
-
-        if (registerID >= currentScope.mRegisters.size())
-        {
-            return nullptr;
-        }
-
-        return currentScope.mRegisters[registerID];
-    }
-
-    StoredValue* ExecutionScope::getRegisterOrAllocate(const std::size_t registerID)
-    {
-        StoredValue* result = getRegister(registerID);
-        ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
-
-        if (!result)
-        {
-            // Allocate empty registers between where we are now and where we want to go
-            for (std::size_t iteration = currentScope.mRegisters.size(); iteration < registerID + 1; ++iteration)
-            {
-                currentScope.mRegisters.push_back(new StoredValue(0));
-            }
-
-            assert(registerID < mRegisters.size());
-            result = currentScope.mRegisters[registerID];
-        }
-
-        return result;
-    }
-
     void ExecutionScope::setRegister(const std::size_t registerID, const StoredValue& variable)
     {
         StoredValue* currentValue = getRegisterOrAllocate(registerID);
