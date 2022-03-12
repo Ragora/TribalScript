@@ -34,7 +34,8 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set(CMAKE_CXX_STANDARD 11)
 
 # required if linking to static library
-add_definitions(-DANTLR4CPP_STATIC -DANTLR4_ZIP_REPOSITORY=https://github.com/antlr/antlr4/archive/4.9.3.zip)
+add_definitions(-DANTLR4CPP_STATIC)
+set(ANTLR4_ZIP_REPOSITORY https://github.com/antlr/antlr4/archive/4.9.3.zip)
 
 # using /MD flag for antlr4_runtime (for Visual C++ compilers only)
 set(ANTLR4_WITH_STATIC_CRT OFF)
