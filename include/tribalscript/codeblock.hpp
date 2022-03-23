@@ -50,6 +50,8 @@ namespace TribalScript
             std::shared_ptr<Function> getFunction(const std::size_t functionNumber);
 
         private:
+            std::vector<std::string> disassembleInstructions(const std::string& prefix, InstructionSequence instructions);
+
             //! All functions registered in this codeblock.
             std::vector<std::shared_ptr<Function>> mFunctions;
 

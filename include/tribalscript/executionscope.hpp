@@ -35,6 +35,11 @@ namespace TribalScript
      */
     struct ObjectInstantiationDescriptor
     {
+        ObjectInstantiationDescriptor()
+        {
+
+        }
+
         /**
          *  @brief Constructs a new ObjectInstantiationDescriptor.
          *  @param typeName The console object type to inititalize.

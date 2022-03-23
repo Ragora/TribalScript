@@ -11,3 +11,5 @@ while (%i < 10)
         break;
     }
 }
+
+echo("Result: " @ $result::break);

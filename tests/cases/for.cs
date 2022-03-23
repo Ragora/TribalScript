@@ -8,5 +8,6 @@ function forLoopTest(%initializer)
     }
     echo("Result: " @ $global);
 }
+
 forLoopTest(5);
 echo("AFTER: " @ $global);

@@ -68,6 +68,8 @@ namespace TribalScript
              */
             const std::string& getDeclaredPackage();
 
+            const InstructionSequence& getInstructions();
+
         private:
             //! The package of the function.
             std::string mPackage;

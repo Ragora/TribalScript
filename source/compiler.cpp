@@ -238,7 +238,7 @@ namespace TribalScript
         }
 
         // FIXME: Subfield references
-        //result.push_back(Instructions::Instruction(Instructions::InstructionType::Subreference, StoredValue(stringID), StoredValue((int)subfield->mIndices.size())));
+        result.push_back(Instructions::Instruction(Instructions::InstructionType::Subreference, StoredValue(subfield->mName), StoredValue((int)subfield->mIndices.size())));
         return result;
     }
 
@@ -756,7 +756,7 @@ namespace TribalScript
             InstructionSequence elseIfExpression = elseIf->mExpression->accept(this).as<InstructionSequence>();
 
             // The expression must jump over our body if false
-            elseIfExpression.push_back(Instructions::Instruction(Instructions::InstructionType::Jump, StoredValue((int)elseIfBody.size() + 2)));
+            elseIfExpression.push_back(Instructions::Instruction(Instructions::InstructionType::JumpFalse, StoredValue((int)elseIfBody.size() + 2)));
 
             // The body, when done, must jump over the remaining code
             elseIfBody.push_back(Instructions::Instruction(Instructions::InstructionType::Jump, StoredValue((int)out.size())));

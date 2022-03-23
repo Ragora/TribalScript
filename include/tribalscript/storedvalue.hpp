@@ -183,14 +183,48 @@ namespace TribalScript
                 return mReference->toInteger();
             }
 
+            StoredValue* referenced;
 
+            switch (mType)
+            {
+                case StoredValueType::Integer:
+                    return mStorage.mInteger;
+                case StoredValueType::Float:
+                    return (int)mStorage.mFloat;
+                case StoredValueType::String:
+                    try
+                    {
+                        return std::stoi(mStorage.mStringPointer);
+                    }
+                    catch (std::invalid_argument exception)
+                    {
+                        return 0;
+                    }
+            }
 
-            return mStorage.mInteger;
+            throw std::runtime_error("Unknown Conversion");
         }
 
         inline std::string toString() const
         {
-            return mStorage.mStringPointer;
+            if (mReference)
+            {
+                return mReference->toString();
+            }
+
+            StoredValue* referenced;
+
+            switch (mType)
+            {
+                case StoredValueType::Integer:
+                    return std::to_string(mStorage.mInteger);
+                case StoredValueType::Float:
+                    return std::to_string(mStorage.mFloat);
+                case StoredValueType::String:
+                    return mStorage.mStringPointer;
+            }
+
+            throw std::runtime_error("Unknown Conversion");
         }
 
         /**

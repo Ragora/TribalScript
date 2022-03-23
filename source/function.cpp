@@ -38,6 +38,11 @@ namespace TribalScript
         }
     }
 
+    const InstructionSequence& Function::getInstructions()
+    {
+        return mInstructions;
+    }
+
     void Function::execute(ConsoleObject* thisObject, ExecutionState* state, std::vector<StoredValue>& parameters)
     {
         StoredValueStack& stack = state->mExecutionScope.getStack();
@@ -45,7 +50,7 @@ namespace TribalScript
         // OPTIMIZATION: We incur a copy cost here
         std::vector<std::string> parameterNames = mParameterNames;
 
-        std::map<std::string, StoredValue> newLocals;
+        std::vector<StoredValue> newLocals;
 
         // If thisObject is non-null, we always provide this as the first parameter
         if (thisObject && !parameterNames.empty())
@@ -53,7 +58,8 @@ namespace TribalScript
             const std::string thisParameterName = parameterNames[0];
             parameterNames.erase(parameterNames.begin());
 
-            newLocals.emplace(std::make_pair(thisParameterName, (int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(state->mInterpreter, thisObject)));
+            // Push this as the first local register
+            newLocals.emplace_back((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(state->mInterpreter, thisObject));
         }
 
         // Calculate expected versus provided to determine what parameters should be left empty
@@ -78,15 +84,7 @@ namespace TribalScript
         {
             const std::string nextParameterName = parameterNames[parameterNames.size() - (iteration + emptyParameters + 1)];
 
-            auto search = newLocals.find(nextParameterName);
-            if (search != newLocals.end())
-            {
-                search->second = parameters.back().getReferencedValueCopy();
-            }
-            else
-            {
-                newLocals.insert(std::make_pair(nextParameterName, parameters.back().getReferencedValueCopy()));
-            }
+            newLocals.push_back(parameters.back().getReferencedValueCopy().getReferencedValueCopy());
 
             parameters.pop_back();
         }
@@ -101,11 +99,16 @@ namespace TribalScript
 
         // Push scope once we're done dealing with locals and load in to current scope
         state->mExecutionScope.pushFrame(this);
-        for (auto localIterator = newLocals.begin(); localIterator != newLocals.end(); ++localIterator)
+        for (int registerIndex = 0; registerIndex < newLocals.size(); ++registerIndex)
         {
-            // FIXME: Fix 'this' passing for registers
-           // auto currentLocal = *localIterator;
-           // state->mExecutionScope.setRegister(currentLocal.first, currentLocal.second);
+            if (thisObject)
+            {
+                state->mExecutionScope.setRegister(registerIndex + 1, newLocals[registerIndex]);
+            }
+            else
+            {
+                state->mExecutionScope.setRegister(registerIndex, newLocals[registerIndex]);
+            }
         }
 
         // FIXME: Resolve codeblock to this function

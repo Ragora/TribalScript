@@ -28,9 +28,16 @@ namespace TribalScript
         std::string functionNamespace;
         std::string functionName;
         std::size_t functionArgc;
+        StringTableEntry stringID;
+        ConsoleObject* consoleObjectPointer;
+        ConsoleObject* childConsoleObjectPointer;
         std::shared_ptr<Function> functionLookup;
         std::vector<StoredValue> functionParameters;
         std::vector<StoredValue>::iterator parametersStart;
+
+        std::ostringstream output;
+        ConsoleObjectDescriptor* consoleObjectDescriptorPointer;
+        ObjectInstantiationDescriptor descriptor;
 
         StoredValue* rhsStored;
         StoredValue* lhsStored;
@@ -98,6 +105,21 @@ namespace TribalScript
                     ++instructionIndex;
                     break;
 
+                case Instructions::InstructionType::JumpTrue:
+                    assert(stack.size() >= 1);
+
+                    if (stack.back().toBoolean())
+                    {
+                        stack.pop_back();
+
+                        instructionIndex += nextInstruction.mOperands[0].toInteger();
+                        break;
+                    }
+
+                    stack.pop_back();
+                    ++instructionIndex;
+                    break;
+
                 case Instructions::InstructionType::NOP:
                     ++instructionIndex;
                     break;
@@ -119,6 +141,7 @@ namespace TribalScript
                     floatResult = lhsStored->toFloat();
                     floatResult += rhsStored->toFloat();
 
+                    stack.erase(stack.end() - 2, stack.end());
                     stack.push_back(StoredValue(floatResult));
                     break;
 
@@ -138,6 +161,73 @@ namespace TribalScript
                   stack.push_back(StoredValue(floatResult));
 
                   break;
+
+                case Instructions::PushObjectInstantiation:
+                    // Pull two values off the stack
+                    rhsStored = &(*(stack.end() - 1));
+                    lhsStored = &(*(stack.end() - 2));
+
+                    // Object name, object type name
+                    state->mExecutionScope.pushObjectInstantiation(lhsStored->toString(), rhsStored->toString());
+
+                    ++instructionIndex;
+                    break;
+
+                case Instructions::PopObjectInstantiation:
+                    descriptor = state->mExecutionScope.popObjectInstantiation();
+
+                    // Ask the interpreter to initialize the resulting tree
+                    consoleObjectPointer = state->mInterpreter->initializeConsoleObjectTree(descriptor);
+
+                    if (consoleObjectPointer)
+                    {
+                        // Assign fields -- any construction fields should have been pulled out of the descriptor at this point
+                        descriptor.copyFieldsToConsoleObject(consoleObjectPointer);
+
+                        // Append children
+                        for (std::size_t iteration = 0; iteration < nextInstruction.mOperands[0].toInteger(); ++iteration)
+                        {
+                            StoredValue nextChildID = stack.back();
+                            stack.pop_back();
+
+                            childConsoleObjectPointer = state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObject(state->mInterpreter, nextChildID.toInteger());
+                            consoleObjectPointer->addChild(childConsoleObjectPointer);
+                        }
+
+                        stack.emplace_back((int)state->mInterpreter->mConfig.mConsoleObjectRegistry->getConsoleObjectID(state->mInterpreter, consoleObjectPointer));
+                    }
+                    else
+                    {
+                        state->mInterpreter->mConfig.mPlatform->logError("Failed to instantiate object!");
+                        stack.emplace_back(-1);
+                    }
+
+                    ++instructionIndex;
+                    break;
+
+                case Instructions::InstructionType::Subreference:
+                    assert(stack.size() >= 1);
+
+                    functionName = resolveArrayNameFromStack(stack, state, nextInstruction.mOperands[0].toString(), nextInstruction.mOperands[1].toInteger());
+
+                    lhsStored = &(*(stack.end() - 1));
+
+                    consoleObjectPointer = lhsStored->toConsoleObject(state);
+                    if (consoleObjectPointer)
+                    {
+                        stack.pop_back();
+
+                        // Obtain a reference to the console object's field
+                        stack.emplace_back(consoleObjectPointer->getTaggedFieldOrAllocate(functionName));
+                        ++instructionIndex;
+                        break;
+                    }
+
+                    stack.pop_back();
+                    stack.emplace_back(0);
+
+                    ++instructionIndex;
+                    break;
 
                 case Instructions::InstructionType::AddAssignment:
                     assert(stack.size() >= 2);
@@ -170,6 +260,20 @@ namespace TribalScript
                     ++instructionIndex;
                     break;
 
+                case Instructions::InstructionType::Equals:
+                    assert(stack.size() >= 2);
+
+                    rhsStored = &(*(stack.end() - 1));
+                    lhsStored = &(*(stack.end() - 2));
+
+                    intResult = lhsStored->toInteger() == rhsStored->toInteger() ? 1 : 0;
+
+                    stack.erase(stack.end() - 2, stack.end());
+                    stack.emplace_back(intResult);
+
+                    ++instructionIndex;
+                    break;
+
                 case Instructions::InstructionType::StringEquals:
                     assert(stack.size() >= 2);
 
@@ -178,12 +282,8 @@ namespace TribalScript
 
                     intResult = lhsStored->toString() == rhsStored->toString() ? 1 : 0;
 
-                    if (intResult)
-                    {
-                        std::cout << "EQ" << std::endl;
-                    }
                     stack.erase(stack.end() - 2, stack.end());
-                    stack.emplace_back(result);
+                    stack.emplace_back(intResult);
 
                     ++instructionIndex;
                     break;
@@ -197,6 +297,7 @@ namespace TribalScript
                     returnStack.push_back(rhsStored->getReferencedValueCopy());
 
                     stack.pop_back();
+                    return;
 
                 case Instructions::InstructionType::PushString:
                     stack.emplace_back(nextInstruction.mOperands[0].toString());
@@ -219,6 +320,14 @@ namespace TribalScript
                     stack.emplace_back(requestedString);
 
                     ++instructionIndex;
+                    break;
+
+                case Instructions::InstructionType::PushGlobalReference:
+                    ++instructionIndex;
+
+                    stringID = nextInstruction.mOperands[0].toInteger();
+                    stack.emplace_back(state->mInterpreter->getGlobalOrAllocate(stringID));
+
                     break;
 
                 case Instructions::InstructionType::PushFloat:
@@ -247,6 +356,19 @@ namespace TribalScript
                     ++instructionIndex;
                     break;
 
+                case Instructions::InstructionType::Negate:
+                    assert(stack.size() >= 1);
+
+                    // Pull two values off the stack
+                    rhsStored = &(*(stack.end() - 1));
+
+                    floatResult = -rhsStored->toFloat();
+                    stack.pop_back();
+                    stack.emplace_back(floatResult);
+
+                    ++instructionIndex;
+                    break;
+                    
                 case Instructions::InstructionType::CallFunction:
                     functionNamespace = nextInstruction.mOperands[0].toString();
                     functionNamespace = toLowerCase(functionNamespace);
@@ -321,13 +443,6 @@ namespace TribalScript
                     std::cout << "Invalid Opcode " << nextInstruction.mInstruction << std::endl;
                     return;
             }
-
-           // const AddressOffsetType advance = nextInstruction->execute(state);
-           // if (advance == 0)
-           // {
-           //     break;
-          //  }
-           // instructionIndex += advance;
         }
     }
 }

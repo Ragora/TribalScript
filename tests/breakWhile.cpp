@@ -29,7 +29,7 @@ TEST(InterpreterTest, BreakWhile)
     TribalScript::ExecutionState state = TribalScript::ExecutionState(&interpreter, nullptr);
     interpreter.execute("cases/breakWhile.cs", &state);
 
-    // After execution, the result of $global should be 50
+    // After execution, the result of result::break should be 10
     TribalScript::StoredValue* result = interpreter.getGlobal("result::break");
     ASSERT_TRUE(result);
 
