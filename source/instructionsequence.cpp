@@ -106,6 +106,39 @@ namespace TribalScript
                     instructionIndex += nextInstruction.mOperands[0].toInteger();
                     break;
 
+                case Instructions::InstructionType::Add:
+                    ++instructionIndex;
+
+                    assert(stack.size() >= 2);
+
+                    // Pull two values off the stack
+                    rhsStored = &(*(stack.end() - 1));
+                    lhsStored = &(*(stack.end() - 2));
+
+                    floatResult = 0.0f;
+                    floatResult = lhsStored->toFloat();
+                    floatResult += rhsStored->toFloat();
+
+                    stack.push_back(StoredValue(floatResult));
+                    break;
+
+              case Instructions::InstructionType::Minus:
+                  ++instructionIndex;
+
+                  assert(stack.size() >= 2);
+
+                  // Pull two values off the stack
+                  rhsStored = &(*(stack.end() - 1));
+                  lhsStored = &(*(stack.end() - 2));
+
+                  floatResult = 0.0f;
+                  floatResult = lhsStored->toFloat();
+                  floatResult -= rhsStored->toFloat();
+
+                  stack.push_back(StoredValue(floatResult));
+
+                  break;
+
                 case Instructions::InstructionType::AddAssignment:
                     assert(stack.size() >= 2);
 

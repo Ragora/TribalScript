@@ -108,7 +108,7 @@ namespace TribalScript
             StoredValueStack& getStack();
             StoredValueStack& getReturnStack();
 
-            __forceinline StoredValue* getRegister(const std::size_t registerID)
+            inline StoredValue* getRegister(const std::size_t registerID)
             {
                 ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
 
@@ -120,7 +120,7 @@ namespace TribalScript
                 return &currentScope.mRegisters[registerID];
             }
 
-            __forceinline StoredValue* getRegisterOrAllocate(const std::size_t registerID)
+            inline StoredValue* getRegisterOrAllocate(const std::size_t registerID)
             {
                 StoredValue* result = getRegister(registerID);
                 ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();

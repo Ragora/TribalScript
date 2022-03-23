@@ -176,7 +176,7 @@ namespace TribalScript
         /// @{
         ///
 
-        __forceinline int toInteger() const
+        inline int toInteger() const
         {
             if (mReference)
             {
@@ -188,7 +188,7 @@ namespace TribalScript
             return mStorage.mInteger;
         }
 
-        __forceinline std::string toString() const
+        inline std::string toString() const
         {
             return mStorage.mStringPointer;
         }
@@ -198,7 +198,7 @@ namespace TribalScript
          *  @param scope The execution scope within which this conversion is occurring.
          *  @return A floating point representation of this value.
          */
-        __forceinline float toFloat() const
+        inline float toFloat() const
         {
             if (mReference)
             {
@@ -253,7 +253,7 @@ namespace TribalScript
          *  @param state The execution state this assignment is taking place in.
          *  @return True if an assignment has taken place. False otherwise.
          */
-        __forceinline bool setValue(const StoredValue& newValue)
+        inline bool setValue(const StoredValue& newValue)
         {
             if (mReference)
             {
@@ -289,7 +289,7 @@ namespace TribalScript
 
         void setValue(const float newValue);
 
-        __forceinline void setValue(const int newValue)
+        inline void setValue(const int newValue)
         {
             if (mReference)
             {
