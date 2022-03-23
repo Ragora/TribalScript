@@ -46,7 +46,7 @@ namespace TribalScript
 
         int intResult;
         float floatResult;
-
+        
         while (instructionIndex < instructionCount && instructionIndex >= 0)
         {
             const Instructions::Instruction& nextInstruction = this->at(instructionIndex);
@@ -368,7 +368,7 @@ namespace TribalScript
 
                     ++instructionIndex;
                     break;
-                    
+
                 case Instructions::InstructionType::CallFunction:
                     functionNamespace = nextInstruction.mOperands[0].toString();
                     functionNamespace = toLowerCase(functionNamespace);

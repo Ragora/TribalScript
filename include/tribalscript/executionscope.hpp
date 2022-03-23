@@ -18,6 +18,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include <tribalscript/common.hpp>
 #include <tribalscript/storedvalue.hpp>
 #include <tribalscript/stringhelpers.hpp>
 #include <tribalscript/function.hpp>
@@ -113,7 +114,7 @@ namespace TribalScript
             StoredValueStack& getStack();
             StoredValueStack& getReturnStack();
 
-            inline StoredValue* getRegister(const std::size_t registerID)
+            TRIBALSCRIPT_FORCEINLINE StoredValue* getRegister(const std::size_t registerID)
             {
                 ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();
 
@@ -125,7 +126,7 @@ namespace TribalScript
                 return &currentScope.mRegisters[registerID];
             }
 
-            inline StoredValue* getRegisterOrAllocate(const std::size_t registerID)
+            __attribute__((always_inline)) StoredValue* getRegisterOrAllocate(const std::size_t registerID)
             {
                 StoredValue* result = getRegister(registerID);
                 ExecutionScopeData& currentScope = *mExecutionScopeData.rbegin();

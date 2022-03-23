@@ -20,6 +20,7 @@
 #include <string>
 #include <cstring>
 
+#include <tribalscript/common.hpp>
 #include <tribalscript/stringtable.hpp>
 
 namespace TribalScript
@@ -176,7 +177,7 @@ namespace TribalScript
         /// @{
         ///
 
-        inline int toInteger() const
+        TRIBALSCRIPT_FORCEINLINE int toInteger() const
         {
             if (mReference)
             {
@@ -205,7 +206,7 @@ namespace TribalScript
             throw std::runtime_error("Unknown Conversion");
         }
 
-        inline std::string toString() const
+        TRIBALSCRIPT_FORCEINLINE std::string toString() const
         {
             if (mReference)
             {
@@ -232,7 +233,7 @@ namespace TribalScript
          *  @param scope The execution scope within which this conversion is occurring.
          *  @return A floating point representation of this value.
          */
-        inline float toFloat() const
+        TRIBALSCRIPT_FORCEINLINE float toFloat() const
         {
             if (mReference)
             {
@@ -287,7 +288,7 @@ namespace TribalScript
          *  @param state The execution state this assignment is taking place in.
          *  @return True if an assignment has taken place. False otherwise.
          */
-        inline bool setValue(const StoredValue& newValue)
+        TRIBALSCRIPT_FORCEINLINE bool setValue(const StoredValue& newValue)
         {
             if (mReference)
             {
@@ -323,7 +324,7 @@ namespace TribalScript
 
         void setValue(const float newValue);
 
-        inline void setValue(const int newValue)
+        TRIBALSCRIPT_FORCEINLINE void setValue(const int newValue)
         {
             if (mReference)
             {
